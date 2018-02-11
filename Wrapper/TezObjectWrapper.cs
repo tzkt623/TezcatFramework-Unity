@@ -20,16 +20,9 @@ namespace tezcat
             get { return null; }
         }
 
-        public virtual Sprite getSprite(int type)
+        public virtual TezSprite getSprite(TezIconType type)
         {
-            //             var temp = TezResourceSystem.instance.getItem(m_ResUID);
-            //             return TezTextureManager.instance.getSprite(temp.icon[type]);
-            return ResourceSystem.instance.errorIcon;
-        }
-
-        public Texture2D getTexture2D(int type)
-        {
-            return null;
+            return TezSprite.empty;
         }
 
         public virtual bool equalTo(TezObjectWrapper other)

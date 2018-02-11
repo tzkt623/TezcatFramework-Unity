@@ -5,55 +5,98 @@ using UnityEngine;
 
 namespace tezcat
 {
+    public enum TezIconType
+    {
+        Normal = 0,
+        Samll,
+        Middle,
+        Large
+    }
+
+    public class TezIconPack
+    {
+        TezSprite[] m_Icon = new TezSprite[4];
+
+        public void setIcon(TezSprite sprite, TezIconType type)
+        {
+            m_Icon[(int)type] = sprite;
+        }
+
+        public TezSprite getIcon(TezIconType type)
+        {
+            return m_Icon[(int)type];
+        }
+    }
+
+    public class TezSprite
+    {
+        public static TezSprite empty { get; private set; }
+
+        int m_ID = 0;
+
+        static TezSprite()
+        {
+            empty = new TezSprite();
+        }
+
+        public TezSprite()
+        {
+            m_ID = 0;
+        }
+
+        public TezSprite(string name)
+        {
+            m_ID = TezTextureManager.instance.getSpriteID(name);
+        }
+
+        public static implicit operator TezSprite(string name)
+        {
+            return new TezSprite(name);
+        }
+
+        public Sprite convertToSprite()
+        {
+            return TezTextureManager.instance.getSprite(m_ID);
+        }
+    }
+
     public class TezTextureManager : TezSingleton<TezTextureManager>
     {
         Dictionary<string, int> m_SpriteDic = new Dictionary<string, int>();
+
         List<Sprite> m_SpriteList = new List<Sprite>();
 
-        Dictionary<string, int> m_Tex2DDic = new Dictionary<string, int>();
-        List<Texture2D> m_Tex2DList = new List<Texture2D>();
-
-        public void load(Sprite error_sprite, List<Sprite> list)
+        public void setErrorSprite(Sprite sprite)
         {
-            m_SpriteList.Add(error_sprite);
-            m_SpriteList.AddRange(list);
-            for (int i = 0; i < m_SpriteList.Count; i++)
+            if(m_SpriteList.Count == 0)
             {
-                m_SpriteDic.Add(m_SpriteList[i].name, i);
+                m_SpriteList.Add(sprite);
+            }
+            else
+            {
+                m_SpriteList[0] = sprite;
             }
 
-            m_SpriteDic.Clear();
+            m_SpriteDic.Add(sprite.name, 0);
         }
 
-        public void load(Texture2D error_tex2d, List<Texture2D> list)
+        public void add(Sprite sprite)
         {
-            m_Tex2DList.Add(error_tex2d);
-            m_Tex2DList.AddRange(list);
-            for (int i = 0; i < m_Tex2DList.Count; i++)
-            {
-                m_Tex2DDic.Add(m_Tex2DList[i].name, i);
-            }
+            int id = m_SpriteList.Count;
+            m_SpriteList.Add(sprite);
+            m_SpriteDic.Add(sprite.name, id);
+        }
+
+        public int getSpriteID(string name)
+        {
+            int id = 0;
+            m_SpriteDic.TryGetValue(name, out id);
+            return id;
         }
 
         public Sprite getSprite(int id)
         {
             return m_SpriteList[id];
-        }
-
-        public int getSpriteID(string name)
-        {
-            int i = 0;
-            if(m_SpriteDic.TryGetValue(name, out i))
-            {
-                return i;
-            }
-
-            return i;
-        }
-
-        public Texture2D getTextrue2D(int id)
-        {
-            return m_Tex2DList[id];
         }
     }
 }

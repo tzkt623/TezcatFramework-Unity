@@ -90,6 +90,11 @@ namespace tezcat
 
         }
 
+        public System.Type systemType
+        {
+            get { return typeof(T); }
+        }
+
         protected T m_Value;
         public T value
         {

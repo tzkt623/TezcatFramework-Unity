@@ -8,38 +8,20 @@ namespace tezcat
 
     public abstract class TezItem : ITezSerializable
     {
-        /// <summary>
-        /// 图标
-        /// </summary>
-        public List<int> icon = new List<int>();
-
-        /// <summary>
-        /// 图片
-        /// </summary>
-        public List<int> tex2d = new List<int>();
-
-        public bool invalid
-        {
-            get { return resUID.invalid; }
-        }
-
-        #region ID
-        /// <summary>
-        /// 资源ID
-        /// </summary>
-        public readonly TezResUID resUID = new TezResUID();
-
-        /// <summary>
-        /// 
-        /// </summary>
-        public string name
-        {
-            get; protected set;
-        }
-        #endregion
+        public TezIconPack icon { get; private set; }
+        public TezResUID resUID { get; private set; }
+        public TezStaticString name { get; private set; }
+        public bool invalid { get { return resUID.invalid; } }
 
         protected abstract int groupID { get; }
         protected abstract int typeID { get; }
+
+        public TezItem()
+        {
+            icon = new TezIconPack();
+            resUID = new TezResUID();
+            name = TezStaticString.empty;
+        }
 
         #region 序列化
         public virtual TezJsonWriter serialization()
@@ -61,7 +43,7 @@ namespace tezcat
                 for (int i = 0; i < reader.count(); i++)
                 {
                     var name = reader.getString(i);
-                    icon.Add(TezTextureManager.instance.getSpriteID(name));
+                    icon.setIcon(new TezSprite(name), (TezIconType)i);
                 }
                 reader.pop();
 

@@ -6,7 +6,7 @@ using UnityEngine.Assertions;
 
 namespace tezcat
 {
-    public abstract class TezResourceSystem : TezSingleton<ResourceSystem>
+    public class TezResourceSystem : TezSingleton<TezResourceSystem>
     {
         //ID分配器
         int m_UniqueIDGenerator = 0;
