@@ -68,7 +68,7 @@ namespace tezcat
 
         public void setErrorSprite(Sprite sprite)
         {
-            if(m_SpriteList.Count == 0)
+            if (m_SpriteList.Count == 0)
             {
                 m_SpriteList.Add(sprite);
             }
@@ -89,6 +89,11 @@ namespace tezcat
 
         public int getSpriteID(string name)
         {
+            if (string.IsNullOrEmpty(name))
+            {
+                return 0;
+            }
+
             int id = 0;
             m_SpriteDic.TryGetValue(name, out id);
             return id;

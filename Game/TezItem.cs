@@ -1,11 +1,5 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-
-
-namespace tezcat
+﻿namespace tezcat
 {
-
     public abstract class TezItem : ITezSerializable
     {
         public TezIconPack icon { get; private set; }
@@ -39,13 +33,19 @@ namespace tezcat
 
             if (reader.tryPush("asset"))
             {
-                reader.push("icon");
-                for (int i = 0; i < reader.count(); i++)
+                if (reader.tryPush("icon"))
                 {
-                    var name = reader.getString(i);
-                    icon.setIcon(new TezSprite(name), (TezIconType)i);
+                    var name = reader.getString("normal");
+                    icon.setIcon(new TezSprite(name), TezIconType.Normal);
+                    name = reader.getString("small");
+                    icon.setIcon(new TezSprite(name), TezIconType.Samll);
+                    name = reader.getString("middle");
+                    icon.setIcon(new TezSprite(name), TezIconType.Middle);
+                    name = reader.getString("large");
+                    icon.setIcon(new TezSprite(name), TezIconType.Large);
+
+                    reader.pop();
                 }
-                reader.pop();
 
                 reader.pop();
             }

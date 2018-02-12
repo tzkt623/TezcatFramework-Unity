@@ -1,15 +1,21 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 namespace tezcat
 {
-    public abstract class TezWindow : TezUINodeMB
+    public abstract class TezWindow
+        : TezUINodeMB
+        , IPointerEnterHandler
+        , IPointerExitHandler
+        , IPointerDownHandler
+        , IPointerUpHandler
     {
         TezWindowTitle m_Title = null;
-        List<TezUINodeMB> m_ChildrenList = new List<TezUINodeMB>();
+        List<TezSubwindow> m_SubwindowList = new List<TezSubwindow>();
 
-        TezUINodeMB m_ActivedSubwindow = null;
+        TezSubwindow focusSubwindow { get; set; }
 
         public ITezPointer currentPointer
         {
@@ -73,20 +79,43 @@ namespace tezcat
             }
         }
 
-        public void activeSubwindow(TezUINodeMB subwindow)
+        public void onFocusSubwindow(TezSubwindow subwindow)
         {
-            if (m_ActivedSubwindow != subwindow)
+            focusSubwindow = subwindow;
+        }
+
+        public void addSubWindow(TezSubwindow subwindow)
+        {
+            subwindow.window = this;
+            m_SubwindowList.Add(subwindow);
+        }
+
+        protected override void onRefresh()
+        {
+            foreach (var sub in m_SubwindowList)
             {
-                if(m_ActivedSubwindow != null)
-                {
-                    m_ActivedSubwindow.gameObject.SetActive(false);
-                }
-
-                m_ActivedSubwindow = subwindow;
-                m_ActivedSubwindow.gameObject.SetActive(true);
-
-                currentPointer = m_ActivedSubwindow as ITezPointer;
+                sub.dirty = true;
             }
+        }
+
+        public virtual void OnPointerEnter(PointerEventData eventData)
+        {
+
+        }
+
+        public virtual void OnPointerExit(PointerEventData eventData)
+        {
+
+        }
+
+        public virtual void OnPointerDown(PointerEventData eventData)
+        {
+            this.focusSubwindow?.onPointerDown(eventData);
+        }
+
+        public virtual void OnPointerUp(PointerEventData eventData)
+        {
+            this.focusSubwindow?.onPointerUp(eventData);
         }
     }
 }
