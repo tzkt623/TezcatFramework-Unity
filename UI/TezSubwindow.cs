@@ -29,5 +29,10 @@ namespace tezcat
         {
 
         }
+
+        public virtual void onDrop(PointerEventData eventData)
+        {
+
+        }
     }
 }

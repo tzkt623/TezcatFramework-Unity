@@ -11,6 +11,7 @@ namespace tezcat
         , IPointerExitHandler
         , IPointerDownHandler
         , IPointerUpHandler
+        , IDropHandler
     {
         TezWindowTitle m_Title = null;
         List<TezSubwindow> m_SubwindowList = new List<TezSubwindow>();
@@ -116,6 +117,11 @@ namespace tezcat
         public virtual void OnPointerUp(PointerEventData eventData)
         {
             this.focusSubwindow?.onPointerUp(eventData);
+        }
+
+        public virtual void OnDrop(PointerEventData eventData)
+        {
+            this.focusSubwindow?.onDrop(eventData);
         }
     }
 }
