@@ -50,7 +50,7 @@ namespace tezcat
             selected.item = item;
             selected.count += count;
 
-            onItemAdded.launch(selected.item, selected.count, selected.id);
+            onItemAdded?.Invoke(selected.item, selected.count, selected.id);
         }
 
         public void remove(TezItem item, int count)
@@ -65,7 +65,7 @@ namespace tezcat
                         slot.item = null;
                     }
 
-                    onItemRemoved.launch(slot.item, slot.count, slot.id);
+                    onItemRemoved?.Invoke(slot.item, slot.count, slot.id);
                     break;
                 }
             }
@@ -75,7 +75,7 @@ namespace tezcat
         {
             var slot = m_SlotList[slot_id];
             slot.count -= split_count;
-            onItemSetted.launch(slot.item, slot.count, slot.id);
+            onItemSetted?.Invoke(slot.item, slot.count, slot.id);
 
             var split_slot = new Slot()
             {
@@ -85,7 +85,7 @@ namespace tezcat
             };
 
             m_SlotList.Add(split_slot);
-            onItemAdded.launch(split_slot.item, split_slot.count, split_slot.id);
+            onItemAdded?.Invoke(split_slot.item, split_slot.count, split_slot.id);
         }
 
         private void combine(int from, int to)
@@ -95,8 +95,8 @@ namespace tezcat
             var slot_to = m_SlotList[to];
             slot_to.count += slot_from.count;
 
-            onItemRemoved.launch(slot_from.item, slot_from.count, slot_from.id);
-            onItemSetted.launch(slot_to.item, slot_to.count, slot_to.id);
+            onItemRemoved?.Invoke(slot_from.item, slot_from.count, slot_from.id);
+            onItemSetted?.Invoke(slot_to.item, slot_to.count, slot_to.id);
         }
 
         private void swap(int slot_1, int slot_2)
@@ -110,8 +110,8 @@ namespace tezcat
             m_SlotList[slot_2] = slot1;
             slot1.id = slot_2;
 
-            onItemSetted.launch(slot1.item, slot1.count, slot1.id);
-            onItemSetted.launch(slot2.item, slot2.count, slot2.id);
+            onItemSetted?.Invoke(slot1.item, slot1.count, slot1.id);
+            onItemSetted?.Invoke(slot2.item, slot2.count, slot2.id);
         }
 
         public void swapOrCombine(int slot_1, int slot_2)
@@ -126,7 +126,7 @@ namespace tezcat
             }
         }
 
-        public bool find(int slot_id, out TezItem item, out int count)
+        public bool tryGetItem(int slot_id, out TezItem item, out int count)
         {
             item = null;
             count = -1;
@@ -135,8 +135,8 @@ namespace tezcat
             {
                 return false;
             }
+            
             var slot = m_SlotList[slot_id];
-
             if (slot.item == null)
             {
                 return false;

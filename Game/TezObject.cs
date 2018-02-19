@@ -6,22 +6,13 @@ namespace tezcat
 {
     public abstract class TezObject
     {
-        public string name { get; private set; }
-
-        public TezResUID resUID
-        {
-            get; protected set;
-        }
-
-        TezUID m_UID = new TezUID();
-        public TezUID UID
-        {
-            get { return m_UID; }
-        }
+        public TezStaticString name { get; private set; }
+        public TezResUID resUID { get; protected set; }
+        public TezUID UID { get; private set; }
 
         public TezObject()
         {
-
+            UID = new TezUID();
         }
 
         public virtual void initialization()
@@ -33,6 +24,7 @@ namespace tezcat
         public virtual void clear()
         {
             this.resUID = null;
+            this.name = null;
         }
 
         public void setItem(int group_id, int type_id, int self_id)

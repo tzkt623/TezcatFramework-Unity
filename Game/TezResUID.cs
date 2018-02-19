@@ -2,6 +2,8 @@
 {
     public class TezResUID
     {
+
+
         int m_GroupID = -1;
         int m_TypeID = -1;
         int m_ObjectID = -1;

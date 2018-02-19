@@ -203,13 +203,6 @@ namespace tezcat
             {
                 m_TezItemGroupList.Add(new TezItemGroup() { groupID = m_TezItemGroupList.Count });
             }
-
-            this.onInitialization();
-        }
-
-        protected virtual void onInitialization()
-        {
-
         }
 
         protected TezItemGroup getGroup(int group_id)
@@ -234,7 +227,7 @@ namespace tezcat
             this.registerItem(item);
         }
 
-        protected void registerItem(TezItem new_item)
+        private void registerItem(TezItem new_item)
         {
             var group_id = new_item.resUID.group_id;
 
@@ -249,7 +242,7 @@ namespace tezcat
             m_TezItemGroupList[group_id].unregisterItem(type_id, self_id);
         }
 
-        protected void resetItem(TezItem item)
+        private void resetItem(TezItem item)
         {
             m_TezItemGroupList[item.resUID.group_id].resetItem(item);
         }

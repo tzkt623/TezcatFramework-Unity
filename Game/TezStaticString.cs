@@ -6,6 +6,7 @@ namespace tezcat
     {
         private static List<string> StringList = null;
         private static Dictionary<string, int> StringDic = null;
+        public static TezStaticString empty { get; private set; }
 
         static TezStaticString()
         {
@@ -17,8 +18,6 @@ namespace tezcat
         }
 
         private int m_ID = -1;
-
-        public static TezStaticString empty { get; private set; }
 
         public TezStaticString()
         {
@@ -49,7 +48,7 @@ namespace tezcat
 
         public TezStaticString(TezStaticString tstring)
         {
-            if(object.ReferenceEquals(tstring, null))
+            if(tstring == null)
             {
                 m_ID = 0;
             }
@@ -59,14 +58,14 @@ namespace tezcat
             }
         }
 
-        public static implicit operator string(TezStaticString str)
+        public static implicit operator string(TezStaticString tstring)
         {
-            if (object.ReferenceEquals(str, null))
+            if (tstring == null)
             {
                 return string.Empty;
             }
 
-            return StringList[str.m_ID];
+            return StringList[tstring.m_ID];
         }
 
         public static implicit operator TezStaticString(string str)
