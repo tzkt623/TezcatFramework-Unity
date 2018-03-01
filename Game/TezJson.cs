@@ -13,7 +13,7 @@ namespace tezcat
         /// <summary>
         /// 弹出栈顶保存的对象
         /// </summary>
-        public void pop()
+        public void exit()
         {
             m_Root = m_DataStack.Pop();
         }
@@ -32,7 +32,7 @@ namespace tezcat
         /// 从一个json对象中取出一个子对象 并将当前对象压栈保存
         /// </summary>
         /// <param name="name"></param>
-        public void push(string name)
+        public void enter(string name)
         {
             m_DataStack.Push(m_Root);
             m_Root = m_Root[name];
@@ -42,17 +42,17 @@ namespace tezcat
         /// 从一个json数组中取出一个子对象 并将当前对象压栈保存
         /// </summary>
         /// <param name="index"></param>
-        public void push(int index)
+        public void enter(int index)
         {
             m_DataStack.Push(m_Root);
             m_Root = m_Root[index];
         }
 
-        public bool tryPush(string name)
+        public bool tryEnter(string name)
         {
             if (this.containsKey(name))
             {
-                this.push(name);
+                this.enter(name);
                 return true;
             }
 
@@ -62,6 +62,11 @@ namespace tezcat
 
     public class TezJsonReader : TezJson
     {
+        public ICollection<string> keys
+        {
+            get { return m_Root.Keys; }
+        }
+
         public void load(string path)
         {
             m_DataStack.Clear();
@@ -81,7 +86,7 @@ namespace tezcat
 
         public float getFloat(int index)
         {
-            return (float)(double)m_Root[index];
+            return (float)m_Root[index];
         }
 
         public string getString(int index)
@@ -99,14 +104,36 @@ namespace tezcat
             return (bool)m_Root[name];
         }
 
+        public bool tryGetBool(string name, bool dvalue = false)
+        {
+            JsonData data = null;
+            if (m_Root.tryGet(name, out data))
+            {
+                return (bool)data;
+            }
+
+            return dvalue;
+        }
+
         public float getFloat(string name)
         {
-            return (float)(double)m_Root[name];
+            return (float)m_Root[name];
         }
 
         public int getInt(string name)
         {
             return (int)m_Root[name];
+        }
+
+        public int tryGetInt(string name, int dvalue = 0)
+        {
+            JsonData data = null;
+            if(m_Root.tryGet(name, out data))
+            {
+                return (int)data;
+            }
+
+            return dvalue;
         }
 
         public string getString(string name)
@@ -140,22 +167,47 @@ namespace tezcat
             m_Root.SetJsonType(type);
         }
 
-        public void newObject(string name)
+        public void beginObject(string name)
         {
             m_DataStack.Push(m_Root);
-            var data = new JsonData();
-            data.SetJsonType(JsonType.Object);
-            m_Root[name] = data;
-            m_Root = data;
+            if(m_Root.Keys.Contains(name))
+            {
+                m_Root = m_Root[name];
+            }
+            else
+            {
+                var data = new JsonData();
+                data.SetJsonType(JsonType.Object);
+                m_Root[name] = data;
+                m_Root = data;
+            }
         }
 
-        public void newObject()
+        public void endObject(string name)
+        {
+            if (!m_Root.IsObject)
+            {
+                throw new System.Exception();
+            }
+            m_Root = m_DataStack.Pop();
+        }
+
+        public void beginObject()
         {
             m_DataStack.Push(m_Root);
             var data = new JsonData();
             data.SetJsonType(JsonType.Object);
             m_Root.Add(data);
             m_Root = data;
+        }
+
+        public void endObject()
+        {
+            if (!m_Root.IsObject)
+            {
+                throw new System.Exception();
+            }
+            m_Root = m_DataStack.Pop();
         }
 
         public void pushValue(string name, bool value)
@@ -178,22 +230,38 @@ namespace tezcat
             m_Root[name] = value;
         }
 
-        public void newArray(string name)
+        public void beginArray(string name)
         {
             m_DataStack.Push(m_Root);
-            var data = new JsonData();
-            data.SetJsonType(JsonType.Array);
-            m_Root[name] = data;
-            m_Root = data;
+            if(m_Root.Keys.Contains(name))
+            {
+                m_Root = m_Root[name];
+            }
+            else
+            {
+                var data = new JsonData();
+                data.SetJsonType(JsonType.Array);
+                m_Root[name] = data;
+                m_Root = data;
+            }
         }
 
-        public void newArray()
+        public void beginArray()
         {
             m_DataStack.Push(m_Root);
             var data = new JsonData();
             data.SetJsonType(JsonType.Array);
             m_Root.Add(data);
             m_Root = data;
+        }
+
+        public void endArray()
+        {
+            if (!m_Root.IsArray)
+            {
+                throw new System.Exception();
+            }
+            m_Root = m_DataStack.Pop();
         }
 
         public void addValue(bool value)

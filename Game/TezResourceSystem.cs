@@ -6,7 +6,7 @@ using UnityEngine.Assertions;
 
 namespace tezcat
 {
-    public class TezResourceSystem : TezSingleton<TezResourceSystem>
+    public class TezItemSystem
     {
         //ID分配器
         int m_UniqueIDGenerator = 0;
@@ -15,209 +15,128 @@ namespace tezcat
             get { return m_UniqueIDGenerator; }
         }
 
-        public class TezItemList : IEnumerable<TezItem>
+        class Group
         {
-            public readonly int itemSize = 100;
+            public int id { get; set; }
 
-            List<TezItem[]> m_ItemWithUniqueID = new List<TezItem[]>();
-            List<TezItem[]> itemList
+            List<Container> m_List = new List<Container>();
+            public List<Container> containers
             {
-                get { return m_ItemWithUniqueID; }
+                get { return m_List; }
             }
 
-            public TezItem this[int unique_id]
+            public void foreachItem(TezEventBus.Action<TezItem> action)
             {
-                get
+                foreach (var container in m_List)
                 {
-                    var area = unique_id / itemSize;
-                    if (area > m_ItemWithUniqueID.Count - 1)
-                    {
-                        return null;
-                    }
-
-                    var index = unique_id - area * itemSize;
-                    return m_ItemWithUniqueID[area][index];
+                    container.foreachItem(action);
                 }
-            }
-
-            public void registerItem(TezItem item)
-            {
-//                 var area = item.uniqueID / itemSize;
-// 
-//                 while (area > m_ItemWithUniqueID.Count - 1)
-//                 {
-//                     m_ItemWithUniqueID.Add(new TezItem[itemSize]);
-//                 }
-// 
-//                 m_ItemWithUniqueID[area][item.uniqueID - itemSize * area] = item;
-            }
-
-            public void unregisterItem(int unique_id)
-            {
-                var area = unique_id / itemSize;
-                var index = unique_id - area * itemSize;
-
-                m_ItemWithUniqueID[area][index] = null;
-            }
-
-            public void resetItem(TezItem item)
-            {
-//                 var area = item.uniqueID / itemSize;
-//                 var index = item.uniqueID - area * itemSize;
-// 
-//                 m_ItemWithUniqueID[area][index] = item;
-            }
-
-            IEnumerator<TezItem> IEnumerable<TezItem>.GetEnumerator()
-            {
-                return new ItemListEnum(this);
-            }
-
-            IEnumerator IEnumerable.GetEnumerator()
-            {
-                return new ItemListEnum(this);
-            }
-
-            class ItemListEnum : IEnumerator<TezItem>
-            {
-                int m_Area = 0;
-                int m_Index = -1;
-
-                TezItemList m_List = null;
-
-                public ItemListEnum(TezItemList list)
-                {
-                    m_List = list;
-                }
-
-                TezItem IEnumerator<TezItem>.Current
-                {
-                    get
-                    {
-                        return m_List.itemList[m_Area][m_Index];
-                    }
-                }
-
-                object IEnumerator.Current
-                {
-                    get { return m_List.itemList[m_Area][m_Index]; }
-                }
-
-                void IDisposable.Dispose()
-                {
-                    m_List = null;
-                }
-
-                bool IEnumerator.MoveNext()
-                {
-                    m_Index += 1;
-                    if (m_Index >= m_List.itemSize)
-                    {
-                        m_Index = 0;
-                        m_Area += 1;
-                        if (m_Area >= m_List.itemList.Count)
-                        {
-                            return false;
-                        }
-                    }
-
-                    return true;
-                }
-
-                void IEnumerator.Reset()
-                {
-                    m_Index = -1;
-                    m_Area = 0;
-                }
-            }
-        }
-
-        protected class TezItemGroup
-        {
-            private int m_GroupID;
-            public int groupID
-            {
-                get { return m_GroupID; }
-                set { m_GroupID = value; }
-            }
-
-            List<List<TezItem>> m_ItemsWithType = new List<List<TezItem>>();
-
-            public List<TezItem> getAllItems()
-            {
-                List<TezItem> items = new List<TezItem>();
-                foreach (var container in m_ItemsWithType)
-                {
-                    foreach (var item in container)
-                    {
-                        items.Add(item);
-                    }
-                }
-
-                return items;
             }
 
             public void registerItem(TezItem new_item)
             {
-                int type_id = new_item.resUID.type_id;
-                while (m_ItemsWithType.Count <= type_id)
+                int type_id = new_item.typeID;
+                while (m_List.Count <= type_id)
                 {
-                    m_ItemsWithType.Add(new List<TezItem>());
+                    m_List.Add(new Container());
                 }
 
-                var container = m_ItemsWithType[type_id];
-                new_item.resUID.setObjectID(container.Count);
-                container.Add(new_item);
+                m_List[type_id].registerItem(new_item);
             }
 
-            public void unregisterItem(int type_id, int self_id)
+            public void unregisterItem(int type_id, int object_id)
             {
-                var type_container = m_ItemsWithType[type_id];
-
-                var remove_item = type_container[self_id];
-                var last_item = type_container[type_container.Count - 1];
-
-                type_container[self_id] = last_item;
-                type_container.RemoveAt(type_container.Count - 1);
+                var container = m_List[type_id];
+                container.unregisterItem(object_id);
             }
 
-            public void resetItem(TezItem item)
+            public Container this[int type_id]
             {
-                m_ItemsWithType[item.resUID.type_id][item.resUID.object_id] = item;
+                get { return m_List[type_id]; }
             }
 
-            public List<TezItem> this[int type_id]
+            public void clear()
             {
-                get
+                foreach (var container in m_List)
                 {
-                    return m_ItemsWithType[type_id];
+                    container.clear();
                 }
             }
         }
 
-        List<TezItemGroup> m_TezItemGroupList = new List<TezItemGroup>();
+        class Container
+        {
+            List<TezItem> m_List = new List<TezItem>();
+            public List<TezItem> items
+            {
+                get { return m_List; }
+            }
+
+            public void registerItem(TezItem new_item)
+            {
+                if (new_item.objectID == -1)
+                {
+                    new_item.setObjectID(m_List.Count);
+                    m_List.Add(new_item);
+                }
+                else
+                {
+                    while (m_List.Count <= new_item.objectID)
+                    {
+                        m_List.Add(null);
+                    }
+
+                    m_List[new_item.objectID] = new_item;
+                }
+            }
+
+            public void unregisterItem(int object_id)
+            {
+                var remove_item = m_List[object_id];
+                var last_item = m_List[m_List.Count - 1];
+
+                m_List[object_id] = last_item;
+                m_List.RemoveAt(m_List.Count - 1);
+            }
+
+            public void foreachItem(TezEventBus.Action<TezItem> action)
+            {
+                foreach (var item in m_List)
+                {
+                    action(item);
+                }
+            }
+
+            public void clear()
+            {
+                m_List.Clear();
+            }
+
+            public TezItem this[int object_id]
+            {
+                get { return m_List[object_id]; }
+            }
+
+        }
+
+        List<Group> m_GroupList = new List<Group>();
 
         public void initialization(int container_count)
         {
             for (int i = 0; i < container_count; i++)
             {
-                m_TezItemGroupList.Add(new TezItemGroup() { groupID = m_TezItemGroupList.Count });
+                m_GroupList.Add(new Group());
             }
         }
 
-        protected TezItemGroup getGroup(int group_id)
+        public TezItem getItem(int group_id, int type_id, int object_id)
         {
-            return m_TezItemGroupList[group_id];
+            return m_GroupList[group_id][type_id][object_id];
         }
 
-        public TezItem getItem(int group_id, int type_id, int self_id)
+        public T getItem<T>(int group_id, int type_id, int object_id) where T : TezItem
         {
-            return m_TezItemGroupList[group_id][type_id][self_id];
-        }
-
-        public T getItem<T>(int group_id, int type_id, int self_id) where T : TezItem, new()
-        {
-            return m_TezItemGroupList[group_id][type_id][self_id] as T;
+            return m_GroupList[group_id][type_id][object_id] as T;
         }
 
         public void registerItem<T>(TezJsonReader reader) where T : TezItem, new()
@@ -227,24 +146,74 @@ namespace tezcat
             this.registerItem(item);
         }
 
-        private void registerItem(TezItem new_item)
+        public void registerItem(TezItem new_item)
         {
-            var group_id = new_item.resUID.group_id;
-
-            Assert.IsTrue(m_TezItemGroupList.Count > group_id && m_TezItemGroupList[group_id] != null);
-
-            m_TezItemGroupList[group_id].registerItem(new_item);
+            var group_id = new_item.groupID;
+            Assert.IsTrue(m_GroupList.Count > group_id && m_GroupList[group_id] != null);
+            m_GroupList[group_id].registerItem(new_item);
         }
 
-        public void unregisterItem(int group_id, int type_id, int self_id)
+        public void unregisterItem(int group_id, int type_id, int object_id)
         {
-            var item = this.getItem(group_id, type_id, self_id);
-            m_TezItemGroupList[group_id].unregisterItem(type_id, self_id);
+            var item = this.getItem(group_id, type_id, object_id);
+            m_GroupList[group_id].unregisterItem(type_id, object_id);
         }
 
-        private void resetItem(TezItem item)
+        public void foreachItem(TezEventBus.Action<TezItem> action)
         {
-            m_TezItemGroupList[item.resUID.group_id].resetItem(item);
+            foreach (var group in m_GroupList)
+            {
+                group.foreachItem(action);
+            }
+        }
+
+        public void clear()
+        {
+            foreach (var group in m_GroupList)
+            {
+                group.clear();
+            }
+        }
+
+        public void save()
+        {
+            TezJsonWriter writer = new TezJsonWriter(true);
+
+            foreach (var group in m_GroupList)
+            {
+                group.foreachItem((TezItem item) =>
+                {
+                    writer.beginObject();
+                    item.serialization(writer);
+                    writer.endObject();
+                });
+            }
+
+            writer.save("C:/Users/Administrator/Desktop/TBS/save1.json");
+        }
+
+        public void load()
+        {
+            TezJsonReader reader = new TezJsonReader();
+            reader.load("C:/Users/Administrator/Desktop/TBS/save1.json");
+
+            var count = reader.count();
+
+            for (int i = 0; i < count; i++)
+            {
+                reader.enter(i);
+
+                reader.enter("id");
+                var gid = reader.getInt("group_id");
+                var tid = reader.getInt("type_id");
+                reader.exit();
+
+                var item = TezItemFactory.create(gid, tid);
+                item.deserialization(reader);
+                this.registerItem(item);
+
+                reader.exit();
+            }
         }
     }
 }

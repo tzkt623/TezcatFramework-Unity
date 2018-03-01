@@ -1,8 +1,9 @@
-﻿namespace tezcat
+﻿using System.Collections.Generic;
+namespace tezcat
 {
     public class TezResUID
     {
-
+        TezStaticString m_ResName = new TezStaticString();
 
         int m_GroupID = -1;
         int m_TypeID = -1;
@@ -41,6 +42,11 @@
         public void setObjectID(int object_id)
         {
             m_ObjectID = object_id;
+        }
+
+        public void setName(string name)
+        {
+            m_ResName = name;
         }
     }
 }

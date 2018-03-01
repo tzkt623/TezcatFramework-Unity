@@ -302,6 +302,11 @@ namespace LitJson
                 json = null;
             }
         }
+
+        public bool tryGet(string name, out JsonData data)
+        {
+            return inst_object.TryGetValue(name, out data);
+        }
         #endregion
 
 
@@ -423,6 +428,15 @@ namespace LitJson
                     "Instance of JsonData doesn't hold a double");
 
             return data.inst_double;
+        }
+
+        public static explicit operator float (JsonData data)
+        {
+            if (data.type != JsonType.Double)
+                throw new InvalidCastException(
+                    "Instance of JsonData doesn't hold a float");
+
+            return (float)data.inst_double;
         }
 
         public static explicit operator Int32 (JsonData data)

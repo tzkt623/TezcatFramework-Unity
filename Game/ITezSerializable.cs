@@ -6,7 +6,7 @@ namespace tezcat
 {
     public interface ITezSerializable
     {
-        TezJsonWriter serialization();
+        void serialization(TezJsonWriter writer);
         void deserialization(TezJsonReader reader);
     }
 }

@@ -6,9 +6,18 @@ namespace tezcat
 {
     public abstract class TezObject
     {
-        public TezStaticString name { get; private set; }
-        public TezResUID resUID { get; protected set; }
         public TezUID UID { get; private set; }
+
+        public int objectID { get; private set; }
+
+        TezStaticString m_ObjectName = new TezStaticString();
+        public string objectName
+        {
+            get { return m_ObjectName.convertToString(); }
+        }
+
+        public string customName { get; set; }
+
 
         public TezObject()
         {
@@ -17,26 +26,23 @@ namespace tezcat
 
         public virtual void initialization()
         {
-            resUID = null;
-            name = null;
+
         }
 
         public virtual void clear()
         {
-            this.resUID = null;
-            this.name = null;
+            m_ObjectName.reset();
         }
 
         public void setItem(int group_id, int type_id, int self_id)
         {
-            var item = TezResourceSystem.instance.getItem(group_id, type_id, self_id);
-            this.resUID = item.resUID;
-            this.name = item.name;
+            var item = GameDataBase.DB.getItem(group_id, type_id, self_id);
             this.setItem(item);
         }
 
         public void setItem(TezItem item)
         {
+            objectID = item.objectID;
             this.onItemSet(item);
         }
 

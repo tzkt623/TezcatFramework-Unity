@@ -1,60 +1,104 @@
 ﻿namespace tezcat
 {
-    public abstract class TezItem : ITezSerializable
+    public abstract class TezItem
+        : ITezSerializable
     {
-        public TezIconPack icon { get; private set; }
-        public TezResUID resUID { get; private set; }
-        public TezStaticString name { get; private set; }
-        public bool invalid { get { return resUID.invalid; } }
+        public TezAsset asset { get; protected set; }
 
-        protected abstract int groupID { get; }
-        protected abstract int typeID { get; }
+        public bool runtime { get; set; }
+        public abstract int groupID { get; }
+        public abstract int typeID { get; }
+        public int objectID { get; private set; }
+
+        public void setObjectID(int id)
+        {
+            this.objectID = id;
+        }
 
         public TezItem()
         {
-            icon = new TezIconPack();
-            resUID = new TezResUID();
-            name = TezStaticString.empty;
+            this.objectID = -1;
+            asset = new TezAsset();
         }
 
-        #region 序列化
-        public virtual TezJsonWriter serialization()
+        public void serialization(TezJsonWriter writer)
         {
-            TezJsonWriter writer = new TezJsonWriter();
-            writer.pushValue("name", name);
-            return writer;
+            writer.beginObject("id");
+            this.onSerializationID(writer);
+            writer.endObject();
+
+            writer.beginObject("asset");
+            this.onSerializationAsset(writer);
+            writer.endObject();
+
+            writer.beginObject("gamedata");
+            this.onSerializationData(writer);
+            writer.endObject();
         }
 
-        public virtual void deserialization(TezJsonReader reader)
+        protected virtual void onSerializationID(TezJsonWriter writer)
         {
-            this.name = reader.getString("name");
-            this.resUID.setGroupID(this.groupID);
-            this.resUID.setTypeID(this.typeID);
+            writer.pushValue("runtime", runtime);
+            writer.pushValue("group_id", groupID);
+            writer.pushValue("type_id", typeID);
+            writer.pushValue("object_id", objectID > 0 ? objectID : -1);
+        }
 
-            if (reader.tryPush("asset"))
+        protected virtual void onSerializationAsset(TezJsonWriter writer)
+        {
+            writer.beginObject("icon");
+            writer.pushValue("normal", asset.iconNormal.convertToString());
+            writer.pushValue("small", asset.iconSamll.convertToString());
+            writer.pushValue("middle", asset.iconMiddle.convertToString());
+            writer.pushValue("large", asset.iconLarge.convertToString());
+            writer.endObject();
+        }
+
+        protected abstract void onSerializationData(TezJsonWriter writer);
+
+        public void deserialization(TezJsonReader reader)
+        {
+            reader.enter("id");
+            this.onDeserializationID(reader);
+            reader.exit();
+
+            if (reader.tryEnter("asset"))
             {
-                if (reader.tryPush("icon"))
+                if (reader.tryEnter("icon"))
                 {
-                    var name = reader.getString("normal");
-                    icon.setIcon(new TezSprite(name), TezIconType.Normal);
-                    name = reader.getString("small");
-                    icon.setIcon(new TezSprite(name), TezIconType.Samll);
-                    name = reader.getString("middle");
-                    icon.setIcon(new TezSprite(name), TezIconType.Middle);
-                    name = reader.getString("large");
-                    icon.setIcon(new TezSprite(name), TezIconType.Large);
-
-                    reader.pop();
+                    this.onDeserializationAsset(reader);
+                    reader.exit();
                 }
 
-                reader.pop();
+                reader.exit();
             }
-        }
-        #endregion
 
-        public bool equal(TezItem other)
+            reader.enter("gamedata");
+            this.onDeserializationData(reader);
+            reader.exit();
+        }
+
+        protected virtual void onDeserializationID(TezJsonReader reader)
         {
-            return resUID == other.resUID;
+            runtime = reader.tryGetBool("runtime", false);
+            objectID = reader.tryGetInt("object_id", -1);
+        }
+
+        protected virtual void onDeserializationAsset(TezJsonReader reader)
+        {
+            asset.iconNormal = reader.getString("normal");
+            asset.iconSamll = reader.getString("small");
+            asset.iconMiddle = reader.getString("middle");
+            asset.iconLarge = reader.getString("large");
+        }
+
+        protected abstract void onDeserializationData(TezJsonReader reader);
+
+
+        public virtual void clear()
+        {
+            asset.clear();
+            asset = null;
         }
     }
 }

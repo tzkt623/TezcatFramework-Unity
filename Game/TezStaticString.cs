@@ -137,5 +137,10 @@ namespace tezcat
         {
             return new TezStaticString(str);
         }
+
+        public void reset()
+        {
+            m_ID = 0;
+        }
     }
 }
