@@ -132,6 +132,11 @@ namespace tezcat
 
     public class TezPV_T<T> : TezPropertyValueT<T>
     {
+        public System.Type valueType
+        {
+            get { return typeof(T); }
+        }
+
         public TezPV_T(TezPropertyName name) : base(name)
         {
         }

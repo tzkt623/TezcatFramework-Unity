@@ -8,7 +8,10 @@ namespace tezcat
     {
         public TezUID UID { get; private set; }
 
-        public int objectID { get; private set; }
+        public TezItem sharedItem
+        {
+            get; protected set;
+        }
 
         TezStaticString m_ObjectName = new TezStaticString();
         public string objectName
@@ -31,19 +34,14 @@ namespace tezcat
 
         public virtual void clear()
         {
+            this.sharedItem = null;
             m_ObjectName.reset();
-        }
-
-        public void setItem(int group_id, int type_id, int self_id)
-        {
-            var item = GameDataBase.DB.getItem(group_id, type_id, self_id);
-            this.setItem(item);
         }
 
         public void setItem(TezItem item)
         {
-            objectID = item.objectID;
             this.onItemSet(item);
+            this.sharedItem = item;
         }
 
         protected abstract void onItemSet(TezItem item);
@@ -66,13 +64,11 @@ namespace tezcat
 
         public void pushToGenerator()
         {
-            TezDebug.isTrue(this.prefabID() >= 0, "TezObject", "pushToGenerator", "no prefab");
             TezGenerator.instance.pushObject(this);
         }
 
         public void pushToGenerator(Transform parent, Vector3 position)
         {
-            TezDebug.isTrue(this.prefabID() >= 0, "TezObject", "pushToGenerator", "no prefab");
             TezGenerator.instance.pushObject(this, parent, position);
         }
     }

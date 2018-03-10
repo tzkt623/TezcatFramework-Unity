@@ -1,104 +1,72 @@
 ﻿namespace tezcat
 {
-    public abstract class TezItem
-        : ITezSerializable
+    public interface ITezItem
     {
-        public TezAsset asset { get; protected set; }
+        int groupID { get; }
+        int typeID { get; }
+        int objectID { get; set; }
+        int GUID { get; set; }
+    }
 
-        public bool runtime { get; set; }
+    public abstract class TezItem
+        : ITezItem
+        , ITezSerializable
+    {
         public abstract int groupID { get; }
         public abstract int typeID { get; }
-        public int objectID { get; private set; }
+        public int objectID { get; set; } = -1;
+        public int GUID { get; set; } = -1;
+        public int refrence { get; private set; } = 0;
 
-        public void setObjectID(int id)
+        public void addRef()
         {
-            this.objectID = id;
+            if (refrence == 0)
+            {
+                this.onRefInit();
+            }
+            refrence += 1;
         }
 
-        public TezItem()
+        public void subRef()
         {
-            this.objectID = -1;
-            asset = new TezAsset();
+            refrence -= 1;
+            if (refrence == 0)
+            {
+                this.onRefZero();
+            }
         }
 
-        public void serialization(TezJsonWriter writer)
+        public virtual void serialization(TezJsonWriter writer)
         {
             writer.beginObject("id");
             this.onSerializationID(writer);
-            writer.endObject();
-
-            writer.beginObject("asset");
-            this.onSerializationAsset(writer);
-            writer.endObject();
-
-            writer.beginObject("gamedata");
-            this.onSerializationData(writer);
             writer.endObject();
         }
 
         protected virtual void onSerializationID(TezJsonWriter writer)
         {
-            writer.pushValue("runtime", runtime);
-            writer.pushValue("group_id", groupID);
-            writer.pushValue("type_id", typeID);
+            var gid = TezItemFactory.convertToGroup(groupID);
+            writer.pushValue("group_id", gid.name);
+            writer.pushValue("type_id", gid.convertToType(typeID).name);
             writer.pushValue("object_id", objectID > 0 ? objectID : -1);
+            writer.pushValue("GUID", this.GUID);
         }
 
-        protected virtual void onSerializationAsset(TezJsonWriter writer)
-        {
-            writer.beginObject("icon");
-            writer.pushValue("normal", asset.iconNormal.convertToString());
-            writer.pushValue("small", asset.iconSamll.convertToString());
-            writer.pushValue("middle", asset.iconMiddle.convertToString());
-            writer.pushValue("large", asset.iconLarge.convertToString());
-            writer.endObject();
-        }
-
-        protected abstract void onSerializationData(TezJsonWriter writer);
-
-        public void deserialization(TezJsonReader reader)
+        public virtual void deserialization(TezJsonReader reader)
         {
             reader.enter("id");
             this.onDeserializationID(reader);
-            reader.exit();
-
-            if (reader.tryEnter("asset"))
-            {
-                if (reader.tryEnter("icon"))
-                {
-                    this.onDeserializationAsset(reader);
-                    reader.exit();
-                }
-
-                reader.exit();
-            }
-
-            reader.enter("gamedata");
-            this.onDeserializationData(reader);
             reader.exit();
         }
 
         protected virtual void onDeserializationID(TezJsonReader reader)
         {
-            runtime = reader.tryGetBool("runtime", false);
             objectID = reader.tryGetInt("object_id", -1);
+            this.GUID = reader.tryGetInt("GUID", -1);
         }
 
-        protected virtual void onDeserializationAsset(TezJsonReader reader)
-        {
-            asset.iconNormal = reader.getString("normal");
-            asset.iconSamll = reader.getString("small");
-            asset.iconMiddle = reader.getString("middle");
-            asset.iconLarge = reader.getString("large");
-        }
-
-        protected abstract void onDeserializationData(TezJsonReader reader);
-
-
-        public virtual void clear()
-        {
-            asset.clear();
-            asset = null;
-        }
+        protected abstract void onRefInit();
+        protected abstract void onRefZero();
+        public abstract void clear();
     }
 }

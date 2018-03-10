@@ -6,51 +6,60 @@ namespace tezcat
     {
         public class Group
         {
-            List<Container> m_List = new List<Container>();
+            public List<Container> containers { get; } = new List<Container>();
+            public string name { get; private set; }
+
             Dictionary<string, Container> m_Dic = new Dictionary<string, Container>();
 
-            public List<Container> containers
+            public Group(string name)
             {
-                get { return m_List; }
+                this.name = name;
             }
 
-            public Group register(string type_name, int type_id, TezEventBus.Function<TezItem> function)
+            public Group createType(string type_name, int type_id, TezEventBus.Function<TezItem> function)
             {
                 Container container = null;
                 if(!m_Dic.TryGetValue(type_name, out container))
                 {
-                    while (m_List.Count <= type_id)
+                    while (containers.Count <= type_id)
                     {
-                        m_List.Add(null);
+                        containers.Add(null);
                     }
 
                     container = new Container();
-                    m_List[type_id] = container;
+                    containers[type_id] = container;
                     m_Dic.Add(type_name, container);
                 }
 
-                container.register(function);
+                container.register(type_name, function);
                 return this;
             }
 
             public Container this[int type_id]
             {
-                get { return m_List[type_id]; }
+                get { return containers[type_id]; }
             }
 
             public Container this[string type_name]
             {
                 get { return m_Dic[type_name]; }
             }
+
+            public Container convertToType(int type_id)
+            {
+                return this.containers[type_id];
+            }
         }
 
         public class Container
         {
+            public string name { get; private set; }
             TezEventBus.Function<TezItem> m_Function = null;
 
-            public void register(TezEventBus.Function<TezItem> function)
+            public void register(string name, TezEventBus.Function<TezItem> function)
             {
                 m_Function = function;
+                this.name = name;
             }
 
             public TezItem create()
@@ -62,22 +71,9 @@ namespace tezcat
         static List<Group> m_List = new List<Group>();
         static Dictionary<string, Group> m_Dic = new Dictionary<string, Group>();
 
-        public static void register(string group_name, int group_id, string type_name, int type_id, TezEventBus.Function<TezItem> function)
+        public static Group convertToGroup(int group_id)
         {
-            Group group = null;
-            if(!m_Dic.TryGetValue(group_name, out group))
-            {
-                while (m_List.Count <= group_id)
-                {
-                    m_List.Add(null);
-                }
-
-                group = new Group();
-                m_Dic.Add(group_name, group);
-                m_List[group_id] = group;
-            }
-
-            group.register(type_name, type_id, function);
+            return m_List[group_id];
         }
 
         public static Group createGroup(string group_name, int group_id)
@@ -90,7 +86,7 @@ namespace tezcat
                     m_List.Add(null);
                 }
 
-                group = new Group();
+                group = new Group(group_name);
                 m_Dic.Add(group_name, group);
                 m_List[group_id] = group;
             }
