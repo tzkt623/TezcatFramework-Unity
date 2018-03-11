@@ -62,6 +62,7 @@ namespace tezcat
         class Container
         {
             public List<Item> items { get; } = new List<Item>();
+            HashSet<int> m_Collide = new HashSet<int>();
 
             public void registerItem(Item new_item)
             {
@@ -72,9 +73,15 @@ namespace tezcat
                 }
                 else
                 {
+                    if(m_Collide.Contains(new_item.objectID))
+                    {
+                        Debug.LogAssertion("object id collide!!");
+                    }
+                    m_Collide.Add(new_item.objectID);
+
                     while (this.items.Count <= new_item.objectID)
                     {
-                        items.Add(default(Item));
+                        items.Add(null);
                     }
 
                     this.items[new_item.objectID] = new_item;
@@ -94,13 +101,14 @@ namespace tezcat
                 }
                 else
                 {
-                    var remove_item = this.items[object_id];
                     var last_item = this.items[items.Count - 1];
 
                     this.items[object_id] = last_item;
                     last_item.objectID = object_id;
                     this.items.RemoveAt(items.Count - 1);
                 }
+
+                m_Collide.Remove(object_id);
             }
 
             public void foreachItem(TezEventBus.Action<Item> action)
@@ -125,6 +133,8 @@ namespace tezcat
 
         class Global
         {
+            public TezDatabase<Item> database { get; set; }
+
             List<Item> m_Items = new List<Item>();
 
             Queue<int> m_FreeInnate = new Queue<int>();
@@ -205,7 +215,10 @@ namespace tezcat
                 }
                 else
                 {
-                    var last_innate = m_Items[innateCount - 1];
+                    var last_id = innateCount - 1;
+                    var last_innate = m_Items[last_id];
+                    m_Items[last_id] = null;
+
                     m_FreeInnate.Enqueue(last_innate.GUID);
                     m_Items[item.GUID] = last_innate;
                     last_innate.GUID = item.GUID;
@@ -277,12 +290,15 @@ namespace tezcat
                 var guid = item.GUID;
                 if (guid == m_Items.Count - 1)
                 {
-                    m_Items[guid] = default(Item);
+                    m_Items.RemoveAt(guid);
                     m_FreeRuntime.Enqueue(guid);
                 }
                 else
                 {
-                    var last_runtime = m_Items[m_Items.Count - 1];
+                    var last_id = m_Items.Count - 1;
+                    var last_runtime = m_Items[last_id];
+                    m_Items.RemoveAt(last_id);
+
                     m_FreeRuntime.Enqueue(last_runtime.GUID);
                     m_Items[guid] = last_runtime;
                     last_runtime.GUID = guid;
@@ -317,6 +333,23 @@ namespace tezcat
                 var guid = this.filterGUID(this.giveRuntimeGUID);
                 m_Items[guid] = item;
             }
+
+            public void clearZeroRefItem()
+            {
+                int i = this.innateCount;
+                while (i < m_Items.Count)
+                {
+                    var item = m_Items[i];
+                    if (item != null && item.refrence <= 0)
+                    {
+                        this.database.removeItem(item);
+                    }
+                    else
+                    {
+                        i++;
+                    }
+                }
+            }
         }
 
         List<Group> m_Group = new List<Group>();
@@ -329,17 +362,29 @@ namespace tezcat
 
         public void initialization(int container_count)
         {
+            m_Global.database = this;
             for (int i = 0; i < container_count; i++)
             {
                 m_Group.Add(new Group());
             }
         }
 
+        /// <summary>
+        /// 取得一个物品
+        /// </summary>
+        /// <param name="GUID"></param>
+        /// <returns></returns>
         public Item getItem(int GUID)
         {
             return m_Global[GUID];
         }
 
+        /// <summary>
+        /// 取得一个物品
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="GUID"></param>
+        /// <returns></returns>
         public T getItem<T>(int GUID) where T : Item
         {
             return (T)m_Global[GUID];
@@ -451,7 +496,7 @@ namespace tezcat
         /// <returns></returns>
         public int remapGUID(int old_innate_count, int guid)
         {
-            if(guid < old_innate_count)
+            if (guid < old_innate_count)
             {
                 return guid;
             }
@@ -459,6 +504,11 @@ namespace tezcat
             {
                 return guid + (this.innateCount - old_innate_count);
             }
+        }
+
+        public void clearZeroRefItem()
+        {
+            m_Global.clearZeroRefItem();
         }
     }
 }

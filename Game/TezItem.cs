@@ -6,6 +6,7 @@
         int typeID { get; }
         int objectID { get; set; }
         int GUID { get; set; }
+        int refrence { get; }
     }
 
     public abstract class TezItem
