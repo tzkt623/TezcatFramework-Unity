@@ -61,7 +61,7 @@
 
         protected virtual void onDeserializationID(TezJsonReader reader)
         {
-            objectID = reader.tryGetInt("object_id", -1);
+            this.objectID = reader.tryGetInt("object_id", -1);
             this.GUID = reader.tryGetInt("GUID", -1);
         }
 

@@ -3,10 +3,11 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Assertions;
+using System.Linq;
 
 namespace tezcat
 {
-    public abstract class TezDatabase<Item> where Item : ITezItem
+    public abstract class TezDatabase<Item> where Item : class, ITezItem
     {
         public int itemCount { get; private set; } = 0;
 
@@ -126,8 +127,10 @@ namespace tezcat
         {
             List<Item> m_Items = new List<Item>();
 
-            Stack<int> m_FreeInnate = new Stack<int>();
-            Stack<int> m_FreeRuntime = new Stack<int>();
+            Queue<int> m_FreeInnate = new Queue<int>();
+            Queue<int> m_FreeRuntime = new Queue<int>();
+
+            HashSet<int> m_Collide = new HashSet<int>();
 
             public int innateCount
             {
@@ -141,6 +144,17 @@ namespace tezcat
                 get { return m_Items[index]; }
             }
 
+            int filterGUID(TezEventBus.Function<int> function)
+            {
+                int guid = -1;
+                do
+                {
+                    guid = function();
+                }
+                while (m_Items[guid] != null);
+                return guid;
+            }
+
             /// <summary>
             /// 注册固有物品
             /// </summary>
@@ -149,21 +163,32 @@ namespace tezcat
             {
                 if (item.GUID < 0)
                 {
-                    var guid = this.giveInnateGUID();
+                    ///过滤掉InnateID中的重复ID
+                    var guid = this.filterGUID(this.giveInnateGUID);
                     item.GUID = guid;
-                    m_Items[item.GUID] = item;
+                    m_Items[guid] = item;
                 }
                 else
                 {
-                    while (m_Items.Count <= item.GUID)
+                    this.growInnate(item.GUID);
+                    var temp = m_Items[item.GUID];
+                    if (temp != null)
                     {
-                        m_Items.Add(default(Item));
+                        ///如果当前物品冲突了,优先让有ID的物品先设置
+                        ///把无关的物品后移
+                        if (m_Collide.Contains(item.GUID))
+                        {
+                            throw new System.Exception("Item Collide!!!");
+                        }
+                        m_Collide.Add(item.GUID);
+
+                        temp.GUID = -1;
+                        this.registerInnateItem(temp);
                     }
 
                     m_Items[item.GUID] = item;
                 }
 
-                innateCount += 1;
             }
 
             /// <summary>
@@ -175,13 +200,13 @@ namespace tezcat
                 Assert.IsTrue(item.GUID < innateCount);
                 if (item.GUID == innateCount - 1)
                 {
-                    m_Items[item.GUID] = default(Item);
-                    m_FreeInnate.Push(item.GUID);
+                    m_Items[item.GUID] = null;
+                    m_FreeInnate.Enqueue(item.GUID);
                 }
                 else
                 {
                     var last_innate = m_Items[innateCount - 1];
-                    m_FreeInnate.Push(last_innate.GUID);
+                    m_FreeInnate.Enqueue(last_innate.GUID);
                     m_Items[item.GUID] = last_innate;
                     last_innate.GUID = item.GUID;
                 }
@@ -189,15 +214,26 @@ namespace tezcat
                 innateCount -= 1;
             }
 
+            void growInnate(int guid)
+            {
+                while (m_Items.Count <= guid)
+                {
+                    m_FreeInnate.Enqueue(m_GUID++);
+                    m_Items.Add(null);
+                }
+
+                this.innateCount = m_Items.Count;
+            }
+
             int giveInnateGUID()
             {
                 if (m_FreeInnate.Count > 0)
                 {
-                    return m_FreeInnate.Pop();
+                    return m_FreeInnate.Dequeue();
                 }
                 else
                 {
-                    m_Items.Add(default(Item));
+                    m_Items.Add(null);
                     return m_GUID++;
                 }
             }
@@ -242,14 +278,23 @@ namespace tezcat
                 if (guid == m_Items.Count - 1)
                 {
                     m_Items[guid] = default(Item);
-                    m_FreeRuntime.Push(guid);
+                    m_FreeRuntime.Enqueue(guid);
                 }
                 else
                 {
                     var last_runtime = m_Items[m_Items.Count - 1];
-                    m_FreeRuntime.Push(last_runtime.GUID);
+                    m_FreeRuntime.Enqueue(last_runtime.GUID);
                     m_Items[guid] = last_runtime;
                     last_runtime.GUID = guid;
+                }
+            }
+
+            void growRuntime(int guid)
+            {
+                while (m_Items.Count <= guid)
+                {
+                    m_FreeRuntime.Enqueue(m_GUID++);
+                    m_Items.Add(null);
                 }
             }
 
@@ -257,13 +302,20 @@ namespace tezcat
             {
                 if (m_FreeRuntime.Count > 0)
                 {
-                    return m_FreeInnate.Pop();
+                    return m_FreeRuntime.Dequeue();
                 }
                 else
                 {
-                    m_Items.Add(default(Item));
+                    m_Items.Add(null);
                     return m_GUID++;
                 }
+            }
+
+            public void registerRuntimeItem(Item item)
+            {
+                this.growRuntime(item.GUID);
+                var guid = this.filterGUID(this.giveRuntimeGUID);
+                m_Items[guid] = item;
             }
         }
 
@@ -304,7 +356,7 @@ namespace tezcat
         }
 
         /// <summary>
-        /// 增加运行时物品
+        /// 增加Runtime数据
         /// </summary>
         /// <param name="item"></param>
         public void addItem(Item item)
@@ -317,7 +369,7 @@ namespace tezcat
         }
 
         /// <summary>
-        /// 移除运行时物品
+        /// 删除Runtime数据
         /// </summary>
         /// <param name="item"></param>
         public void removeItem(Item item)
@@ -329,13 +381,21 @@ namespace tezcat
             }
         }
 
+        /// <summary>
+        /// 注册Runtime数据
+        /// </summary>
+        /// <param name="item"></param>
         public void registerRuntimeItem(Item item)
         {
-
+            if (item.GUID >= m_Global.innateCount)
+            {
+                m_Global.registerRuntimeItem(item);
+                m_Group[item.groupID].registerItem(item);
+            }
         }
 
         /// <summary>
-        /// 注册数据库物品
+        /// 注册Innate数据
         /// </summary>
         /// <param name="new_item"></param>
         public void registerInnateItem(Item new_item)
@@ -346,7 +406,7 @@ namespace tezcat
         }
 
         /// <summary>
-        /// 移除数据库物品
+        /// 移除Innate数据
         /// </summary>
         /// <param name="item"></param>
         public void unregisterInnateItem(Item item)
@@ -368,6 +428,11 @@ namespace tezcat
             m_Global.foreachItem(action);
         }
 
+        public void foreachRuntimeItem(TezEventBus.Action<Item> action)
+        {
+            m_Global.foreachRuntimeItem(action);
+        }
+
         public void clear()
         {
             foreach (var group in m_Group)
@@ -376,45 +441,24 @@ namespace tezcat
             }
         }
 
-        public void save()
+        /// <summary>
+        /// 重新映射物品的GUID
+        /// 如果物品的GUID小于old_innate_count值,则说明是Innate数据,不需要映射
+        /// 如果大于等于old_innate_count值,说明是Runtime数据,重新映射
+        /// </summary>
+        /// <param name="old_innate_count">老版本的innate数据数量</param>
+        /// <param name="guid">当前的GUID</param>
+        /// <returns></returns>
+        public int remapGUID(int old_innate_count, int guid)
         {
-            //             TezJsonWriter writer = new TezJsonWriter(true);
-            // 
-            //             foreach (var group in m_Group)
-            //             {
-            //                 group.foreachItem((Item item) =>
-            //                 {
-            //                     writer.beginObject();
-            //                     item.serialization(writer);
-            //                     writer.endObject();
-            //                 });
-            //             }
-            // 
-            //             writer.save("C:/Users/Administrator/Desktop/TBS/save1.json");
-        }
-
-        public void load()
-        {
-            //             TezJsonReader reader = new TezJsonReader();
-            //             reader.load("C:/Users/Administrator/Desktop/TBS/save1.json");
-            // 
-            //             var count = reader.count();
-            // 
-            //             for (int i = 0; i < count; i++)
-            //             {
-            //                 reader.enter(i);
-            // 
-            //                 reader.enter("id");
-            //                 var gid = reader.getInt("group_id");
-            //                 var tid = reader.getInt("type_id");
-            //                 reader.exit();
-            // 
-            //                 var item = TezItemFactory.create(gid, tid);
-            //                 item.deserialization(reader);
-            //                 this.registerItem(item);
-            // 
-            //                 reader.exit();
-            //             }
+            if(guid < old_innate_count)
+            {
+                return guid;
+            }
+            else
+            {
+                return guid + (this.innateCount - old_innate_count);
+            }
         }
     }
 }

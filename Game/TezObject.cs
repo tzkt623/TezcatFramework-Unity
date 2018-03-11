@@ -40,8 +40,10 @@ namespace tezcat
 
         public void setItem(TezItem item)
         {
-            this.onItemSet(item);
+            this.sharedItem?.subRef();
             this.sharedItem = item;
+            this.sharedItem.addRef();
+            this.onItemSet(item);
         }
 
         protected abstract void onItemSet(TezItem item);
