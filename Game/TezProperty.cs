@@ -91,7 +91,7 @@ namespace tezcat
             get { return typeof(T); }
         }
 
-        protected T m_Value;
+        protected T m_Value = default(T);
         public T value
         {
             get { return m_Value; }

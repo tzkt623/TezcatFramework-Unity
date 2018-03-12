@@ -48,17 +48,6 @@ namespace tezcat
 
         protected abstract void onItemSet(TezItem item);
 
-        public TezItem generateItem()
-        {
-            var item = this.onGenerateItem();
-            return item;
-        }
-
-        protected virtual TezItem onGenerateItem()
-        {
-            return null;
-        }
-
         public virtual int prefabID()
         {
             return -1;

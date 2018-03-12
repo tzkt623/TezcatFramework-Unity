@@ -37,6 +37,11 @@
             }
         }
 
+        public bool isTheSameItem(TezItem item)
+        {
+            return item == null ? false : this.GUID == item.GUID;
+        }
+
         public virtual void serialization(TezJsonWriter writer)
         {
             writer.beginObject("id");
