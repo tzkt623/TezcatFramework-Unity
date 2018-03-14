@@ -45,6 +45,12 @@ namespace tezcat
          * sizeDelta = 当前RectTransform的rect的size - parent的RectTransform的rect的size * offset 
          * 
          */
+
+        /*
+         * <localposition>
+         * 
+         * 此节点的pivot到父节点的pivot的坐标值
+         */
     }
 }
 
