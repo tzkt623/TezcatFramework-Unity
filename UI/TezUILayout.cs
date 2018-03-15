@@ -49,7 +49,7 @@ namespace tezcat
         /*
          * <localposition>
          * 
-         * 此节点的pivot到父节点的pivot的坐标值
+         * 此节点的pivot到父节点的pivot的相对坐标值
          */
     }
 }
