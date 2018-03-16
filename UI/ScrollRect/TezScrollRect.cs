@@ -1,0 +1,502 @@
+﻿using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.EventSystems;
+using UnityEngine.UI;
+
+namespace tezcat
+{
+    public class TezScrollRect
+        : ScrollRect
+        , IPointerEnterHandler
+        , IPointerExitHandler
+    {
+
+        class TestListener : TezScrollRectListener
+        {
+            int m_Index = 0;
+
+            RectTransform[] create(int count)
+            {
+                RectTransform[] array = new RectTransform[count];
+                for (int i = 0; i < count; i++)
+                {
+                    GameObject go = new GameObject();
+                    go.AddComponent<Image>();
+                    go.transform.SetParent(m_ScrollRect.content);
+                    go.transform.localScale = Vector3.one;
+                    go.transform.localRotation = Quaternion.identity;
+                    go.transform.name = m_Index++.ToString();
+                    array[i] = (RectTransform)go.transform;
+                }
+
+                return array;
+            }
+
+            public override RectTransform[] onArrivedTop(int need_count, int top_row_id)
+            {
+                if (top_row_id == 0)
+                {
+                    return new RectTransform[0];
+                }
+
+                var begin_id = (top_row_id - 1) * need_count;
+                var end_id = begin_id + need_count;
+
+
+                return this.create(need_count);
+            }
+
+            public override RectTransform[] onArrivedBottom(int need_count, int bottom_row_id)
+            {
+                return this.create(need_count);
+            }
+
+            public override RectTransform[] onArrivedLeft(int need_count, int left_row_id)
+            {
+                return this.create(need_count);
+            }
+
+            public override RectTransform[] onArrivedRight(int need_count, int right_row_id)
+            {
+                return this.create(need_count);
+            }
+
+            public override bool onRemoveLeft(RectTransform removed_item)
+            {
+                Destroy(removed_item.gameObject);
+                return true;
+            }
+
+            public override bool onRemoveRight(RectTransform removed_item)
+            {
+                Destroy(removed_item.gameObject);
+                return true;
+            }
+
+            public override bool onRemoveTop(RectTransform removed_item)
+            {
+                Destroy(removed_item.gameObject);
+                return true;
+            }
+
+            public override bool onRemoveBottom(RectTransform removed_item)
+            {
+                Destroy(removed_item.gameObject);
+                return true;
+            }
+        }
+
+        class DefaultListener : TezScrollRectListener
+        {
+            public override RectTransform[] onArrivedTop(int need_count, int top_row_id)
+            {
+                return new RectTransform[0];
+            }
+
+            public override RectTransform[] onArrivedBottom(int need_count, int bottom_row_id)
+            {
+                return new RectTransform[0];
+            }
+
+            public override RectTransform[] onArrivedLeft(int need_count, int left_row_id)
+            {
+                return new RectTransform[0];
+            }
+
+            public override RectTransform[] onArrivedRight(int need_count, int right_row_id)
+            {
+                return new RectTransform[0];
+            }
+
+            public override bool onRemoveBottom(RectTransform removed_item)
+            {
+                return false;
+            }
+
+            public override bool onRemoveLeft(RectTransform removed_item)
+            {
+                return false;
+            }
+
+            public override bool onRemoveRight(RectTransform removed_item)
+            {
+                return false;
+            }
+
+            public override bool onRemoveTop(RectTransform removed_item)
+            {
+                return false;
+            }
+        }
+
+
+        public enum CellSize
+        {
+            Fixed,
+            Changeable
+        }
+
+        [SerializeField]
+        TezScrollCell m_PrefabCell = null;
+
+        [SerializeField]
+        CellSize m_CellSize = CellSize.Fixed;
+        public CellSize cellControl
+        {
+            get { return m_CellSize; }
+            set
+            {
+                m_CellSize = value;
+                switch (value)
+                {
+                    case CellSize.Fixed:
+                        
+                        break;
+                    case CellSize.Changeable:
+                        break;
+                }
+            }
+        }
+
+        HorizontalLayoutGroup m_HLayout = null;
+        VerticalLayoutGroup m_VLayout = null;
+        GridLayoutGroup m_GLayout = null;
+
+        RectOffset m_Padding = null;
+        Vector2 m_Spacing = Vector2.zero;
+        Vector2 m_RemainingSize = Vector2.zero;
+        Vector2 m_Delta = Vector2.zero;
+
+        int m_Row = 1;
+        int m_RowSize = 0;
+        int m_Col = 1;
+        int m_ColSize = 0;
+
+        int m_TopRowID = 0;
+        int m_BottomRowID = 0;
+        int m_LeftColID = 0;
+        int m_RightColID = 0;
+
+        TezScrollRectListener m_Listener = null;
+
+        protected override void Start()
+        {
+            base.Start();
+            this.setListener(new TestListener());
+
+            var layout = this.content.GetComponent<LayoutGroup>();
+            if (layout)
+            {
+                m_Padding = layout.padding != null ? layout.padding : new RectOffset();
+                if (layout.GetType() == typeof(HorizontalLayoutGroup))
+                {
+                    m_HLayout = (HorizontalLayoutGroup)layout;
+                    m_Spacing.x = m_HLayout.spacing;
+                }
+                else if (layout.GetType() == typeof(VerticalLayoutGroup))
+                {
+                    m_VLayout = (VerticalLayoutGroup)layout;
+                    m_Spacing.y = m_VLayout.spacing;
+                }
+                else if (layout.GetType() == typeof(GridLayoutGroup))
+                {
+                    m_GLayout = (GridLayoutGroup)layout;
+                    m_Spacing = m_GLayout.spacing;
+                    m_CellSize = CellSize.Fixed;
+                }
+
+                var view_size = this.getSize(this.viewRect);
+                var content_size = this.getSize(this.content) - new Vector2(m_Padding.left + m_Padding.right - m_Spacing.x, m_Padding.top + m_Padding.bottom - m_Spacing.y);
+                var length = m_Spacing + m_PrefabCell.size;
+                if (this.vertical)
+                {
+                    m_Col = (int)(content_size.x / length.x);
+                }
+
+                if (this.horizontal)
+                {
+                    m_Row = (int)(content_size.y / length.y);
+                }
+
+                var min = Vector2.Min(view_size, content_size);
+                m_TopRowID = 0;
+                m_BottomRowID = Mathf.CeilToInt(min.y / length.y);
+
+                m_LeftColID = 0;
+                m_RightColID = Mathf.CeilToInt(min.x / length.x);
+            }
+            else
+            {
+                throw new System.Exception();
+            }
+        }
+
+        public void setListener(TezScrollRectListener listener)
+        {
+            if (listener == null)
+            {
+                m_Listener = new DefaultListener();
+            }
+            else
+            {
+                m_Listener = listener;
+            }
+
+            m_Listener.setScrollRect(this);
+        }
+
+        public override void OnBeginDrag(PointerEventData eventData)
+        {
+            base.OnBeginDrag(eventData);
+        }
+
+        public override void OnDrag(PointerEventData eventData)
+        {
+            base.OnDrag(eventData);
+            this.calculatePositionOnDrag(eventData);
+        }
+
+        public override void OnEndDrag(PointerEventData eventData)
+        {
+            base.OnEndDrag(eventData);
+        }
+
+        public override void OnScroll(PointerEventData data)
+        {
+            base.OnScroll(data);
+            this.calculatePositionOnDrag(data);
+        }
+
+        Vector2 getSize(RectTransform transform)
+        {
+            return transform.rect.size;
+        }
+
+        void onScrollArrivedTop(RectTransform[] array)
+        {
+            foreach (var item in array)
+            {
+                item.SetAsFirstSibling();
+            }
+        }
+
+        void onScrollArrivedBottom(RectTransform[] array)
+        {
+
+        }
+
+        void onScrollArrivedLeft(RectTransform[] array)
+        {
+            foreach (var item in array)
+            {
+                item.SetAsFirstSibling();
+            }
+        }
+
+        void onScrollArrivedRight(RectTransform[] array)
+        {
+
+        }
+
+        void calculatePositionOnDrag(PointerEventData eventData)
+        {
+            ///
+            var view_pivot = this.viewRect.pivot;
+
+            ///计算位置偏移
+            m_Delta.y = this.vertical ? eventData.delta.y : 0;
+            m_Delta.x = this.horizontal ? eventData.delta.x : 0;
+            var my_anchored_position = this.content.anchoredPosition + m_Delta;
+
+            ///并计算出当前真实锚点的标准值
+            var content_pivot = this.content.pivot;
+            var content_real_anchor = this.content.anchorMax - this.content.anchorMin;
+            if (content_real_anchor == Vector2.zero)
+            {
+                content_real_anchor = this.content.anchorMax;
+            }
+            else
+            {
+                content_real_anchor = Vector2.Scale(content_real_anchor, content_pivot) + this.content.anchorMin;
+            }
+
+            ///计算当前锚点到rect左下角的大小
+            var view_size = this.getSize(this.viewRect);
+            m_RemainingSize = m_ContentBounds.size.toVector2() - view_size;
+            var anchor_rect_size = Vector2.Scale(content_real_anchor, view_size);
+
+            bool fix = false;
+            #region Vertical
+            if (this.vertical)
+            {
+                var factor_y = (view_size.y + m_RemainingSize.y) * content_pivot.y;
+                if (my_anchored_position.y < (-m_RemainingSize.y - anchor_rect_size.y) + factor_y)
+                {
+                    ///滚动到顶
+                    var array = m_Listener.onArrivedTop(m_Row * m_Col, m_TopRowID);
+                    if (array.Length > 0)
+                    {
+                        this.onScrollArrivedTop(array);
+
+                        m_TopRowID -= 1;
+                        var rt = array[0].rect;
+                        float y = rt.height + m_Spacing.y;
+                        m_RemainingSize.y += y;
+                        my_anchored_position.y += y * content_pivot.y;
+
+                        fix = true;
+                    }
+                }
+                else if (my_anchored_position.y > -anchor_rect_size.y + factor_y)
+                {
+                    ///滚动到底
+                    var array = m_Listener.onArrivedBottom(m_Row * m_Col, m_BottomRowID);
+                    if (array.Length > 0)
+                    {
+                        m_BottomRowID += 1;
+                        this.onScrollArrivedBottom(array);
+                        var rt = array[0].rect;
+
+                        float y = rt.height + m_Spacing.y;
+                        m_RemainingSize.y += y;
+                        my_anchored_position.y += -y * (1 - content_pivot.y);
+
+                        fix = true;
+                    }
+                }
+                else
+                {
+                    bool remove_top = false, remove_bottom = false;
+                    foreach (RectTransform item in this.content)
+                    {
+                        var view_local_position = item.localPosition + this.content.localPosition;
+                        var height = item.rect.height;
+                        if (view_local_position.y < -view_pivot.y * view_size.y - height)
+                        {
+                            if (m_Listener.onRemoveBottom(item) && !remove_bottom)
+                            {
+                                remove_bottom = true;
+
+                                float y = height + m_Spacing.y;
+                                m_RemainingSize.y -= y;
+                                my_anchored_position.y += y * (1 - content_pivot.y);
+
+                                fix = true;
+                            }
+                        }
+                        else if (view_local_position.y > (1 - view_pivot.y) * view_size.y + height)
+                        {
+                            if (m_Listener.onRemoveTop(item) && !remove_top)
+                            {
+                                remove_top = true;
+
+                                float y = height + m_Spacing.y;
+                                m_RemainingSize.y -= y;
+                                my_anchored_position.y += -y * content_pivot.y;
+
+                                fix = true;
+                            }
+                        }
+                    }
+                }
+            }
+            #endregion
+
+            #region Horizontal
+            if (this.horizontal)
+            {
+                var factor_x = (view_size.x + m_RemainingSize.x) * content_pivot.x;
+                if (my_anchored_position.x < (-m_RemainingSize.x - anchor_rect_size.x) + factor_x)
+                {
+                    ///滚动到右
+                    var array = m_Listener.onArrivedRight(m_Row * m_Col, m_Col);
+                    if (array.Length > 0)
+                    {
+                        this.onScrollArrivedRight(array);
+                        var rt = array[0].rect;
+
+                        float x = rt.width + m_Spacing.x;
+                        m_RemainingSize.x += x;
+                        my_anchored_position.x += x * content_pivot.x;
+
+                        fix = true;
+                    }
+                }
+                else if (my_anchored_position.x > -anchor_rect_size.x + factor_x)
+                {
+                    ///滚动到左
+                    var array = m_Listener.onArrivedLeft(m_Row * m_Col, m_Col);
+                    if (array.Length > 0)
+                    {
+                        this.onScrollArrivedLeft(array);
+                        var rt = array[0].rect;
+
+                        float x = rt.width + m_Spacing.x;
+                        m_RemainingSize.x += x;
+                        my_anchored_position.x += -x * (1 - content_pivot.x);
+
+                        fix = true;
+                    }
+                }
+                else
+                {
+                    bool remove_left = false, remove_right = false;
+                    foreach (RectTransform item in this.content)
+                    {
+                        var view_local_position = item.localPosition + this.content.localPosition;
+                        var width = item.rect.width;
+                        if (view_local_position.x < -view_pivot.x * view_size.x - width)
+                        {
+                            if (m_Listener.onRemoveLeft(item) && !remove_left)
+                            {
+                                remove_left = true;
+                                float x = width + m_Spacing.x;
+                                m_RemainingSize.x -= x;
+                                my_anchored_position.x += x * (1 - content_pivot.x);
+                                fix = true;
+                            }
+                        }
+                        else if (view_local_position.x > (1 - view_pivot.x) * view_size.x + width)
+                        {
+                            if (m_Listener.onRemoveRight(item) && !remove_right)
+                            {
+                                remove_right = true;
+                                float x = width + m_Spacing.x;
+                                m_RemainingSize.x -= x;
+                                my_anchored_position.x += -x * content_pivot.x;
+                                fix = true;
+                            }
+                        }
+                    }
+                }
+            }
+            #endregion
+
+            if (fix)
+            {
+                this.content.anchoredPosition = my_anchored_position;
+                ///为什么要调这个函数
+                ///因为unity把一个关键的参数m_PointerStartLocalCursor写成了private
+                this.OnBeginDrag(eventData);
+            }
+        }
+
+        protected override void LateUpdate()
+        {
+            base.LateUpdate();
+        }
+
+        void IPointerEnterHandler.OnPointerEnter(PointerEventData eventData)
+        {
+
+        }
+
+        void IPointerExitHandler.OnPointerExit(PointerEventData eventData)
+        {
+
+        }
+
+    }
+}
+

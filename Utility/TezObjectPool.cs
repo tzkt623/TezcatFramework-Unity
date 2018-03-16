@@ -25,7 +25,7 @@ namespace tezcat
     /// ======
     /// 
     /// </summary>
-    public class TezObjectPool<T> : TezSingleton<TezObjectPool<T>> where T : MonoBehaviour, new()
+    public abstract class TezObjectPool<T> : MonoBehaviour where T : MonoBehaviour, new()
     {
         bool m_Inited = false;
         T m_Prefab;
@@ -71,6 +71,8 @@ namespace tezcat
             {
                 obj = m_Pool[m_PointEnd++];
                 obj.transform.parent = parent;
+                obj.transform.localRotation = Quaternion.identity;
+                obj.transform.localScale = Vector3.one;
                 obj.gameObject.SetActive(true);
                 return obj;
             }
@@ -79,6 +81,7 @@ namespace tezcat
         public void recycle(T obj)
         {
             obj.gameObject.SetActive(false);
+            obj.transform.SetParent(this.transform);
             m_PointBegin += 1;
             m_Pool[m_PointBegin] = obj;
 
