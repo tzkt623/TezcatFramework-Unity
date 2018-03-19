@@ -12,125 +12,6 @@ namespace tezcat
         , IPointerExitHandler
     {
 
-        class TestListener : TezScrollRectListener
-        {
-            int m_Index = 0;
-
-            RectTransform[] create(int count)
-            {
-                RectTransform[] array = new RectTransform[count];
-                for (int i = 0; i < count; i++)
-                {
-                    GameObject go = new GameObject();
-                    go.AddComponent<Image>();
-                    go.transform.SetParent(m_ScrollRect.content);
-                    go.transform.localScale = Vector3.one;
-                    go.transform.localRotation = Quaternion.identity;
-                    go.transform.name = m_Index++.ToString();
-                    array[i] = (RectTransform)go.transform;
-                }
-
-                return array;
-            }
-
-            public override RectTransform[] onArrivedTop(int need_count, int top_row_id)
-            {
-                if (top_row_id == 0)
-                {
-                    return new RectTransform[0];
-                }
-
-                var begin_id = (top_row_id - 1) * need_count;
-                var end_id = begin_id + need_count;
-
-
-                return this.create(need_count);
-            }
-
-            public override RectTransform[] onArrivedBottom(int need_count, int bottom_row_id)
-            {
-                return this.create(need_count);
-            }
-
-            public override RectTransform[] onArrivedLeft(int need_count, int left_row_id)
-            {
-                return this.create(need_count);
-            }
-
-            public override RectTransform[] onArrivedRight(int need_count, int right_row_id)
-            {
-                return this.create(need_count);
-            }
-
-            public override bool onRemoveLeft(RectTransform removed_item)
-            {
-                Destroy(removed_item.gameObject);
-                return true;
-            }
-
-            public override bool onRemoveRight(RectTransform removed_item)
-            {
-                Destroy(removed_item.gameObject);
-                return true;
-            }
-
-            public override bool onRemoveTop(RectTransform removed_item)
-            {
-                Destroy(removed_item.gameObject);
-                return true;
-            }
-
-            public override bool onRemoveBottom(RectTransform removed_item)
-            {
-                Destroy(removed_item.gameObject);
-                return true;
-            }
-        }
-
-        class DefaultListener : TezScrollRectListener
-        {
-            public override RectTransform[] onArrivedTop(int need_count, int top_row_id)
-            {
-                return new RectTransform[0];
-            }
-
-            public override RectTransform[] onArrivedBottom(int need_count, int bottom_row_id)
-            {
-                return new RectTransform[0];
-            }
-
-            public override RectTransform[] onArrivedLeft(int need_count, int left_row_id)
-            {
-                return new RectTransform[0];
-            }
-
-            public override RectTransform[] onArrivedRight(int need_count, int right_row_id)
-            {
-                return new RectTransform[0];
-            }
-
-            public override bool onRemoveBottom(RectTransform removed_item)
-            {
-                return false;
-            }
-
-            public override bool onRemoveLeft(RectTransform removed_item)
-            {
-                return false;
-            }
-
-            public override bool onRemoveRight(RectTransform removed_item)
-            {
-                return false;
-            }
-
-            public override bool onRemoveTop(RectTransform removed_item)
-            {
-                return false;
-            }
-        }
-
-
         public enum CellSize
         {
             Fixed,
@@ -151,7 +32,7 @@ namespace tezcat
                 switch (value)
                 {
                     case CellSize.Fixed:
-                        
+
                         break;
                     case CellSize.Changeable:
                         break;
@@ -167,6 +48,7 @@ namespace tezcat
         Vector2 m_Spacing = Vector2.zero;
         Vector2 m_RemainingSize = Vector2.zero;
         Vector2 m_Delta = Vector2.zero;
+        Vector2 m_OffsetTop = Vector2.zero;
 
         int m_Row = 1;
         int m_RowSize = 0;
@@ -183,48 +65,26 @@ namespace tezcat
         protected override void Start()
         {
             base.Start();
-            this.setListener(new TestListener());
+            this.setListener(new TezGridScrollRectTeszListener());
+        }
+
+        public void setListener(TezScrollRectListener listener)
+        {
+            if (listener == null)
+            {
+                m_Listener = new TezDefaultScrollRectListener();
+            }
+            else
+            {
+                m_Listener = listener;
+            }
+
+            m_Listener.setScrollRect(this, this.viewRect);
 
             var layout = this.content.GetComponent<LayoutGroup>();
             if (layout)
             {
-                m_Padding = layout.padding != null ? layout.padding : new RectOffset();
-                if (layout.GetType() == typeof(HorizontalLayoutGroup))
-                {
-                    m_HLayout = (HorizontalLayoutGroup)layout;
-                    m_Spacing.x = m_HLayout.spacing;
-                }
-                else if (layout.GetType() == typeof(VerticalLayoutGroup))
-                {
-                    m_VLayout = (VerticalLayoutGroup)layout;
-                    m_Spacing.y = m_VLayout.spacing;
-                }
-                else if (layout.GetType() == typeof(GridLayoutGroup))
-                {
-                    m_GLayout = (GridLayoutGroup)layout;
-                    m_Spacing = m_GLayout.spacing;
-                    m_CellSize = CellSize.Fixed;
-                }
-
-                var view_size = this.getSize(this.viewRect);
-                var content_size = this.getSize(this.content) - new Vector2(m_Padding.left + m_Padding.right - m_Spacing.x, m_Padding.top + m_Padding.bottom - m_Spacing.y);
-                var length = m_Spacing + m_PrefabCell.size;
-                if (this.vertical)
-                {
-                    m_Col = (int)(content_size.x / length.x);
-                }
-
-                if (this.horizontal)
-                {
-                    m_Row = (int)(content_size.y / length.y);
-                }
-
-                var min = Vector2.Min(view_size, content_size);
-                m_TopRowID = 0;
-                m_BottomRowID = Mathf.CeilToInt(min.y / length.y);
-
-                m_LeftColID = 0;
-                m_RightColID = Mathf.CeilToInt(min.x / length.x);
+                m_Listener.calculateLayout(layout);
             }
             else
             {
@@ -232,29 +92,16 @@ namespace tezcat
             }
         }
 
-        public void setListener(TezScrollRectListener listener)
-        {
-            if (listener == null)
-            {
-                m_Listener = new DefaultListener();
-            }
-            else
-            {
-                m_Listener = listener;
-            }
-
-            m_Listener.setScrollRect(this);
-        }
-
         public override void OnBeginDrag(PointerEventData eventData)
         {
             base.OnBeginDrag(eventData);
+            m_Listener.onBeginScroll();
         }
 
         public override void OnDrag(PointerEventData eventData)
         {
             base.OnDrag(eventData);
-            this.calculatePositionOnDrag(eventData);
+            m_Listener.calculatePositionOnDrag(ref m_ContentBounds, eventData);
         }
 
         public override void OnEndDrag(PointerEventData eventData)
@@ -262,12 +109,13 @@ namespace tezcat
             base.OnEndDrag(eventData);
         }
 
-        public override void OnScroll(PointerEventData data)
+        public override void OnScroll(PointerEventData eventData)
         {
-            base.OnScroll(data);
-            this.calculatePositionOnDrag(data);
+            base.OnScroll(eventData);
+            m_Listener.calculatePositionOnDrag(ref m_ContentBounds, eventData);
         }
 
+#if Test
         Vector2 getSize(RectTransform transform)
         {
             return transform.rect.size;
@@ -327,7 +175,7 @@ namespace tezcat
             var anchor_rect_size = Vector2.Scale(content_real_anchor, view_size);
 
             bool fix = false;
-            #region Vertical
+        #region Vertical
             if (this.vertical)
             {
                 var factor_y = (view_size.y + m_RemainingSize.y) * content_pivot.y;
@@ -401,9 +249,9 @@ namespace tezcat
                     }
                 }
             }
-            #endregion
+        #endregion
 
-            #region Horizontal
+        #region Horizontal
             if (this.horizontal)
             {
                 var factor_x = (view_size.x + m_RemainingSize.x) * content_pivot.x;
@@ -471,7 +319,7 @@ namespace tezcat
                     }
                 }
             }
-            #endregion
+        #endregion
 
             if (fix)
             {
@@ -481,7 +329,7 @@ namespace tezcat
                 this.OnBeginDrag(eventData);
             }
         }
-
+#endif
         protected override void LateUpdate()
         {
             base.LateUpdate();

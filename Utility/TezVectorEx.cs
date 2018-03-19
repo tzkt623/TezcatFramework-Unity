@@ -12,5 +12,10 @@ namespace tezcat
         {
             return new Vector2(vector.x, vector.y);
         }
+
+        public static Vector2 divide(this Vector2 self, Vector2 other)
+        {
+            return new Vector2(self.x / other.x, self.y / other.y);
+        }
     }
 }
