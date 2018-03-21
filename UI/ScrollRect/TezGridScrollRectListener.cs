@@ -10,8 +10,35 @@ namespace tezcat
     {
         GridLayoutGroup m_LayoutGroup = null;
 
-        int m_ColCount = 0;
-        int m_RowCount = 0;
+        /// <summary>
+        /// 可见的排数或者列数
+        /// </summary>
+        protected int viewCount
+        {
+            get { return m_Capacity[m_Axis]; }
+        }
+
+        /// <summary>
+        /// 填充量
+        /// </summary>
+        protected int needCount
+        {
+            get { return m_Capacity[1 - m_Axis]; }
+        }
+
+        /// <summary>
+        ///V方向
+        ///既 m_Axis == 1
+        ///那么x(Col)既是创建数量
+        ///y(Row)既是最大可见数量
+        ///
+        ///H方向
+        ///既 m_Axis == 0
+        ///那么y(Row)既是创建数量
+        ///x(Col)既是最大可见数量
+        /// </summary>
+        protected Vector2Int m_Capacity = Vector2Int.zero;
+
 
         /// <summary>
         /// 滚动起始时的本地坐标值
@@ -23,6 +50,9 @@ namespace tezcat
         /// </summary>
         protected Vector2 m_TotalOffset = Vector2.zero;
 
+        int m_OldTop = 0;
+        int m_OldBottom = 0;
+
         protected override Vector2 getItemSize()
         {
             return m_LayoutGroup.cellSize;
@@ -33,8 +63,7 @@ namespace tezcat
             m_LayoutGroup = group;
             var real_view_size = m_ViewRect.rect.size - new Vector2(m_Padding.left + m_Padding.right, m_Padding.bottom + m_Padding.top);
             var rc = real_view_size.divide(this.getItemSize() + m_Spacing);
-            m_ColCount = Mathf.CeilToInt(rc.x);
-            m_RowCount = Mathf.CeilToInt(rc.y);
+            m_Capacity = Vector2Int.CeilToInt(rc);
         }
 
         protected override void onHorizontalLayoutGroup(HorizontalLayoutGroup group)
@@ -49,106 +78,114 @@ namespace tezcat
 
         public override void onBeginScroll()
         {
-            m_ContentStartLocalPosition = m_Content.localPosition;
+
         }
 
-        public override void calculatePositionOnDrag(ref Bounds content_bounds, PointerEventData eventData)
+        public override void onScroll(ref Bounds content_bounds, PointerEventData eventData)
         {
-            ///计算当前的偏移量
-            m_LocalPositionOffset = (m_Content.localPosition - m_ContentStartLocalPosition).toVector2();
-//            Debug.Log(m_LocalPositionOffset);
-
-            base.calculatePositionOnDrag(ref content_bounds, eventData);
+            base.onScroll(ref content_bounds, eventData);
         }
 
         protected override void onScrollArriveTopOrRight()
         {
-            m_TotalOffset[m_Axis] += m_LocalPositionOffset[m_Axis];
-            if (m_TotalOffset[m_Axis] < 0)
-            {
-                m_TotalOffset[m_Axis] = 0;
-            }
-
-
             if (this.checkArriveTopOrRight())
             {
-                this.updateOnArriveTopOrRightPosition();
-            }
-            else
-            {
-                m_TotalOffset[m_Axis] -= m_LocalPositionOffset[m_Axis];
+                this.addSpaceToTopOrRight();
             }
         }
 
         protected override void onScrollArriveBottomOrLeft()
         {
-            m_TotalOffset[m_Axis] += m_LocalPositionOffset[m_Axis];
-            if (m_TotalOffset[m_Axis] < 0)
-            {
-                m_TotalOffset[m_Axis] = 0;
-            }
-
             if (this.checkArriveBottmOrLeft())
             {
-                this.updateOnArriveBottomOrLeftPosition();
-            }
-            else
-            {
-                m_TotalOffset[m_Axis] -= m_LocalPositionOffset[m_Axis];
+                this.addSpaceToBottomOrLeft();
             }
         }
 
         private bool checkArriveTopOrRight()
         {
-            var factor = m_TotalOffset[m_Axis] / this.getItemSize()[m_Axis];
-            Debug.Log(factor);
-            var vid = Mathf.CeilToInt(factor) - 1;
-
+            bool result = false;
             switch (this.axis)
             {
-                case Axis.Horizontal: return this.onScrollArriveRight(vid, m_RowCount);
-                case Axis.Vertical: return this.onScrollArriveTop(vid, m_ColCount);
+                case Axis.Horizontal: result = this.onScrollArriveRight(this.needCount); break;
+                case Axis.Vertical: result = this.onScrollArriveTop(this.needCount); break;
             }
 
-            return false;
+            return result;
         }
 
         private bool checkArriveBottmOrLeft()
         {
-            var factor = (m_TotalOffset[m_Axis] + m_ViewSize[m_Axis]) / this.getItemSize()[m_Axis];
-            var vid = Mathf.CeilToInt(factor);
-
+            bool result = false;
             switch (this.axis)
             {
-                case Axis.Horizontal: return this.onScrollArriveLeft(vid, m_RowCount);
-                case Axis.Vertical: return this.onScrollArriveBottom(vid, m_ColCount);
+                case Axis.Horizontal: result = this.onScrollArriveLeft(this.needCount); break;
+                case Axis.Vertical: result = this.onScrollArriveBottom(this.needCount); break;
             }
 
-            return false;
+            return result;
         }
 
-
-
-        protected abstract bool onScrollArriveRight(int right_col_vid, int need_count);
-        protected abstract bool onScrollArriveTop(int top_row_vid, int need_count);
-        protected abstract bool onScrollArriveLeft(int left_col_vid, int need_count);
-        protected abstract bool onScrollArriveBottom(int bottom_row_vid, int need_count);
+        protected abstract bool onScrollArriveRight(int need_count);
+        protected abstract bool onScrollArriveTop(int need_count);
+        protected abstract bool onScrollArriveLeft(int need_count);
+        protected abstract bool onScrollArriveBottom(int need_count);
     }
 
-    public class TezGridScrollRectTeszListener : TezGridScrollRectListener
+    /// <summary>
+    /// 已知的BUG是有一排没有删掉导致显示ID重复
+    /// </summary>
+    public abstract class TezIDGridScrollRectListener : TezGridScrollRectListener
     {
-        Text m_Prefab = null;
-        Text prefab
-        {
-            get
-            {
-                if(m_Prefab == null)
-                {
-                    m_Prefab = GamePrefabManager.get<Text>("Text");
-                }
+        int m_BeginID = 0;
+        int m_EndID = 0;
 
-                return m_Prefab;
+        protected abstract GameObject prefab { get; }
+
+        bool calculateBegin()
+        {
+            bool result = true;
+            m_BeginID -= 1;
+            if (m_BeginID <= -1)
+            {
+                m_BeginID = 0;
+                result = false;
             }
+            m_EndID = m_BeginID + this.viewCount - 1;
+            return result;
+        }
+
+        bool calculateEnd()
+        {
+            bool result = true;
+            m_EndID += 1;
+            if (m_EndID >= this.getMaxRowOrCol())
+            {
+                m_EndID = this.getMaxRowOrCol() - 1;
+                result = false;
+            }
+
+            m_BeginID = m_EndID - this.viewCount + 1;
+            return result;
+        }
+
+        protected override void init()
+        {
+            m_BeginID = 0;
+            m_EndID = this.viewCount - 1;
+        }
+
+        private int getMaxRowOrCol()
+        {
+            return Mathf.CeilToInt(this.getCount() / (float)this.needCount);
+        }
+
+        protected abstract int getCount();
+
+        protected override bool onFindOutOfTopOrRightItem(RectTransform item)
+        {
+            Object.Destroy(item.gameObject);
+            return true;
         }
 
         protected override bool onFindOutOfBottomOrLeftItem(RectTransform item)
@@ -157,67 +194,51 @@ namespace tezcat
             return true;
         }
 
-        protected override bool onFindOutOfTopOrRightItem(RectTransform item)
+        protected sealed override bool onScrollArriveLeft(int need_count)
         {
-            Object.Destroy(item.gameObject);
-            return true;
+            return false;
         }
 
-        RectTransform create(int id, int self_id)
+        protected sealed override bool onScrollArriveRight(int need_count)
         {
-            var go = Object.Instantiate(this.prefab);
-            go.text = id + "-" + self_id;
-            return (RectTransform)go.transform;
+            return false;
         }
 
-        protected override bool onScrollArriveLeft(int left_col_vid, int need_count)
+        protected sealed override bool onScrollArriveTop(int need_count)
         {
-            for (int i = need_count - 1; i >= 0; i--)
-            {
-                this.addItemAsFirstSibling(this.create(left_col_vid, i));
-            }
-
-            return true;
-        }
-
-        protected override bool onScrollArriveRight(int right_col_vid, int need_count)
-        {
-            for (int i = 0; i < need_count; i++)
-            {
-                this.addItemAsLastSibling(this.create(right_col_vid, i));
-            }
-
-            return true;
-        }
-
-        protected override bool onScrollArriveTop(int top_row_vid, int need_count)
-        {
-            if(top_row_vid < 0)
+            if (!this.calculateBegin())
             {
                 return false;
             }
 
-            for (int i = need_count - 1; i >= 0; i--)
-            {
-                this.addItemAsFirstSibling(this.create(top_row_vid, i));
+            var end = (m_BeginID * need_count) - 1;
+            var begin = end + need_count;
+            for (int i = begin; i > end; i--)
+            {      
+                this.addItemAsFirstSibling(this.onFillItemAsFirst(i));
             }
 
             return true;
         }
 
-        protected override bool onScrollArriveBottom(int bottom_row_vid, int need_count)
+        protected sealed override bool onScrollArriveBottom(int need_count)
         {
-            if (bottom_row_vid > 9)
+            if (!this.calculateEnd())
             {
                 return false;
             }
 
-            for (int i = 0; i < need_count; i++)
+            var begin = m_EndID * need_count;
+            var end = Mathf.Min(begin + need_count, this.getCount());
+            for (int i = begin; i < end; i++)
             {
-                this.addItemAsLastSibling(this.create(bottom_row_vid, i));
+                this.addItemAsLastSibling(this.onFillItemAsLast(i));
             }
 
             return true;
         }
+
+        protected abstract RectTransform onFillItemAsFirst(int index);
+        protected abstract RectTransform onFillItemAsLast(int index);
     }
 }

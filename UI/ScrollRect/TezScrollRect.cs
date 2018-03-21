@@ -11,61 +11,11 @@ namespace tezcat
         , IPointerEnterHandler
         , IPointerExitHandler
     {
-
-        public enum CellSize
-        {
-            Fixed,
-            Changeable
-        }
-
-        [SerializeField]
-        TezScrollCell m_PrefabCell = null;
-
-        [SerializeField]
-        CellSize m_CellSize = CellSize.Fixed;
-        public CellSize cellControl
-        {
-            get { return m_CellSize; }
-            set
-            {
-                m_CellSize = value;
-                switch (value)
-                {
-                    case CellSize.Fixed:
-
-                        break;
-                    case CellSize.Changeable:
-                        break;
-                }
-            }
-        }
-
-        HorizontalLayoutGroup m_HLayout = null;
-        VerticalLayoutGroup m_VLayout = null;
-        GridLayoutGroup m_GLayout = null;
-
-        RectOffset m_Padding = null;
-        Vector2 m_Spacing = Vector2.zero;
-        Vector2 m_RemainingSize = Vector2.zero;
-        Vector2 m_Delta = Vector2.zero;
-        Vector2 m_OffsetTop = Vector2.zero;
-
-        int m_Row = 1;
-        int m_RowSize = 0;
-        int m_Col = 1;
-        int m_ColSize = 0;
-
-        int m_TopRowID = 0;
-        int m_BottomRowID = 0;
-        int m_LeftColID = 0;
-        int m_RightColID = 0;
-
-        TezScrollRectListener m_Listener = null;
+        TezScrollRectListener m_Listener = new TezDefaultScrollRectListener();
 
         protected override void Start()
         {
             base.Start();
-            this.setListener(new TezGridScrollRectTeszListener());
         }
 
         public void setListener(TezScrollRectListener listener)
@@ -101,7 +51,7 @@ namespace tezcat
         public override void OnDrag(PointerEventData eventData)
         {
             base.OnDrag(eventData);
-            m_Listener.calculatePositionOnDrag(ref m_ContentBounds, eventData);
+            m_Listener.onScroll(ref m_ContentBounds, eventData);
         }
 
         public override void OnEndDrag(PointerEventData eventData)
@@ -112,7 +62,7 @@ namespace tezcat
         public override void OnScroll(PointerEventData eventData)
         {
             base.OnScroll(eventData);
-            m_Listener.calculatePositionOnDrag(ref m_ContentBounds, eventData);
+            m_Listener.onScroll(ref m_ContentBounds, eventData);
         }
 
 #if Test
@@ -333,6 +283,7 @@ namespace tezcat
         protected override void LateUpdate()
         {
             base.LateUpdate();
+            m_Listener.update();
         }
 
         void IPointerEnterHandler.OnPointerEnter(PointerEventData eventData)

@@ -19,6 +19,10 @@ namespace tezcat
         }
 
         List<Slot> m_SlotList = new List<Slot>();
+        public int count
+        {
+            get { return m_SlotList.Count; }
+        }
 
         public void add(TezItem item, int count)
         {

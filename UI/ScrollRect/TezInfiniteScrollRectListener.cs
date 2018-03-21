@@ -13,10 +13,12 @@ namespace tezcat
         /// 鼠标拖动帧偏移或滚轮值
         /// </summary>
         protected Vector2 m_Delta = Vector2.zero;
+
         /// <summary>
         /// ContentSize - ViewSzie的剩余大小
         /// </summary>
         protected Vector2 m_RemainingSize = Vector2.zero;
+
         /// <summary>
         /// 铆钉的标准点
         /// </summary>
@@ -51,36 +53,38 @@ namespace tezcat
         protected abstract Vector2 getItemSize();
 
         /// <summary>
-        /// 更新Content位置当滚动到顶部或者右部
+        /// 在顶部或者右部增加空间
         /// </summary>
-        protected void updateOnArriveTopOrRightPosition()
+        protected void addSpaceToTopOrRight()
         {
-            m_MyAnchoredPosition[m_Axis] += (this.getItemSize()[m_Axis] + m_Spacing[m_Axis]) * m_ContentPivot[m_Axis];
+            var offset = (this.getItemSize()[m_Axis] + m_Spacing[m_Axis]) * m_ContentPivot[m_Axis];
+            m_MyAnchoredPosition[m_Axis] += offset;
             m_Dirty = true;
         }
 
         /// <summary>
-        /// 更新Content位置当滚动到底部或者左部
+        /// 在底部或者左部增加空间
         /// </summary>
-        protected void updateOnArriveBottomOrLeftPosition()
+        protected void addSpaceToBottomOrLeft()
         {
-            m_MyAnchoredPosition[m_Axis] += -(this.getItemSize()[m_Axis] + m_Spacing[m_Axis]) * (1 - m_ContentPivot[m_Axis]);
+            var offset = -(this.getItemSize()[m_Axis] + m_Spacing[m_Axis]) * (1 - m_ContentPivot[m_Axis]);
+            m_MyAnchoredPosition[m_Axis] += offset;
             m_Dirty = true;
         }
 
         /// <summary>
-        /// 更新Content位置当找到并处理了一个超过顶部或者右部的Item
+        /// 在顶部或者右部减少空间
         /// </summary>
-        protected void updateOnFindOutOfTopOrRightItem()
+        protected void removeSpaceFromTopOrRight()
         {
             m_MyAnchoredPosition[m_Axis] += -(this.getItemSize()[m_Axis] + m_Spacing[m_Axis]) * m_ContentPivot[m_Axis];
             m_Dirty = true;
         }
 
         /// <summary>
-        /// 更新Content位置当找到并处理了一个超过底部或者左部的Item
+        /// 在底部或者左部减少空间
         /// </summary>
-        protected void updateOnFindOutOfBottomOrLeftItem()
+        protected void removeSpaceFromBottomOrLeft()
         {
             m_MyAnchoredPosition[m_Axis] += (this.getItemSize()[m_Axis] + m_Spacing[m_Axis]) * (1 - m_ContentPivot[m_Axis]);
             m_Dirty = true;
@@ -110,7 +114,7 @@ namespace tezcat
         /// <returns>True则会删除此元素所占的空间 False表示不处理此元素所占的空间</returns>
         protected abstract bool onFindOutOfBottomOrLeftItem(RectTransform item);
 
-        public override void calculatePositionOnDrag(ref Bounds content_bounds, PointerEventData eventData)
+        public override void onScroll(ref Bounds content_bounds, PointerEventData eventData)
         {
             ///
             m_ViewPiovt = m_ViewRect.pivot;
@@ -155,10 +159,11 @@ namespace tezcat
 
             if (m_Dirty)
             {
-                this.m_Content.anchoredPosition = m_MyAnchoredPosition;
+                this.m_Content.anchoredPosition = (m_MyAnchoredPosition - m_Delta);
                 ///为什么要调这个函数
                 ///因为unity把一个关键的参数m_PointerStartLocalCursor写成了private
                 m_ScrollRect.OnBeginDrag(eventData);
+
                 m_Dirty = false;
             }
         }
@@ -191,12 +196,12 @@ namespace tezcat
             {
                 var in_view_local_position = item.localPosition + this.m_Content.localPosition;
                 var size = this.getItemSize()[m_Axis];
-                if (in_view_local_position[m_Axis] < -m_ViewPiovt[m_Axis] * m_ViewSize[m_Axis] - size)
+                if (in_view_local_position[m_Axis] < -(m_ViewPiovt[m_Axis] * m_ViewSize[m_Axis] + size))
                 {
                     if (this.onFindOutOfBottomOrLeftItem(item) && !removed_bl)
                     {
                         removed_bl = true;
-                        this.updateOnFindOutOfBottomOrLeftItem();
+                        this.removeSpaceFromBottomOrLeft();
                     }
                 }
                 else if (in_view_local_position[m_Axis] > (1 - m_ViewPiovt[m_Axis]) * m_ViewSize[m_Axis] + size)
@@ -204,10 +209,15 @@ namespace tezcat
                     if (this.onFindOutOfTopOrRightItem(item) && !removed_tr)
                     {
                         removed_tr = true;
-                        this.updateOnFindOutOfTopOrRightItem();
+                        this.removeSpaceFromTopOrRight();
                     }
                 }
             }
+        }
+
+        public override void update()
+        {
+
         }
     }
 }

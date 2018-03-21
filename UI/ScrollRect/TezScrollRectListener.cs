@@ -55,7 +55,7 @@ namespace tezcat
         }
 
         public abstract void onBeginScroll();
-        public abstract void calculatePositionOnDrag(ref Bounds content_bounds, PointerEventData eventData);
+        public abstract void onScroll(ref Bounds content_bounds, PointerEventData eventData);
 
         protected void addItemAsFirstSibling(RectTransform item)
         {
@@ -68,6 +68,14 @@ namespace tezcat
         protected void addItemAsLastSibling(RectTransform item)
         {
             item.SetParent(this.m_Content);
+            item.localRotation = Quaternion.identity;
+            item.localScale = Vector3.one;
+        }
+
+        protected void insertItemAtSibling(RectTransform item, int sibling)
+        {
+            item.SetParent(this.m_Content);
+            item.SetSiblingIndex(sibling);
             item.localRotation = Quaternion.identity;
             item.localScale = Vector3.one;
         }
@@ -92,21 +100,37 @@ namespace tezcat
                 m_Spacing = ((GridLayoutGroup)layout).spacing;
                 this.onGridLayoutGroup((GridLayoutGroup)layout);
             }
+
+            this.init();
         }
+
+        protected abstract void init();
 
         protected abstract void onHorizontalLayoutGroup(HorizontalLayoutGroup group);
         protected abstract void onVerticalLayoutGroup(VerticalLayoutGroup group);
         protected abstract void onGridLayoutGroup(GridLayoutGroup group);
+
+        public abstract void update();
     }
 
     public class TezDefaultScrollRectListener : TezScrollRectListener
     {
+        protected override void init()
+        {
+
+        }
+
         public override void onBeginScroll()
         {
 
         }
 
-        public override void calculatePositionOnDrag(ref Bounds content_bounds, PointerEventData eventData)
+        public override void onScroll(ref Bounds content_bounds, PointerEventData eventData)
+        {
+
+        }
+
+        public override void update()
         {
 
         }
