@@ -140,8 +140,6 @@ namespace tezcat
         int m_BeginID = 0;
         int m_EndID = 0;
 
-        protected abstract GameObject prefab { get; }
-
         bool calculateBegin()
         {
             bool result = true;
@@ -181,18 +179,6 @@ namespace tezcat
         }
 
         protected abstract int getCount();
-
-        protected override bool onFindOutOfTopOrRightItem(RectTransform item)
-        {
-            Object.Destroy(item.gameObject);
-            return true;
-        }
-
-        protected override bool onFindOutOfBottomOrLeftItem(RectTransform item)
-        {
-            Object.Destroy(item.gameObject);
-            return true;
-        }
 
         protected sealed override bool onScrollArriveLeft(int need_count)
         {
