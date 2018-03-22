@@ -23,14 +23,14 @@ namespace tezcat
             }
         }
 
-        protected override void onStart()
+        protected override void Start()
         {
             m_Init = true;
         }
 
         protected abstract void onRefresh();
 
-        protected override void onEnable()
+        protected override void OnEnable()
         {
             if(m_Init)
             {

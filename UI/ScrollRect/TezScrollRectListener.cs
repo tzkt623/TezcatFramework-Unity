@@ -109,8 +109,6 @@ namespace tezcat
         protected abstract void onHorizontalLayoutGroup(HorizontalLayoutGroup group);
         protected abstract void onVerticalLayoutGroup(VerticalLayoutGroup group);
         protected abstract void onGridLayoutGroup(GridLayoutGroup group);
-
-        public abstract void update();
     }
 
     public class TezDefaultScrollRectListener : TezScrollRectListener
@@ -126,11 +124,6 @@ namespace tezcat
         }
 
         public override void onScroll(ref Bounds content_bounds, PointerEventData eventData)
-        {
-
-        }
-
-        public override void update()
         {
 
         }

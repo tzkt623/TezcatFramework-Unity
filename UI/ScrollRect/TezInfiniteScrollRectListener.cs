@@ -138,8 +138,10 @@ namespace tezcat
 
             ///计算当前锚点到rect左下角的大小
             m_ViewSize = m_ViewRect.rect.size;
-            m_RemainingSize = content_bounds.size.toVector2() - m_ViewSize;
             m_AnchorRectSize = Vector2.Scale(content_real_anchor, m_ViewSize);
+
+            ///
+            m_RemainingSize = m_Content.rect.size - m_ViewSize;
 
             #region Vertical
             if (m_ScrollRect.vertical)
@@ -162,10 +164,10 @@ namespace tezcat
                 this.m_Content.anchoredPosition = (m_MyAnchoredPosition - m_Delta);
                 ///为什么要调这个函数
                 ///因为unity把一个关键的参数m_PointerStartLocalCursor写成了private
-                m_ScrollRect.OnBeginDrag(eventData);
-
                 m_Dirty = false;
             }
+
+            m_ScrollRect.OnBeginDrag(eventData);
         }
 
         /// <summary>
@@ -213,11 +215,6 @@ namespace tezcat
                     }
                 }
             }
-        }
-
-        public override void update()
-        {
-
         }
     }
 }

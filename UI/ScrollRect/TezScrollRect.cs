@@ -44,14 +44,14 @@ namespace tezcat
 
         public override void OnBeginDrag(PointerEventData eventData)
         {
-            base.OnBeginDrag(eventData);
             m_Listener.onBeginScroll();
+            base.OnBeginDrag(eventData);
         }
 
         public override void OnDrag(PointerEventData eventData)
         {
-            base.OnDrag(eventData);
             m_Listener.onScroll(ref m_ContentBounds, eventData);
+            base.OnDrag(eventData);
         }
 
         public override void OnEndDrag(PointerEventData eventData)
@@ -283,7 +283,6 @@ namespace tezcat
         protected override void LateUpdate()
         {
             base.LateUpdate();
-            m_Listener.update();
         }
 
         void IPointerEnterHandler.OnPointerEnter(PointerEventData eventData)

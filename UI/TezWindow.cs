@@ -28,9 +28,9 @@ namespace tezcat
             get { return this.gameObject.activeSelf; }
         }
 
-        protected override void onStart()
+        protected override void Start()
         {
-            base.onStart();
+            base.Start();
             if (m_Title == null)
             {
                 m_Title = this.GetComponentInChildren<TezWindowTitle>();
@@ -65,11 +65,6 @@ namespace tezcat
         protected virtual bool onClose()
         {
             return true;
-        }
-
-        public void show()
-        {
-            this.gameObject.SetActive(true);
         }
 
         public void setTitle(string title)

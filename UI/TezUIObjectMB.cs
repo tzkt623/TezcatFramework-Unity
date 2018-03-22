@@ -1,42 +1,11 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-using UnityEngine.UI;
+﻿using UnityEngine.EventSystems;
 
 namespace tezcat
 {
-    public abstract class TezUIObjectMB
-        : MonoBehaviour
+    public abstract class TezUIObjectMB : UIBehaviour
     {
-        protected void Awake()
-        {
-            this.onAwake();
-        }
+        public virtual bool interactable { get; set; } = true;
 
-        protected void Start()
-        {
-            this.onStart();
-        }
-
-        protected void OnDestroy()
-        {
-            this.onDelete();
-        }
-
-        protected void OnDisable()
-        {
-            this.onDisable();
-        }
-
-        protected void OnEnable()
-        {
-            this.onEnable();
-        }
-
-        protected abstract void onAwake();
-        protected abstract void onStart();
-        protected abstract void onDelete();
-        protected abstract void onDisable();
-        protected abstract void onEnable();
+        public abstract void clear();
     }
 }

@@ -24,13 +24,10 @@ namespace tezcat
         TezWindow m_Window = null;
         bool m_Pin = false;
 
-        protected override void onAwake()
+        protected override void Start()
         {
+            base.Start();
 
-        }
-
-        protected override void onStart()
-        {
             if(m_TitleName == null)
             {
                 m_TitleName = this.GetComponentInChildren<Text>();
@@ -58,17 +55,8 @@ namespace tezcat
             }
         }
 
-        protected override void onDelete()
-        {
 
-        }
-
-        protected override void onDisable()
-        {
-
-        }
-
-        protected override void onEnable()
+        public override void clear()
         {
 
         }

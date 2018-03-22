@@ -18,45 +18,32 @@ namespace tezcat
         Color m_PressColor;
         Color m_OrgColor;
 
-        protected override void onAwake()
-        {
 
-        }
-
-        protected override void onStart()
+        protected override void Start()
         {
+            base.Start();
             m_OrgColor = m_Image.color;
         }
 
-        protected override void onDelete()
+        public override void clear()
         {
 
         }
 
-        protected override void onDisable()
-        {
-
-        }
-
-        protected override void onEnable()
-        {
-
-        }
-
-        protected override void onEnter(PointerEventData eventData)
+        public override void OnPointerEnter(PointerEventData eventData)
         {
             m_Image.DOColor(new Color(1, 1, 1, 60 / 255.0f), 1.2f)
                 .SetLoops(-1, LoopType.Yoyo)
                 .SetAutoKill(false);
         }
 
-        protected override void onExit(PointerEventData eventData)
+        public override void OnPointerExit(PointerEventData eventData)
         {
             m_Image.DORewind(false);
             m_Image.DOKill();
         }
 
-        protected override void onDown(PointerEventData eventData)
+        public override void OnPointerDown(PointerEventData eventData)
         {
             m_Image.DORewind(false);
             m_Image.DOKill();
@@ -64,7 +51,7 @@ namespace tezcat
             m_Image.color = m_PressColor;
         }
 
-        protected override void onUp(PointerEventData eventData)
+        public override void OnPointerUp(PointerEventData eventData)
         {
             m_Image.color = m_OrgColor;
             onClick.launch(eventData.button);

@@ -13,19 +13,14 @@ namespace tezcat
         [SerializeField]
         Text m_Label = null;
 
-        protected override void onAwake()
+        protected override void Awake()
         {
-
+            base.Awake();
         }
 
-        protected override void onDelete()
+        protected override void Start()
         {
-
-        }
-
-        protected override void onStart()
-        {
-
+            base.Start();
         }
 
         public void setIcon(Sprite icon)
@@ -38,12 +33,7 @@ namespace tezcat
             m_Label.text = text;
         }
 
-        protected override void onDisable()
-        {
-
-        }
-
-        protected override void onEnable()
+        public override void clear()
         {
 
         }

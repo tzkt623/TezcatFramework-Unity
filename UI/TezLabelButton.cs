@@ -5,14 +5,27 @@ using UnityEngine.UI;
 
 namespace tezcat
 {
-    public class TezLabelButton
-        : TezUIObjectMB
-        , IPointerEnterHandler
-        , IPointerExitHandler
-        , IPointerDownHandler
-        , IPointerUpHandler
+    public class TezLabelButton : TezButton
     {
-        public GameEvent.Event onClick;
+        public event TezEventBus.Action onClick;
+
+        public override bool interactable
+        {
+            get { return base.interactable; }
+
+            set
+            {
+                base.interactable = value;
+                if(value)
+                {
+                    m_Label.color = m_LabelColor;
+                }
+                else
+                {
+                    m_Label.color = Color.gray;
+                }
+            }
+        }
 
         [SerializeField]
         Image m_BG = null;
@@ -25,48 +38,39 @@ namespace tezcat
 
         Tweener m_Tweener = null;
 
-
-        protected override void onAwake()
+        protected override void Start()
         {
-
-        }
-
-        protected override void onStart()
-        {
+            base.Start();
             m_LabelColor = m_Label.color;
-
         }
 
-        protected override void onDelete()
+        public override void clear()
         {
 
         }
 
-        protected override void onDisable()
+        public override void OnPointerDown(PointerEventData eventData)
         {
+            if (!this.interactable)
+            {
+                return;
+            }
 
-        }
-
-        protected override void onEnable()
-        {
-
-        }
-
-        void IPointerDownHandler.OnPointerDown(PointerEventData eventData)
-        {
             m_Label.color = m_PressColor;
         }
 
-        void IPointerUpHandler.OnPointerUp(PointerEventData eventData)
+        public override void OnPointerUp(PointerEventData eventData)
         {
-            m_Label.color = m_LabelColor;
+            if (!this.interactable)
+            {
+                return;
+            }
+
             switch (eventData.button)
             {
                 case PointerEventData.InputButton.Left:
-                    if(onClick != null)
-                    {
-                        onClick();
-                    }
+                    m_Label.color = m_LabelColor;
+                    onClick?.Invoke();
                     break;
                 case PointerEventData.InputButton.Right:
                     break;
@@ -75,14 +79,24 @@ namespace tezcat
             }
         }
 
-        void IPointerEnterHandler.OnPointerEnter(PointerEventData eventData)
+        public override void OnPointerEnter(PointerEventData eventData)
         {
+            if (!this.interactable)
+            {
+                return;
+            }
+
             m_Tweener = m_BG.DOColor(Colors.button_hover, 0.8f);
             m_Tweener.SetAutoKill(false);
         }
 
-        void IPointerExitHandler.OnPointerExit(PointerEventData eventData)
+        public override void OnPointerExit(PointerEventData eventData)
         {
+            if (!this.interactable)
+            {
+                return;
+            }
+
             m_Tweener.Rewind();
             m_Tweener.Kill();
         }
