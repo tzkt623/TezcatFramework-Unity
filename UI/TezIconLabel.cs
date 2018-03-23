@@ -13,24 +13,16 @@ namespace tezcat
         [SerializeField]
         Text m_Label = null;
 
-        protected override void Awake()
+        public Sprite icon
         {
-            base.Awake();
+            get { return m_Icon.sprite; }
+            set { m_Icon.sprite = value; }
         }
 
-        protected override void Start()
+        public string text
         {
-            base.Start();
-        }
-
-        public void setIcon(Sprite icon)
-        {
-            m_Icon.sprite = icon;
-        }
-
-        public void setLabel(string text)
-        {
-            m_Label.text = text;
+            get { return m_Label.text; }
+            set { m_Label.text = value; }
         }
 
         public override void clear()

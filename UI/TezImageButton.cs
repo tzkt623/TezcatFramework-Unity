@@ -30,6 +30,18 @@ namespace tezcat
 
         }
 
+        protected override void onInteractable(bool value)
+        {
+            if(value)
+            {
+                m_Image.color = m_OrgColor;
+            }
+            else
+            {
+                m_Image.color = Color.gray;
+            }
+        }
+
         public override void OnPointerEnter(PointerEventData eventData)
         {
             m_Image.DOColor(new Color(1, 1, 1, 60 / 255.0f), 1.2f)
