@@ -5,8 +5,6 @@ using UnityEngine;
 
 namespace tezcat
 {
-    public 
-
     public abstract class TezAbstractState
     {
         public int index { get; set; } = -1;

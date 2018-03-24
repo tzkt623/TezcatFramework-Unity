@@ -1,22 +1,28 @@
-﻿using DG.Tweening;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
+using DG.Tweening;
 
 namespace tezcat
 {
+    [RequireComponent(typeof(Text))]
     public class TezLabelButton : TezButton
     {
         public event TezEventBus.Action<PointerEventData.InputButton> onClick;
-
-        [SerializeField]
-        Text m_Label = null;
         [SerializeField]
         Color m_PressColor;
+
+        Text m_Label = null;
 
         Color m_LabelColor;
 
         Tweener m_Tweener = null;
+
+        protected override void Awake()
+        {
+            base.Awake();
+            m_Label = this.GetComponent<Text>();
+        }
 
         protected override void Start()
         {

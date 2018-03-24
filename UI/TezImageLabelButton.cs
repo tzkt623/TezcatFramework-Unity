@@ -83,8 +83,8 @@ namespace tezcat
 
         public override void OnPointerEnter(PointerEventData eventData)
         {
-            m_Tweener = m_BG.DOColor(Colors.button_hover, 0.8f);
-            m_Tweener.SetAutoKill(false);
+            m_Tweener = m_BG.DOColor(Colors.button_hover, 1.2f);
+            m_Tweener.SetAutoKill(false).SetLoops(-1, LoopType.Yoyo);
         }
 
         public override void OnPointerExit(PointerEventData eventData)
