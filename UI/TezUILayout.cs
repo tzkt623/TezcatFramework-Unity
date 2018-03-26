@@ -5,7 +5,7 @@ using UnityEngine.UI;
 
 namespace tezcat
 {
-    public class TezUILayout
+    public static class TezUILayout
     {
         /*
          * <pivot>
@@ -51,6 +51,18 @@ namespace tezcat
          * 
          * 此节点的pivot到父节点的pivot的相对坐标值
          */
+
+
+
+        public static void setLayout(this RectTransform transform, float left, float bottom, float right, float top)
+        {
+            transform.anchorMin = Vector2.zero;
+            transform.anchorMax = Vector2.one;
+            transform.pivot = new Vector2(0.5f, 0.5f);
+
+            transform.offsetMin = new Vector2(left, bottom);
+            transform.offsetMax = new Vector2(right, top);
+        }
     }
 }
 

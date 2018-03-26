@@ -52,10 +52,10 @@
         protected virtual void onSerializationID(TezJsonWriter writer)
         {
             var gid = TezItemFactory.convertToGroup(groupID);
-            writer.pushValue("group_id", gid.name);
-            writer.pushValue("type_id", gid.convertToType(typeID).name);
-            writer.pushValue("object_id", objectID > 0 ? objectID : -1);
-            writer.pushValue("GUID", this.GUID);
+            writer.pushValue(ReadOnlyString.group_id, gid.name);
+            writer.pushValue(ReadOnlyString.type_id, gid.convertToType(typeID).name);
+            writer.pushValue(ReadOnlyString.object_id, objectID > 0 ? objectID : -1);
+            writer.pushValue(ReadOnlyString.GUID, this.GUID);
         }
 
         public virtual void deserialization(TezJsonReader reader)

@@ -92,6 +92,7 @@ namespace tezcat
         public struct AxialCoordinate
         {
             public static readonly AxialCoordinate zero = new AxialCoordinate(0, 0);
+            public static readonly AxialCoordinate one = new AxialCoordinate(1, 1);
 
             public int q;
             public int r;
