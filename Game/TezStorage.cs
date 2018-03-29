@@ -1,14 +1,20 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-using UnityEngine.Assertions;
+﻿using System.Collections.Generic;
 
 namespace tezcat
 {
     public class TezStorage
     {
+        /// <summary>
+        /// Item Count ID
+        /// </summary>
         public event TezEventBus.Action<TezItem, int, int> onItemAdded;
+        /// <summary>
+        /// Item Count ID
+        /// </summary>
         public event TezEventBus.Action<TezItem, int, int> onItemRemoved;
+        /// <summary>
+        /// Item Count ID
+        /// </summary>
         public event TezEventBus.Action<TezItem, int, int> onItemSetted;
 
         class Slot
