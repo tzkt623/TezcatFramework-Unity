@@ -2,25 +2,25 @@
 
 namespace tezcat
 {
-    public class TezStorage
+    public class TezStorage<Item> where Item : class, ITezItem
     {
         /// <summary>
         /// Item Count ID
         /// </summary>
-        public event TezEventBus.Action<TezItem, int, int> onItemAdded;
+        public event TezEventBus.Action<Item, int, int> onItemAdded;
         /// <summary>
         /// Item Count ID
         /// </summary>
-        public event TezEventBus.Action<TezItem, int, int> onItemRemoved;
+        public event TezEventBus.Action<Item, int, int> onItemRemoved;
         /// <summary>
         /// Item Count ID
         /// </summary>
-        public event TezEventBus.Action<TezItem, int, int> onItemSetted;
+        public event TezEventBus.Action<Item, int, int> onItemSetted;
 
-        class Slot
+        public class Slot
         {
             public int id = -1;
-            public TezItem item = null;
+            public Item item = null;
             public int count = 0;
         }
 
@@ -30,7 +30,54 @@ namespace tezcat
             get { return m_SlotList.Count; }
         }
 
-        public void add(TezItem item, int count)
+        public Item getItem(int id)
+        {
+            if (id >= m_SlotList.Count)
+            {
+                return null;
+            }
+
+            return m_SlotList[id].item;
+        }
+
+        public int getItemCount(int id)
+        {
+            if (id >= m_SlotList.Count)
+            {
+                return -1;
+            }
+
+            return m_SlotList[id].count;
+        }
+
+        /// <summary>
+        /// 新增加一个槽位来存放物品
+        /// 不会合并相同的物品
+        /// </summary>
+        /// <param name="item"></param>
+        /// <param name="count"></param>
+        public void newSlot(Item item, int count)
+        {
+            Slot slot = new Slot()
+            {
+                id = m_SlotList.Count,
+                item = item,
+                count = count
+            };
+
+            m_SlotList.Add(slot);
+
+            onItemAdded?.Invoke(slot.item, slot.count, slot.id);
+        }
+
+        /// <summary>
+        /// 加入一个物品
+        /// 如果有相同的物品
+        /// 自动合并
+        /// </summary>
+        /// <param name="item"></param>
+        /// <param name="count"></param>
+        public void add(Item item, int count)
         {
             Slot selected = null;
             foreach (var slot in m_SlotList)
@@ -63,22 +110,55 @@ namespace tezcat
             onItemAdded?.Invoke(selected.item, selected.count, selected.id);
         }
 
-        public void remove(TezItem item, int count)
+        /// <summary>
+        /// 移除指定数量的物品
+        /// 如果一个槽中的物品不够
+        /// 会自动寻找下一个相同的物品
+        /// </summary>
+        /// <param name="item"></param>
+        /// <param name="count"></param>
+        public void remove(Item item, int count)
         {
+            int remaining = count;
             foreach (var slot in m_SlotList)
             {
                 if (slot.item == item)
                 {
-                    slot.count -= count;
+                    if (slot.count >= remaining)
+                    {
+                        slot.count -= remaining;
+                        remaining = 0;
+                    }
+                    else
+                    {
+                        remaining -= slot.count;
+                        slot.count = 0;
+                    }
+
                     if (slot.count == 0)
                     {
                         slot.item = null;
                     }
 
                     onItemRemoved?.Invoke(slot.item, slot.count, slot.id);
-                    break;
+
+                    if(remaining == 0)
+                    {
+                        break;
+                    }
                 }
             }
+        }
+
+        public void remove(int id, int count)
+        {
+            var slot = m_SlotList[id];
+            slot.count -= count;
+            if(slot.count == 0)
+            {
+                slot.item = null;
+            }
+            onItemRemoved?.Invoke(slot.item, slot.count, slot.id);
         }
 
         public void split(int slot_id, int split_count)
@@ -136,7 +216,7 @@ namespace tezcat
             }
         }
 
-        public bool tryGetItem(int slot_id, out TezItem item, out int count)
+        public bool tryGetItem(int slot_id, out Item item, out int count)
         {
             item = null;
             count = -1;
@@ -145,7 +225,7 @@ namespace tezcat
             {
                 return false;
             }
-            
+
             var slot = m_SlotList[slot_id];
             if (slot.item == null)
             {
@@ -157,12 +237,22 @@ namespace tezcat
             return true;
         }
 
-        public void foreachItem(TezEventBus.Action<TezItem, int, int> function)
+        public void foreachItem(TezEventBus.Action<Item, int, int> function)
         {
             foreach (var slot in m_SlotList)
             {
                 function(slot.item, slot.count, slot.id);
             }
+        }
+
+        public void clearItem()
+        {
+            foreach (var slot in m_SlotList)
+            {
+                slot.item = null;
+            }
+
+            m_SlotList.Clear();
         }
     }
 }
