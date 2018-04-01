@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using System.Collections.Generic;
 using UnityEngine.EventSystems;
 
 namespace tezcat
@@ -14,9 +12,9 @@ namespace tezcat
         , IDropHandler
     {
         TezWindowTitle m_Title = null;
-        List<TezSubwindow> m_SubwindowList = new List<TezSubwindow>();
 
-        TezSubwindow focusSubwindow { get; set; }
+        List<TezSubwindow> m_SubwindowList = new List<TezSubwindow>();
+        TezSubwindow m_FocusSubwindow = null;
 
         public ITezPointer currentPointer
         {
@@ -26,15 +24,6 @@ namespace tezcat
         public bool isOpen
         {
             get { return this.gameObject.activeSelf; }
-        }
-
-        protected override void Start()
-        {
-            base.Start();
-            if (m_Title == null)
-            {
-                m_Title = this.GetComponentInChildren<TezWindowTitle>();
-            }
         }
 
         public void open()
@@ -64,6 +53,11 @@ namespace tezcat
 
         protected virtual bool onClose()
         {
+            foreach (var subwindow in m_SubwindowList)
+            {
+                subwindow.onWindowClose();
+            }
+
             return true;
         }
 
@@ -75,14 +69,18 @@ namespace tezcat
             }
         }
 
+        public void setTile(TezWindowTitle title)
+        {
+            m_Title = title;
+        }
+
         public void onFocusSubwindow(TezSubwindow subwindow)
         {
-            focusSubwindow = subwindow;
+            m_FocusSubwindow = subwindow;
         }
 
         public void addSubWindow(TezSubwindow subwindow)
         {
-            subwindow.window = this;
             m_SubwindowList.Add(subwindow);
         }
 
@@ -106,17 +104,17 @@ namespace tezcat
 
         public virtual void OnPointerDown(PointerEventData eventData)
         {
-            this.focusSubwindow?.onPointerDown(eventData);
+            m_FocusSubwindow?.onPointerDown(eventData);
         }
 
         public virtual void OnPointerUp(PointerEventData eventData)
         {
-            this.focusSubwindow?.onPointerUp(eventData);
+            m_FocusSubwindow?.onPointerUp(eventData);
         }
 
         public virtual void OnDrop(PointerEventData eventData)
         {
-            this.focusSubwindow?.onDrop(eventData);
+            m_FocusSubwindow?.onDrop(eventData);
         }
     }
 }

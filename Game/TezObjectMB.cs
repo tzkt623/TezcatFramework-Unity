@@ -1,60 +1,46 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace tezcat
 {
-    public abstract class TezObjectMB : MonoBehaviour
+    public abstract class TezObjectMB
+        : MonoBehaviour
     {
-        public static T createMB<T>(T obj) where T : TezObjectMB, new()
+        bool m_Init = false;
+        bool m_Dirty = false;
+        public bool dirty
         {
-            return Instantiate<T>(obj);
-        }
-
-        private void Awake()
-        {
-            this.onAwake();
-        }
-
-        private void Start()
-        {
-            var data = TezGenerator.instance.get(this.classID());
-            if(data != null)
+            get { return m_Dirty; }
+            set
             {
-                this.transform.parent = data.parent;
-                this.transform.localPosition = data.position;
-                this.onStart(data.obj);
+                m_Dirty = value;
+                if (m_Init && this.gameObject.activeSelf && m_Dirty)
+                {
+                    this.onRefresh();
+                    m_Dirty = false;
+                }
             }
         }
 
-        private void OnDestroy()
-        {
-            this.onDelete();
-        }
-
-        public virtual void onAwake()
+        protected virtual void Awake()
         {
 
         }
 
-        public virtual void onStart(TezObject obj)
+        protected virtual void Start()
+        {
+            m_Init = true;
+        }
+
+        protected virtual void OnEnable()
+        {
+            this.dirty = true;
+        }
+
+        protected virtual void OnDestroy()
         {
 
         }
 
-        public virtual void onDelete()
-        {
-
-        }
-
-        /// <summary>
-        /// 与Object拥有同一个ID
-        /// 用于prefab的注册
-        /// </summary>
-        /// <returns></returns>
-        public virtual int classID()
-        {
-            return -1;
-        }
+        protected abstract void onRefresh();
     }
 }

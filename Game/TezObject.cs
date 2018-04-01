@@ -47,21 +47,6 @@ namespace tezcat
         }
 
         protected abstract void onItemSet(TezItem item);
-
-        public virtual int prefabID()
-        {
-            return -1;
-        }
-
-        public void pushToGenerator()
-        {
-            TezGenerator.instance.pushObject(this);
-        }
-
-        public void pushToGenerator(Transform parent, Vector3 position)
-        {
-            TezGenerator.instance.pushObject(this, parent, position);
-        }
     }
 }
 

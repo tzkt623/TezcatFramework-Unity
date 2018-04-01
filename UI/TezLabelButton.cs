@@ -84,7 +84,7 @@ namespace tezcat
                 return;
             }
 
-            m_Tweener = m_Label.DOColor(Colors.button_hover, 0.8f);
+            m_Tweener = m_Label.DOColor(ShipProject.Colors.button_hover, 0.8f);
             m_Tweener.SetAutoKill(false);
         }
 

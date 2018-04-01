@@ -7,18 +7,17 @@ namespace tezcat
     public abstract class TezUINodeMB : TezUIObjectMB
     {
         bool m_Init = false;
-
         bool m_Dirty = false;
         public bool dirty
         {
             get { return m_Dirty; }
             set
             {
-                m_Dirty = (value && this.gameObject.activeSelf);
-                if (m_Dirty && m_Init)
+                m_Dirty = value;
+                if (m_Init && this.gameObject.activeSelf && m_Dirty)
                 {
-                    m_Dirty = false;
                     this.onRefresh();
+                    m_Dirty = false;
                 }
             }
         }
@@ -28,14 +27,11 @@ namespace tezcat
             m_Init = true;
         }
 
-        protected abstract void onRefresh();
-
         protected override void OnEnable()
         {
-            if(m_Init)
-            {
-                this.dirty = true;
-            }
+            this.dirty = true;
         }
+
+        protected abstract void onRefresh();
     }
 }

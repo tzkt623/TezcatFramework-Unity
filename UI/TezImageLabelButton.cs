@@ -1,6 +1,4 @@
 ﻿using DG.Tweening;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -83,7 +81,7 @@ namespace tezcat
 
         public override void OnPointerEnter(PointerEventData eventData)
         {
-            m_Tweener = m_BG.DOColor(Colors.button_hover, 1.2f);
+            m_Tweener = m_BG.DOColor(ShipProject.Colors.button_hover, 1.2f);
             m_Tweener.SetAutoKill(false).SetLoops(-1, LoopType.Yoyo);
         }
 

@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+﻿using System;
 using UnityEngine.EventSystems;
 
 namespace tezcat
@@ -8,16 +8,28 @@ namespace tezcat
         , IPointerEnterHandler
         , IPointerExitHandler
     {
-        public TezWindow window { get; set; }
+        TezWindow m_Window;
+
+        protected override void Start()
+        {
+            base.Start();
+            m_Window = this.GetComponentInParent<TezWindow>();
+            if (m_Window == null)
+            {
+                throw new ArgumentNullException("Window Not Found");
+            }
+
+            m_Window.addSubWindow(this);
+        }
 
         public virtual void OnPointerEnter(PointerEventData eventData)
         {
-            window.onFocusSubwindow(this);
+            m_Window.onFocusSubwindow(this);
         }
 
         public virtual void OnPointerExit(PointerEventData eventData)
         {
-            window.onFocusSubwindow(null);
+            m_Window.onFocusSubwindow(null);
         }
 
         public virtual void onPointerUp(PointerEventData eventData)
@@ -31,6 +43,11 @@ namespace tezcat
         }
 
         public virtual void onDrop(PointerEventData eventData)
+        {
+
+        }
+
+        public virtual void onWindowClose()
         {
 
         }

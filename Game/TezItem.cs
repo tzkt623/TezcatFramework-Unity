@@ -1,4 +1,6 @@
-﻿namespace tezcat
+﻿using tezcat.Utility;
+
+namespace tezcat
 {
     public interface ITezItem
     {
@@ -44,7 +46,7 @@
 
         public virtual void serialization(TezJsonWriter writer)
         {
-            writer.beginObject("id");
+            writer.beginObject(TezReadOnlyString.id);
             this.onSerializationID(writer);
             writer.endObject();
         }
@@ -52,23 +54,23 @@
         protected virtual void onSerializationID(TezJsonWriter writer)
         {
             var gid = TezItemFactory.convertToGroup(groupID);
-            writer.pushValue(ReadOnlyString.group_id, gid.name);
-            writer.pushValue(ReadOnlyString.type_id, gid.convertToType(typeID).name);
-            writer.pushValue(ReadOnlyString.object_id, objectID > 0 ? objectID : -1);
-            writer.pushValue(ReadOnlyString.GUID, this.GUID);
+            writer.pushValue(TezReadOnlyString.group_id, gid.name);
+            writer.pushValue(TezReadOnlyString.type_id, gid.convertToType(typeID).name);
+            writer.pushValue(TezReadOnlyString.object_id, objectID > 0 ? objectID : -1);
+            writer.pushValue(TezReadOnlyString.GUID, this.GUID);
         }
 
         public virtual void deserialization(TezJsonReader reader)
         {
-            reader.enter("id");
+            reader.enter(TezReadOnlyString.id);
             this.onDeserializationID(reader);
             reader.exit();
         }
 
         protected virtual void onDeserializationID(TezJsonReader reader)
         {
-            this.objectID = reader.tryGetInt("object_id", -1);
-            this.GUID = reader.tryGetInt("GUID", -1);
+            this.objectID = reader.tryGetInt(TezReadOnlyString.object_id, -1);
+            this.GUID = reader.tryGetInt(TezReadOnlyString.GUID, -1);
         }
 
         protected abstract void onRefInit();

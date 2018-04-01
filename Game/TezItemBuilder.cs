@@ -7,9 +7,9 @@ namespace tezcat
         public abstract Item build(Item item);
     }
 
-    public class TezEmptyItemBuilder : TezItemBuilder<GameItem>
+    public class TezEmptyItemBuilder : TezItemBuilder<ShipProject.GameItem>
     {
-        public override GameItem build(GameItem item)
+        public override ShipProject.GameItem build(ShipProject.GameItem item)
         {
             return item;
         }
