@@ -11,7 +11,7 @@ namespace tezcat
         MouseRight,
     }
 
-    public interface IPickable 
+    public interface ITezPickable 
     {
         void onPicked(PickState pick_state);
     }

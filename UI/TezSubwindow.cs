@@ -9,6 +9,10 @@ namespace tezcat
         , IPointerExitHandler
     {
         TezWindow m_Window;
+        public TezWindow window
+        {
+            get { return m_Window; }
+        }
 
         protected override void Start()
         {
@@ -45,6 +49,11 @@ namespace tezcat
         public virtual void onDrop(PointerEventData eventData)
         {
 
+        }
+
+        public virtual bool checkOnWindowClose()
+        {
+            return true;
         }
 
         public virtual void onWindowClose()

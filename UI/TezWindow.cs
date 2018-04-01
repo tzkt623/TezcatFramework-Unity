@@ -28,7 +28,7 @@ namespace tezcat
 
         public void open()
         {
-            if (onOpen())
+            if (this.onOpen())
             {
                 this.gameObject.SetActive(true);
             }
@@ -39,26 +39,57 @@ namespace tezcat
             return true;
         }
 
-        public void close(bool clear = false)
+        public void hide()
         {
-            if (onClose())
+            if(this.onHide())
             {
-                if (clear)
-                {
-                    Destroy(this.gameObject);
-                }
                 this.gameObject.SetActive(false);
             }
         }
 
-        protected virtual bool onClose()
+        protected virtual bool onHide()
         {
+            return true;
+        }
+
+        public void close()
+        {
+            if (this.checkOnClose())
+            {
+                this.onClose();
+                Destroy(this.gameObject);
+            }
+        }
+
+        protected virtual bool checkOnClose()
+        {
+            List<TezEventBus.Action> close_function_list = new List<TezEventBus.Action>(m_SubwindowList.Count);
+
+            bool result = true;
             foreach (var subwindow in m_SubwindowList)
             {
-                subwindow.onWindowClose();
+                result &= subwindow.checkOnWindowClose();
+                if (result)
+                {
+                    close_function_list.Add(subwindow.onWindowClose);
+                }
+                else
+                {
+                    return false;
+                }
+            }
+
+            foreach (var function in close_function_list)
+            {
+                function();
             }
 
             return true;
+        }
+
+        protected virtual void onClose()
+        {
+
         }
 
         public void setTitle(string title)

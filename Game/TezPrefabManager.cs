@@ -4,24 +4,24 @@ using UnityEngine;
 
 namespace tezcat
 {
-    public interface IPrefab
+    public interface ITezPrefab
     {
         System.Type GetType();
     }
 
     public class TezPrefabManager : TezSingleton<TezPrefabManager>
     {
-        static Dictionary<System.Type, IPrefab> m_PrefabDic = new Dictionary<System.Type, IPrefab>();
+        static Dictionary<System.Type, ITezPrefab> m_PrefabDic = new Dictionary<System.Type, ITezPrefab>();
         public static void register(GameObject go)
         {
-            var prefab = go.GetComponent<IPrefab>();
+            var prefab = go.GetComponent<ITezPrefab>();
             if (prefab != null)
             {
                 m_PrefabDic.Add(prefab.GetType(), prefab);
             }
             else
             {
-                throw new ArgumentNullException("Prefab Not Found");
+                throw new ArgumentNullException(go.name + "`s Prefab Not Found");
             }
         }
 
@@ -33,16 +33,16 @@ namespace tezcat
             }
         }
 
-        public static T get<T>() where T : class, IPrefab
+        public static T get<T>() where T : class, ITezPrefab
         {
-            IPrefab result = null;
+            ITezPrefab result = null;
             m_PrefabDic.TryGetValue(typeof(T), out result);
             return (T)result;
         }
 
-        public static IPrefab get(System.Type type)
+        public static ITezPrefab get(System.Type type)
         {
-            IPrefab result = null;
+            ITezPrefab result = null;
             m_PrefabDic.TryGetValue(type, out result);
             return result;
         }

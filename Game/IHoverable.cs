@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace tezcat
 {
-    public interface IHoverable
+    public interface ITezHoverable
     {
         void onEnter();
 
