@@ -8,32 +8,54 @@ namespace tezcat
         , IPointerEnterHandler
         , IPointerExitHandler
     {
-        TezWindow m_Window;
-        public TezWindow window
+        public TezWindow window { get; set; } = null;
+        public abstract string windowName { get; }
+        public int windowID { get; set; } = -1;
+
+        public void show()
         {
-            get { return m_Window; }
+            this.gameObject.SetActive(true);
         }
 
-        protected override void Start()
+        public void hide()
         {
-            base.Start();
-            m_Window = this.GetComponentInParent<TezWindow>();
-            if (m_Window == null)
-            {
-                throw new ArgumentNullException("Window Not Found");
-            }
+            this.gameObject.SetActive(false);
+        }
 
-            m_Window.addSubWindow(this);
+        public void close()
+        {
+            if(this.checkOnClose())
+            {
+                window.removeSubwindow(this);
+                window = null;
+                this.onClose();
+                Destroy(this.gameObject);
+            }
+        }
+
+        public virtual void onWindowEvent(TezWindow.Event evt)
+        {
+
+        }
+
+        public virtual bool checkOnClose()
+        {
+            return true;
+        }
+
+        public virtual void onClose()
+        {
+
         }
 
         public virtual void OnPointerEnter(PointerEventData eventData)
         {
-            m_Window.onFocusSubwindow(this);
+            window.onFocusSubwindow(this);
         }
 
         public virtual void OnPointerExit(PointerEventData eventData)
         {
-            m_Window.onFocusSubwindow(null);
+            window.onFocusSubwindow(null);
         }
 
         public virtual void onPointerUp(PointerEventData eventData)
@@ -47,16 +69,6 @@ namespace tezcat
         }
 
         public virtual void onDrop(PointerEventData eventData)
-        {
-
-        }
-
-        public virtual bool checkOnWindowClose()
-        {
-            return true;
-        }
-
-        public virtual void onWindowClose()
         {
 
         }
