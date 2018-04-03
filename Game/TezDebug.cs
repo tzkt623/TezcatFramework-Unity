@@ -123,24 +123,44 @@ namespace tezcat
             Assert.IsTrue(false);
         }
 
-        public static void isNotNull(object _object, string _content)
+        public static void isNotNull(object _object, string _title, string _content)
         {
-            Assert.IsNotNull(_object, _content);
+            if(_object == null)
+            {
+                m_InfoList.Enqueue(create(Type.Assert, "[" + _title + "] : " + _content));
+                checkQueue();
+                Assert.IsTrue(false);
+            }
         }
 
-        public static void isNull(object _object, string _content)
+        public static void isNull(object _object, string _title, string _content)
         {
-            Assert.IsNull(_object, _content);
+            if (_object != null)
+            {
+                m_InfoList.Enqueue(create(Type.Assert, "[" + _title + "] : " + _content));
+                checkQueue();
+                Assert.IsTrue(false);
+            }
         }
 
-        public static void isTrue(bool _condition, string _class, string _method, string _content)
+        public static void isTrue(bool _condition, string _title, string _content)
         {
-            Assert.IsTrue(_condition, "[" + _class + "](" + _method + ") : " + _content);
+            if (!_condition)
+            {
+                m_InfoList.Enqueue(create(Type.Assert, "[" + _title + "] : " + _content));
+                checkQueue();
+                Assert.IsTrue(false);
+            }
         }
 
-        public static void isFalse(bool _condition, string _class, string _method, string _content)
+        public static void isFalse(bool _condition, string _title, string _content)
         {
-            Assert.IsFalse(_condition, "[" + _class + "](" + _method + ") : " + _content);
+            if (_condition)
+            {
+                m_InfoList.Enqueue(create(Type.Assert, "[" + _title + "] : " + _content));
+                checkQueue();
+                Assert.IsTrue(false);
+            }
         }
     }
 }

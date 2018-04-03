@@ -5,7 +5,7 @@ using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using DG.Tweening;
 
-namespace tezcat
+namespace tezcat.UI
 {
 
     public class TezImageButton : TezButton

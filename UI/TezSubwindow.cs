@@ -1,7 +1,8 @@
 ﻿using System;
+using UnityEngine;
 using UnityEngine.EventSystems;
 
-namespace tezcat
+namespace tezcat.UI
 {
     public abstract class TezSubwindow
         : TezUINodeMB
@@ -9,8 +10,31 @@ namespace tezcat
         , IPointerExitHandler
     {
         public TezWindow window { get; set; } = null;
-        public abstract string windowName { get; }
-        public int windowID { get; set; } = -1;
+
+        [SerializeField]
+        private int m_SubwindowID = -1;
+        public int subwindowID
+        {
+            get { return m_SubwindowID; }
+            set { m_SubwindowID = value; }
+        }
+
+        [SerializeField]
+        private string m_SubwindowName = null;
+        public string windowName
+        {
+            get
+            {
+                return m_SubwindowName;
+            }
+            set
+            {
+                this.window?.onSubwindowNameChanged(m_SubwindowName, value);
+                m_SubwindowName = value;
+                this.name = m_SubwindowName;
+            }
+        }
+
 
         public void show()
         {
@@ -24,7 +48,7 @@ namespace tezcat
 
         public void close()
         {
-            if(this.checkOnClose())
+            if (this.checkOnClose())
             {
                 window.removeSubwindow(this);
                 window = null;

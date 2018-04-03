@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 
-namespace tezcat
+namespace tezcat.UI
 {
     public class TezScrollCell : UIBehaviour
     {

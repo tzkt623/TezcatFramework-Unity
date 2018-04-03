@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace tezcat
+namespace tezcat.UI
 {
     public abstract class TezUINodeMB : TezUIObjectMB
     {

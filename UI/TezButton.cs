@@ -1,7 +1,7 @@
 ﻿using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-namespace tezcat
+namespace tezcat.UI
 {
     public abstract class TezButton
         : TezUIObjectMB

@@ -36,8 +36,6 @@ namespace tezcat
 
         public void init(int size, T prefab)
         {
-            TezDebug.isFalse(m_Inited, "ObjectPool", "init", "second init");
-
             m_Inited = true;
             m_Prefab = prefab;
             for (int i = 0; i < size; i++)

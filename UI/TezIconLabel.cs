@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace tezcat
+namespace tezcat.UI
 {
     public class TezIconLabel
         : TezUIObjectMB

@@ -5,7 +5,7 @@ using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using System;
 
-namespace tezcat
+namespace tezcat.UI
 {
     public class TezWindowTitle
         : TezUIObjectMB

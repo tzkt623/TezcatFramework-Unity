@@ -3,7 +3,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-namespace tezcat
+namespace tezcat.UI
 {
     public class TezImageLabelButton : TezButton
     {

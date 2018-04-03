@@ -3,7 +3,7 @@ using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using DG.Tweening;
 
-namespace tezcat
+namespace tezcat.UI
 {
     [RequireComponent(typeof(Text))]
     public class TezLabelButton : TezButton

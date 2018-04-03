@@ -1,6 +1,6 @@
 ﻿using UnityEngine.EventSystems;
 
-namespace tezcat
+namespace tezcat.UI
 {
     public abstract class TezUIObjectMB : UIBehaviour
     {
