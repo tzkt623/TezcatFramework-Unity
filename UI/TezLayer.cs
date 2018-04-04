@@ -85,6 +85,14 @@ namespace tezcat.UI
 #endif
         }
 
+        public TezWindow getWindow(int window_id)
+        {
+#if UNITY_EDITOR
+            TezDebug.isTrue(window_id < m_WindowsList.Count, "UILayer (" + this.name + ")", "Window ID Out Of Range");
+#endif
+            return m_WindowsList[window_id];
+        }
+
         public void removeWindow(TezWindow window)
         {
             this.removeWindow(window.windowID);

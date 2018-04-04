@@ -64,6 +64,14 @@ namespace tezcat.UI
             return m_LayerList[layer_id].transform;
         }
 
+        public TezWindow getWindow(int layer_id, int window_id)
+        {
+#if UNITY_EDITOR
+            TezDebug.isTrue(layer_id < m_LayerList.Count, "UIRoot", "Layer id out of range");
+#endif
+            return m_LayerList[layer_id].getWindow(window_id);
+        }
+
         public T createWindow<T>(T prefab, int layer_id) where T : TezWindow
         {
 #if UNITY_EDITOR

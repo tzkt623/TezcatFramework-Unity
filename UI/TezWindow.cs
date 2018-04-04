@@ -286,12 +286,22 @@ namespace tezcat.UI
             return (T)m_SubwindowList[id];
         }
 
-        public void dispathEvent(Event evt)
+        public void dispathEvent(Event evt, bool include_self = false)
         {
+            if(include_self)
+            {
+                this.onWindowEvent(evt);
+            }
+
             foreach (var sub in m_SubwindowList)
             {
                 sub.onWindowEvent(evt);
             }
+        }
+
+        protected virtual void onWindowEvent(Event evt)
+        {
+
         }
 
         protected override void onRefresh()

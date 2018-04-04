@@ -71,7 +71,7 @@ namespace tezcat.UI
 
         void hide()
         {
-            m_Window.close();
+            m_Window.hide();
         }
 
         void pin(bool pin)
