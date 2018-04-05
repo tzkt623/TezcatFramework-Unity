@@ -27,11 +27,6 @@ namespace tezcat
             UID = new TezUID();
         }
 
-        public virtual void initialization()
-        {
-
-        }
-
         public virtual void clear()
         {
             this.sharedItem = null;

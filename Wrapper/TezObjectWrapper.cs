@@ -1,9 +1,11 @@
 ﻿namespace tezcat.Wrapper
 {
-    /// <summary>
-    /// 包装器
-    /// </summary>
-    public abstract class TezObjectWrapper
+    public interface ITezObjectWrapper
+    {
+        void clear();
+    }
+
+    public abstract class TezObjectWrapper : ITezObjectWrapper
     {
         public abstract void clear();
     }
