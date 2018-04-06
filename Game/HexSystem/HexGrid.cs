@@ -207,29 +207,12 @@ namespace tezcat
             Flat
         }
 
-        Layout m_Layout = Layout.Pointy;
-        public Layout layout { get { return m_Layout; } }
-
-        float m_Size = 1;
-        public float size { get { return m_Size; } }
-
-        float m_CellHeight = 0;
-        public float cellHeight { get { return m_CellHeight; } }
-
-        float m_CellWidth = 0;
-        public float cellWidth { get { return m_CellWidth; } }
-
-        float m_VDistance = 0;
-        public float vDistance
-        {
-            get { return m_VDistance; }
-        }
-
-        float m_HDistance = 0;
-        public float hDistance
-        {
-            get { return m_HDistance; }
-        }
+        public Layout layout { get; private set; } = Layout.Pointy;
+        public float size { get; private set; } = 1;
+        public float cellHeight { get; private set; } = 0;
+        public float cellWidth { get; private set; } = 0;
+        public float vDistance { get; private set; } = 0;
+        public float hDistance { get; private set; } = 0;
 
         bool m_BorderWith = false;
 
@@ -245,24 +228,24 @@ namespace tezcat
 
         public void init(float size, Layout layout)
         {
-            m_Size = size;
-            m_Layout = layout;
+            this.size = size;
+            this.layout = layout;
 
             switch (layout)
             {
                 case Layout.Pointy:
-                    m_CellHeight = size * 2;
-                    m_CellWidth = Sqrt3 / 2 * m_CellHeight;
+                    cellHeight = size * 2;
+                    cellWidth = Sqrt3 / 2 * cellHeight;
 
-                    m_VDistance = m_CellHeight * 3 / 4;
-                    m_HDistance = m_CellWidth;
+                    vDistance = cellHeight * 3 / 4;
+                    hDistance = cellWidth;
                     break;
                 case Layout.Flat:
-                    m_CellWidth = size * 2;
-                    m_CellHeight = Sqrt3 / 2 * m_CellWidth;
+                    cellWidth = size * 2;
+                    cellHeight = Sqrt3 / 2 * cellWidth;
 
-                    m_VDistance = m_CellHeight;
-                    m_HDistance = m_CellWidth * 3 / 4;
+                    vDistance = cellHeight;
+                    hDistance = cellWidth * 3 / 4;
                     break;
             }
         }
@@ -323,7 +306,7 @@ namespace tezcat
             float x = 0;
             float y = 0;
 
-            switch (m_Layout)
+            switch (layout)
             {
                 /*
                  function hex_to_pixel(hex):
@@ -332,8 +315,8 @@ namespace tezcat
                     return Point(x, y)
                  */
                 case Layout.Pointy:
-                    x = m_Size * Sqrt3 * (q + r / 2.0f);
-                    y = m_Size * 3 / 2 * r;
+                    x = size * Sqrt3 * (q + r / 2.0f);
+                    y = size * 3 / 2 * r;
                     break;
 
                 /*
@@ -343,8 +326,8 @@ namespace tezcat
                     return Point(x, y)
                  */
                 case Layout.Flat:
-                    x = m_Size * 3 / 2 * q;
-                    y = m_Size * Sqrt3 * (r + q / 2.0f);
+                    x = size * 3 / 2 * q;
+                    y = size * Sqrt3 * (r + q / 2.0f);
                     break;
             }
 
@@ -356,7 +339,7 @@ namespace tezcat
             float q = 0;
             float r = 0;
 
-            switch (m_Layout)
+            switch (layout)
             {
                 /*
                  function pixel_to_hex(x, y):
@@ -365,8 +348,8 @@ namespace tezcat
                     return hex_round(Hex(q, r)) 
                  */
                 case Layout.Pointy:
-                    q = (position.x * Sqrt3D3 - position.y / 3) / m_Size;
-                    r = position.y * 2 / 3 / m_Size;
+                    q = (position.x * Sqrt3D3 - position.y / 3) / size;
+                    r = position.y * 2 / 3 / size;
                     break;
                 /*
                  function pixel_to_hex(x, y):
@@ -375,8 +358,8 @@ namespace tezcat
                     return hex_round(Hex(q, r))
                  */
                 case Layout.Flat:
-                    q = position.x * 2 / 3 / m_Size;
-                    r = (-position.x / 3 + position.y * Sqrt3D3) / m_Size;
+                    q = position.x * 2 / 3 / size;
+                    r = (-position.x / 3 + position.y * Sqrt3D3) / size;
                     break;
             }
 
@@ -387,7 +370,7 @@ namespace tezcat
         {
             float angle_deg = 0;
 
-            switch (m_Layout)
+            switch (layout)
             {
                 case Layout.Pointy:
                     angle_deg = 60 * index + 30;
@@ -400,9 +383,9 @@ namespace tezcat
             var angle_rad = Mathf.Deg2Rad * angle_deg;
 
             return new Vector3(
-                corner.x + m_Size * Mathf.Cos(angle_rad),
+                corner.x + size * Mathf.Cos(angle_rad),
                 corner.y,
-                corner.z + m_Size * Mathf.Sin(angle_rad));
+                corner.z + size * Mathf.Sin(angle_rad));
         }
 
         public HexMesh createMesh(List<Vector3> corner_list)
