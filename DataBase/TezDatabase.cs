@@ -2,16 +2,43 @@
 using UnityEngine;
 using UnityEngine.Assertions;
 
+using tezcat.Utility;
 namespace tezcat
 {
     public abstract class TezDatabase<Item> where Item : class, ITezItem
     {
+        public abstract class GroupType : TezEnum
+        {
+
+        }
+
+        public abstract class ContainerType : TezEnum
+        {
+
+        }
+
         public int itemCount { get; private set; } = 0;
 
-        class Group
+        public class Group
         {
+            public GroupType groupType { get; private set; }
+
             public int id { get; set; }
             public List<Container> containers { get; } = new List<Container>();
+
+            public Group() { }
+            public Group(GroupType group_type) { this.groupType = group_type; }
+
+            public void registerContainer(ContainerType container_type)
+            {
+                while(this.containers.Count <= container_type.id)
+                {
+                    this.containers.Add(null);
+                }
+
+                var container = new Container();
+                this.containers[container_type.id] = container;
+            }
 
             public void foreachItem(TezEventBus.Action<Item> action)
             {
@@ -56,8 +83,10 @@ namespace tezcat
             }
         }
 
-        class Container
+        public class Container
         {
+            public ContainerType ctype { get; private set; }
+
             public List<Item> items { get; } = new List<Item>();
             HashSet<int> m_Collide = new HashSet<int>();
 
@@ -364,6 +393,18 @@ namespace tezcat
             {
                 m_Group.Add(new Group());
             }
+        }
+
+        public Group registerGroup(GroupType group_type)
+        {
+            while(m_Group.Count <= group_type.id)
+            {
+                m_Group.Add(null);
+            }
+
+            var group = new Group(group_type);
+            m_Group[group_type.id] = group;
+            return group;
         }
 
         /// <summary>
