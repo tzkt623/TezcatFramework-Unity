@@ -1,9 +1,9 @@
 ﻿using tezcat.Utility;
-using tezcat.DataBase;
 namespace tezcat
 {
     public interface ITezItem
     {
+        string name { get; }
         int groupID { get; }
         int typeID { get; }
         int objectID { get; set; }
@@ -17,6 +17,8 @@ namespace tezcat
     {
         public abstract int groupID { get; }
         public abstract int typeID { get; }
+
+        public virtual string name { get; }
         public int objectID { get; set; } = -1;
         public int GUID { get; set; } = -1;
         public int refrence { get; private set; } = 0;

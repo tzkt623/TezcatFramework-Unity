@@ -4,7 +4,6 @@
     {
         string dataName { get; }
         System.Type GetType();
-        void onChoose();
         bool isEqual(ITezTreeData other);
     }
 
@@ -15,11 +14,6 @@
         public TezTreeData(string name)
         {
             this.dataName = name;
-        }
-
-        public void onChoose()
-        {
-
         }
 
         public bool isEqual(ITezTreeData data)

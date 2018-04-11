@@ -22,7 +22,7 @@ namespace tezcat.UI
 
         public bool isRoot
         {
-            get { return m_Parent == null; }
+            get { return parent == null; }
         }
 
         public bool isLeaf
@@ -38,12 +38,8 @@ namespace tezcat.UI
         }
         public bool isOn { get; private set; } = false;
 
-        TezTreeNode m_Parent = null;
-        ITezTreeData m_Data = null;
-        public ITezTreeData data
-        {
-            get { return m_Data; }
-        }
+        public TezTreeNode parent { get; private set; } = null;
+        public ITezTreeData data { get; private set; } = null;
 
         public RectTransform rectTransform
         {
@@ -77,19 +73,19 @@ namespace tezcat.UI
         public void setData(ITezTreeData data)
         {
             m_Tag.text = data.dataName;
-            m_Data = data;
+            this.data = data;
         }
 
         public void setParent(TezTreeNode node)
         {
-            m_Parent = node;
-            if (m_Parent == null)
+            parent = node;
+            if (parent == null)
             {
                 this.level = 0;
             }
             else
             {
-                level = m_Parent.level + 1;
+                level = parent.level + 1;
             }
         }
 
@@ -119,7 +115,7 @@ namespace tezcat.UI
         {
             if (this.level > 0)
             {
-                return m_Parent.getTopLevelIndex();
+                return parent.getTopLevelIndex();
             }
 
             return this.index;
