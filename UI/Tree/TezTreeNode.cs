@@ -8,7 +8,7 @@ namespace tezcat.UI
 {
 
     public class TezTreeNode
-        : TezUINodeMB
+        : TezWidget
         , IPointerDownHandler
         , IPointerUpHandler
     {

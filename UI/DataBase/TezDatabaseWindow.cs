@@ -59,11 +59,11 @@ namespace tezcat.DataBase
             m_Tree.onSelectNode += onSelectNode;
 
             m_AddGroup.onClick += onAddGroup;
+            m_RefreshDataBase.onClick += onRefreshDataBase;
 
             m_NewGroupConfirm.onClick += onNewGroupConfirm;
             m_NewGroupCancel.onClick += onNewGroupCancel;
 
-            m_RefreshDataBase.onClick += onRefreshDataBase;
 
             this.onRefreshDataBase();
         }

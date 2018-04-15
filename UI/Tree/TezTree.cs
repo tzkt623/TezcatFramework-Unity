@@ -7,7 +7,7 @@ using UnityEngine.UI;
 namespace tezcat.UI
 {
     [RequireComponent(typeof(ScrollRect))]
-    public class TezTree : TezUINodeMB
+    public class TezTree : TezWidget
     {
         public event TezEventBus.Action<TezTreeNode> onSelectNode;
 

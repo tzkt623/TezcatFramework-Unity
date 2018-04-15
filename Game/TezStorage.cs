@@ -2,25 +2,30 @@
 
 namespace tezcat
 {
-    public class TezStorage<Item> where Item : class, ITezItem
+    public interface ITezStorage
+    {
+
+    }
+
+    public class TezStorage
     {
         /// <summary>
         /// Item Count ID
         /// </summary>
-        public event TezEventBus.Action<Item, int, int> onItemAdded;
+        public event TezEventBus.Action<ITezItem, int, int> onItemAdded;
         /// <summary>
         /// Item Count ID
         /// </summary>
-        public event TezEventBus.Action<Item, int, int> onItemRemoved;
+        public event TezEventBus.Action<ITezItem, int, int> onItemRemoved;
         /// <summary>
         /// Item Count ID
         /// </summary>
-        public event TezEventBus.Action<Item, int, int> onItemSetted;
+        public event TezEventBus.Action<ITezItem, int, int> onItemSetted;
 
         public class Slot
         {
             public int id = -1;
-            public Item item = null;
+            public ITezItem item = null;
             public int count = 0;
         }
 
@@ -30,7 +35,7 @@ namespace tezcat
             get { return m_SlotList.Count; }
         }
 
-        public Item getItem(int id)
+        public ITezItem getItem(int id)
         {
             if (id >= m_SlotList.Count)
             {
@@ -38,6 +43,11 @@ namespace tezcat
             }
 
             return m_SlotList[id].item;
+        }
+
+        public T getItem<T>(int id) where T : ITezItem
+        {
+            return (T)this.getItem(id);
         }
 
         public int getItemCount(int id)
@@ -56,7 +66,7 @@ namespace tezcat
         /// </summary>
         /// <param name="item"></param>
         /// <param name="count"></param>
-        public void newSlot(Item item, int count)
+        public void newSlot(ITezItem item, int count)
         {
             Slot slot = new Slot()
             {
@@ -77,7 +87,7 @@ namespace tezcat
         /// </summary>
         /// <param name="item"></param>
         /// <param name="count"></param>
-        public void add(Item item, int count)
+        public void add(ITezItem item, int count)
         {
             Slot selected = null;
             foreach (var slot in m_SlotList)
@@ -110,6 +120,14 @@ namespace tezcat
             onItemAdded?.Invoke(selected.item, selected.count, selected.id);
         }
 
+        public void add(int id, int count)
+        {
+            var slot = m_SlotList[id];
+            slot.count += count;
+
+            onItemAdded?.Invoke(slot.item, slot.count, slot.id);
+        }
+
         /// <summary>
         /// 移除指定数量的物品
         /// 如果一个槽中的物品不够
@@ -117,7 +135,7 @@ namespace tezcat
         /// </summary>
         /// <param name="item"></param>
         /// <param name="count"></param>
-        public void remove(Item item, int count)
+        public void remove(ITezItem item, int count)
         {
             int remaining = count;
             foreach (var slot in m_SlotList)
@@ -216,9 +234,9 @@ namespace tezcat
             }
         }
 
-        public bool tryGetItem(int slot_id, out Item item, out int count)
+        public bool tryGetItem<T>(int slot_id, out T item, out int count) where T : ITezItem
         {
-            item = null;
+            item = default(T);
             count = -1;
 
             if (slot_id >= m_SlotList.Count)
@@ -232,16 +250,16 @@ namespace tezcat
                 return false;
             }
 
-            item = slot.item;
+            item = (T)slot.item;
             count = slot.count;
             return true;
         }
 
-        public void foreachItem(TezEventBus.Action<Item, int, int> function)
+        public void foreachItem<T>(TezEventBus.Action<T, int, int> function) where T : ITezItem
         {
             foreach (var slot in m_SlotList)
             {
-                function(slot.item, slot.count, slot.id);
+                function((T)slot.item, slot.count, slot.id);
             }
         }
 
