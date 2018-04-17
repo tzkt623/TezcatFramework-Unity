@@ -1,13 +1,11 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using tezcat.Utility;
 using UnityEngine;
 using UnityEngine.EventSystems;
-using tezcat.Utility;
 
 namespace tezcat.UI
 {
-    public class TezLayer : UIBehaviour
+    public class TezLayer : TezWidget
     {
         [SerializeField]
         int m_LayerID = -1;
@@ -127,21 +125,21 @@ namespace tezcat.UI
 #endif
         }
 
-        public void showWindow(int window_id)
+        public void openWindow(int window_id)
         {
 #if UNITY_EDITOR
             TezDebug.isTrue(window_id < m_WindowsList.Count, "UILayer (" + this.name + ")", "Window ID Out Of Range");
             TezDebug.info("UILayer (" + this.name + ")", "Show Window: " + m_WindowsList[window_id].name + " ID: " + window_id);
 #endif
-            m_WindowsList[window_id].show();
+            m_WindowsList[window_id].open();
         }
 
-        public void showWindow(string window_name)
+        public void openWindow(string window_name)
         {
             int id = -1;
             if (m_WindowDic.TryGetValue(window_name, out id))
             {
-                this.showWindow(id);
+                this.openWindow(id);
             }
 #if UNITY_EDITOR
             else
@@ -149,6 +147,25 @@ namespace tezcat.UI
                 TezDebug.waring("UILayer (" + this.name + ")", "Window: " + window_name + " Didn't Exist");
             }
 #endif
+        }
+
+        protected override void onRefresh()
+        {
+
+        }
+
+        protected override void clear()
+        {
+            foreach (var window in m_WindowsList)
+            {
+                window.close();
+            }
+
+            m_WindowsList.Clear();
+            m_WindowsList = null;
+
+            m_WindowDic.Clear();
+            m_WindowDic = null;
         }
     }
 }

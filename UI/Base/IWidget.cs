@@ -80,4 +80,3 @@ namespace tezcat.UI
         void dispathEvent(int event_id, object data);
     }
 }
-

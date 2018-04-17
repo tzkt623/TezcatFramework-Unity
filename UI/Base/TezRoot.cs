@@ -5,7 +5,7 @@ using UnityEngine.EventSystems;
 namespace tezcat.UI
 {
     [RequireComponent(typeof(TezLayer))]
-    public class TezRoot : UIBehaviour
+    public class TezRoot : TezWidget
     {
         public static TezRoot instance { get; private set; } = null;
 
@@ -15,6 +15,7 @@ namespace tezcat.UI
         protected override void Awake()
         {
             base.Awake();
+            instance?.close();
             instance = this;
 
             this.addLayer(this.GetComponent<TezLayer>());
@@ -78,28 +79,28 @@ namespace tezcat.UI
             return Instantiate(prefab, m_LayerList[layer_id].transform);
         }
 
-        public void showWindow(int layer_id, int window_id)
+        public void openWindow(int layer_id, int window_id)
         {
 #if UNITY_EDITOR
             TezDebug.isTrue(layer_id < m_LayerList.Count, "UIRoot", "Layer id out of range");
 #endif
-            m_LayerList[layer_id].showWindow(window_id);
+            m_LayerList[layer_id].openWindow(window_id);
         }
 
-        public void showWindow(int layer_id, string window_name)
+        public void openWindow(int layer_id, string window_name)
         {
 #if UNITY_EDITOR
             TezDebug.isTrue(layer_id < m_LayerList.Count, "UIRoot", "Layer id out of range");
 #endif
-            m_LayerList[layer_id].showWindow(window_name);
+            m_LayerList[layer_id].openWindow(window_name);
         }
 
-        public void showWindow(string layer_name, int window_id)
+        public void openWindow(string layer_name, int window_id)
         {
             int id = -1;
             if (m_LayerDic.TryGetValue(layer_name, out id))
             {
-                m_LayerList[id].showWindow(window_id);
+                m_LayerList[id].openWindow(window_id);
             }
 #if UNITY_EDITOR
             else
@@ -109,12 +110,12 @@ namespace tezcat.UI
 #endif
         }
 
-        public void showWindow(string layer_name, string window_name)
+        public void openWindow(string layer_name, string window_name)
         {
             int id = -1;
             if (m_LayerDic.TryGetValue(layer_name, out id))
             {
-                m_LayerList[id].showWindow(window_name);
+                m_LayerList[id].openWindow(window_name);
             }
 #if UNITY_EDITOR
             else
@@ -122,6 +123,32 @@ namespace tezcat.UI
                 TezDebug.waring("UIRoot", "Layer (" + layer_name + ") not found");
             }
 #endif
+        }
+
+        public T createPopup<T>(T prefab) where T : TezPopup
+        {
+            var popup = Instantiate(prefab, this.transform, false);
+            popup.transform.localPosition = Vector3.zero;
+            return popup;
+        }
+
+        protected override void onRefresh()
+        {
+
+        }
+
+        protected override void clear()
+        {
+            foreach (var layer in m_LayerList)
+            {
+                layer.close();
+            }
+
+            m_LayerList.Clear();
+            m_LayerList = null;
+
+            m_LayerDic.Clear();
+            m_LayerDic = null;
         }
     }
 }

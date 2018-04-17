@@ -126,7 +126,7 @@ namespace tezcat.UI
             m_ScrollRect.content.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, m_ScrollRect.content.rect.height - length);
         }
 
-        public override void clear()
+        protected override void clear()
         {
 
         }

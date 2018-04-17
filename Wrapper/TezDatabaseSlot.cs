@@ -1,50 +1,39 @@
-﻿using tezcat.Utility;
-using tezcat.Wrapper;
-using UnityEngine.EventSystems;
+﻿using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.UI;
 
-namespace tezcat.UI
+using tezcat.UI;
+using UnityEngine.EventSystems;
+using tezcat.Wrapper;
+using tezcat.Utility;
+
+namespace tezcat
 {
-    public class TezStorageSlot
+    public class TezDatabaseSlot
         : TezWidget
-        , ITezWrapperBinder<ITezStorageItemWrapper>
         , ITezFocusableWidget
         , ITezDragableWidget
-        , ITezDropableWidget
-
     {
-        TezStorageItem m_StorageItem = null;
+        [SerializeField]
+        Image m_Icon = null;
 
-        public virtual ITezStorageItemWrapper wrapper { get; private set; }
-
-        protected override void Awake()
+        public ITezStorageItemWrapper wrapper
         {
-            base.Awake();
-            m_StorageItem = this.GetComponent<TezStorageItem>();
-        }
-
-        public void bind(ITezStorageItemWrapper wrapper)
-        {
-            if (wrapper.count <= 0)
+            get
             {
-                this.wrapper = null;
+                throw new System.NotImplementedException();
             }
-            else
-            {
-                this.wrapper.clear();
-                this.wrapper = wrapper;
-            }
-
-            this.dirty = true;
-        }
-
-        protected override void OnDestroy()
-        {
-            wrapper.clear();
         }
 
         protected override void clear()
         {
-            wrapper.clear();
+
+        }
+
+        protected override void onRefresh()
+        {
+
         }
 
         void IBeginDragHandler.OnBeginDrag(PointerEventData eventData)
@@ -100,34 +89,13 @@ namespace tezcat.UI
 
         void IPointerEnterHandler.OnPointerEnter(PointerEventData eventData)
         {
-            wrapper?.showTip();
+
         }
 
         void IPointerExitHandler.OnPointerExit(PointerEventData eventData)
-        {
-            wrapper?.hideTip();
-        }
-
-        void ITezDropableWidget.onDrop(PointerEventData eventData)
-        {
-            TezDragDropManager.dropItem(this, eventData);
-        }
-
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="wrapper"></param>
-        /// <param name="event_data"></param>
-        /// <returns></returns>
-        public virtual TezEventBus.Action<ITezStorageItemWrapper> checkItemToDrop(ITezStorageItemWrapper wrapper, PointerEventData event_data)
-        {
-            return null;
-        }
-
-        protected override void onRefresh()
         {
 
         }
     }
 }
+

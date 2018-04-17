@@ -7,12 +7,12 @@ namespace tezcat.DataBase
     {
         public static readonly TezDatabase instance = new TezDatabase();
 
-        public abstract class GroupEnum : TezEnum
+        public abstract class GroupRTTI : TezRTTI
         {
 
         }
 
-        public abstract class TypeEnum : TezEnum
+        public abstract class TypeRTTI : TezRTTI
         {
 
         }
@@ -21,15 +21,15 @@ namespace tezcat.DataBase
 
         class Group
         {
-            public GroupEnum groupType { get; private set; }
+            public GroupRTTI groupRTTI { get; private set; }
 
             public int id { get; set; }
             public List<Container> containers { get; } = new List<Container>();
 
             public Group() { }
-            public Group(GroupEnum group_type) { this.groupType = group_type; }
+            public Group(GroupRTTI group_rtti) { this.groupRTTI = group_rtti; }
 
-            public void registerContainer(TypeEnum container_type)
+            public void registerContainer(TypeRTTI container_type)
             {
                 while (this.containers.Count <= container_type.ID)
                 {
@@ -40,11 +40,11 @@ namespace tezcat.DataBase
                 this.containers[container_type.ID] = container;
             }
 
-            public void foreachItem<T>(TezEventBus.Action<TypeEnum> get_type, TezEventBus.Action<T> action) where T : ITezItem
+            public void foreachItem<T>(TezEventBus.Action<TypeRTTI> get_type, TezEventBus.Action<T> action) where T : ITezItem
             {
                 foreach (var container in this.containers)
                 {
-                    get_type(container.container_type);
+                    get_type(container.typeRTTI);
                     container.foreachItem(action);
                 }
             }
@@ -59,7 +59,7 @@ namespace tezcat.DataBase
 
             public void registerItem(ITezItem new_item)
             {
-                int type_id = new_item.typeID;
+                int type_id = new_item.typeRTTI.ID;
                 while (this.containers.Count <= type_id)
                 {
                     this.containers.Add(new Container());
@@ -88,10 +88,10 @@ namespace tezcat.DataBase
 
             public void unregisterItem(ITezItem item)
             {
-                this.containers[item.typeID].unregisterItem(item);
+                this.containers[item.typeRTTI.ID].unregisterItem(item);
             }
 
-            public void registerContainers<T>(List<T> types) where T : TypeEnum
+            public void registerContainers<T>(List<T> types) where T : TypeRTTI
             {
                 for (int i = 0; i < types.Count; i++)
                 {
@@ -100,87 +100,58 @@ namespace tezcat.DataBase
             }
         }
 
-        class Container
+        public class DatabaseSlot : TezSlot
         {
-            public TypeEnum container_type { get; private set; }
+            public void registerItem(ITezItem item)
+            {
+                item.objectID = this.id;
+                this.item = item;
+            }
+        }
 
-            public List<ITezItem> items { get; } = new List<ITezItem>();
-            HashSet<int> m_Collide = new HashSet<int>();
+        class Container : TezSlotSet<DatabaseSlot>
+        {
+            public TypeRTTI typeRTTI { get; private set; }
 
             public Container() { }
-            public Container(TypeEnum container_type) { this.container_type = container_type; }
+            public Container(TypeRTTI type_rtti) { this.typeRTTI = type_rtti; }
 
             public void registerItem(ITezItem new_item)
             {
                 if (new_item.objectID == -1)
                 {
-                    new_item.objectID = this.items.Count;
-                    this.items.Add(new_item);
+                    this.add((DatabaseSlot slot) =>
+                    {
+                        slot.registerItem(new_item);
+                    });
                 }
                 else
                 {
-#if UNITY_EDITOR
-                    TezDebug.isFalse(m_Collide.Contains(new_item.objectID), "TezDataBase", "ITezItem Collide!!");
-                    m_Collide.Add(new_item.objectID);
-#endif
-                    while (this.items.Count <= new_item.objectID)
+                    this.grow(new_item.objectID);
+                    this.set(new_item.objectID, (DatabaseSlot slot) =>
                     {
-                        items.Add(null);
-                    }
-
-                    this.items[new_item.objectID] = new_item;
+                        slot.item = new_item;
+                    });
                 }
             }
 
             public void unregisterItem(ITezItem item)
             {
-                this.unregisterItem(item.objectID);
+                this.remove(item.objectID);
             }
 
             public void unregisterItem(int object_id)
             {
-                if (object_id == items.Count - 1)
-                {
-                    this.items.RemoveAt(object_id);
-                }
-                else
-                {
-                    var last_item = this.items[items.Count - 1];
-
-                    this.items[object_id] = last_item;
-                    last_item.objectID = object_id;
-                    this.items.RemoveAt(items.Count - 1);
-                }
-
-                m_Collide.Remove(object_id);
+                this.remove(object_id);
             }
 
-            public void foreachItem(TezEventBus.Action<ITezItem> action)
+            public void foreachItem<T>(TezEventBus.Action<T> function) where T : ITezItem
             {
-                foreach (var item in this.items)
+                foreach (var slot in slots)
                 {
-                    action(item);
+                    function((T)slot.item);
                 }
             }
-
-            public void foreachItem<T>(TezEventBus.Action<T> action) where T : ITezItem
-            {
-                foreach (var item in this.items)
-                {
-                    action((T)item);
-                }
-            }
-
-            public void clear()
-            {
-                this.items.Clear();
-            }
-
-            public ITezItem this[int object_id]
-            {
-                get { return this.items[object_id]; }
-            }
-
         }
 
         class Global
@@ -325,7 +296,7 @@ namespace tezcat.DataBase
             }
 
             public void foreachRuntimeItem<T>(TezEventBus.Action<T> action) where T : ITezItem
-            { 
+            {
                 for (int i = this.innateCount; i < m_Items.Count; i++)
                 {
                     action((T)m_Items[i]);
@@ -431,7 +402,7 @@ namespace tezcat.DataBase
             }
         }
 
-        public void registerGroups<T>(List<T> groups) where T : GroupEnum
+        public void registerGroups<T>(List<T> groups) where T : GroupRTTI
         {
             for (int i = 0; i < groups.Count; i++)
             {
@@ -439,7 +410,7 @@ namespace tezcat.DataBase
             }
         }
 
-        public void registerTypes<T>(GroupEnum group_type, List<T> types) where T : TypeEnum
+        public void registerTypes<T>(GroupRTTI group_type, List<T> types) where T : TypeRTTI
         {
             var group = m_Group[group_type.ID];
             group.registerContainers(types);
@@ -476,9 +447,9 @@ namespace tezcat.DataBase
             return (T)m_Group[group_id][type_id][object_id];
         }
 
-        public bool tryGetItems(int group_id, int type_id, out List<ITezItem> result)
+        public bool tryGetItems(int group_id, int type_id, out List<DatabaseSlot> result)
         {
-            result = m_Group[group_id][type_id].items;
+            result = m_Group[group_id][type_id].slots;
             return true;
         }
 
@@ -491,7 +462,7 @@ namespace tezcat.DataBase
             if (item.GUID < 0)
             {
                 m_Global.add(item);
-                m_Group[item.groupID].registerItem(item);
+                m_Group[item.groupRTTI.ID].registerItem(item);
             }
         }
 
@@ -504,7 +475,7 @@ namespace tezcat.DataBase
             if (item.GUID >= m_Global.innateCount)
             {
                 m_Global.remove(item);
-                m_Group[item.groupID].unregisterItem(item);
+                m_Group[item.groupRTTI.ID].unregisterItem(item);
             }
         }
 
@@ -517,7 +488,7 @@ namespace tezcat.DataBase
             if (item.GUID >= m_Global.innateCount)
             {
                 m_Global.registerRuntimeItem(item);
-                m_Group[item.groupID].registerItem(item);
+                m_Group[item.groupRTTI.ID].registerItem(item);
             }
         }
 
@@ -529,12 +500,12 @@ namespace tezcat.DataBase
         {
 #if UNITY_EDITOR
             TezDebug.isTrue(
-                m_Group.Count > new_item.groupID && m_Group[new_item.groupID] != null,
+                m_Group.Count > new_item.groupRTTI.ID && m_Group[new_item.groupRTTI.ID] != null,
                 "TezDataBase",
                 "This ITezItem is out of range");
 #endif
             m_Global.registerInnateItem(new_item);
-            m_Group[new_item.groupID].registerItem(new_item);
+            m_Group[new_item.groupRTTI.ID].registerItem(new_item);
         }
 
         /// <summary>
@@ -543,18 +514,18 @@ namespace tezcat.DataBase
         /// <param name="item"></param>
         public void unregisterInnateItem(ITezItem item)
         {
-            m_Group[item.groupID].unregisterItem(item);
+            m_Group[item.groupRTTI.ID].unregisterItem(item);
             m_Global.unregisterInnateItem(item);
         }
 
         public void foreachItemByGroup<T>(
-            TezEventBus.Action<GroupEnum> get_group,
-            TezEventBus.Action<TypeEnum> get_type,
+            TezEventBus.Action<GroupRTTI> get_group,
+            TezEventBus.Action<TypeRTTI> get_type,
             TezEventBus.Action<T> get_item) where T : ITezItem
         {
             foreach (var group in m_Group)
             {
-                get_group(group.groupType);
+                get_group(group.groupRTTI);
                 group.foreachItem(get_type, get_item);
             }
         }

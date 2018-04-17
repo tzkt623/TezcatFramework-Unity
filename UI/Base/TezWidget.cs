@@ -36,7 +36,10 @@ namespace tezcat.UI
 
         protected abstract void onRefresh();
 
-        public abstract void clear();
+        /// <summary>
+        /// 删除Widget时做的清理
+        /// </summary>
+        protected abstract void clear();
 
         /// <summary>
         /// 关闭并销毁控件

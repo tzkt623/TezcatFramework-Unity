@@ -10,7 +10,7 @@ namespace tezcat.UI
     /// Window本身只包含Area
     /// 用于划分其中的显示区域
     /// </summary>
-    public abstract class TezWindow
+    public class TezWindow
         : TezWidget
         , ITezFocusableWidget
         , ITezDropableWidget
@@ -46,18 +46,19 @@ namespace tezcat.UI
             }
         }
 
-
-        TezWindowTitle m_Title = null;
-
-        #region Area
+        /// <summary>
+        /// Area
+        /// </summary>
         List<TezArea> m_AreaList = new List<TezArea>();
         Dictionary<string, int> m_AreaDic = new Dictionary<string, int>();
-        #endregion
+
 
         ITezFocusableWidget m_FocusWidget = null;
         public TezUIEvent.Switcher eventSwitcher { get; private set; } = null;
         public List<ITezEventHandler> handlers { get; private set; } = new List<ITezEventHandler>();
         List<TezPopup> m_PopupList = new List<TezPopup>();
+
+        #region Core
 
         protected override void Awake()
         {
@@ -128,31 +129,53 @@ namespace tezcat.UI
             return true;
         }
 
-        public void setTitle(string title)
+        protected override void clear()
         {
-            if (m_Title)
+            foreach (var area in m_AreaList)
             {
-                m_Title.setName(title);
+                area.close();
             }
+
+            m_AreaList.Clear();
+            m_AreaList = null;
+
+            m_AreaDic.Clear();
+            m_AreaDic = null;
         }
 
-        public void setTile(TezWindowTitle title)
-        {
-            m_Title = title;
-        }
-
-        public void onFocusWidget(ITezFocusableWidget widget)
+        public void setFocusWidget(ITezFocusableWidget widget)
         {
             m_FocusWidget = widget;
         }
+        #endregion
 
-        public T createPopup<T>(T prefab) where T : TezWidget, ITezPopup
+
+        #region Popup
+        public T createPopup<T>(T prefab) where T : TezPopup
         {
             var widget = Instantiate(prefab, this.transform);
             widget.window = this;
             m_PopupList.Add(widget);
             return widget;
         }
+
+        public void closePopup(TezPopup popup)
+        {
+            m_PopupList.Remove(
+                popup.popupID,
+
+                (TezPopup remove, TezPopup last) =>
+                {
+                    last.popupID = remove.popupID;
+                },
+
+                (TezPopup remove) =>
+                {
+
+                });
+        }
+        #endregion
+
 
 
 
@@ -229,6 +252,19 @@ namespace tezcat.UI
         public void removeArea(TezArea subwindow)
         {
             this.removeArea(subwindow.areaID);
+        }
+
+        public T getArea<T>() where T : TezArea
+        {
+            foreach (var area in m_AreaList)
+            {
+                if(area is T)
+                {
+                    return (T)area;
+                }
+            }
+
+            return null;
         }
 
         public T getArea<T>(string name) where T : TezArea

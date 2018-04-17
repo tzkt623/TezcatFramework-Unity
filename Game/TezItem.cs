@@ -4,8 +4,10 @@ namespace tezcat
     public interface ITezItem
     {
         string name { get; }
-        int groupID { get; }
-        int typeID { get; }
+
+        TezRTTI groupRTTI { get; }
+        TezRTTI typeRTTI { get; }
+
         int objectID { get; set; }
         int GUID { get; set; }
         int refrence { get; }
@@ -15,8 +17,8 @@ namespace tezcat
         : ITezItem
         , ITezSerializable
     {
-        public abstract int groupID { get; }
-        public abstract int typeID { get; }
+        public abstract TezRTTI groupRTTI { get; }
+        public abstract TezRTTI typeRTTI { get; }
 
         public virtual string name { get; }
         public int objectID { get; set; } = -1;
@@ -55,9 +57,8 @@ namespace tezcat
 
         protected virtual void onSerializationID(TezJsonWriter writer)
         {
-            var gid = TezItemFactory.convertToGroup(groupID);
-            writer.pushValue(TezReadOnlyString.group_id, gid.name);
-            writer.pushValue(TezReadOnlyString.type_id, gid.convertToType(typeID).name);
+            writer.pushValue(TezReadOnlyString.group_id, groupRTTI.name);
+            writer.pushValue(TezReadOnlyString.type_id, typeRTTI.name);
             writer.pushValue(TezReadOnlyString.object_id, objectID > 0 ? objectID : -1);
             writer.pushValue(TezReadOnlyString.GUID, this.GUID);
         }

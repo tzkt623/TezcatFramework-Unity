@@ -55,7 +55,7 @@ namespace tezcat.UI
             return true;
         }
 
-        public override void clear()
+        protected override void clear()
         {
             window.removeArea(this);
             window = null;
@@ -63,12 +63,12 @@ namespace tezcat.UI
 
         public virtual void OnPointerEnter(PointerEventData eventData)
         {
-            window.onFocusWidget(this);
+            window.setFocusWidget(this);
         }
 
         public virtual void OnPointerExit(PointerEventData eventData)
         {
-            window.onFocusWidget(null);
+            window.setFocusWidget(null);
         }
 
         public void onEvent(int event_id, object data)

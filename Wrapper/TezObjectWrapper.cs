@@ -1,13 +1,23 @@
 ﻿namespace tezcat.Wrapper
 {
-    public interface ITezObjectWrapper
+    public interface ITezWrapper
     {
         string name { get; }
         string description { get; }
         void clear();
     }
 
-    public abstract class TezObjectWrapper : ITezObjectWrapper
+    public interface ITezObjectWrapper : ITezWrapper
+    {
+
+    }
+
+    public interface ITezItemWrapper : ITezWrapper
+    {
+        int storeID { get; }
+    }
+
+    public abstract class TezObjectWrapper : ITezWrapper
     {
         public abstract string name { get; }
         public abstract string description { get; }

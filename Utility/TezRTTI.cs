@@ -2,26 +2,33 @@
 
 namespace tezcat.Utility
 {
-    public class TezEnumRegister<T> where T : TezEnum, new()
+    public class TezRTTIRegister<T> where T : TezRTTI, new()
     {
-        public static List<T> enums { get; private set; } = new List<T>();
+        public static List<T> RTTI { get; private set; } = new List<T>();
+        static Dictionary<string, int> RTTIIndex = new Dictionary<string, int>();
 
         public static int count
         {
-            get { return enums.Count; }
+            get { return RTTI.Count; }
         }
 
         public static T register(string name)
         {
             var v = new T();
-            v.init(enums.Count, name);
-            enums.Add(v);
+            v.init(RTTI.Count, name);
+            RTTIIndex.Add(name, RTTI.Count);
+            RTTI.Add(v);
             return v;
         }
 
         public static T get(int index)
         {
-            return enums[index];
+            return RTTI[index];
+        }
+
+        public static T get(string name)
+        {
+            return get(RTTIIndex[name]);
         }
 
         #region Switcher
@@ -202,7 +209,7 @@ namespace tezcat.Utility
         #endregion
     }
 
-    public abstract class TezEnum
+    public abstract class TezRTTI
     {
         public int ID { get; private set; }
         public string name { get; private set; }
@@ -218,19 +225,24 @@ namespace tezcat.Utility
             return this.ID;
         }
 
-        public static T enumIniter<T>(T e, string name) where T : TezEnum, new()
+        protected static T initRTTI<T>(T e, string name) where T : TezRTTI, new()
         {
             if (e == null)
             {
-                return TezEnumRegister<T>.register(name);
+                return TezRTTIRegister<T>.register(name);
             }
 
             return e;
         }
 
-        public static T get<T>(int id) where T : TezEnum, new()
+        public static T get<T>(int id) where T : TezRTTI, new()
         {
-            return TezEnumRegister<T>.enums[id];
+            return TezRTTIRegister<T>.get(id);
+        }
+
+        public static T get<T>(string name) where T : TezRTTI, new()
+        {
+            return TezRTTIRegister<T>.get(name);
         }
     }
 }

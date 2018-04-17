@@ -4,13 +4,8 @@ using UnityEngine;
 
 namespace tezcat.UI
 {
-    public class TezGroupEditor : TezPopup
+    public class TezItemEditor : TezPopup
     {
-        public override void clear()
-        {
-
-        }
-
         protected override void onRefresh()
         {
 

@@ -1,9 +1,7 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System;
 using UnityEngine;
-using UnityEngine.UI;
 using UnityEngine.EventSystems;
-using System;
+using UnityEngine.UI;
 
 namespace tezcat.UI
 {
@@ -34,7 +32,6 @@ namespace tezcat.UI
             {
                 throw new ArgumentNullException("Window Not Found");
             }
-            m_Window.setTile(this);
 
             if (m_TitleName == null)
             {

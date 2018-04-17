@@ -46,11 +46,8 @@ namespace tezcat.Utility
         {
             if (m_Drag)
             {
-                if (m_ItemDrop != null)
-                {
-                    m_ItemDrop.Invoke(m_DragInfo);
-                    m_ItemDrop = null;
-                }
+                m_ItemDrop?.Invoke(m_DragInfo);
+                m_ItemDrop = null;
 
                 m_DragInfo = null;
                 m_Drag = false;

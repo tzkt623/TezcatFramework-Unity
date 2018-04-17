@@ -141,7 +141,7 @@ namespace tezcat.UI
             return child;
         }
 
-        public override void clear()
+        protected override void clear()
         {
             foreach (var item in m_Children)
             {

@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 namespace tezcat.DataBase
 {
-    public static class TezClassInfoManager
+    public static class TezRTTIManager
     {
         const string _namespace = "namespace";
         const string _class = "class";
@@ -100,7 +100,7 @@ namespace tezcat.DataBase
             return meta;
         }
 
-        public static void loadClassInfoFile(string path)
+        public static void loadRTTIFile(string path)
         {
             TezJsonReader reader = new TezJsonReader();
             reader.load(path);
