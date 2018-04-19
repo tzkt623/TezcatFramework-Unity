@@ -1,10 +1,9 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
-namespace tezcat
+namespace tezcat.Utility
 {
-    public static class Localization
+    public static class TezLocalization
     {
         static Dictionary<string, string> m_Name = new Dictionary<string, string>();
         static Dictionary<string, string> m_Description = new Dictionary<string, string>();

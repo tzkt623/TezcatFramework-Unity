@@ -1,5 +1,7 @@
 ﻿
 
+using tezcat.DataBase;
+
 namespace tezcat
 {
     public abstract class TezItemBuilder<Item> where Item : ITezItem

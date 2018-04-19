@@ -10,17 +10,17 @@ namespace tezcat.Utility
 
         public interface VirtualItem
         {
-            void onBeginDrag(ITezStorageItemWrapper info);
+            void onBeginDrag(ITezItemWrapper info);
             void onDragging(PointerEventData event_data);
             void onEndDrag();
         }
 
 
         static VirtualItem m_CurrentVirtualItem = null;
-        static ITezStorageItemWrapper m_DragInfo = null;
+        static ITezItemWrapper m_DragInfo = null;
         static ITezDropableWidget m_Slot = null;
 
-        static TezEventBus.Action<ITezStorageItemWrapper> m_ItemDrop = null;
+        static TezEventBus.Action<ITezItemWrapper> m_ItemDrop = null;
 
         public static void setVirtualItem(VirtualItem item)
         {

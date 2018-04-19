@@ -1,39 +1,44 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using tezcat.Utility;
+using tezcat.Wrapper;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-using tezcat.UI;
-using UnityEngine.EventSystems;
-using tezcat.Wrapper;
-using tezcat.Utility;
-
-namespace tezcat
+namespace tezcat.UI
 {
     public class TezDatabaseSlot
         : TezWidget
         , ITezFocusableWidget
         , ITezDragableWidget
+        , ITezWrapperBinder<TezDatabaseItemWrapper>
     {
         [SerializeField]
         Image m_Icon = null;
 
-        public ITezStorageItemWrapper wrapper
+        TezDatabaseItemWrapper m_Wrapper = null;
+        public ITezItemWrapper wrapper
         {
-            get
-            {
-                throw new System.NotImplementedException();
-            }
+            get { return m_Wrapper; }
+        }
+
+        public void bind(TezDatabaseItemWrapper wrapper)
+        {
+            m_Wrapper = wrapper;
+            this.dirty = true;
         }
 
         protected override void clear()
         {
-
+            m_Wrapper?.clear();
+            m_Wrapper = null;
         }
 
         protected override void onRefresh()
         {
-
+            if (m_Wrapper != null)
+            {
+                m_Icon.sprite = m_Wrapper.getIcon();
+            }
         }
 
         void IBeginDragHandler.OnBeginDrag(PointerEventData eventData)
@@ -89,12 +94,12 @@ namespace tezcat
 
         void IPointerEnterHandler.OnPointerEnter(PointerEventData eventData)
         {
-
+            m_Wrapper?.showTip();
         }
 
         void IPointerExitHandler.OnPointerExit(PointerEventData eventData)
         {
-
+            m_Wrapper?.hideTip();
         }
     }
 }

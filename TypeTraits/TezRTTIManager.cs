@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-namespace tezcat.DataBase
+namespace tezcat.TypeTraits
 {
     public static class TezRTTIManager
     {
@@ -15,9 +15,9 @@ namespace tezcat.DataBase
         const string _key = "key";
         const string _value = "value";
 
-        static Dictionary<string, Dictionary<string, TezClassInfo>> m_NameSpace = new Dictionary<string, Dictionary<string, TezClassInfo>>();
+        static Dictionary<string, Dictionary<string, TezRTTIInfo>> m_NameSpace = new Dictionary<string, Dictionary<string, TezRTTIInfo>>();
 
-        public static void foreachInfo(TezEventBus.Action<string, TezClassInfo> action)
+        public static void foreachInfo(TezEventBus.Action<string, TezRTTIInfo> action)
         {
             foreach (var pair in m_NameSpace)
             {
@@ -30,47 +30,47 @@ namespace tezcat.DataBase
             }
         }
 
-        public static TezClassInfo addClassInfo(string name_space, string class_name, string parent_name_space, string parent_class_name)
+        public static TezRTTIInfo addClassInfo(string name_space, string class_name, string parent_name_space, string parent_class_name)
         {
-            Dictionary<string, TezClassInfo> class_info = null;
+            Dictionary<string, TezRTTIInfo> class_info = null;
             if(!m_NameSpace.TryGetValue(name_space, out class_info))
             {
-                class_info = new Dictionary<string, TezClassInfo>();
+                class_info = new Dictionary<string, TezRTTIInfo>();
                 m_NameSpace.Add(name_space, class_info);
             }     
 
-            var info = new TezClassInfo(name_space, class_name, parent_name_space, parent_class_name);
+            var info = new TezRTTIInfo(name_space, class_name, parent_name_space, parent_class_name);
             class_info.Add(class_name, info);
             return info;
         }
 
-        public static TezClassInfo getClassInfo(string name_space, string class_name)
+        public static TezRTTIInfo getClassInfo(string name_space, string class_name)
         {
             return m_NameSpace[name_space][class_name];
         }
 
-        static TezClassInfo.MetaData readMetaData(TezJsonReader reader)
+        static TezRTTIInfo.MetaData readMetaData(TezJsonReader reader)
         {
             var type = reader.getString(_variable_type);
             var name = reader.getString(_variable_name);
-            TezClassInfo.MetaData meta = null;
+            TezRTTIInfo.MetaData meta = null;
             switch (type)
             {
                 case "bool":
-                    meta = new TezClassInfo.MetaData_Bool(name);
+                    meta = new TezRTTIInfo.MetaData_Bool(name);
                     break;
                 case "int":
-                    meta = new TezClassInfo.MetaData_Int(name);
+                    meta = new TezRTTIInfo.MetaData_Int(name);
                     break;
                 case "float":
-                    meta = new TezClassInfo.MetaData_Float(name);
+                    meta = new TezRTTIInfo.MetaData_Float(name);
                     break;
                 case "string":
-                    meta = new TezClassInfo.MetaData_String(name);
+                    meta = new TezRTTIInfo.MetaData_String(name);
                     break;
                 case "list":
                     reader.enter(_list_item);
-                    meta = new TezClassInfo.MetaData_List(name, readMetaData(reader));
+                    meta = new TezRTTIInfo.MetaData_List(name, readMetaData(reader));
                     reader.exit();
                     break;
                 case "dictionary":
@@ -83,15 +83,15 @@ namespace tezcat.DataBase
                     var value = readMetaData(reader);
                     reader.exit();
                     ///
-                    meta = new TezClassInfo.MetaData_Dictionary(name, key, value);
+                    meta = new TezRTTIInfo.MetaData_Dictionary(name, key, value);
                     break;
                 case "hashset":
                     reader.enter(_set_item);
-                    meta = new TezClassInfo.MetaData_HashSet(name, readMetaData(reader));
+                    meta = new TezRTTIInfo.MetaData_HashSet(name, readMetaData(reader));
                     reader.exit();
                     break;
                 case "class":
-                    meta = new TezClassInfo.MetaData_Class(reader.getString(_namespace), name);
+                    meta = new TezRTTIInfo.MetaData_Class(reader.getString(_namespace), name);
                     break;
                 default:
                     break;

@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using tezcat.Utility;
+using tezcat.TypeTraits;
 
 namespace tezcat.DataBase
 {
@@ -7,29 +8,51 @@ namespace tezcat.DataBase
     {
         public static readonly TezDatabase instance = new TezDatabase();
 
-        public abstract class GroupRTTI : TezRTTI
+        public abstract class GroupType : TezType
         {
 
         }
 
-        public abstract class TypeRTTI : TezRTTI
+        public abstract class CategoryType : TezType
         {
+            TezEventBus.Function<TezItem> m_Function = null;
 
+            void setCreator(TezEventBus.Function<TezItem> function)
+            {
+                m_Function = function;
+            }
+
+            public T create<T>() where T : TezItem
+            {
+                return (T)m_Function();
+            }
+
+            protected static T initType<T>(T e, string name, TezEventBus.Function<TezItem> function) where T : CategoryType, new()
+            {
+                if (e == null)
+                {
+                    var temp = TezTypeRegister<T>.register(name);
+                    temp.setCreator(function);
+                    return temp;
+                }
+
+                return e;
+            }
         }
 
         public int itemCount { get; private set; } = 0;
 
         class Group
         {
-            public GroupRTTI groupRTTI { get; private set; }
+            public GroupType groupRTTI { get; private set; }
 
             public int id { get; set; }
             public List<Container> containers { get; } = new List<Container>();
 
             public Group() { }
-            public Group(GroupRTTI group_rtti) { this.groupRTTI = group_rtti; }
+            public Group(GroupType group_rtti) { this.groupRTTI = group_rtti; }
 
-            public void registerContainer(TypeRTTI container_type)
+            public void registerContainer(CategoryType container_type)
             {
                 while (this.containers.Count <= container_type.ID)
                 {
@@ -40,7 +63,7 @@ namespace tezcat.DataBase
                 this.containers[container_type.ID] = container;
             }
 
-            public void foreachItem<T>(TezEventBus.Action<TypeRTTI> get_type, TezEventBus.Action<T> action) where T : ITezItem
+            public void foreachItem<T>(TezEventBus.Action<CategoryType> get_type, TezEventBus.Action<T> action) where T : TezItem
             {
                 foreach (var container in this.containers)
                 {
@@ -49,7 +72,7 @@ namespace tezcat.DataBase
                 }
             }
 
-            public void foreachItem(TezEventBus.Action<ITezItem> action)
+            public void foreachItem(TezEventBus.Action<TezItem> action)
             {
                 foreach (var container in this.containers)
                 {
@@ -57,9 +80,9 @@ namespace tezcat.DataBase
                 }
             }
 
-            public void registerItem(ITezItem new_item)
+            public void registerItem(TezItem new_item)
             {
-                int type_id = new_item.typeRTTI.ID;
+                int type_id = new_item.categoryType.ID;
                 while (this.containers.Count <= type_id)
                 {
                     this.containers.Add(new Container());
@@ -86,12 +109,12 @@ namespace tezcat.DataBase
                 }
             }
 
-            public void unregisterItem(ITezItem item)
+            public void unregisterItem(TezItem item)
             {
-                this.containers[item.typeRTTI.ID].unregisterItem(item);
+                this.containers[item.categoryType.ID].unregisterItem(item);
             }
 
-            public void registerContainers<T>(List<T> types) where T : TypeRTTI
+            public void registerContainers<T>(List<T> types) where T : CategoryType
             {
                 for (int i = 0; i < types.Count; i++)
                 {
@@ -102,7 +125,7 @@ namespace tezcat.DataBase
 
         public class DatabaseSlot : TezSlot
         {
-            public void registerItem(ITezItem item)
+            public void registerItem(TezItem item)
             {
                 item.objectID = this.id;
                 this.item = item;
@@ -111,12 +134,12 @@ namespace tezcat.DataBase
 
         class Container : TezSlotSet<DatabaseSlot>
         {
-            public TypeRTTI typeRTTI { get; private set; }
+            public CategoryType typeRTTI { get; private set; }
 
             public Container() { }
-            public Container(TypeRTTI type_rtti) { this.typeRTTI = type_rtti; }
+            public Container(CategoryType type_rtti) { this.typeRTTI = type_rtti; }
 
-            public void registerItem(ITezItem new_item)
+            public void registerItem(TezItem new_item)
             {
                 if (new_item.objectID == -1)
                 {
@@ -135,7 +158,7 @@ namespace tezcat.DataBase
                 }
             }
 
-            public void unregisterItem(ITezItem item)
+            public void unregisterItem(TezItem item)
             {
                 this.remove(item.objectID);
             }
@@ -145,7 +168,7 @@ namespace tezcat.DataBase
                 this.remove(object_id);
             }
 
-            public void foreachItem<T>(TezEventBus.Action<T> function) where T : ITezItem
+            public void foreachItem<T>(TezEventBus.Action<T> function) where T : TezItem
             {
                 foreach (var slot in slots)
                 {
@@ -158,7 +181,7 @@ namespace tezcat.DataBase
         {
             public TezDatabase database { get; set; }
 
-            List<ITezItem> m_Items = new List<ITezItem>();
+            List<TezItem> m_Items = new List<TezItem>();
 
             Queue<int> m_FreeInnate = new Queue<int>();
             Queue<int> m_FreeRuntime = new Queue<int>();
@@ -172,7 +195,7 @@ namespace tezcat.DataBase
 
             int m_GUID = 0;
 
-            public ITezItem this[int index]
+            public TezItem this[int index]
             {
                 get { return m_Items[index]; }
             }
@@ -192,7 +215,7 @@ namespace tezcat.DataBase
             /// 注册固有物品
             /// </summary>
             /// <param name="item"></param>
-            public void registerInnateItem(ITezItem item)
+            public void registerInnateItem(TezItem item)
             {
                 if (item.GUID < 0)
                 {
@@ -211,7 +234,7 @@ namespace tezcat.DataBase
                         ///把无关的物品后移
                         if (m_Collide.Contains(item.GUID))
                         {
-                            throw new System.Exception("ITezItem Collide!!!");
+                            throw new System.Exception("TezItem Collide!!!");
                         }
                         m_Collide.Add(item.GUID);
 
@@ -228,10 +251,10 @@ namespace tezcat.DataBase
             /// 移除固有物品
             /// </summary>
             /// <param name="item"></param>
-            public void unregisterInnateItem(ITezItem item)
+            public void unregisterInnateItem(TezItem item)
             {
 #if UNITY_EDITOR
-                TezDebug.isTrue(item.GUID < innateCount, "TezDataBase", "This is not a Innate ITezItem");
+                TezDebug.isTrue(item.GUID < innateCount, "TezDataBase", "This is not a Innate TezItem");
 #endif
                 if (item.GUID == innateCount - 1)
                 {
@@ -276,7 +299,7 @@ namespace tezcat.DataBase
                 }
             }
 
-            public void foreachItem(TezEventBus.Action<ITezItem> action)
+            public void foreachItem(TezEventBus.Action<TezItem> action)
             {
                 foreach (var item in m_Items)
                 {
@@ -287,7 +310,7 @@ namespace tezcat.DataBase
                 }
             }
 
-            public void foreachRuntimeItem(TezEventBus.Action<ITezItem> action)
+            public void foreachRuntimeItem(TezEventBus.Action<TezItem> action)
             {
                 for (int i = this.innateCount; i < m_Items.Count; i++)
                 {
@@ -295,7 +318,7 @@ namespace tezcat.DataBase
                 }
             }
 
-            public void foreachRuntimeItem<T>(TezEventBus.Action<T> action) where T : ITezItem
+            public void foreachRuntimeItem<T>(TezEventBus.Action<T> action) where T : TezItem
             {
                 for (int i = this.innateCount; i < m_Items.Count; i++)
                 {
@@ -307,7 +330,7 @@ namespace tezcat.DataBase
             /// 增加运行时物品
             /// </summary>
             /// <param name="item"></param>
-            public void add(ITezItem item)
+            public void add(TezItem item)
             {
                 var guid = this.giveRuntimeGUID();
                 item.GUID = guid;
@@ -318,7 +341,7 @@ namespace tezcat.DataBase
             /// 移除运行时物品
             /// </summary>
             /// <param name="item"></param>
-            public void remove(ITezItem item)
+            public void remove(TezItem item)
             {
                 var guid = item.GUID;
                 if (guid == m_Items.Count - 1)
@@ -360,7 +383,7 @@ namespace tezcat.DataBase
                 }
             }
 
-            public void registerRuntimeItem(ITezItem item)
+            public void registerRuntimeItem(TezItem item)
             {
                 this.growRuntime(item.GUID);
                 var guid = this.filterGUID(this.giveRuntimeGUID);
@@ -402,7 +425,7 @@ namespace tezcat.DataBase
             }
         }
 
-        public void registerGroups<T>(List<T> groups) where T : GroupRTTI
+        public void registerGroups<T>(List<T> groups) where T : GroupType
         {
             for (int i = 0; i < groups.Count; i++)
             {
@@ -410,7 +433,7 @@ namespace tezcat.DataBase
             }
         }
 
-        public void registerTypes<T>(GroupRTTI group_type, List<T> types) where T : TypeRTTI
+        public void registerCategories<T>(GroupType group_type, List<T> types) where T : CategoryType
         {
             var group = m_Group[group_type.ID];
             group.registerContainers(types);
@@ -421,7 +444,7 @@ namespace tezcat.DataBase
         /// </summary>
         /// <param name="GUID"></param>
         /// <returns></returns>
-        public ITezItem getItem(int GUID)
+        public TezItem getItem(int GUID)
         {
             return m_Global[GUID];
         }
@@ -432,19 +455,19 @@ namespace tezcat.DataBase
         /// <typeparam name="T"></typeparam>
         /// <param name="GUID"></param>
         /// <returns></returns>
-        public T getItem<T>(int GUID) where T : ITezItem
+        public T getItem<T>(int GUID) where T : TezItem
         {
             return (T)m_Global[GUID];
         }
 
-        public ITezItem getItem(int group_id, int type_id, int object_id)
+        public TezItem getItem(int group_id, int type_id, int object_id)
         {
-            return m_Group[group_id][type_id][object_id];
+            return m_Group[group_id][type_id][object_id].item;
         }
 
-        public T getItem<T>(int group_id, int type_id, int object_id) where T : ITezItem
+        public T getItem<T>(int group_id, int type_id, int object_id) where T : TezItem
         {
-            return (T)m_Group[group_id][type_id][object_id];
+            return (T)m_Group[group_id][type_id][object_id].item;
         }
 
         public bool tryGetItems(int group_id, int type_id, out List<DatabaseSlot> result)
@@ -457,12 +480,12 @@ namespace tezcat.DataBase
         /// 增加Runtime数据
         /// </summary>
         /// <param name="item"></param>
-        public void addItem(ITezItem item)
+        public void addItem(TezItem item)
         {
             if (item.GUID < 0)
             {
                 m_Global.add(item);
-                m_Group[item.groupRTTI.ID].registerItem(item);
+                m_Group[item.groupType.ID].registerItem(item);
             }
         }
 
@@ -470,12 +493,12 @@ namespace tezcat.DataBase
         /// 删除Runtime数据
         /// </summary>
         /// <param name="item"></param>
-        public void removeItem(ITezItem item)
+        public void removeItem(TezItem item)
         {
             if (item.GUID >= m_Global.innateCount)
             {
                 m_Global.remove(item);
-                m_Group[item.groupRTTI.ID].unregisterItem(item);
+                m_Group[item.groupType.ID].unregisterItem(item);
             }
         }
 
@@ -483,12 +506,12 @@ namespace tezcat.DataBase
         /// 注册Runtime数据
         /// </summary>
         /// <param name="item"></param>
-        public void registerRuntimeItem(ITezItem item)
+        public void registerRuntimeItem(TezItem item)
         {
             if (item.GUID >= m_Global.innateCount)
             {
                 m_Global.registerRuntimeItem(item);
-                m_Group[item.groupRTTI.ID].registerItem(item);
+                m_Group[item.groupType.ID].registerItem(item);
             }
         }
 
@@ -496,32 +519,32 @@ namespace tezcat.DataBase
         /// 注册Innate数据
         /// </summary>
         /// <param name="new_item"></param>
-        public void registerInnateItem(ITezItem new_item)
+        public void registerInnateItem(TezItem new_item)
         {
 #if UNITY_EDITOR
             TezDebug.isTrue(
-                m_Group.Count > new_item.groupRTTI.ID && m_Group[new_item.groupRTTI.ID] != null,
+                m_Group.Count > new_item.groupType.ID && m_Group[new_item.groupType.ID] != null,
                 "TezDataBase",
-                "This ITezItem is out of range");
+                "This TezItem is out of range");
 #endif
             m_Global.registerInnateItem(new_item);
-            m_Group[new_item.groupRTTI.ID].registerItem(new_item);
+            m_Group[new_item.groupType.ID].registerItem(new_item);
         }
 
         /// <summary>
         /// 移除Innate数据
         /// </summary>
         /// <param name="item"></param>
-        public void unregisterInnateItem(ITezItem item)
+        public void unregisterInnateItem(TezItem item)
         {
-            m_Group[item.groupRTTI.ID].unregisterItem(item);
+            m_Group[item.groupType.ID].unregisterItem(item);
             m_Global.unregisterInnateItem(item);
         }
 
         public void foreachItemByGroup<T>(
-            TezEventBus.Action<GroupRTTI> get_group,
-            TezEventBus.Action<TypeRTTI> get_type,
-            TezEventBus.Action<T> get_item) where T : ITezItem
+            TezEventBus.Action<GroupType> get_group,
+            TezEventBus.Action<CategoryType> get_type,
+            TezEventBus.Action<T> get_item) where T : TezItem
         {
             foreach (var group in m_Group)
             {
@@ -530,7 +553,7 @@ namespace tezcat.DataBase
             }
         }
 
-        public void foreachItemByGroup(TezEventBus.Action<ITezItem> action)
+        public void foreachItemByGroup(TezEventBus.Action<TezItem> action)
         {
             foreach (var group in m_Group)
             {
@@ -538,17 +561,17 @@ namespace tezcat.DataBase
             }
         }
 
-        public void foreachItemByGUID(TezEventBus.Action<ITezItem> action)
+        public void foreachItemByGUID(TezEventBus.Action<TezItem> action)
         {
             m_Global.foreachItem(action);
         }
 
-        public void foreachRuntimeItem<T>(TezEventBus.Action<T> action) where T : ITezItem
+        public void foreachRuntimeItem<T>(TezEventBus.Action<T> action) where T : TezItem
         {
             m_Global.foreachRuntimeItem(action);
         }
 
-        public void foreachRuntimeItem(TezEventBus.Action<ITezItem> action)
+        public void foreachRuntimeItem(TezEventBus.Action<TezItem> action)
         {
             m_Global.foreachRuntimeItem(action);
         }

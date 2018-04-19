@@ -75,18 +75,22 @@ namespace tezcat
 
         public static bool operator ==(TezStaticString x, TezStaticString y)
         {
-            bool flag = object.ReferenceEquals(x, null);
-            bool flag2 = object.ReferenceEquals(y, null);
-            return (flag && flag2) || (!flag && !flag2 && x.m_ID == y.m_ID);
+            bool flagX = object.ReferenceEquals(x, null);
+            bool flagY = object.ReferenceEquals(y, null);
+
+            return (flagX && flagY) || (!flagX && !flagY) && (x.m_ID == y.m_ID);
         }
 
 
         public static bool operator != (TezStaticString x, TezStaticString y)
         {
+            /// (!true || !false) && (x)
+            /// (!false || !false) && (x.m_ID != y.m_ID)
+
             bool flagX = object.ReferenceEquals(x, null);
             bool flagY = object.ReferenceEquals(y, null);
 
-            return (!flagX || !flagY) && (flagX || flagY || x.m_ID != y.m_ID);
+            return (!flagX || !flagY) && (x.m_ID != y.m_ID);
         }
 
         public static bool isNullOrEmpty(TezStaticString tstring)

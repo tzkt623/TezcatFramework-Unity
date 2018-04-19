@@ -364,7 +364,7 @@ namespace tezcat.UI
             }
         }
 
-        public virtual TezEventBus.Action<ITezStorageItemWrapper> checkItemToDrop(ITezStorageItemWrapper wrapper, PointerEventData event_data)
+        public virtual TezEventBus.Action<ITezItemWrapper> checkItemToDrop(ITezItemWrapper wrapper, PointerEventData event_data)
         {
             return null;
         }

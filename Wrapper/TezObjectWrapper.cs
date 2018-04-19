@@ -1,4 +1,6 @@
-﻿namespace tezcat.Wrapper
+﻿using tezcat.DataBase;
+
+namespace tezcat.Wrapper
 {
     public interface ITezWrapper
     {
@@ -14,7 +16,12 @@
 
     public interface ITezItemWrapper : ITezWrapper
     {
-        int storeID { get; }
+        ITezItem item { get; }
+        int count { get; }
+
+        void showTip();
+        void hideTip();
+        void onDrop();
     }
 
     public abstract class TezObjectWrapper : ITezWrapper

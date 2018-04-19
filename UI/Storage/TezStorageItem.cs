@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using tezcat.Wrapper;
+﻿using tezcat.Wrapper;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -9,7 +7,7 @@ namespace tezcat.UI
     [RequireComponent(typeof(Image))]
     public class TezStorageItem
         : TezWidget
-        , ITezWrapperBinder<ITezStorageItemWrapper>
+        , ITezWrapperBinder<ITezItemWrapper>
     {
         Image m_Image = null;
 
@@ -35,7 +33,7 @@ namespace tezcat.UI
 
         }
 
-        public void bind(ITezStorageItemWrapper wrapper)
+        public void bind(ITezItemWrapper wrapper)
         {
 
         }

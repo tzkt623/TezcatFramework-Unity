@@ -1,13 +1,9 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using tezcat.DataBase;
+using tezcat.TypeTraits;
 using UnityEngine;
-using UnityEngine.UI;
 
 using tezcat.Wrapper;
-using tezcat.Utility;
-using tezcat.DataBase;
-
 namespace tezcat.UI
 {
     public class TezDatabaseItemContainer
@@ -19,11 +15,29 @@ namespace tezcat.UI
         [SerializeField]
         RectTransform m_Content = null;
 
-        List<TezStorageSlot> m_SlotList = new List<TezStorageSlot>();
+        List<TezDatabaseSlot> m_SlotList = new List<TezDatabaseSlot>();
 
         protected override void onRefresh()
         {
 
+        }
+
+        public void loadItems(TezType group, TezType type)
+        {
+            List<TezDatabase.DatabaseSlot> items = null;
+
+            if (TezDatabase.instance.tryGetItems(group.ID, type.ID, out items))
+            {
+                for (int i = 0; i < items.Count; i++)
+                {
+                    m_SlotList.Add(Instantiate(m_Prefab, m_Content, false));
+                }
+
+                for (int i = 0; i < items.Count; i++)
+                {
+                    m_SlotList[i].bind(new TezDatabaseItemWrapper(items[i].item.GUID));
+                }
+            }
         }
 
         public void removeAllItem()
@@ -34,24 +48,6 @@ namespace tezcat.UI
             }
 
             m_SlotList.Clear();
-        }
-
-        public void addItem(ITezItem item)
-        {
-            var slot = Instantiate(m_Prefab, m_Content, false);
-        }
-
-        internal void loadItems(TezRTTI group, TezRTTI type)
-        {
-            List<DataBase.TezSlot> items = null;
-            if (TezDatabase.instance.tryGetItems(group.ID, type.ID, out items))
-            {
-                for (int i = 0; i < items.Count; i++)
-                {
-                    var slot = (TezDatabase.DatabaseSlot)items[i];
-                    this.addItem(slot.item);
-                }
-            }
         }
     }
 }

@@ -6,15 +6,14 @@ namespace tezcat.UI
 {
     public class TezStorageSlot
         : TezWidget
-        , ITezWrapperBinder<ITezStorageItemWrapper>
+        , ITezWrapperBinder<ITezItemWrapper>
         , ITezFocusableWidget
         , ITezDragableWidget
         , ITezDropableWidget
 
     {
         TezStorageItem m_StorageItem = null;
-
-        public virtual ITezStorageItemWrapper wrapper { get; private set; }
+        public virtual ITezItemWrapper wrapper { get; private set; }
 
         protected override void Awake()
         {
@@ -22,7 +21,7 @@ namespace tezcat.UI
             m_StorageItem = this.GetComponent<TezStorageItem>();
         }
 
-        public void bind(ITezStorageItemWrapper wrapper)
+        public void bind(ITezItemWrapper wrapper)
         {
             if (wrapper.count <= 0)
             {
@@ -120,7 +119,7 @@ namespace tezcat.UI
         /// <param name="wrapper"></param>
         /// <param name="event_data"></param>
         /// <returns></returns>
-        public virtual TezEventBus.Action<ITezStorageItemWrapper> checkItemToDrop(ITezStorageItemWrapper wrapper, PointerEventData event_data)
+        public virtual TezEventBus.Action<ITezItemWrapper> checkItemToDrop(ITezItemWrapper wrapper, PointerEventData event_data)
         {
             return null;
         }

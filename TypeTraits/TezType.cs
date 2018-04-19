@@ -1,34 +1,34 @@
 ﻿using System.Collections.Generic;
 
-namespace tezcat.Utility
+namespace tezcat.TypeTraits
 {
-    public class TezRTTIRegister<T> where T : TezRTTI, new()
+    public class TezTypeRegister<T> where T : TezType, new()
     {
-        public static List<T> RTTI { get; private set; } = new List<T>();
-        static Dictionary<string, int> RTTIIndex = new Dictionary<string, int>();
+        public static List<T> TYPE { get; private set; } = new List<T>();
+        static Dictionary<string, int> TYPEIndex = new Dictionary<string, int>();
 
         public static int count
         {
-            get { return RTTI.Count; }
+            get { return TYPE.Count; }
         }
 
         public static T register(string name)
         {
             var v = new T();
-            v.init(RTTI.Count, name);
-            RTTIIndex.Add(name, RTTI.Count);
-            RTTI.Add(v);
+            v.init(TYPE.Count, name);
+            TYPEIndex.Add(name, TYPE.Count);
+            TYPE.Add(v);
             return v;
         }
 
         public static T get(int index)
         {
-            return RTTI[index];
+            return TYPE[index];
         }
 
         public static T get(string name)
         {
-            return get(RTTIIndex[name]);
+            return get(TYPEIndex[name]);
         }
 
         #region Switcher
@@ -209,10 +209,10 @@ namespace tezcat.Utility
         #endregion
     }
 
-    public abstract class TezRTTI
+    public abstract class TezType
     {
         public int ID { get; private set; }
-        public string name { get; private set; }
+        public TezStaticString name { get; private set; }
 
         public void init(int id, string name)
         {
@@ -225,24 +225,52 @@ namespace tezcat.Utility
             return this.ID;
         }
 
-        protected static T initRTTI<T>(T e, string name) where T : TezRTTI, new()
+        protected static T initType<T>(T e, string name) where T : TezType, new()
         {
             if (e == null)
             {
-                return TezRTTIRegister<T>.register(name);
+                return TezTypeRegister<T>.register(name);
             }
 
             return e;
         }
 
-        public static T get<T>(int id) where T : TezRTTI, new()
+        public static T get<T>(int id) where T : TezType, new()
         {
-            return TezRTTIRegister<T>.get(id);
+            return TezTypeRegister<T>.get(id);
         }
 
-        public static T get<T>(string name) where T : TezRTTI, new()
+        public static T get<T>(string name) where T : TezType, new()
         {
-            return TezRTTIRegister<T>.get(name);
+            return TezTypeRegister<T>.get(name);
+        }
+
+        public static bool operator != (TezType x, TezType y)
+        {
+            /// (!true || !false) && (x)
+            /// (!false || !false) && (x.ID != y.ID || x.name != y.name)
+
+            var flagx = object.ReferenceEquals(x, null);
+            var flagy = object.ReferenceEquals(y, null);
+
+            return (!flagx || !flagy) && (x.ID != y.ID || x.name != y.name);
+        }
+
+        public static bool operator == (TezType x, TezType y)
+        {
+            ///(false && false) || (x.ID == y.ID && x.name == y.name)
+            ///(true && true) || (x)
+            ///(false && true) || (!false && !true) && (x)
+
+            var flagx = object.ReferenceEquals(x, null);
+            var flagy = object.ReferenceEquals(y, null);
+
+            return (flagx && flagy) || (!flagx && !flagy) && (x.ID == y.ID && x.name == y.name);
+        }
+
+        public override bool Equals(object obj)
+        {
+            return base.Equals(obj);
         }
     }
 }

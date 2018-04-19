@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 
-namespace tezcat.DataBase
+namespace tezcat.TypeTraits
 {
-    public class TezClassInfo
+    public class TezRTTIInfo
     {
         #region MetaData
         public abstract class MetaData
@@ -149,7 +149,7 @@ namespace tezcat.DataBase
 
         public List<MetaData> metaData { get; private set; } = new List<MetaData>();
 
-        public TezClassInfo(string name_space, string class_name, string parent_name_space, string parent_class_name)
+        public TezRTTIInfo(string name_space, string class_name, string parent_name_space, string parent_class_name)
         {
             this.nameSpace = name_space;
             this.className = class_name;

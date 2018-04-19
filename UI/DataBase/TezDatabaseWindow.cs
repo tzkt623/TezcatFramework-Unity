@@ -1,19 +1,15 @@
-﻿using System.Collections.Generic;
-using tezcat.UI;
-using tezcat.Utility;
+﻿using tezcat.DataBase;
 using UnityEngine;
-using UnityEngine.EventSystems;
-using UnityEngine.UI;
 
-namespace tezcat.DataBase
+namespace tezcat.UI
 {
     public class TezDatabaseWindow : TezWindow
     {
         [Header("Item Pool")]
         RectTransform m_Pool = null;
 
-        public TezRTTI selectGroupRTTI { get; set; }
-        public TezRTTI selectTypeRTTI { get; set; }
+        public TezDatabase.GroupType selectGroup { get; set; }
+        public TezDatabase.CategoryType selectCategory { get; set; }
 
 
         protected override void Start()

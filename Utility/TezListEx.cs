@@ -2,6 +2,11 @@
 
 namespace tezcat.Utility
 {
+    public interface ITezListSortItem
+    {
+        int sortID { get; }
+    }
+
     public static class TezListEx
     {
         /// <summary>
@@ -43,6 +48,35 @@ namespace tezcat.Utility
             }
 
             list.RemoveAt(last_id);
+        }
+
+        public static bool binaryFind<T>(this List<T> list, int target_id, out T result) where T : ITezListSortItem
+        {
+            int min = 0;
+            int max = list.Count;
+            int mid = -1;
+
+            while(min <= max)
+            {
+                mid = min + (max - min) / 2;
+                var item = list[mid];
+                if (item.sortID > target_id)
+                {
+                    max = mid - 1;
+                }
+                else if(item.sortID < target_id)
+                {
+                    min = mid + 1;
+                }
+                else
+                {
+                    result = item;
+                    return true;
+                }
+            }
+
+            result = default(T);
+            return false;
         }
     }
 }

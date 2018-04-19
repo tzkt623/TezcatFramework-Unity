@@ -1,6 +1,5 @@
-﻿using System.Collections.Generic;
-using tezcat.DataBase;
-using tezcat.Utility;
+﻿using tezcat.DataBase;
+using tezcat.TypeTraits;
 using UnityEngine;
 
 namespace tezcat.UI
@@ -13,11 +12,11 @@ namespace tezcat.UI
 
         class NodeData : TezTreeData
         {
-            public TezRTTI RTTI { get; private set; }
+            public TezType dataType { get; private set; }
 
-            public NodeData(TezRTTI e) : base(e.name)
+            public NodeData(TezType e) : base(e.name)
             {
-                RTTI = e;
+                dataType = e;
             }
         }
 
@@ -45,10 +44,10 @@ namespace tezcat.UI
                 var group = node.parent.data as NodeData;
                 var type = node.data as NodeData;
 
-                ((TezDatabaseWindow)this.window).selectGroupRTTI = group.RTTI;
-                ((TezDatabaseWindow)this.window).selectTypeRTTI = type.RTTI;
+                ((TezDatabaseWindow)this.window).selectGroup = group.dataType as TezDatabase.GroupType;
+                ((TezDatabaseWindow)this.window).selectCategory = type.dataType as TezDatabase.CategoryType;
 
-                m_Container.loadItems(group.RTTI, type.RTTI);
+                m_Container.loadItems(group.dataType, type.dataType);
             }
         }
 
@@ -58,7 +57,7 @@ namespace tezcat.UI
             TezTreeNode current_type = null;
             TezDatabase.instance.foreachItemByGroup(
 
-                (TezDatabase.GroupRTTI group) =>
+                (TezDatabase.GroupType group) =>
                 {
                     if (group == null)
                     {
@@ -71,7 +70,7 @@ namespace tezcat.UI
 #endif
                 },
 
-                (TezDatabase.TypeRTTI type) =>
+                (TezDatabase.CategoryType type) =>
                 {
                     if (type == null)
                     {
@@ -84,7 +83,7 @@ namespace tezcat.UI
 #endif
                 },
 
-                (ITezItem item) =>
+                (TezItem item) =>
                 {
 
                 });
