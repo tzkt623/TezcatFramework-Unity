@@ -56,6 +56,7 @@ namespace tezcat.UI
         ITezFocusableWidget m_FocusWidget = null;
         public TezUIEvent.Switcher eventSwitcher { get; private set; } = null;
         public List<ITezEventHandler> handlers { get; private set; } = new List<ITezEventHandler>();
+
         List<TezPopup> m_PopupList = new List<TezPopup>();
 
         #region Core
@@ -153,8 +154,9 @@ namespace tezcat.UI
         #region Popup
         public T createPopup<T>(T prefab) where T : TezPopup
         {
-            var widget = Instantiate(prefab, this.transform);
+            var widget = Instantiate(prefab, this.transform, false);
             widget.window = this;
+            widget.transform.localPosition = Vector3.zero;
             m_PopupList.Add(widget);
             return widget;
         }

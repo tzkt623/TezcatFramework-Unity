@@ -23,7 +23,7 @@ namespace tezcat.DataBase
         public abstract TezDatabase.GroupType groupType { get; }
         public abstract TezDatabase.CategoryType categoryType { get; }
 
-        public virtual string nameID { get; }
+        public virtual string nameID { get; set; }
         public int objectID { get; set; } = -1;
         public int GUID { get; set; } = -1;
         public int refrence { get; private set; } = 0;

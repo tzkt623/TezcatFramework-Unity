@@ -7,6 +7,9 @@ namespace tezcat.UI
     public class TezDatabaseMenu : TezArea
     {
         [SerializeField]
+        TezItemEditor m_Prefab;
+
+        [SerializeField]
         TezImageLabelButton m_Save = null;
         [SerializeField]
         TezImageLabelButton m_AddItem = null;
@@ -37,7 +40,9 @@ namespace tezcat.UI
         {
             if(m_Window.selectCategory != null)
             {
-
+                var ui = this.window.createPopup(m_Prefab);
+                ui.bind(m_Window.selectCategory.create());
+                ui.open();
             }
         }
 

@@ -247,13 +247,13 @@ namespace tezcat.TypeTraits
 
         public static bool operator != (TezType x, TezType y)
         {
-            /// (!true || !false) && (x)
-            /// (!false || !false) && (x.ID != y.ID || x.name != y.name)
+            /// (!true || !false) && (true || false) || (x)
+            /// (!false || !false) && (false || false) || (x.ID != y.ID || x.name != y.name)
 
             var flagx = object.ReferenceEquals(x, null);
             var flagy = object.ReferenceEquals(y, null);
 
-            return (!flagx || !flagy) && (x.ID != y.ID || x.name != y.name);
+            return (!flagx || !flagy) && (flagx || flagy) || (x.ID != y.ID || x.name != y.name);
         }
 
         public static bool operator == (TezType x, TezType y)

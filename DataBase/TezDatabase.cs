@@ -22,6 +22,11 @@ namespace tezcat.DataBase
                 m_Function = function;
             }
 
+            public TezItem create()
+            {
+                return m_Function();
+            }
+
             public T create<T>() where T : TezItem
             {
                 return (T)m_Function();

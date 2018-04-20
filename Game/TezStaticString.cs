@@ -90,7 +90,7 @@ namespace tezcat
             bool flagX = object.ReferenceEquals(x, null);
             bool flagY = object.ReferenceEquals(y, null);
 
-            return (!flagX || !flagY) && (x.m_ID != y.m_ID);
+            return (!flagX || !flagY) && (flagX || flagY) || (x.m_ID != y.m_ID);
         }
 
         public static bool isNullOrEmpty(TezStaticString tstring)
