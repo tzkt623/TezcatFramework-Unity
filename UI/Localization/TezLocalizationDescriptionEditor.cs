@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace tezcat.UI
 {
-    public class TezLocDescriptionEditor : TezArea
+    public class TezLocalizationDescriptionEditor : TezArea
     {
 
 

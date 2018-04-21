@@ -145,10 +145,14 @@ namespace tezcat.UI
         {
             foreach (var item in m_Children)
             {
-                Destroy(item.gameObject);
+                item.close();
             }
 
             m_Children.Clear();
+            m_Children = null;
+
+            this.parent = null;
+            this.data = null;
         }
 
         protected override void onRefresh()

@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+using tezcat.Serialization;
+
 namespace tezcat.TypeTraits
 {
     public static class TezRTTIManager
@@ -49,10 +51,10 @@ namespace tezcat.TypeTraits
             return m_NameSpace[name_space][class_name];
         }
 
-        static TezRTTIInfo.MetaData readMetaData(TezJsonReader reader)
+        static TezRTTIInfo.MetaData readMetaData(TezReader reader)
         {
-            var type = reader.getString(_variable_type);
-            var name = reader.getString(_variable_name);
+            var type = reader.readString(_variable_type);
+            var name = reader.readString(_variable_name);
             TezRTTIInfo.MetaData meta = null;
             switch (type)
             {
@@ -69,29 +71,29 @@ namespace tezcat.TypeTraits
                     meta = new TezRTTIInfo.MetaData_String(name);
                     break;
                 case "list":
-                    reader.enter(_list_item);
+                    reader.beginObject(_list_item);
                     meta = new TezRTTIInfo.MetaData_List(name, readMetaData(reader));
-                    reader.exit();
+                    reader.endObject(_list_item);
                     break;
                 case "dictionary":
                     ///key
-                    reader.enter(_key);
+                    reader.beginObject(_key);
                     var key = readMetaData(reader);
-                    reader.exit();
+                    reader.endObject(_key);
                     ///value
-                    reader.enter("value");
+                    reader.beginObject(_value);
                     var value = readMetaData(reader);
-                    reader.exit();
+                    reader.endObject(_value);
                     ///
                     meta = new TezRTTIInfo.MetaData_Dictionary(name, key, value);
                     break;
                 case "hashset":
-                    reader.enter(_set_item);
+                    reader.beginObject(_set_item);
                     meta = new TezRTTIInfo.MetaData_HashSet(name, readMetaData(reader));
-                    reader.exit();
+                    reader.endObject(_set_item);
                     break;
                 case "class":
-                    meta = new TezRTTIInfo.MetaData_Class(reader.getString(_namespace), name);
+                    meta = new TezRTTIInfo.MetaData_Class(reader.readString(_namespace), name);
                     break;
                 default:
                     break;
@@ -105,25 +107,26 @@ namespace tezcat.TypeTraits
             TezJsonReader reader = new TezJsonReader();
             reader.load(path);
 
-            var count = reader.count();
+            var count = reader.count;
             for (int i = 0; i < count; i++)
             {
-                reader.enter(i);
-                var info = addClassInfo(
-                    reader.getString(_namespace), reader.getString(_class),
-                    reader.getString(_parent_namespace), reader.getString(_parent_class));
+                reader.beginArray(i);
 
-                reader.enter(_metadata);
-                var mdcount = reader.count();
+                var info = addClassInfo(
+                    reader.readString(_namespace), reader.readString(_class),
+                    reader.readString(_parent_namespace), reader.readString(_parent_class));
+
+                reader.beginObject(_metadata);
+                var mdcount = reader.count;
                 for (int j = 0; j < mdcount; j++)
                 {
-                    reader.enter(j);
+                    reader.beginArray(j);
                     info.addMetaData(readMetaData(reader));
-                    reader.exit();
+                    reader.endArray(j);
                 }
-                reader.exit();
+                reader.endObject(_metadata);
 
-                reader.exit();
+                reader.endArray(i);
             }
         }
 

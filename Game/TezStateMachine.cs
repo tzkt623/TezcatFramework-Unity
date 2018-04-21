@@ -47,14 +47,14 @@ namespace tezcat
         public static void push(int state)
         {
             m_StateLogic.Push(m_FunctionList[state]);
-            onPush.launch(state);
+            onPush?.Invoke(state);
             m_CurrentState = m_StateLogic.Peek();
         }
 
         public static void pop()
         {
             var state = m_StateLogic.Pop();
-            onPop.launch(state.state);
+            onPop?.Invoke(state.state);
             m_CurrentState = m_StateLogic.Peek();
         }
 

@@ -1,6 +1,7 @@
-﻿using tezcat.TypeTraits;
+﻿using System.Collections.Generic;
+using tezcat.Serialization;
 using tezcat.Utility;
-using System.Collections.Generic;
+
 namespace tezcat.DataBase
 {
     public interface ITezItem
@@ -76,32 +77,32 @@ namespace tezcat.DataBase
             return item == null ? false : this.GUID == item.GUID;
         }
 
-        public virtual void serialization(TezJsonWriter writer)
+        public virtual void serialization(TezWriter writer)
         {
-            writer.beginObject(TezReadOnlyString.id);
+            writer.beginObject(TezReadOnlyString.Database.id);
             this.onSerializationID(writer);
-            writer.endObject();
+            writer.endObject(TezReadOnlyString.Database.id);
         }
 
-        protected virtual void onSerializationID(TezJsonWriter writer)
+        protected virtual void onSerializationID(TezWriter writer)
         {
-            writer.pushValue(TezReadOnlyString.group_id, groupType.name);
-            writer.pushValue(TezReadOnlyString.type_id, categoryType.name);
-            writer.pushValue(TezReadOnlyString.object_id, objectID > 0 ? objectID : -1);
-            writer.pushValue(TezReadOnlyString.GUID, this.GUID);
+            writer.write(TezReadOnlyString.Database.group_id, groupType.name);
+            writer.write(TezReadOnlyString.Database.type_id, categoryType.name);
+            writer.write(TezReadOnlyString.Database.object_id, objectID >= 0 ? objectID : -1);
+            writer.write(TezReadOnlyString.Database.GUID, this.GUID);
         }
 
-        public virtual void deserialization(TezJsonReader reader)
+        public virtual void deserialization(TezReader reader)
         {
-            reader.enter(TezReadOnlyString.id);
+            reader.beginObject(TezReadOnlyString.Database.id);
             this.onDeserializationID(reader);
-            reader.exit();
+            reader.endObject(TezReadOnlyString.Database.id);
         }
 
-        protected virtual void onDeserializationID(TezJsonReader reader)
+        protected virtual void onDeserializationID(TezReader reader)
         {
-            this.objectID = reader.tryGetInt(TezReadOnlyString.object_id, -1);
-            this.GUID = reader.tryGetInt(TezReadOnlyString.GUID, -1);
+            this.objectID = reader.readInt(TezReadOnlyString.Database.object_id);
+            this.GUID = reader.readInt(TezReadOnlyString.Database.GUID);
         }
 
         protected abstract void onRefInit();

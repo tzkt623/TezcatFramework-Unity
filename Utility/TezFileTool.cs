@@ -1,6 +1,6 @@
 ﻿using System.IO;
 
-namespace tezcat
+namespace tezcat.Utility
 {
     public class TezFileTool
     {
@@ -9,7 +9,7 @@ namespace tezcat
             return File.Exists(file_path);
         }
 
-        public FileStream createFile(string path)
+        public static FileStream createFile(string path)
         {
             return File.Create(path);
         }
@@ -17,6 +17,11 @@ namespace tezcat
         public static bool directoryExist(string dir_path)
         {
             return Directory.Exists(dir_path);
+        }
+
+        public static DirectoryInfo createDirectory(string path)
+        {
+            return Directory.CreateDirectory(path);
         }
     }
 }

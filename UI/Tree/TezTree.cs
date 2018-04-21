@@ -70,6 +70,15 @@ namespace tezcat.UI
             return false;
         }
 
+        public void reset()
+        {
+            foreach (var child in m_Children)
+            {
+                child.close();
+            }
+            m_Children.Clear();
+        }
+
         public TezTreeNode addData(ITezTreeData data)
         {
             var index = m_Children.Count;
@@ -128,7 +137,12 @@ namespace tezcat.UI
 
         protected override void clear()
         {
-
+            foreach (var child in m_Children)
+            {
+                child.close();
+            }
+            m_Children.Clear();
+            m_Children = null;
         }
 
         public void selectNode(TezTreeNode node)

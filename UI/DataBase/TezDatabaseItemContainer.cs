@@ -24,13 +24,15 @@ namespace tezcat.UI
 
         public void loadItems(TezType group, TezType type)
         {
-            List<TezDatabase.DatabaseSlot> items = null;
+            List<TezDatabase.ContainerSlot> items = null;
 
             if (TezDatabase.instance.tryGetItems(group.ID, type.ID, out items))
             {
                 for (int i = 0; i < items.Count; i++)
                 {
-                    m_SlotList.Add(Instantiate(m_Prefab, m_Content, false));
+                    var slot = Instantiate(m_Prefab, m_Content, false);
+                    slot.open();
+                    m_SlotList.Add(slot);
                 }
 
                 for (int i = 0; i < items.Count; i++)
@@ -40,7 +42,7 @@ namespace tezcat.UI
             }
         }
 
-        public void removeAllItem()
+        public void reset()
         {
             foreach (var slot in m_SlotList)
             {

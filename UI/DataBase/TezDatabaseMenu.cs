@@ -1,4 +1,6 @@
-﻿using UnityEngine;
+﻿using tezcat.DataBase;
+using tezcat.Serialization;
+using UnityEngine;
 using UnityEngine.EventSystems;
 
 namespace tezcat.UI
@@ -33,12 +35,25 @@ namespace tezcat.UI
 
         private void onSave(PointerEventData.InputButton button)
         {
-            //TezDatabase.instance.save();
+            TezDatabase.instance.clearZeroRefItem();
+            TezJsonWriter writer = new TezJsonWriter(true);
+
+            TezDatabase.instance.foreachInnateItem((TezItem item) =>
+            {
+                if(item != null)
+                {
+                    writer.beginObject(item.GUID);
+                    item.serialization(writer);
+                    writer.endObject(item.GUID);
+                }
+            });
+
+            writer.save(TezcatFramework.rootPath + TezcatFramework.databaseFile);
         }
 
         private void onAddItem(PointerEventData.InputButton button)
         {
-            if(m_Window.selectCategory != null)
+            if (m_Window.selectCategory != null)
             {
                 var ui = this.window.createPopup(m_Prefab);
                 ui.bind(m_Window.selectCategory.create());
@@ -48,7 +63,7 @@ namespace tezcat.UI
 
         private void onRefreshDataBase(PointerEventData.InputButton button)
         {
-            if(button == PointerEventData.InputButton.Left)
+            if (button == PointerEventData.InputButton.Left)
             {
                 m_Group.refreshDataBase();
             }

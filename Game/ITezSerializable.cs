@@ -1,12 +1,8 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-
-namespace tezcat
+﻿namespace tezcat.Serialization
 {
     public interface ITezSerializable
     {
-        void serialization(TezJsonWriter writer);
-        void deserialization(TezJsonReader reader);
+        void serialization(TezWriter writer);
+        void deserialization(TezReader reader);
     }
 }

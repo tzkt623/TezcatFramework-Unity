@@ -1,24 +1,21 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace tezcat.UI
 {
-    public class TezcatTool : TezWidget
+    public class TezLocalizationDescriptionItem
+        : TezWidget
     {
-        [SerializeField]
-        TezImageLabelButton m_Database;
-        [SerializeField]
-        TezImageLabelButton m_Localization;
-        [SerializeField]
-        TezImageLabelButton m_Option;
-        [SerializeField]
-        TezImageLabelButton m_Close;
+        Image m_Flag = null;
+        Text m_Name = null;
 
         protected override void Awake()
         {
             base.Awake();
-
+            m_Flag = this.GetComponentInChildren<Image>();
+            m_Name = this.GetComponentInChildren<Text>();
         }
 
         protected override void clear()

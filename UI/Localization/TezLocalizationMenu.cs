@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace tezcat.UI
 {
-    public class TezLocMenu : TezArea
+    public class TezLocalizationMenu : TezArea
     {
         [SerializeField]
         TezImageLabelButton m_AddName = null;

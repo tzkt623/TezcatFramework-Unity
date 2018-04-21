@@ -1,85 +1,8 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using System.Collections.Generic;
 
 
 namespace tezcat
 {
-    public static class TezEventExtension
-    {
-        public static void launch(this TezEventBus.Action action)
-        {
-            if(action != null)
-            {
-                action();
-            }
-        }
-
-        public static void launch<T>(this TezEventBus.Action<T> action, T arg)
-        {
-            if (action != null)
-            {
-                action(arg);
-            }
-        }
-
-        public static void launch<T1, T2>(this TezEventBus.Action<T1, T2> action, T1 arg1, T2 arg2)
-        {
-            if (action != null)
-            {
-                action(arg1, arg2);
-            }
-        }
-
-        public static void launch<T1, T2, T3>(this TezEventBus.Action<T1, T2, T3> action, T1 arg1, T2 arg2, T3 arg3)
-        {
-            if (action != null)
-            {
-                action(arg1, arg2, arg3);
-            }
-        }
-
-        public static void launch<T1, T2, T3, T4>(this TezEventBus.Action<T1, T2, T3, T4> action, T1 arg1, T2 arg2, T3 arg3, T4 arg4)
-        {
-            if (action != null)
-            {
-                action(arg1, arg2, arg3, arg4);
-            }
-        }
-
-        public static void launch<T1, T2, T3, T4, T5>(this TezEventBus.Action<T1, T2, T3, T4, T5> action, T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5)
-        {
-            if (action != null)
-            {
-                action(arg1, arg2, arg3, arg4, arg5);
-            }
-        }
-
-        public static void launch<T1, T2, T3, T4, T5, T6>(this TezEventBus.Action<T1, T2, T3, T4, T5, T6> action, T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6)
-        {
-            if (action != null)
-            {
-                action(arg1, arg2, arg3, arg4, arg5, arg6);
-            }
-        }
-
-        public static void launch<T1, T2, T3, T4, T5, T6, T7>(this TezEventBus.Action<T1, T2, T3, T4, T5, T6, T7> action, T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7)
-        {
-            if (action != null)
-            {
-                action(arg1, arg2, arg3, arg4, arg5, arg6, arg7);
-            }
-        }
-
-        public static void launch<T1, T2, T3, T4, T5, T6, T7, T8>(this TezEventBus.Action<T1, T2, T3, T4, T5, T6, T7, T8> action, T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7, T8 arg8)
-        {
-            if (action != null)
-            {
-                action(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8);
-            }
-        }
-    }
-
     public class TezEventBus : TezSingleton<TezEventBus>
     {
         public delegate void Action();

@@ -5,8 +5,10 @@ using UnityEngine;
 
 namespace tezcat.UI
 {
-    public class TezLocItem : TezWidget
+    public class TezLocalizationNameItem : TezWidget
     {
+
+
         protected override void clear()
         {
 

@@ -37,7 +37,7 @@ namespace tezcat.UI
 
         private void onSelectNode(TezTreeNode node)
         {
-            m_Container.removeAllItem();
+            m_Container.reset();
 
             if (node.parent != null)
             {
@@ -53,6 +53,8 @@ namespace tezcat.UI
 
         public void refreshDataBase()
         {
+            m_Tree.reset();
+
             TezTreeNode current_group = null;
             TezTreeNode current_type = null;
             TezDatabase.instance.foreachItemByGroup(

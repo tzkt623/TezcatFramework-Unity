@@ -1,9 +1,7 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using DG.Tweening;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
-using DG.Tweening;
 
 namespace tezcat.UI
 {
@@ -66,7 +64,7 @@ namespace tezcat.UI
         public override void OnPointerUp(PointerEventData eventData)
         {
             m_Image.color = m_OrgColor;
-            onClick.launch(eventData.button);
+            onClick?.Invoke(eventData.button);
         }
     }
 }

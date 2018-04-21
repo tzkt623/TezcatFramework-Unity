@@ -7,10 +7,16 @@ namespace tezcat.Utility
 {
     public class TezReadOnlyString
     {
-        public readonly static string group_id = "group_id";
-        public readonly static string type_id = "type_id";
-        public readonly static string object_id = "object_id";
-        public readonly static string id = "id";
-        public readonly static string GUID = "GUID";
+        public class Database
+        {
+            public const string id = "id";
+            public const string asset = "asset";
+            public const string gamedata = "gamedata";
+
+            public const string group_id = "group_id";
+            public const string type_id = "type_id";
+            public const string object_id = "object_id";
+            public const string GUID = "GUID";
+        }
     }
 }

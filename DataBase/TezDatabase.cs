@@ -8,28 +8,34 @@ namespace tezcat.DataBase
     {
         public static readonly TezDatabase instance = new TezDatabase();
 
+        /// <summary>
+        /// 组别类型
+        /// </summary>
         public abstract class GroupType : TezType
         {
 
         }
 
+        /// <summary>
+        /// 分类类型
+        /// </summary>
         public abstract class CategoryType : TezType
         {
-            TezEventBus.Function<TezItem> m_Function = null;
+            public TezEventBus.Function<TezItem> function { get; private set; } = null;
 
             void setCreator(TezEventBus.Function<TezItem> function)
             {
-                m_Function = function;
+                this.function = function;
             }
 
             public TezItem create()
             {
-                return m_Function();
+                return function();
             }
 
             public T create<T>() where T : TezItem
             {
-                return (T)m_Function();
+                return (T)function();
             }
 
             protected static T initType<T>(T e, string name, TezEventBus.Function<TezItem> function) where T : CategoryType, new()
@@ -49,13 +55,13 @@ namespace tezcat.DataBase
 
         class Group
         {
-            public GroupType groupRTTI { get; private set; }
+            public GroupType groupType { get; private set; }
 
             public int id { get; set; }
             public List<Container> containers { get; } = new List<Container>();
 
             public Group() { }
-            public Group(GroupType group_rtti) { this.groupRTTI = group_rtti; }
+            public Group(GroupType group_type) { this.groupType = group_type; }
 
             public void registerContainer(CategoryType container_type)
             {
@@ -72,7 +78,7 @@ namespace tezcat.DataBase
             {
                 foreach (var container in this.containers)
                 {
-                    get_type(container.typeRTTI);
+                    get_type(container.categoryType);
                     container.foreachItem(action);
                 }
             }
@@ -124,11 +130,13 @@ namespace tezcat.DataBase
                 for (int i = 0; i < types.Count; i++)
                 {
                     this.containers.Add(new Container(types[i]));
+                    TezDatabaseItemFactory.getGroup(groupType.ID)
+                        .createType(types[i].name, types[i].ID, types[i].function);
                 }
             }
         }
 
-        public class DatabaseSlot : TezSlot
+        public class ContainerSlot : TezSlot
         {
             public void registerItem(TezItem item)
             {
@@ -137,18 +145,18 @@ namespace tezcat.DataBase
             }
         }
 
-        class Container : TezSlotSet<DatabaseSlot>
+        class Container : TezSlotSet<ContainerSlot>
         {
-            public CategoryType typeRTTI { get; private set; }
+            public CategoryType categoryType { get; private set; }
 
             public Container() { }
-            public Container(CategoryType type_rtti) { this.typeRTTI = type_rtti; }
+            public Container(CategoryType category_type) { this.categoryType = category_type; }
 
             public void registerItem(TezItem new_item)
             {
                 if (new_item.objectID == -1)
                 {
-                    this.add((DatabaseSlot slot) =>
+                    this.add((ContainerSlot slot) =>
                     {
                         slot.registerItem(new_item);
                     });
@@ -156,7 +164,7 @@ namespace tezcat.DataBase
                 else
                 {
                     this.grow(new_item.objectID);
-                    this.set(new_item.objectID, (DatabaseSlot slot) =>
+                    this.set(new_item.objectID, (ContainerSlot slot) =>
                     {
                         slot.item = new_item;
                     });
@@ -315,6 +323,14 @@ namespace tezcat.DataBase
                 }
             }
 
+            public void foreachInnateItem(TezEventBus.Action<TezItem> action)
+            {
+                for (int i = 0; i < this.innateCount; i++)
+                {
+                    action(m_Items[i]);
+                }
+            }
+
             public void foreachRuntimeItem(TezEventBus.Action<TezItem> action)
             {
                 for (int i = this.innateCount; i < m_Items.Count; i++)
@@ -435,6 +451,7 @@ namespace tezcat.DataBase
             for (int i = 0; i < groups.Count; i++)
             {
                 m_Group.Add(new Group(groups[i]));
+                TezDatabaseItemFactory.createGroup(groups[i].name, groups[i].ID);
             }
         }
 
@@ -475,7 +492,7 @@ namespace tezcat.DataBase
             return (T)m_Group[group_id][type_id][object_id].item;
         }
 
-        public bool tryGetItems(int group_id, int type_id, out List<DatabaseSlot> result)
+        public bool tryGetItems(int group_id, int type_id, out List<ContainerSlot> result)
         {
             result = m_Group[group_id][type_id].slots;
             return true;
@@ -553,9 +570,14 @@ namespace tezcat.DataBase
         {
             foreach (var group in m_Group)
             {
-                get_group(group.groupRTTI);
+                get_group(group.groupType);
                 group.foreachItem(get_type, get_item);
             }
+        }
+
+        public void foreachInnateItem(TezEventBus.Action<TezItem> action)
+        {
+            m_Global.foreachInnateItem(action);
         }
 
         public void foreachItemByGroup(TezEventBus.Action<TezItem> action)

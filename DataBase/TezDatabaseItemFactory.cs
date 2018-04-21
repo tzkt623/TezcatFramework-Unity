@@ -1,24 +1,22 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
-using tezcat.DataBase;
-namespace tezcat
+namespace tezcat.DataBase
 {
-    public static class TezItemFactory
+    public static class TezDatabaseItemFactory
     {
         public class Group
         {
-            public List<Container> containers { get; } = new List<Container>();
-            public string name { get; private set; }
+            public List<Container> containers { get; private set; } = new List<Container>();
+            public TezStaticString name { get; private set; }
 
-            Dictionary<string, Container> m_Dic = new Dictionary<string, Container>();
+            Dictionary<TezStaticString, Container> m_Dic = new Dictionary<TezStaticString, Container>();
 
-            public Group(string name)
+            public Group(TezStaticString name)
             {
                 this.name = name;
             }
 
-            public Group createType(string type_name, int type_id, TezEventBus.Function<TezItem> function)
+            public Group createType(TezStaticString type_name, int type_id, TezEventBus.Function<TezItem> function)
             {
                 Container container = null;
                 if(!m_Dic.TryGetValue(type_name, out container))
@@ -42,7 +40,7 @@ namespace tezcat
                 get { return containers[type_id]; }
             }
 
-            public Container this[string type_name]
+            public Container this[TezStaticString type_name]
             {
                 get { return m_Dic[type_name]; }
             }
@@ -55,10 +53,10 @@ namespace tezcat
 
         public class Container
         {
-            public string name { get; private set; }
+            public TezStaticString name { get; private set; }
             TezEventBus.Function<TezItem> m_Function = null;
 
-            public void register(string name, TezEventBus.Function<TezItem> function)
+            public void register(TezStaticString name, TezEventBus.Function<TezItem> function)
             {
                 m_Function = function;
                 this.name = name;
@@ -66,19 +64,24 @@ namespace tezcat
 
             public TezItem create()
             {
+#if UNITY_EDITOR
+                TezDebug.isTrue(m_Function != null
+                    , "TezDatabaseItemFactory"
+                    , string.Format("{0}`s Create Function is null", this.name.convertToString()));
+#endif
                 return m_Function();
             }
         }
 
         static List<Group> m_List = new List<Group>();
-        static Dictionary<string, Group> m_Dic = new Dictionary<string, Group>();
+        static Dictionary<TezStaticString, Group> m_Dic = new Dictionary<TezStaticString, Group>();
 
         public static Group convertToGroup(int group_id)
         {
             return m_List[group_id];
         }
 
-        public static Group createGroup(string group_name, int group_id)
+        public static Group createGroup(TezStaticString group_name, int group_id)
         {
             Group group = null;
             if (!m_Dic.TryGetValue(group_name, out group))
@@ -96,6 +99,16 @@ namespace tezcat
             return group;
         }
 
+        public static Group getGroup(int group_id)
+        {
+            return m_List[group_id];
+        }
+
+        public static Group getGroup(TezStaticString group_name)
+        {
+            return m_Dic[group_name];
+        }
+
         public static TezItem create(int group_id, int type_id)
         {
             return m_List[group_id][type_id].create();
@@ -107,24 +120,24 @@ namespace tezcat
 
             if(!(item is T))
             {
-                throw new System.Exception();
+                throw new System.ArgumentException();
             }
 
             return (T)item;
         }
 
-        public static TezItem create(string group_name, string type_name)
+        public static TezItem create(TezStaticString group_name, TezStaticString type_name)
         {
             return m_Dic[group_name][type_name].create();
         }
 
-        public static T create<T>(string group_name, string type_name) where T : TezItem
+        public static T create<T>(TezStaticString group_name, TezStaticString type_name) where T : TezItem
         {
             var item = m_Dic[group_name][type_name].create();
 
             if(!(item is T))
             {
-                throw new System.Exception();
+                throw new System.ArgumentException();
             }
 
             return (T)item;
