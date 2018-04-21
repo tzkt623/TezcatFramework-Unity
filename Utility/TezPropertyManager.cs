@@ -83,7 +83,7 @@ namespace tezcat.Utility
         #region Float
         public void register(TezPV_Float value, TezEventBus.Action<float> function)
         {
-            this.register(value.name, function);
+            this.register(value.propertyName, function);
             properties.Add(value);
         }
 
@@ -107,7 +107,7 @@ namespace tezcat.Utility
         #region Int
         public void register(TezPV_Int value, TezEventBus.Action<int> function)
         {
-            this.register(value.name, function);
+            this.register(value.propertyName, function);
             properties.Add(value);
         }
 
@@ -131,7 +131,7 @@ namespace tezcat.Utility
         #region Bool
         public void register(TezPV_Bool value, TezEventBus.Action<bool> function)
         {
-            this.register(value.name, function);
+            this.register(value.propertyName, function);
             properties.Add(value);
         }
 
@@ -155,7 +155,7 @@ namespace tezcat.Utility
         #region String
         public void register(TezPV_String value, TezEventBus.Action<string> function)
         {
-            this.register(value.name, function);
+            this.register(value.propertyName, function);
             properties.Add(value);
         }
 
@@ -236,7 +236,7 @@ namespace tezcat.Utility
 
         public void inject(TezPropertyValue pv)
         {
-            var pf = this.getPropertyFunction(pv.name);
+            var pf = this.getPropertyFunction(pv.propertyName);
             if (pf != null)
             {
                 pv.accept(pf);

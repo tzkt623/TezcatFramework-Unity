@@ -107,6 +107,7 @@ namespace tezcat.DataBase
 
         protected abstract void onRefInit();
         protected abstract void onRefZero();
+
         public abstract void clear();
     }
 }

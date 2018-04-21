@@ -30,7 +30,7 @@ namespace tezcat.UI
         {
             var editor = Instantiate(m_Prefab, m_Content, false);
             editor.setInfo(
-                TezLocalization.getName(property.name.key_name, property.name.key_name),
+                TezLocalization.getName(property.propertyName.key_name, property.propertyName.key_name),
                 TezPropertyType.Float);
 
             return editor;
@@ -54,19 +54,19 @@ namespace tezcat.UI
                         case TezPropertyType.Float:
                             editor = Instantiate(m_Prefab, m_Content, false);
                             editor.setInfo(
-                                TezLocalization.getName(property.name.key_name, property.name.key_name),
+                                TezLocalization.getName(property.propertyName.key_name, property.propertyName.key_name),
                                 TezPropertyType.Float);
                             break;
                         case TezPropertyType.Int:
                             editor = Instantiate(m_Prefab, m_Content, false);
                             editor.setInfo(
-                                TezLocalization.getName(property.name.key_name, property.name.key_name),
+                                TezLocalization.getName(property.propertyName.key_name, property.propertyName.key_name),
                                 TezPropertyType.Int);
                             break;
                         case TezPropertyType.String:
                             editor = Instantiate(m_Prefab, m_Content, false);
                             editor.setInfo(
-                                TezLocalization.getName(property.name.key_name, property.name.key_name),
+                                TezLocalization.getName(property.propertyName.key_name, property.propertyName.key_name),
                                 TezPropertyType.String);
                             break;
                     }

@@ -29,7 +29,7 @@ namespace tezcat.Utility
     {
         public TezPropertyValue(TezPropertyName name)
         {
-            this.name = name;
+            this.propertyName = name;
         }
 
         public TezPropertyValue()
@@ -37,11 +37,13 @@ namespace tezcat.Utility
 
         }
 
-        public TezPropertyName name { get; private set; } = null;
+        public TezPropertyName propertyName { get; private set; } = null;
+        public string name { get { return propertyName.key_name; } }
+        public int ID { get { return propertyName.key_id; } }
 
         int ITezListSortItem.sortID
         {
-            get { return name.key_id; }
+            get { return propertyName.key_id; }
         }
 
         public abstract TezPropertyType getParameterType();
@@ -52,17 +54,17 @@ namespace tezcat.Utility
 
         public bool equalTo(TezPropertyValue other)
         {
-            return name.key_id == other.name.key_id;
+            return propertyName.key_id == other.propertyName.key_id;
         }
 
         public virtual void clear()
         {
-            name = null;
+            propertyName = null;
         }
 
         int IComparable<TezPropertyValue>.CompareTo(TezPropertyValue other)
         {
-            return this.name.CompareTo(other.name);
+            return this.propertyName.CompareTo(other.propertyName);
         }
     }
 
