@@ -57,6 +57,8 @@ namespace tezcat.UI
         public TezUIEvent.Switcher eventSwitcher { get; private set; } = null;
         public List<ITezEventHandler> handlers { get; private set; } = new List<ITezEventHandler>();
 
+
+        TezPopupContent m_PopupContent = null;
         List<TezPopup> m_PopupList = new List<TezPopup>();
 
         #region Core
@@ -86,6 +88,18 @@ namespace tezcat.UI
         protected override void Start()
         {
             base.Start();
+
+            m_PopupContent = this.GetComponentInChildren<TezPopupContent>();
+            if(m_PopupContent == null)
+            {
+                GameObject go = new GameObject();
+                var rect = go.AddComponent<RectTransform>();
+                go.transform.SetParent(this.transform);
+                go.transform.localPosition = Vector3.zero;
+                go.transform.SetAsLastSibling();
+                m_PopupContent = go.AddComponent<TezPopupContent>();
+                TezUILayout.setLayout(rect, 0, 0, 0, 0);
+            }
         }
 
         protected override void onRefresh()
@@ -132,11 +146,17 @@ namespace tezcat.UI
 
         protected override void clear()
         {
+            foreach (var popup in m_PopupList)
+            {
+                popup.close();
+            }
+            m_PopupList.Clear();
+            m_PopupList = null;
+
             foreach (var area in m_AreaList)
             {
                 area.close();
             }
-
             m_AreaList.Clear();
             m_AreaList = null;
 
@@ -154,9 +174,10 @@ namespace tezcat.UI
         #region Popup
         public T createPopup<T>(T prefab) where T : TezPopup
         {
-            var widget = Instantiate(prefab, this.transform, false);
+            var widget = Instantiate(prefab, m_PopupContent.transform, false);
             widget.window = this;
             widget.transform.localPosition = Vector3.zero;
+            widget.popupID = m_PopupList.Count;
             m_PopupList.Add(widget);
             return widget;
         }
@@ -177,9 +198,6 @@ namespace tezcat.UI
                 });
         }
         #endregion
-
-
-
 
         #region Area
         private void registerArea(TezArea area)

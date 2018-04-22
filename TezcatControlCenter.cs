@@ -40,27 +40,7 @@ namespace tezcat.UI
         {
             base.Start();
 
-            this.checkNeedFile();
-        }
-
-        private void checkNeedFile()
-        {
-            if (!TezFileTool.directoryExist(TezcatFramework.rootPath))
-            {
-                var info = TezFileTool.createDirectory(TezcatFramework.rootPath);
-            }
-
-            this.checkFile(TezcatFramework.localizationPath);
-            this.checkFile(TezcatFramework.databasePath);
-            this.checkFile(TezcatFramework.savePath);
-        }
-
-        private void checkFile(string path)
-        {
-            if (!TezFileTool.fileExist(path))
-            {
-                TezFileTool.createFile(path);
-            }
+            TezcatFramework.checkNeedFile();
         }
 
         private void onCloseButtonClick(PointerEventData.InputButton button)

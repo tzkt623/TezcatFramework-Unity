@@ -14,6 +14,11 @@ namespace tezcat.Utility
             return File.Create(path);
         }
 
+        public static StreamWriter createTextFile(string path)
+        {
+            return File.CreateText(path);
+        }
+
         public static bool directoryExist(string dir_path)
         {
             return Directory.Exists(dir_path);

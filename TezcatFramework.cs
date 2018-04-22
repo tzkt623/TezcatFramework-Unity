@@ -1,5 +1,5 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.IO;
+using tezcat.Utility;
 using UnityEngine;
 
 namespace tezcat
@@ -45,6 +45,52 @@ namespace tezcat
             get
             {
                 return m_RootDir + saveFile;
+            }
+        }
+
+        public static void checkNeedFile()
+        {
+            if (!TezFileTool.directoryExist(TezcatFramework.rootPath))
+            {
+                var info = TezFileTool.createDirectory(TezcatFramework.rootPath);
+            }
+
+            checkFile(
+                TezcatFramework.localizationPath,
+
+                (StreamWriter writer)=>
+                {
+                    writer.Write(
+                        "{" +
+                        "\"name\":[]," +
+                        "\"description\":[]" +
+                        "}");
+                });
+
+            checkFile(
+                TezcatFramework.databasePath,
+
+                (StreamWriter writer) =>
+                {
+                    writer.Write("[]");
+                });
+
+            checkFile(
+                TezcatFramework.savePath,
+
+                (StreamWriter writer) =>
+                {
+
+                });
+        }
+
+        private static void checkFile(string path, TezEventBus.Action<StreamWriter> action)
+        {
+            if (!TezFileTool.fileExist(path))
+            {
+                var writer = TezFileTool.createTextFile(path);
+                action(writer);
+                writer.Close();
             }
         }
     }

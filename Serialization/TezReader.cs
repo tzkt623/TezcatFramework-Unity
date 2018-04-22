@@ -132,6 +132,8 @@ namespace tezcat.Serialization
         public abstract bool tryRead(string key, out float result);
         public abstract bool tryRead(string key, out string result);
 
+        public abstract ICollection<string> getKeys();
+
         public void close()
         {
             m_CheckStringKey.Clear();

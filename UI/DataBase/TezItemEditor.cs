@@ -4,8 +4,7 @@ using UnityEngine;
 
 namespace tezcat.UI
 {
-    public class TezItemEditor
-        : TezPopup
+    public class TezItemEditor : TezPopup
     {
         [SerializeField]
         TezPropertyEditor m_Prefab = null;

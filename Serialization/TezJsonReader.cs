@@ -26,9 +26,25 @@ namespace tezcat.Serialization
                 return false;
             }
 
+            bool result = false;
             m_PreRoot.Clear();
-            m_Current = JsonMapper.ToObject(File.ReadAllText(path));
-            return true;
+            string content = null;
+            try
+            {
+                content = File.ReadAllText(path);
+                result = true;
+            }
+            catch
+            {
+                result = false;
+            }
+
+            if(result)
+            {
+                m_Current = JsonMapper.ToObject(content);
+                result = m_Current.IsArray | m_Current.IsObject;
+            }
+            return result;
         }
 
         public override bool readBool(int key)
@@ -277,6 +293,17 @@ namespace tezcat.Serialization
 
             result = null;
             return false;
+        }
+
+
+        public override ICollection<string> getKeys()
+        {
+            if(!m_Current.IsObject)
+            {
+                throw new System.ArgumentException();
+            }
+
+            return m_Current.Keys;
         }
     }
 }

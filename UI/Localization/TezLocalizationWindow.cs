@@ -1,23 +1,21 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-
-
-namespace tezcat.UI
+﻿namespace tezcat.UI
 {
     public class TezLocalizationWindow : TezWindow
     {
         TezLocalizationMenu m_Menu = null;
-        TezLocalizationDescriptionEditor m_DescriptionEditor = null;
-        TezLocalizationNameEditor m_NameEditor = null;
+        TezLocalizationNameList m_NameList = null;
+        TezLocalizationDescriptionList m_DescriptionList = null;
 
         protected override void Awake()
         {
             base.Awake();
 
             m_Menu = this.GetComponentInChildren<TezLocalizationMenu>();
-            m_DescriptionEditor = this.GetComponentInChildren<TezLocalizationDescriptionEditor>();
-            m_NameEditor = this.GetComponentInChildren<TezLocalizationNameEditor>();
+            m_NameList = this.GetComponentInChildren<TezLocalizationNameList>();
+            m_DescriptionList = this.GetComponentInChildren<TezLocalizationDescriptionList>();
+
+            m_Menu.nameList = m_NameList;
+            m_Menu.descriptionList = m_DescriptionList;
         }
 
         protected override void Start()
