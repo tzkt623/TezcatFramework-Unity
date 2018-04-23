@@ -9,16 +9,16 @@ namespace tezcat.UI
         : TezWidget
         , IPointerEnterHandler
         , IPointerExitHandler
+        , ITezClickable
     {
         [SerializeField]
         TezImageButton m_Edit = null;
 
-        public TezLocalizationDescriptionList list { get; set; }
+        public TezLocalizationDescriptionList listArea { get; set; }
 
         Image m_Flag = null;
         Text m_KeyName = null;
-
-        int m_Index = -1;
+        public int index { get; private set; } = -1;
 
         protected override void Awake()
         {
@@ -31,7 +31,7 @@ namespace tezcat.UI
 
         private void onEditClick(PointerEventData.InputButton button)
         {
-            list.editItem(m_Index);
+            listArea.editItem(index);
         }
 
         protected override void Start()
@@ -43,7 +43,7 @@ namespace tezcat.UI
 
         public void set(int index)
         {
-            m_Index = index;
+            this.index = index;
             this.dirty = true;
         }
 
@@ -51,13 +51,13 @@ namespace tezcat.UI
         {
             m_Flag = null;
             m_KeyName = null;
-            list = null;
+            listArea = null;
         }
 
         protected override void onRefresh()
         {
             string key = null, value = null;
-            if (TezLocalization.getDescription(m_Index, out key, out value))
+            if (TezLocalization.getDescription(index, out key, out value))
             {
                 m_KeyName.text = key;
             }
@@ -66,7 +66,7 @@ namespace tezcat.UI
         void IPointerEnterHandler.OnPointerEnter(PointerEventData eventData)
         {
             string key = null, value = null;
-            if (TezLocalization.getDescription(m_Index, out key, out value))
+            if (TezLocalization.getDescription(index, out key, out value))
             {
                 TezTipManager.instance
                     .setDescription(value)
@@ -77,6 +77,16 @@ namespace tezcat.UI
         void IPointerExitHandler.OnPointerExit(PointerEventData eventData)
         {
             TezTipManager.instance.hide();
+        }
+
+        void IPointerUpHandler.OnPointerUp(PointerEventData eventData)
+        {
+            this.listArea.onFocus(this);
+        }
+
+        void IPointerDownHandler.OnPointerDown(PointerEventData eventData)
+        {
+
         }
     }
 }

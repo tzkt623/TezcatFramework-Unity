@@ -15,6 +15,8 @@ namespace tezcat.UI
 
         [SerializeField]
         RectTransform m_Content = null;
+        [SerializeField]
+        RectTransform m_Vernier = null;
 
         [SerializeField]
         TezImageLabelButton m_Add = null;
@@ -29,6 +31,8 @@ namespace tezcat.UI
         InputField m_SearchKey = null;
 
         TezLocalizationDescriptionItem m_SearchResult = null;
+        TezLocalizationDescriptionItem m_SelectItem = null;
+
         List<TezLocalizationDescriptionItem> m_ItemList = new List<TezLocalizationDescriptionItem>();
 
         protected override void Awake()
@@ -68,7 +72,10 @@ namespace tezcat.UI
 
         private void onRemoveClick(PointerEventData.InputButton button)
         {
-
+            TezLocalization.removeDescription(m_SelectItem.index);
+            m_Vernier.SetParent(this.transform, false);
+            m_Vernier.gameObject.SetActive(false);
+            this.dirty = true;
         }
 
         private void onClearSearchClick(PointerEventData.InputButton button)
@@ -97,7 +104,7 @@ namespace tezcat.UI
                         this.hideAllItem();
                         m_SearchResult = Instantiate(m_Prefab, m_Content, false);
                         m_SearchResult.set(index);
-                        m_SearchResult.list = this;
+                        m_SearchResult.listArea = this;
                         m_SearchResult.open();
                     }
                 }
@@ -124,7 +131,7 @@ namespace tezcat.UI
         {
             var item = Instantiate(m_Prefab, m_Content, false);
             item.set(index);
-            item.list = this;
+            item.listArea = this;
             item.open();
             m_ItemList.Add(item);
         }
@@ -134,6 +141,14 @@ namespace tezcat.UI
             var editor = this.window.createPopup(m_PrefabEditor);
             editor.set(index);
             editor.open();
+        }
+
+        public void onFocus(TezLocalizationDescriptionItem item)
+        {
+            m_SelectItem = item;
+            m_Vernier.gameObject.SetActive(true);
+            m_Vernier.SetParent(m_SelectItem.transform, false);
+            TezUILayout.setLayout(m_Vernier, -4, -4, 4, 4);
         }
     }
 }

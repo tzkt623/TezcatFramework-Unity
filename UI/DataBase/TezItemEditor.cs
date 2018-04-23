@@ -1,6 +1,7 @@
 ﻿using tezcat.DataBase;
 using tezcat.Utility;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 namespace tezcat.UI
 {
@@ -8,15 +9,45 @@ namespace tezcat.UI
     {
         [SerializeField]
         TezPropertyEditor m_Prefab = null;
+
+        [SerializeField]
+        TezImageLabelButton m_Confirm = null;
+        [SerializeField]
+        TezImageLabelButton m_Cancel = null;
+
         [SerializeField]
         RectTransform m_Content = null;
 
         TezItem m_NewItem = null;
 
+        protected override void Awake()
+        {
+            base.Awake();
+
+            m_Confirm.onClick += onConfirmClick;
+            m_Cancel.onClick += onCancelClick;
+        }
+
         protected override void Start()
         {
             base.Start();
             this.dirty = true;
+        }
+
+        private void onCancelClick(PointerEventData.InputButton button)
+        {
+            if(button == PointerEventData.InputButton.Left)
+            {
+                this.close();
+            }
+        }
+
+        private void onConfirmClick(PointerEventData.InputButton button)
+        {
+            if(button == PointerEventData.InputButton.Left)
+            {
+
+            }
         }
 
         public void bind(TezItem item)

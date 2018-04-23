@@ -17,6 +17,8 @@ namespace tezcat.UI
         [SerializeField]
         TezImageLabelButton m_Cancel = null;
 
+        public TezLocalizationNameItem handleItem { get; set; }
+
         int m_Index = -1;
 
         protected override void Awake()
@@ -71,6 +73,7 @@ namespace tezcat.UI
         {
             TezLocalization.saveName(m_Index, m_Localization.text);
             this.close();
+            handleItem.dirty = true;
         }
 
         protected override void onRefresh()

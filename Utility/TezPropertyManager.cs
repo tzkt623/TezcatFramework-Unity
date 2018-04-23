@@ -11,37 +11,45 @@ namespace tezcat.Utility
     public class TezPropertyManager
     {
         #region 属性注册
-        static Dictionary<string, int> m_KeyDic = new Dictionary<string, int>();
-        static List<TezPropertyName> m_IDList = new List<TezPropertyName>();
+        static Dictionary<string, int> m_PropertyDic = new Dictionary<string, int>();
+        static List<TezPropertyName> m_PropertyList = new List<TezPropertyName>();
 
         public static TezPropertyName register(string name)
         {
 #if UNITY_EDITOR
-            TezDebug.isFalse(m_KeyDic.ContainsKey(name), "TezPropertyRegister", string.Format("PropertyKey [{0}] Has Registered", name));
+            TezDebug.isFalse(m_PropertyDic.ContainsKey(name), "TezPropertyRegister", string.Format("PropertyKey [{0}] Has Registered", name));
             TezDebug.info("TezPropertyRegister", string.Format("Register Property [{0}]", name));
 #endif
-            int id = m_IDList.Count;
+            int id = m_PropertyList.Count;
             TezPropertyName pname = new TezPropertyName(name, id);
 
-            m_IDList.Add(pname);
-            m_KeyDic.Add(pname.key_name, id);
+            m_PropertyList.Add(pname);
+            m_PropertyDic.Add(pname.key_name, id);
 
             return pname;
         }
 
         public static int getKeyID(string name)
         {
-            return m_IDList[m_KeyDic[name]].key_id;
+            return m_PropertyList[m_PropertyDic[name]].key_id;
         }
 
         public static string getKeyName(int id)
         {
-            return m_IDList[id].key_name;
+            return m_PropertyList[id].key_name;
         }
 
         public static bool hasKey(string name)
         {
-            return m_KeyDic.ContainsKey(name);
+            return m_PropertyDic.ContainsKey(name);
+        }
+
+        public static void foreachProperty(TezEventBus.Action<TezPropertyName> action)
+        {
+            for (int i = 0; i < m_PropertyList.Count; i++)
+            {
+                action(m_PropertyList[i]);
+            }
         }
         #endregion
 

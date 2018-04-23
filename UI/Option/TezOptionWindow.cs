@@ -37,7 +37,6 @@ namespace tezcat.UI
         private void onSaveAndCloseClick(PointerEventData.InputButton button)
         {
             this.hide();
-            m_RootMenu.SetActive(true);
         }
 
         protected override void Start()
@@ -63,6 +62,12 @@ namespace tezcat.UI
             m_LocalizationName.text = TezcatFramework.localizationFile;
             m_DatabaseName.text = TezcatFramework.databaseFile;
             m_SaveName.text = TezcatFramework.saveFile;
+        }
+
+        protected override void OnDisable()
+        {
+            base.OnDisable();
+            m_RootMenu.SetActive(true);
         }
     }
 }

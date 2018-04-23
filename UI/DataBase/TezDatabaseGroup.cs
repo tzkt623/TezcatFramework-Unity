@@ -10,6 +10,11 @@ namespace tezcat.UI
         [SerializeField]
         TezTree m_Tree = null;
 
+        [SerializeField]
+        RectTransform m_Vernier = null;
+
+        TezTreeNode m_SelectNode = null;
+
         class NodeData : TezTreeData
         {
             public TezType dataType { get; private set; }
@@ -26,32 +31,11 @@ namespace tezcat.UI
         {
             base.Start();
             m_Tree.onSelectNode += onSelectNode;
-
             m_Container = window.getArea<TezDatabaseItemContainer>();
+            this.dirty = true;
         }
 
         protected override void onRefresh()
-        {
-
-        }
-
-        private void onSelectNode(TezTreeNode node)
-        {
-            m_Container.reset();
-
-            if (node.parent != null)
-            {
-                var group = node.parent.data as NodeData;
-                var type = node.data as NodeData;
-
-                ((TezDatabaseWindow)this.window).selectGroup = group.dataType as TezDatabase.GroupType;
-                ((TezDatabaseWindow)this.window).selectCategory = type.dataType as TezDatabase.CategoryType;
-
-                m_Container.loadItems(group.dataType, type.dataType);
-            }
-        }
-
-        public void refreshDataBase()
         {
             m_Tree.reset();
 
@@ -89,6 +73,27 @@ namespace tezcat.UI
                 {
 
                 });
+        }
+
+        private void onSelectNode(TezTreeNode node)
+        {
+            m_Container.reset();
+
+            if (node.parent != null)
+            {
+                m_SelectNode = node;
+                m_Vernier.gameObject.SetActive(true);
+                m_Vernier.SetParent(m_SelectNode.transform, false);
+                TezUILayout.setLayout(m_Vernier, -2, -2, 2, 2);
+
+                var group = node.parent.data as NodeData;
+                var type = node.data as NodeData;
+
+                ((TezDatabaseWindow)this.window).selectGroup = group.dataType as TezDatabase.GroupType;
+                ((TezDatabaseWindow)this.window).selectCategory = type.dataType as TezDatabase.CategoryType;
+
+                m_Container.loadItems(group.dataType, type.dataType);
+            }
         }
     }
 }

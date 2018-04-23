@@ -103,10 +103,17 @@ namespace tezcat.UI
                 if (TezLocalization.getName(key, out value, out index))
                 {
                     this.hideAllItem();
-                    m_SearchResult = Instantiate(m_Prefab, m_Content, false);
-                    m_SearchResult.listArea = this;
-                    m_SearchResult.set(index);
-                    m_SearchResult.open();
+                    if(m_SearchResult != null)
+                    {
+                        m_SearchResult.set(index);
+                    }
+                    else
+                    {
+                        m_SearchResult = Instantiate(m_Prefab, m_Content, false);
+                        m_SearchResult.listArea = this;
+                        m_SearchResult.set(index);
+                        m_SearchResult.open();
+                    }
                 }
             }
         }
@@ -143,10 +150,11 @@ namespace tezcat.UI
             }
         }
 
-        public void edit(int index)
+        public void edit(TezLocalizationNameItem item, int index)
         {
             var editor = this.window.createPopup(m_PrefabEditor);
             editor.set(index);
+            editor.handleItem = item;
             editor.open();
         }
 

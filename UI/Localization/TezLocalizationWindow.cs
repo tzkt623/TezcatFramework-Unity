@@ -1,7 +1,11 @@
-﻿namespace tezcat.UI
+﻿using UnityEngine;
+namespace tezcat.UI
 {
     public class TezLocalizationWindow : TezWindow
     {
+        [SerializeField]
+        GameObject m_RootMenu = null;
+
         TezLocalizationMenu m_Menu = null;
         TezLocalizationNameList m_NameList = null;
         TezLocalizationDescriptionList m_DescriptionList = null;
@@ -27,6 +31,13 @@
         protected override void onRefresh()
         {
             base.onRefresh();
+        }
+
+        protected override void OnDisable()
+        {
+            base.OnDisable();
+
+            m_RootMenu.SetActive(true);
         }
     }
 }

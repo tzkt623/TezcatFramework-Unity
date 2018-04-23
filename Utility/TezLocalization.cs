@@ -84,6 +84,20 @@ namespace tezcat.Utility
             writer.endObject("description");
         }
 
+        public static bool tryAddName(string key, string value)
+        {
+            int index = -1;
+            if(!m_NameDic.TryGetValue(key, out index))
+            {
+                index = m_NameList.Count;
+                m_NameDic.Add(key, index);
+                m_NameList.Add(new Package(key, value));
+                return true;
+            }
+
+            return false;
+        }
+
         public static int addName(string key, string value)
         {
             int index = m_NameList.Count;
@@ -97,6 +111,27 @@ namespace tezcat.Utility
             var pack = m_NameList[index];
             m_NameList.Remove(index);
             m_NameDic.Remove(pack.key);
+        }
+
+        public static void removeDescription(int index)
+        {
+            var pack = m_DescriptionList[index];
+            m_DescriptionList.Remove(index);
+            m_DescriptionDic.Remove(pack.key);
+        }
+
+        public static bool tryAddDescription(string key, string value)
+        {
+            int index = -1;
+            if (!m_DescriptionDic.TryGetValue(key, out index))
+            {
+                index = m_DescriptionList.Count;
+                m_DescriptionDic.Add(key, index);
+                m_DescriptionList.Add(new Package(key, value));
+                return true;
+            }
+
+            return false;
         }
 
         public static int addDescription(string key, string value)

@@ -27,7 +27,7 @@ namespace tezcat.UI
 
         private void onEditClick(PointerEventData.InputButton button)
         {
-            listArea.edit(index);
+            listArea.edit(this, index);
         }
 
         protected override void Start()

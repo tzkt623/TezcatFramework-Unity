@@ -65,7 +65,7 @@ namespace tezcat.UI
         {
             if (button == PointerEventData.InputButton.Left)
             {
-                m_Group.refreshDataBase();
+                m_Group.dirty = true;
             }
         }
 
