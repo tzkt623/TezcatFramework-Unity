@@ -19,7 +19,6 @@ namespace tezcat.UI
         {
             base.Awake();
 
-
             m_Refresh.onClick += onRefreshClick;
             m_Save.onClick += onSaveClick;
         }
@@ -28,7 +27,7 @@ namespace tezcat.UI
         {
             if(button == PointerEventData.InputButton.Left)
             {
-                TezJsonWriter writer = new TezJsonWriter(true);
+                TezJsonWriter writer = new TezJsonWriter();
                 TezLocalization.serialization(writer);
                 writer.save(TezcatFramework.localizationPath);
             }

@@ -42,6 +42,12 @@ namespace tezcat.UI
             m_ClearSearch.onClick += onClearSearchClick;
         }
 
+        protected override void Start()
+        {
+            base.Start();
+            this.dirty = true;
+        }
+
         protected override void onRefresh()
         {
             foreach (var item in m_ItemList)
@@ -73,6 +79,8 @@ namespace tezcat.UI
                 m_SearchResult = null;
                 this.showAllItem();
             }
+
+            m_SearchKey.text = string.Empty;
         }
 
         private void onSearchClick(PointerEventData.InputButton button)

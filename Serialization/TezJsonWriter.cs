@@ -1,6 +1,7 @@
 ﻿using LitJson;
 using System.Collections.Generic;
 using System.IO;
+using System.Text;
 
 namespace tezcat.Serialization
 {
@@ -17,7 +18,7 @@ namespace tezcat.Serialization
 
         public override void save(string path)
         {
-            File.WriteAllText(path, JsonMapper.ToJson(m_Root));
+            File.WriteAllText(path, JsonMapper.ToJson(m_Root), Encoding.ASCII);
         }
 
         #region Object

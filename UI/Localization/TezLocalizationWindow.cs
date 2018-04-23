@@ -21,10 +21,8 @@
         protected override void Start()
         {
             base.Start();
-
             this.dirty = true;
         }
-
 
         protected override void onRefresh()
         {

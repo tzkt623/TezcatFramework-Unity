@@ -26,7 +26,7 @@ namespace tezcat
         {
             get
             {
-                return m_RootDir + localizationFile;
+                return rootPath + localizationFile;
             }
         }
 
@@ -35,7 +35,7 @@ namespace tezcat
         {
             get
             {
-                return m_RootDir + databaseFile;
+                return rootPath + databaseFile;
             }
         }
 
@@ -44,7 +44,7 @@ namespace tezcat
         {
             get
             {
-                return m_RootDir + saveFile;
+                return rootPath + saveFile;
             }
         }
 
@@ -62,8 +62,8 @@ namespace tezcat
                 {
                     writer.Write(
                         "{" +
-                        "\"name\":[]," +
-                        "\"description\":[]" +
+                        "\"name\":{}," +
+                        "\"description\":{}" +
                         "}");
                 });
 

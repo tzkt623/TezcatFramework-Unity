@@ -47,63 +47,64 @@ namespace tezcat.Utility
             }
         }
 
+        public static void deserialization(TezReader reader)
+        {
+            reader.beginObject("name");
+            foreach (var key in reader.getKeys())
+            {
+                m_NameDic.Add(key, m_NameList.Count);
+                m_NameList.Add(new Package(key, reader.readString(key)));
+            }
+            reader.endObject("name");
+
+
+            reader.beginObject("description");
+            foreach (var key in reader.getKeys())
+            {
+                m_DescriptionDic.Add(key, m_DescriptionList.Count);
+                m_DescriptionList.Add(new Package(key, reader.readString(key)));
+            }
+            reader.endObject("description");
+        }
+
+        public static void serialization(TezWriter writer)
+        {
+            writer.beginObject("name");
+            for (int i = 0; i < m_NameList.Count; i++)
+            {
+                writer.write(m_NameList[i].key, m_NameList[i].value);
+            }
+            writer.endObject("name");
+
+            writer.beginObject("description");
+            for (int i = 0; i < m_DescriptionList.Count; i++)
+            {
+                writer.write(m_DescriptionList[i].key, m_DescriptionList[i].value);
+            }
+            writer.endObject("description");
+        }
+
+        public static int addName(string key, string value)
+        {
+            int index = m_NameList.Count;
+            m_NameDic.Add(key, index);
+            m_NameList.Add(new Package(key, value));
+            return index;
+        }
+
+        public static void removeName(int index)
+        {
+            var pack = m_NameList[index];
+            m_NameList.Remove(index);
+            m_NameDic.Remove(pack.key);
+        }
+
         public static int addDescription(string key, string value)
         {
             int index = m_DescriptionList.Count;
             m_DescriptionDic.Add(key, index);
             m_DescriptionList.Add(new Package(key, value));
             return index;
-        }
-
-        public static void deserialization(TezReader reader)
-        {
-            reader.beginArray("name");
-            for (int i = 0; i < reader.count; i++)
-            {
-                reader.beginObject(i);
-                foreach (var key in reader.getKeys())
-                {
-                    m_NameDic.Add(key, m_NameList.Count);
-                    m_NameList.Add(new Package(key, reader.readString(key)));
-                }
-                reader.endObject(i);
-            }
-            reader.endArray("name");
-
-
-            reader.beginArray("description");
-            for (int i = 0; i < reader.count; i++)
-            {
-                reader.beginObject(i);
-                foreach (var key in reader.getKeys())
-                {
-                    m_DescriptionDic.Add(key, m_DescriptionList.Count);
-                    m_DescriptionList.Add(new Package(key, reader.readString(key)));
-                }
-                reader.endObject(i);
-            }
-            reader.endArray("description");
-        }
-
-        public static void serialization(TezWriter writer)
-        {
-            writer.beginArray("name");
-            for (int i = 0; i < m_NameList.Count; i++)
-            {
-                writer.beginObject(i);
-                writer.write(m_NameList[i].key, m_NameList[i].value);
-                writer.endObject(i);
-            }
-            writer.endArray("name");
-
-            writer.beginArray("description");
-            for (int i = 0; i < m_DescriptionList.Count; i++)
-            {
-                writer.beginObject(i);
-                writer.write(m_DescriptionList[i].key, m_DescriptionList[i].value);
-                writer.endObject(i);
-            }
-            writer.endArray("description");
         }
 
         public static void foreachName(TezEventBus.Action<int, string, string> action)
@@ -122,10 +123,9 @@ namespace tezcat.Utility
             }
         }
 
-
         public static void saveName(int key, string value)
         {
-            if(key >= m_NameList.Count || key < 0)
+            if (key >= m_NameList.Count || key < 0)
             {
                 return;
             }
@@ -173,7 +173,7 @@ namespace tezcat.Utility
 
         public static bool getName(int index, out string key, out string value)
         {
-            if(index >= m_NameList.Count || index < 0)
+            if (index >= m_NameList.Count || index < 0)
             {
                 key = null;
                 value = null;
@@ -205,7 +205,7 @@ namespace tezcat.Utility
 
         public static string getName(string key, string value = "$error_name")
         {
-            if(string.IsNullOrEmpty(key))
+            if (string.IsNullOrEmpty(key))
             {
                 return value;
             }
@@ -259,7 +259,7 @@ namespace tezcat.Utility
             }
 
             int index = -1;
-            if(m_DescriptionDic.TryGetValue(key, out index))
+            if (m_DescriptionDic.TryGetValue(key, out index))
             {
                 return m_DescriptionList[index].value;
             }

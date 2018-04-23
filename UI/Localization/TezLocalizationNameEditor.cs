@@ -5,12 +5,12 @@ using UnityEngine.UI;
 
 namespace tezcat.UI
 {
-    public class TezLocalizationDescriptionEditor : TezPopup
+    public class TezLocalizationNameEditor : TezPopup
     {
         [SerializeField]
         InputField m_Key = null;
         [SerializeField]
-        InputField m_Description = null;
+        InputField m_Localization = null;
 
         [SerializeField]
         TezImageLabelButton m_Confirm = null;
@@ -38,16 +38,17 @@ namespace tezcat.UI
         private void checkKey(string key)
         {
             string value;
-            if (TezLocalization.getDescription(key, out value, out m_Index))
+            if (TezLocalization.getName(key, out value, out m_Index))
             {
-                m_Description.text = value;
+                m_Localization.text = value;
             }
             else
             {
-                m_Index = TezLocalization.addDescription(key, value);
+                m_Index = TezLocalization.addName(key, value);
                 this.dirty = true;
             }
         }
+
 
         public void set(int index)
         {
@@ -68,19 +69,19 @@ namespace tezcat.UI
 
         private void onConfirmClick(PointerEventData.InputButton button)
         {
-            TezLocalization.saveDescription(m_Index, m_Description.text);
+            TezLocalization.saveName(m_Index, m_Localization.text);
             this.close();
         }
 
         protected override void onRefresh()
         {
-            if(m_Index != -1)
+            if (m_Index != -1)
             {
                 string key, value;
-                if (TezLocalization.getDescription(m_Index, out key, out value))
+                if (TezLocalization.getName(m_Index, out key, out value))
                 {
                     m_Key.text = key;
-                    m_Description.text = value;
+                    m_Localization.text = value;
                 }
             }
         }
