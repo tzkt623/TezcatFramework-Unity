@@ -13,6 +13,10 @@ namespace tezcat.UI
         [SerializeField]
         RectTransform m_Vernier = null;
 
+        public TezDatabase.GroupType groupType { get; private set; }
+        public TezDatabase.CategoryType categoryType { get; private set; }
+
+        TezDatabaseItemContainer m_Container = null;
         TezTreeNode m_SelectNode = null;
 
         class NodeData : TezTreeData
@@ -25,23 +29,26 @@ namespace tezcat.UI
             }
         }
 
-        TezDatabaseItemContainer m_Container = null;
-
         protected override void Start()
         {
             base.Start();
             m_Tree.onSelectNode += onSelectNode;
-            m_Container = window.getArea<TezDatabaseItemContainer>();
             this.dirty = true;
         }
 
         protected override void onRefresh()
         {
+            if (m_Vernier.gameObject.activeSelf)
+            {
+                m_Vernier.SetParent(this.transform, false);
+                m_Vernier.gameObject.SetActive(false);
+            }
+
             m_Tree.reset();
 
             TezTreeNode current_group = null;
             TezTreeNode current_type = null;
-            TezDatabase.instance.foreachItemByGroup(
+            TezDatabase.instance.foreachCategoryType(
 
                 (TezDatabase.GroupType group) =>
                 {
@@ -67,18 +74,16 @@ namespace tezcat.UI
 #if UNITY_EDITOR
                     TezDebug.info("TezDatabaseWindow", "Add Type : " + type.name);
 #endif
-                },
-
-                (TezItem item) =>
-                {
-
                 });
+        }
+
+        public void setContainer(TezDatabaseItemContainer container)
+        {
+            m_Container = container;
         }
 
         private void onSelectNode(TezTreeNode node)
         {
-            m_Container.reset();
-
             if (node.parent != null)
             {
                 m_SelectNode = node;
@@ -89,11 +94,16 @@ namespace tezcat.UI
                 var group = node.parent.data as NodeData;
                 var type = node.data as NodeData;
 
-                ((TezDatabaseWindow)this.window).selectGroup = group.dataType as TezDatabase.GroupType;
-                ((TezDatabaseWindow)this.window).selectCategory = type.dataType as TezDatabase.CategoryType;
-
-                m_Container.loadItems(group.dataType, type.dataType);
+                this.groupType = group.dataType as TezDatabase.GroupType;
+                this.categoryType = type.dataType as TezDatabase.CategoryType;
             }
+            else
+            {
+                this.groupType = null;
+                this.categoryType = null;
+            }
+
+            m_Container.dirty = true;
         }
     }
 }

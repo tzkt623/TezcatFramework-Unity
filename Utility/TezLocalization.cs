@@ -21,10 +21,17 @@ namespace tezcat.Utility
 
         static Dictionary<string, int> m_NameDic = new Dictionary<string, int>();
         static List<Package> m_NameList = new List<Package>();
+        public static int nameCount
+        {
+            get { return m_NameList.Count; }
+        }
 
         static Dictionary<string, int> m_DescriptionDic = new Dictionary<string, int>();
         static List<Package> m_DescriptionList = new List<Package>();
-
+        public static int descriptionCount
+        {
+            get { return m_DescriptionList.Count; }
+        }
 
         public static void init()
         {
@@ -150,9 +157,27 @@ namespace tezcat.Utility
             }
         }
 
+        public static void foreachName(TezEventBus.Action<int, string, string> action, int begin, int end)
+        {
+            end = Mathf.Min(end, m_NameList.Count);
+            for (int i = begin; i < end; i++)
+            {
+                action(i, m_NameList[i].key, m_NameList[i].value);
+            }
+        }
+
         public static void foreachDescription(TezEventBus.Action<int, string, string> action)
         {
             for (int i = 0; i < m_DescriptionList.Count; i++)
+            {
+                action(i, m_DescriptionList[i].key, m_DescriptionList[i].value);
+            }
+        }
+
+        public static void foreachDescription(TezEventBus.Action<int, string, string> action, int begin, int end)
+        {
+            end = Mathf.Min(end, m_DescriptionList.Count);
+            for (int i = begin; i < end; i++)
             {
                 action(i, m_DescriptionList[i].key, m_DescriptionList[i].value);
             }

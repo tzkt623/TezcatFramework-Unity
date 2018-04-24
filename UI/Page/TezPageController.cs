@@ -1,43 +1,84 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-using UnityEngine.UI;
-
+﻿using UnityEngine;
 namespace tezcat.UI
 {
-    public class TezPageController : TezWidget
+    public class TezPageController
     {
-        [SerializeField]
-        int m_Count = 20;
+        TezEventBus.Action<int, int> m_OnPageChanged;
 
-        [SerializeField]
-        LayoutGroup m_Layout = null;
+        public int currentPage { get; private set; } = 1;
+        public int maxPage { get; private set; } = 0;
+        public int countPerPage { get; set; } = 10;
 
-        HorizontalLayoutGroup m_HLayout = null;
-        VerticalLayoutGroup m_VLayout = null;
-        GridLayoutGroup m_GLayout = null;
+        int m_CurrentPageBegin;
+        int m_CurrentPageEnd;
 
-
-
-        protected override void Awake()
+        public void calculateMaxPage(int total_count)
         {
-            base.Awake();
-
-            m_HLayout = m_Layout as HorizontalLayoutGroup;
-            m_VLayout = m_Layout as VerticalLayoutGroup;
-            m_GLayout = m_Layout as GridLayoutGroup;
-
-
+            this.maxPage = Mathf.CeilToInt(total_count / (float)countPerPage);
         }
 
-        protected override void clear()
+        public void setListener(TezEventBus.Action<int, int> function)
         {
-
+            m_OnPageChanged = function;
         }
 
-        protected override void onRefresh()
+        public void pageUp()
         {
+            if (currentPage == 1)
+            {
+                return;
+            }
 
+            this.currentPage -= 1;
+
+            if (this.calculateCurrentPage())
+            {
+                m_OnPageChanged(this.m_CurrentPageBegin, this.m_CurrentPageEnd);
+            }
+        }
+
+        public void pageDown()
+        {
+            if (currentPage == maxPage)
+            {
+                return;
+            }
+
+            this.currentPage += 1;
+
+            if (this.calculateCurrentPage())
+            {
+                m_OnPageChanged(this.m_CurrentPageBegin, this.m_CurrentPageEnd);
+            }
+        }
+
+        public void setPage(int page)
+        {
+            if(page <= 1)
+            {
+                this.currentPage = 1;
+            }
+            else if(page >= maxPage)
+            {
+                currentPage = maxPage;
+            }
+            else
+            {
+                this.currentPage = page;
+            }
+
+
+            if(this.calculateCurrentPage())
+            {
+                m_OnPageChanged(this.m_CurrentPageBegin, this.m_CurrentPageEnd);
+            }
+        }
+
+        private bool calculateCurrentPage()
+        {
+            this.m_CurrentPageBegin = (this.currentPage - 1) * countPerPage;
+            this.m_CurrentPageEnd = this.m_CurrentPageBegin + countPerPage;
+            return this.m_CurrentPageBegin >= 0 && this.m_CurrentPageEnd > 0;
         }
     }
 }

@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using tezcat.DataBase;
 
 namespace tezcat.UI
 {
@@ -8,6 +7,7 @@ namespace tezcat.UI
         [SerializeField]
         GameObject m_RootMenu = null;
 
+        [Header("Area")]
         [SerializeField]
         TezDatabaseMenu m_Menu = null;
         [SerializeField]
@@ -16,14 +16,17 @@ namespace tezcat.UI
         TezDatabaseItemContainer m_Container = null;
 
 
-        public TezDatabase.GroupType selectGroup { get; set; }
-        public TezDatabase.CategoryType selectCategory { get; set; }
-
-
+        protected override void Awake()
+        {
+            base.Awake();
+        }
 
         protected override void Start()
         {
             base.Start();
+            m_Menu.setGroup(m_Group);
+            m_Container.setGroup(m_Group);
+            m_Group.setContainer(m_Container);
             this.dirty = true;
         }
 

@@ -37,7 +37,12 @@ namespace tezcat.UI
         {
             if (m_Wrapper != null)
             {
+                m_Icon.gameObject.SetActive(true);
                 m_Icon.sprite = m_Wrapper.getIcon();
+            }
+            else
+            {
+                m_Icon.gameObject.SetActive(false);
             }
         }
 

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using tezcat.Utility;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -8,21 +9,31 @@ namespace tezcat.UI
 {
     public class TezLocalizationDescriptionList : TezArea
     {
+        [Header("Prefab")]
         [SerializeField]
         TezLocalizationDescriptionItem m_Prefab = null;
         [SerializeField]
         TezLocalizationDescriptionEditor m_PrefabEditor = null;
 
+        [Header("Widget")]
         [SerializeField]
         RectTransform m_Content = null;
         [SerializeField]
         RectTransform m_Vernier = null;
 
+        [Header("Load Property")]
+        [SerializeField]
+        TezImageLabelButton m_LoadProperty = null;
+        [SerializeField]
+        TezImageLabelButton m_LoadPropertySingal = null;
+
+        [Header("Add And Remove")]
         [SerializeField]
         TezImageLabelButton m_Add = null;
         [SerializeField]
         TezImageLabelButton m_Remove = null;
 
+        [Header("Search")]
         [SerializeField]
         TezImageLabelButton m_Search = null;
         [SerializeField]
@@ -30,6 +41,21 @@ namespace tezcat.UI
         [SerializeField]
         InputField m_SearchKey = null;
 
+        [Header("Page Controller")]
+        [SerializeField]
+        GameObject m_PageGO = null;
+        [SerializeField]
+        int m_CountPerPage = 20;
+        [SerializeField]
+        TezImageButton m_PageUp = null;
+        [SerializeField]
+        TezImageButton m_PageDown = null;
+        [SerializeField]
+        InputField m_Page = null;
+        [SerializeField]
+        Text m_MaxPage = null;
+
+        TezPageController m_PageController = new TezPageController();
         TezLocalizationDescriptionItem m_SearchResult = null;
         TezLocalizationDescriptionItem m_SelectItem = null;
 
@@ -39,11 +65,23 @@ namespace tezcat.UI
         {
             base.Awake();
 
+            ///function
             m_Add.onClick += onAddClick;
             m_Remove.onClick += onRemoveClick;
+            m_LoadProperty.onClick += onLoadPropertyClick;
 
+            ///search
+            m_SearchKey.onEndEdit.AddListener(this.onSearch);
             m_Search.onClick += onSearchClick;
             m_ClearSearch.onClick += onClearSearchClick;
+
+            ///page
+            m_PageController.countPerPage = m_CountPerPage;
+            m_PageController.setListener(this.onPageChanged);
+            m_PageUp.onClick += onPageUpClick;
+            m_PageDown.onClick += onPageDownClick;
+            m_Page.contentType = InputField.ContentType.IntegerNumber;
+            m_Page.onEndEdit.AddListener(this.onPageSet);
         }
 
         protected override void Start()
@@ -54,13 +92,47 @@ namespace tezcat.UI
 
         protected override void onRefresh()
         {
+            m_PageController.setPage(m_PageController.currentPage);
+        }
+
+        private void onPageChanged(int begin, int end)
+        {
+            m_PageController.calculateMaxPage(TezLocalization.descriptionCount);
+            m_MaxPage.text = "/" + m_PageController.maxPage.ToString();
+            m_Page.text = m_PageController.currentPage.ToString();
+
             foreach (var item in m_ItemList)
             {
                 item.close();
             }
             m_ItemList.Clear();
 
-            TezLocalization.foreachDescription(this.createItem);
+            TezLocalization.foreachDescription(
+                this.createItem,
+                begin,
+                end);
+        }
+
+        private void onPageSet(string page)
+        {
+            if (m_Vernier.gameObject.activeSelf)
+            {
+                m_Vernier.SetParent(this.transform, false);
+                m_Vernier.gameObject.SetActive(false);
+            }
+
+            var current = int.Parse(page);
+            m_PageController.setPage(current);
+        }
+
+        private void onPageDownClick(PointerEventData.InputButton button)
+        {
+            m_PageController.pageDown();
+        }
+
+        private void onPageUpClick(PointerEventData.InputButton button)
+        {
+            m_PageController.pageUp();
         }
 
         private void onAddClick(PointerEventData.InputButton button)
@@ -88,26 +160,53 @@ namespace tezcat.UI
             }
 
             m_SearchKey.text = string.Empty;
+            m_PageGO.SetActive(true);
         }
 
         private void onSearchClick(PointerEventData.InputButton button)
         {
             if (button == PointerEventData.InputButton.Left)
             {
-                var key = m_SearchKey.text;
-                if (!string.IsNullOrEmpty(key))
+                this.onSearch(m_SearchKey.text);
+            }
+        }
+
+        private void onSearch(string key)
+        {
+            if (!string.IsNullOrEmpty(key))
+            {
+                string value = null;
+                int index = -1;
+                if (TezLocalization.getDescription(key, out value, out index))
                 {
-                    string value = null;
-                    int index = -1;
-                    if (TezLocalization.getDescription(key, out value, out index))
+                    this.hideAllItem();
+                    if (m_SearchResult != null)
                     {
-                        this.hideAllItem();
-                        m_SearchResult = Instantiate(m_Prefab, m_Content, false);
                         m_SearchResult.set(index);
+                    }
+                    else
+                    {
+                        m_SearchResult = Instantiate(m_Prefab, m_Content, false);
                         m_SearchResult.listArea = this;
+                        m_SearchResult.set(index);
                         m_SearchResult.open();
                     }
                 }
+
+                m_PageGO.SetActive(false);
+            }
+        }
+
+        private void onLoadPropertyClick(PointerEventData.InputButton button)
+        {
+            if (button == PointerEventData.InputButton.Left)
+            {
+                TezPropertyManager.foreachProperty((TezPropertyName name) =>
+                {
+                    TezLocalization.tryAddDescription(name.key_name, name.key_name);
+                });
+
+                this.dirty = true;
             }
         }
 

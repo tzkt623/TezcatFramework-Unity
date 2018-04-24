@@ -19,7 +19,6 @@ namespace tezcat.UI
         TezImageLabelButton m_RefreshDataBase = null;
 
         TezDatabaseGroup m_Group = null;
-        TezDatabaseWindow m_Window = null;
 
         protected override void Start()
         {
@@ -28,9 +27,11 @@ namespace tezcat.UI
             m_Save.onClick += onSave;
             m_AddItem.onClick += onAddItem;
             m_RefreshDataBase.onClick += onRefreshDataBase;
+        }
 
-            m_Group = this.window.getArea<TezDatabaseGroup>();
-            m_Window = (TezDatabaseWindow)this.window;
+        public void setGroup(TezDatabaseGroup group)
+        {
+            m_Group = group;
         }
 
         private void onSave(PointerEventData.InputButton button)
@@ -53,10 +54,10 @@ namespace tezcat.UI
 
         private void onAddItem(PointerEventData.InputButton button)
         {
-            if (m_Window.selectCategory != null)
+            if (m_Group.categoryType != null)
             {
                 var ui = this.window.createPopup(m_Prefab);
-                ui.bind(m_Window.selectCategory.create());
+                ui.bind(m_Group.categoryType.create());
                 ui.open();
             }
         }

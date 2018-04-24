@@ -8,30 +8,53 @@ namespace tezcat.UI
 {
     public class TezLocalizationNameList : TezArea
     {
+        [Header("Prefab")]
         [SerializeField]
         TezLocalizationNameItem m_Prefab = null;
         [SerializeField]
         TezLocalizationNameEditor m_PrefabEditor = null;
 
+        [Header("Widget")]
         [SerializeField]
         RectTransform m_Content = null;
         [SerializeField]
         RectTransform m_Vernier = null;
 
+        [Header("Load Property")]
+        [SerializeField]
+        TezImageLabelButton m_LoadProperty = null;
+        [SerializeField]
+        TezImageLabelButton m_LoadPropertySingal = null;
 
+        [Header("Add And Remove")]
         [SerializeField]
         TezImageLabelButton m_Add = null;
         [SerializeField]
         TezImageLabelButton m_Remove = null;
 
+        [Header("Search")]
         [SerializeField]
         TezImageLabelButton m_Search = null;
-
         [SerializeField]
         TezImageLabelButton m_ClearSearch = null;
         [SerializeField]
         InputField m_SearchKey = null;
 
+        [Header("Page Controller")]
+        [SerializeField]
+        GameObject m_PageGO = null;
+        [SerializeField]
+        int m_CountPerPage = 20;
+        [SerializeField]
+        TezImageButton m_PageUp = null;
+        [SerializeField]
+        TezImageButton m_PageDown = null;
+        [SerializeField]
+        InputField m_Page = null;
+        [SerializeField]
+        Text m_MaxPage = null;
+
+        TezPageController m_PageController = new TezPageController();
         TezLocalizationNameItem m_SearchResult = null;
         TezLocalizationNameItem m_SelectItem = null;
 
@@ -41,13 +64,24 @@ namespace tezcat.UI
         {
             base.Awake();
 
+            ///
             m_Add.onClick += onAddClick;
             m_Remove.onClick += onRemoveClick;
+            m_LoadProperty.onClick += onLoadPropertyClick;
 
+            ///
             m_SearchKey.onEndEdit.AddListener(this.onSearch);
-
             m_Search.onClick += onSearchClick;
             m_ClearSearch.onClick += onClearSearchClick;
+
+            ///
+            m_PageController.countPerPage = m_CountPerPage;
+            m_PageController.setListener(this.onPageChanged);
+            m_PageUp.onClick += onPageUpClick;
+            m_PageDown.onClick += onPageDownClick;
+            m_Page.onValueChanged.AddListener(this.onPageSet);
+            m_Page.contentType = InputField.ContentType.IntegerNumber;
+
         }
 
         protected override void Start()
@@ -58,13 +92,48 @@ namespace tezcat.UI
 
         protected override void onRefresh()
         {
+            m_PageController.setPage(m_PageController.currentPage);
+        }
+
+        private void onPageChanged(int begin, int end)
+        {
+            m_PageController.calculateMaxPage(TezLocalization.nameCount);
+
+            m_MaxPage.text = "/" + m_PageController.maxPage.ToString();
+            m_Page.text = m_PageController.currentPage.ToString();
+
             foreach (var item in m_ItemList)
             {
                 item.close();
             }
             m_ItemList.Clear();
 
-            TezLocalization.foreachName(this.createItem);
+            TezLocalization.foreachName(
+                this.createItem,
+                begin,
+                end);
+        }
+
+        private void onPageDownClick(PointerEventData.InputButton button)
+        {
+            m_PageController.pageDown();
+        }
+
+        private void onPageUpClick(PointerEventData.InputButton button)
+        {
+            m_PageController.pageUp();
+        }
+
+        private void onPageSet(string page)
+        {
+            if (m_Vernier.gameObject.activeSelf)
+            {
+                m_Vernier.SetParent(this.transform, false);
+                m_Vernier.gameObject.SetActive(false);
+            }
+
+            var current = int.Parse(page);
+            m_PageController.setPage(current);
         }
 
         private void onAddClick(PointerEventData.InputButton button)
@@ -92,6 +161,7 @@ namespace tezcat.UI
             }
 
             m_SearchKey.text = string.Empty;
+            m_PageGO.SetActive(true);
         }
 
         private void onSearch(string key)
@@ -103,7 +173,7 @@ namespace tezcat.UI
                 if (TezLocalization.getName(key, out value, out index))
                 {
                     this.hideAllItem();
-                    if(m_SearchResult != null)
+                    if (m_SearchResult != null)
                     {
                         m_SearchResult.set(index);
                     }
@@ -115,6 +185,8 @@ namespace tezcat.UI
                         m_SearchResult.open();
                     }
                 }
+
+                m_PageGO.SetActive(false);
             }
         }
 
@@ -123,6 +195,19 @@ namespace tezcat.UI
             if (button == PointerEventData.InputButton.Left)
             {
                 this.onSearch(m_SearchKey.text);
+            }
+        }
+
+        private void onLoadPropertyClick(PointerEventData.InputButton button)
+        {
+            if (button == PointerEventData.InputButton.Left)
+            {
+                TezPropertyManager.foreachProperty((TezPropertyName name) =>
+                {
+                    TezLocalization.tryAddName(name.key_name, name.key_name);
+                });
+
+                this.dirty = true;
             }
         }
 

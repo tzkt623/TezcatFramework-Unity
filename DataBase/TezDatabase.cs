@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using tezcat.Utility;
 using tezcat.TypeTraits;
+using System;
 
 namespace tezcat.DataBase
 {
@@ -83,6 +84,14 @@ namespace tezcat.DataBase
                 }
             }
 
+            public void foreachCategoryType(TezEventBus.Action<CategoryType> get_type)
+            {
+                foreach (var container in this.containers)
+                {
+                    get_type(container.categoryType);
+                }
+            }
+
             public void foreachItem(TezEventBus.Action<TezItem> action)
             {
                 foreach (var container in this.containers)
@@ -134,6 +143,7 @@ namespace tezcat.DataBase
                         .createType(types[i].name, types[i].ID, types[i].function);
                 }
             }
+
         }
 
         public class ContainerSlot : TezSlot
@@ -561,6 +571,17 @@ namespace tezcat.DataBase
         {
             m_Group[item.groupType.ID].unregisterItem(item);
             m_Global.unregisterInnateItem(item);
+        }
+
+        public void foreachCategoryType(
+            TezEventBus.Action<GroupType> get_group,
+            TezEventBus.Action<CategoryType> get_type)
+        {
+            foreach (var group in m_Group)
+            {
+                get_group(group.groupType);
+                group.foreachCategoryType(get_type);
+            }
         }
 
         public void foreachItemByGroup<T>(
