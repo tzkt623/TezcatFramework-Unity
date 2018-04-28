@@ -92,13 +92,12 @@ namespace tezcat.UI
 
         protected override void onRefresh()
         {
+            m_PageController.calculateMaxPage(TezLocalization.nameCount);
             m_PageController.setPage(m_PageController.currentPage);
         }
 
         private void onPageChanged(int begin, int end)
         {
-            m_PageController.calculateMaxPage(TezLocalization.nameCount);
-
             m_MaxPage.text = "/" + m_PageController.maxPage.ToString();
             m_Page.text = m_PageController.currentPage.ToString();
 

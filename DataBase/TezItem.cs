@@ -2,29 +2,20 @@
 using tezcat.Serialization;
 using tezcat.Utility;
 
+using tezcat.Core;
+using tezcat.String;
+
 namespace tezcat.DataBase
 {
-    public interface ITezItem
-    {
-        string nameID { get; }
-
-        TezDatabase.GroupType groupType { get; }
-        TezDatabase.CategoryType categoryType { get; }
-
-        int objectID { get; set; }
-        int GUID { get; set; }
-        int refrence { get; }
-    }
-
     public abstract class TezItem
-        : ITezItem
+        : ITezData
         , ITezSerializable
         , ITezPropertyOwner
     {
         public abstract TezDatabase.GroupType groupType { get; }
         public abstract TezDatabase.CategoryType categoryType { get; }
 
-        public virtual string nameID { get; set; }
+        public virtual TezStaticString nameID { get; set; }
         public int objectID { get; set; } = -1;
         public int GUID { get; set; } = -1;
         public int refrence { get; private set; } = 0;

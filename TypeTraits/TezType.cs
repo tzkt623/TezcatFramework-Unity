@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using tezcat.String;
 
 namespace tezcat.TypeTraits
 {
@@ -108,14 +109,14 @@ namespace tezcat.TypeTraits
 
             }
 
-            public void invoke(T item, P1 p1, P2 p2)
+            public void invoke(T type, P1 p1, P2 p2)
             {
-                m_CallBack[item.ID](p1, p2);
+                m_CallBack[type.ID](p1, p2);
             }
 
-            public void register(T item, TezEventBus.Action<P1, P2> call_back)
+            public void register(T type, TezEventBus.Action<P1, P2> call_back)
             {
-                m_CallBack[item.ID] = call_back;
+                m_CallBack[type.ID] = call_back;
             }
         }
 
@@ -137,14 +138,14 @@ namespace tezcat.TypeTraits
                 return default(R);
             }
 
-            public R invoke(T item)
+            public R invoke(T type)
             {
-                return m_CallBack[item.ID]();
+                return m_CallBack[type.ID]();
             }
 
-            public void register(T item, TezEventBus.Function<R> call_back)
+            public void register(T type, TezEventBus.Function<R> call_back)
             {
-                m_CallBack[item.ID] = call_back;
+                m_CallBack[type.ID] = call_back;
             }
         }
 
@@ -166,14 +167,14 @@ namespace tezcat.TypeTraits
                 return default(R);
             }
 
-            public R invoke(T item, P1 p1)
+            public R invoke(T type, P1 p1)
             {
-                return m_CallBack[item.ID](p1);
+                return m_CallBack[type.ID](p1);
             }
 
-            public void register(T item, TezEventBus.Function<R, P1> call_back)
+            public void register(T type, TezEventBus.Function<R, P1> call_back)
             {
-                m_CallBack[item.ID] = call_back;
+                m_CallBack[type.ID] = call_back;
             }
         }
 

@@ -84,18 +84,6 @@ namespace tezcat.Utility
         }
     }
 
-    public class TezPF_Float_Array : TezPropertyFunctionT<float[]>
-    {
-        public TezPF_Float_Array(TezPropertyName name) : base(name)
-        {
-        }
-
-        public override TezPropertyType parameterType
-        {
-            get { return TezPropertyType.Float_Array; }
-        }
-    }
-
     public class TezPF_Int : TezPropertyFunctionT<int>
     {
         public TezPF_Int(TezPropertyName name) : base(name)
@@ -108,18 +96,6 @@ namespace tezcat.Utility
         }
     }
 
-    public class TezPF_Int_Array : TezPropertyFunctionT<int[]>
-    {
-        public TezPF_Int_Array(TezPropertyName name) : base(name)
-        {
-        }
-
-        public override TezPropertyType parameterType
-        {
-            get { return TezPropertyType.Int_Array; }
-        }
-    }
-
     public class TezPF_Bool : TezPropertyFunctionT<bool>
     {
         public TezPF_Bool(TezPropertyName name) : base(name)
@@ -129,18 +105,6 @@ namespace tezcat.Utility
         public override TezPropertyType parameterType
         {
             get { return TezPropertyType.Bool; }
-        }
-    }
-
-    public class TezPF_Bool_Array : TezPropertyFunctionT<bool[]>
-    {
-        public TezPF_Bool_Array(TezPropertyName name) : base(name)
-        {
-        }
-
-        public override TezPropertyType parameterType
-        {
-            get { return TezPropertyType.Bool_Array; }
         }
     }
 

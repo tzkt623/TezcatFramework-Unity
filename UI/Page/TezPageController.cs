@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+
 namespace tezcat.UI
 {
     public class TezPageController
@@ -24,7 +25,7 @@ namespace tezcat.UI
 
         public void pageUp()
         {
-            if (currentPage == 1)
+            if (currentPage <= 1)
             {
                 return;
             }
@@ -39,7 +40,7 @@ namespace tezcat.UI
 
         public void pageDown()
         {
-            if (currentPage == maxPage)
+            if (currentPage >= maxPage)
             {
                 return;
             }
@@ -54,6 +55,11 @@ namespace tezcat.UI
 
         public void setPage(int page)
         {
+            if(this.maxPage == 0)
+            {
+                return;
+            }
+
             if(page <= 1)
             {
                 this.currentPage = 1;

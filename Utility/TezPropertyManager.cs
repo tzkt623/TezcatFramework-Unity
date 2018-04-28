@@ -102,14 +102,6 @@ namespace tezcat.Utility
 
             functions.Add(p);
         }
-
-        public void register(TezPropertyName name, TezEventBus.Action<float[]> function)
-        {
-            TezPF_Float_Array p = new TezPF_Float_Array(name);
-            p.setFunction(function);
-
-            functions.Add(p);
-        }
         #endregion
 
         #region Int
@@ -126,14 +118,6 @@ namespace tezcat.Utility
 
             functions.Add(p);
         }
-
-        public void register(TezPropertyName name, TezEventBus.Action<int[]> function)
-        {
-            TezPF_Int_Array p = new TezPF_Int_Array(name);
-            p.setFunction(function);
-
-            functions.Add(p);
-        }
         #endregion
 
         #region Bool
@@ -146,14 +130,6 @@ namespace tezcat.Utility
         public void register(TezPropertyName name, TezEventBus.Action<bool> function)
         {
             TezPF_Bool p = new TezPF_Bool(name);
-            p.setFunction(function);
-
-            functions.Add(p);
-        }
-
-        public void register(TezPropertyName name, TezEventBus.Action<bool[]> function)
-        {
-            TezPF_Bool_Array p = new TezPF_Bool_Array(name);
             p.setFunction(function);
 
             functions.Add(p);

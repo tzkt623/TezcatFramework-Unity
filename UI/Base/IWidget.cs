@@ -46,6 +46,17 @@ namespace tezcat.UI
         , IEndDragHandler
         , IDragHandler
     {
+
+    }
+
+    /// <summary>
+    /// 此控件中的Item可以被拖拽
+    /// </summary>
+    public interface ITezDragableItemWidget
+        : IBeginDragHandler
+        , IEndDragHandler
+        , IDragHandler
+    {
         /// <summary>
         /// 物品的包装器
         /// </summary>

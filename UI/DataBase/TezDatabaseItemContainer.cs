@@ -44,7 +44,6 @@ namespace tezcat.UI
 
             ///page
             m_PageController.countPerPage = m_CountPerPage;
-            m_PageController.setPage(1);
             m_PageController.setListener(this.onPageChanged);
             m_PageUp.onClick += onPageUpClick;
             m_PageDown.onClick += onPageDownClick;
@@ -79,6 +78,7 @@ namespace tezcat.UI
                 m_MaxPage.text = "/" + m_PageController.maxPage.ToString();
                 m_Page.text = m_PageController.currentPage.ToString();
 
+                end = Mathf.Min(end, items.Count);
                 for (int i = begin; i < end; i++)
                 {
                     var slot = Instantiate(m_Prefab, m_Content, false);

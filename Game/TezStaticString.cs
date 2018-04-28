@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace tezcat
+namespace tezcat.String
 {
     public class TezStaticString
     {
@@ -48,7 +48,7 @@ namespace tezcat
 
         public TezStaticString(TezStaticString tstring)
         {
-            if(tstring == null)
+            if (tstring == null)
             {
                 m_ID = 0;
             }
@@ -82,7 +82,7 @@ namespace tezcat
         }
 
 
-        public static bool operator != (TezStaticString x, TezStaticString y)
+        public static bool operator !=(TezStaticString x, TezStaticString y)
         {
             /// (!true || !false) && (x)
             /// (!false || !false) && (x.m_ID != y.m_ID)
@@ -101,7 +101,7 @@ namespace tezcat
         public static int getIDFromString(string str)
         {
             int id = -1;
-            if(!TezStaticString.StringDic.TryGetValue(str, out id))
+            if (!TezStaticString.StringDic.TryGetValue(str, out id))
             {
                 id = TezStaticString.StringList.Count;
                 TezStaticString.StringList.Add(str);

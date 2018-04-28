@@ -6,7 +6,7 @@ namespace tezcat.Wrapper
 {
     public class TezDatabaseItemWrapper : ITezItemWrapper
     {
-        public ITezItem item
+        public TezItem item
         {
             get { return TezDatabase.instance.getItem(m_GUID); }
         }

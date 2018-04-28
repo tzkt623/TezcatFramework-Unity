@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using tezcat.String;
+
 namespace tezcat
 {
     public class TezResUID

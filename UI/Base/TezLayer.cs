@@ -34,7 +34,6 @@ namespace tezcat.UI
 #if UNITY_EDITOR
             TezDebug.isTrue(window.windowID >= 0, "UILayer (" + this.name + ")", "Window (" + window.windowName + ") ID Must EqualGreater Than 0");
 #endif
-
             while (m_WindowsList.Count <= window.windowID)
             {
                 m_WindowsList.Add(null);
@@ -68,6 +67,7 @@ namespace tezcat.UI
             {
                 window.layer = this;
                 window.windowID = m_WindowsList.Count;
+                window.transform.SetParent(this.transform, false);
                 m_WindowsList.Add(window);
                 m_WindowDic.Add(window.windowName, window.windowID);
 #if UNITY_EDITOR

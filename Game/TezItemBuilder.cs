@@ -1,10 +1,8 @@
-﻿
-
-using tezcat.DataBase;
+﻿using tezcat.DataBase;
 
 namespace tezcat
 {
-    public abstract class TezItemBuilder<Item> where Item : ITezItem
+    public abstract class TezItemBuilder<Item> where Item : TezItem
     {
         public abstract Item build(Item item);
     }

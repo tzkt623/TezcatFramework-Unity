@@ -1,45 +1,19 @@
 ﻿using tezcat.Utility;
-using UnityEngine;
-using UnityEngine.UI;
-
 namespace tezcat.UI
 {
-    public class TezPropertyEditor : TezWidget
+    public abstract class TezPropertyEditor : TezWidget
     {
-        [SerializeField]
-        Text m_PropertyName = null;
-        [SerializeField]
-        InputField m_Input = null;
+        protected TezPropertyValue m_Property;
 
-        public void setInfo(string name, TezPropertyType type)
+        public void bind(TezPropertyValue value)
         {
-            m_PropertyName.text = name;
-            switch (type)
-            {
-                case TezPropertyType.Float:
-                    m_Input.contentType = InputField.ContentType.DecimalNumber;
-                    break;
-                case TezPropertyType.Int:
-                    m_Input.contentType = InputField.ContentType.IntegerNumber;
-                    break;
-                case TezPropertyType.Bool:
-                    break;
-                case TezPropertyType.String:
-                    m_Input.contentType = InputField.ContentType.Standard;
-                    break;
-                default:
-                    break;
-            }
+            m_Property = value;
+            this.dirty = true;
         }
 
         protected override void clear()
         {
-
-        }
-
-        protected override void onRefresh()
-        {
-
+            m_Property = null;
         }
     }
 }

@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using tezcat.Utility;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -92,12 +91,12 @@ namespace tezcat.UI
 
         protected override void onRefresh()
         {
+            m_PageController.calculateMaxPage(TezLocalization.descriptionCount);
             m_PageController.setPage(m_PageController.currentPage);
         }
 
         private void onPageChanged(int begin, int end)
         {
-            m_PageController.calculateMaxPage(TezLocalization.descriptionCount);
             m_MaxPage.text = "/" + m_PageController.maxPage.ToString();
             m_Page.text = m_PageController.currentPage.ToString();
 

@@ -1,7 +1,5 @@
 ﻿using System.Collections.Generic;
-using tezcat.Utility;
 using tezcat.TypeTraits;
-using System;
 
 namespace tezcat.DataBase
 {
@@ -146,7 +144,7 @@ namespace tezcat.DataBase
 
         }
 
-        public class ContainerSlot : TezSlot
+        public class ContainerSlot : TezItemSlot
         {
             public void registerItem(TezItem item)
             {
@@ -155,7 +153,7 @@ namespace tezcat.DataBase
             }
         }
 
-        class Container : TezSlotSet<ContainerSlot>
+        class Container : TezItemSlotManager<ContainerSlot>
         {
             public CategoryType categoryType { get; private set; }
 

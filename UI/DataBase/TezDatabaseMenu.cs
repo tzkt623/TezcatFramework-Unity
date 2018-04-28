@@ -9,9 +9,6 @@ namespace tezcat.UI
     public class TezDatabaseMenu : TezArea
     {
         [SerializeField]
-        TezItemEditor m_Prefab;
-
-        [SerializeField]
         TezImageLabelButton m_Save = null;
         [SerializeField]
         TezImageLabelButton m_AddItem = null;
@@ -19,6 +16,12 @@ namespace tezcat.UI
         TezImageLabelButton m_RefreshDataBase = null;
 
         TezDatabaseGroup m_Group = null;
+        TezDatabaseWindow m_Window = null;
+
+        protected override void Awake()
+        {
+            base.Awake();
+        }
 
         protected override void Start()
         {
@@ -32,6 +35,7 @@ namespace tezcat.UI
         public void setGroup(TezDatabaseGroup group)
         {
             m_Group = group;
+            m_Window = (TezDatabaseWindow)this.window;
         }
 
         private void onSave(PointerEventData.InputButton button)
@@ -56,9 +60,7 @@ namespace tezcat.UI
         {
             if (m_Group.categoryType != null)
             {
-                var ui = this.window.createPopup(m_Prefab);
-                ui.bind(m_Group.categoryType.create());
-                ui.open();
+                m_Window.createItemEditor(m_Group.categoryType);
             }
         }
 

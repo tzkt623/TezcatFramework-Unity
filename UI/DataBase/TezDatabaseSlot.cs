@@ -9,7 +9,7 @@ namespace tezcat.UI
     public class TezDatabaseSlot
         : TezWidget
         , ITezFocusableWidget
-        , ITezDragableWidget
+        , ITezDragableItemWidget
         , ITezWrapperBinder<TezDatabaseItemWrapper>
     {
         [SerializeField]

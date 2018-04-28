@@ -13,10 +13,8 @@ namespace tezcat.UI
     public class TezWindow
         : TezWidget
         , ITezFocusableWidget
-        , ITezDropableWidget
         , ITezEventHandler
         , ITezEventDispather
-        , IDropHandler
         , IPointerDownHandler
         , IPointerUpHandler
     {
@@ -36,6 +34,11 @@ namespace tezcat.UI
         {
             get
             {
+                if(string.IsNullOrEmpty(m_WindowName))
+                {
+                    m_WindowName = this.name;
+                }
+
                 return m_WindowName;
             }
             set
@@ -53,7 +56,7 @@ namespace tezcat.UI
         Dictionary<string, int> m_AreaDic = new Dictionary<string, int>();
 
 
-        ITezFocusableWidget m_FocusWidget = null;
+        protected ITezFocusableWidget m_FocusWidget = null;
         public TezUIEvent.Switcher eventSwitcher { get; private set; } = null;
         public List<ITezEventHandler> handlers { get; private set; } = new List<ITezEventHandler>();
 
@@ -353,40 +356,6 @@ namespace tezcat.UI
         void IPointerExitHandler.OnPointerExit(PointerEventData eventData)
         {
 
-        }
-
-        void IDropHandler.OnDrop(PointerEventData eventData)
-        {
-            ((ITezDropableWidget)this).onDrop(eventData);
-        }
-
-        void ITezDropableWidget.onDrop(PointerEventData eventData)
-        {
-            switch (eventData.button)
-            {
-                case PointerEventData.InputButton.Left:
-                    var widget = m_FocusWidget as ITezDropableWidget;
-                    if (widget != null)
-                    {
-                        widget.onDrop(eventData);
-                    }
-                    else
-                    {
-                        TezDragDropManager.dropItem(this, eventData);
-                    }
-                    break;
-                case PointerEventData.InputButton.Right:
-                    break;
-                case PointerEventData.InputButton.Middle:
-                    break;
-                default:
-                    break;
-            }
-        }
-
-        public virtual TezEventBus.Action<ITezItemWrapper> checkItemToDrop(ITezItemWrapper wrapper, PointerEventData event_data)
-        {
-            return null;
         }
     }
 }

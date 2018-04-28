@@ -5,8 +5,8 @@ using UnityEngine.UI;
 
 namespace tezcat.UI
 {
-    public class TezWindowTitle
-        : TezUIObjectMB
+    public class TezTitle
+        : TezWidget
         , IPointerEnterHandler
         , IPointerExitHandler
         , IDragHandler
@@ -20,17 +20,17 @@ namespace tezcat.UI
         [SerializeField]
         Toggle m_PinToggle = null;
 
-        TezWindow m_Window = null;
+        TezWidget m_ParenWidget = null;
         bool m_Pin = false;
 
         protected override void Start()
         {
             base.Start();
 
-            m_Window = this.GetComponentInParent<TezWindow>();
-            if (m_Window == null)
+            m_ParenWidget = this.transform.parent.GetComponent<TezWidget>();
+            if (m_ParenWidget == null)
             {
-                throw new ArgumentNullException("Window Not Found");
+                throw new ArgumentNullException("ParenWidget Not Found");
             }
 
             if (m_TitleName == null)
@@ -40,12 +40,12 @@ namespace tezcat.UI
 
             if (m_CloseButton)
             {
-                m_CloseButton.onClick.AddListener(close);
+                m_CloseButton.onClick.AddListener(this.closeParent);
             }
 
             if (m_HideButton)
             {
-                m_HideButton.onClick.AddListener(hide);
+                m_HideButton.onClick.AddListener(this.hideParent);
             }
 
             if (m_PinToggle)
@@ -55,20 +55,24 @@ namespace tezcat.UI
             }
         }
 
-
-        public override void clear()
+        protected override void onRefresh()
         {
 
         }
 
-        void close()
+        protected override void clear()
         {
-            m_Window.close();
+            m_ParenWidget = null;
         }
 
-        void hide()
+        void closeParent()
         {
-            m_Window.hide();
+            m_ParenWidget.close();
+        }
+
+        void hideParent()
+        {
+            m_ParenWidget.hide();
         }
 
         void pin(bool pin)
@@ -89,7 +93,7 @@ namespace tezcat.UI
             }
 
             var offset = eventData.delta;
-            m_Window.transform.localPosition += new Vector3(offset.x, offset.y, 0);
+            m_ParenWidget.transform.localPosition += new Vector3(offset.x, offset.y, 0);
         }
 
         void IPointerEnterHandler.OnPointerEnter(PointerEventData eventData)

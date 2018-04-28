@@ -8,7 +8,7 @@ namespace tezcat.UI
         : TezWidget
         , ITezWrapperBinder<ITezItemWrapper>
         , ITezFocusableWidget
-        , ITezDragableWidget
+        , ITezDragableItemWidget
         , ITezDropableWidget
 
     {

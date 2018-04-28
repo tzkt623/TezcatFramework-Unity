@@ -1,22 +1,34 @@
-﻿using tezcat.DataBase;
+﻿using System;
+using tezcat.DataBase;
 using tezcat.Utility;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
 namespace tezcat.UI
 {
-    public class TezItemEditor : TezPopup
+    public class TezItemEditor : TezBaseItemEditor
     {
+        [Header("Prefab")]
         [SerializeField]
-        TezPropertyEditor m_Prefab = null;
+        TezPE_IFS m_PrefabPE = null;
+        [SerializeField]
+        TezPropertyView m_PrefabPV = null;
 
+        [Header("Widget")]
         [SerializeField]
         TezImageLabelButton m_Confirm = null;
         [SerializeField]
         TezImageLabelButton m_Cancel = null;
+        [SerializeField]
+        TezImageLabelButton m_Save = null;
 
         [SerializeField]
         RectTransform m_Content = null;
+
+        public override TezDatabase.CategoryType[] categoryTypes
+        {
+            get { throw new NotImplementedException(); }
+        }
 
         TezItem m_NewItem = null;
 
@@ -26,6 +38,7 @@ namespace tezcat.UI
 
             m_Confirm.onClick += onConfirmClick;
             m_Cancel.onClick += onCancelClick;
+            m_Save.onClick += onSaveClick;
         }
 
         protected override void Start()
@@ -36,7 +49,7 @@ namespace tezcat.UI
 
         private void onCancelClick(PointerEventData.InputButton button)
         {
-            if(button == PointerEventData.InputButton.Left)
+            if (button == PointerEventData.InputButton.Left)
             {
                 this.close();
             }
@@ -44,67 +57,67 @@ namespace tezcat.UI
 
         private void onConfirmClick(PointerEventData.InputButton button)
         {
-            if(button == PointerEventData.InputButton.Left)
+            if (button == PointerEventData.InputButton.Left)
             {
 
             }
         }
 
-        public void bind(TezItem item)
+        private void onSaveClick(PointerEventData.InputButton button)
         {
-            m_NewItem = item;
+            if (button == PointerEventData.InputButton.Left)
+            {
+                TezDatabase.instance.registerInnateItem(m_NewItem);
+                this.dirty = true;
+            }
+        }
+
+        public override void bind(TezDatabase.CategoryType category_type)
+        {
+            m_NewItem = category_type.create();
             this.dirty = true;
         }
 
-        TezPropertyEditor create(TezPropertyType type, TezPropertyValue property)
+        private TezPropertyView createPV(string name, string value)
         {
-            var editor = Instantiate(m_Prefab, m_Content, false);
-            editor.setInfo(
-                TezLocalization.getName(property.propertyName.key_name, property.propertyName.key_name),
-                TezPropertyType.Float);
+            var pv = Instantiate(m_PrefabPV, m_Content, false);
+            pv.setInfo(name, value);
+            return pv;
+        }
 
-            return editor;
+        private TezPE_IFS createPE(TezPropertyValue property)
+        {
+            var pe = Instantiate(m_PrefabPE, m_Content, false);
+            pe.bind(property);
+            return pe;
         }
 
         protected override void onRefresh()
         {
-            if(m_NewItem != null)
+            foreach (RectTransform item in m_Content)
             {
-                var properties = m_NewItem.properties;
+                Destroy(item.gameObject);
+            }
 
+            if (m_NewItem != null)
+            {
+                var view = this.createPV(
+                    TezLocalization.getName(TezReadOnlyString.Database.object_id, TezReadOnlyString.Database.object_id),
+                    m_NewItem.objectID.ToString());
+                view.open();
+
+                view = this.createPV(
+                    TezLocalization.getName(TezReadOnlyString.Database.GUID, TezReadOnlyString.Database.GUID),
+                    m_NewItem.GUID.ToString());
+                view.open();
+
+
+                var properties = m_NewItem.properties;
                 for (int i = 0; i < properties.Count; i++)
                 {
                     var property = properties[i];
-                    TezPropertyEditor editor = null;
-                    switch (property.getParameterType())
-                    {
-                        case TezPropertyType.Bool:
-
-                            break;
-                        case TezPropertyType.Float:
-                            editor = Instantiate(m_Prefab, m_Content, false);
-                            editor.setInfo(
-                                TezLocalization.getName(property.propertyName.key_name, property.propertyName.key_name),
-                                TezPropertyType.Float);
-                            break;
-                        case TezPropertyType.Int:
-                            editor = Instantiate(m_Prefab, m_Content, false);
-                            editor.setInfo(
-                                TezLocalization.getName(property.propertyName.key_name, property.propertyName.key_name),
-                                TezPropertyType.Int);
-                            break;
-                        case TezPropertyType.String:
-                            editor = Instantiate(m_Prefab, m_Content, false);
-                            editor.setInfo(
-                                TezLocalization.getName(property.propertyName.key_name, property.propertyName.key_name),
-                                TezPropertyType.String);
-                            break;
-                    }
-
-                    if(editor != null)
-                    {
-                        editor.open();
-                    }
+                    var editor = this.createPE(property);
+                    editor.open();
                 }
             }
         }
