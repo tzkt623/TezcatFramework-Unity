@@ -202,7 +202,7 @@ namespace tezcat.UI
             {
                 TezPropertyManager.foreachProperty((TezPropertyName name) =>
                 {
-                    TezLocalization.tryAddDescription(name.key_name, name.key_name);
+                    TezLocalization.tryAddDescription(name.name, name.name);
                 });
 
                 this.dirty = true;

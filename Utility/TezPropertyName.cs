@@ -5,18 +5,18 @@ namespace tezcat.Utility
     public class TezPropertyName
         : IComparable<TezPropertyName>
     {
-        public readonly string key_name;
-        public readonly int key_id;
+        public readonly string name;
+        public readonly int ID;
 
         public TezPropertyName(string name, int id)
         {
-            key_name = name;
-            key_id = id;
+            this.name = name;
+            this.ID = id;
         }
 
         public int CompareTo(TezPropertyName other)
         {
-            return key_id.CompareTo(other.key_id);
+            return ID.CompareTo(other.ID);
         }
     }
 }

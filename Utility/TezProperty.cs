@@ -42,12 +42,12 @@ namespace tezcat.Utility
 
         public TezPropertyName propertyName { get; private set; } = null;
 
-        public string name { get { return propertyName.key_name; } }
-        public int ID { get { return propertyName.key_id; } }
+        public string name { get { return propertyName.name; } }
+        public int ID { get { return propertyName.ID; } }
 
         int ITezListSortItem.sortID
         {
-            get { return propertyName.key_id; }
+            get { return propertyName.ID; }
         }
 
         public abstract TezPropertyType getParameterType();
@@ -56,7 +56,7 @@ namespace tezcat.Utility
 
         public bool equalTo(TezPropertyValue other)
         {
-            return propertyName.key_id == other.propertyName.key_id;
+            return propertyName.ID == other.propertyName.ID;
         }
 
         public virtual void clear()

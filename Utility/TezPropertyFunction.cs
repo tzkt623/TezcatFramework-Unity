@@ -15,7 +15,7 @@ namespace tezcat.Utility
 
         int ITezListSortItem.sortID
         {
-            get { return name.key_id; }
+            get { return name.ID; }
         }
 
         public TezPropertyFunction(TezPropertyName name)

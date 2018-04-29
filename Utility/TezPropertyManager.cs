@@ -24,19 +24,19 @@ namespace tezcat.Utility
             TezPropertyName pname = new TezPropertyName(name, id);
 
             m_PropertyList.Add(pname);
-            m_PropertyDic.Add(pname.key_name, id);
+            m_PropertyDic.Add(pname.name, id);
 
             return pname;
         }
 
         public static int getKeyID(string name)
         {
-            return m_PropertyList[m_PropertyDic[name]].key_id;
+            return m_PropertyList[m_PropertyDic[name]].ID;
         }
 
         public static string getKeyName(int id)
         {
-            return m_PropertyList[id].key_name;
+            return m_PropertyList[id].name;
         }
 
         public static bool hasKey(string name)
@@ -70,7 +70,7 @@ namespace tezcat.Utility
 
         public void unregister(TezPropertyName name)
         {
-            functions.Remove(name.key_id);
+            functions.Remove(name.ID);
         }
 
         public void sortProperties()
@@ -156,21 +156,21 @@ namespace tezcat.Utility
         public TezPropertyFunction getPropertyFunction(TezPropertyName name)
         {
             TezPropertyFunction function;
-            functions.binaryFind(name.key_id, out function);
+            functions.binaryFind(name.ID, out function);
             return function;
         }
 
         public TezPropertyValue getPropertyValue(TezPropertyName name)
         {
             TezPropertyValue value;
-            properties.binaryFind(name.key_id, out value);
+            properties.binaryFind(name.ID, out value);
             return value;
         }
 
         protected PV getPropertyValue<PV>(TezPropertyName name) where PV : TezPropertyValue
         {
             TezPropertyValue value;
-            properties.binaryFind(name.key_id, out value);
+            properties.binaryFind(name.ID, out value);
             return value as PV;
         }
 
