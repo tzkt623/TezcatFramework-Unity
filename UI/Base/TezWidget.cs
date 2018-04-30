@@ -4,9 +4,20 @@ namespace tezcat.UI
 {
     public abstract class TezWidget
         : UIBehaviour
-        , IWidget
+        , ITezWidget
     {
-        public virtual bool interactable { get; set; } = true;
+        bool m_Interactable;
+        public bool interactable
+        {
+            get { return m_Interactable; }
+            set
+            {
+                m_Interactable = value;
+                this.onInteractable(m_Interactable);
+            }
+        }
+
+        protected virtual void onInteractable(bool value) { }
 
         bool m_Init = false;
         bool m_Dirty = false;

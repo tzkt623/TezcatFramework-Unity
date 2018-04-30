@@ -1,27 +1,24 @@
-﻿using UnityEngine;
+﻿using DG.Tweening;
+using UnityEngine;
 using UnityEngine.EventSystems;
-using UnityEngine.UI;
-using DG.Tweening;
 
 namespace tezcat.UI
 {
-    [RequireComponent(typeof(Text))]
+    [RequireComponent(typeof(TezText))]
     public class TezLabelButton : TezButton
     {
         public event TezEventBus.Action<PointerEventData.InputButton> onClick;
         [SerializeField]
         Color m_PressColor;
-
-        Text m_Label = null;
-
         Color m_LabelColor;
 
+        TezText m_Label = null;
         Tweener m_Tweener = null;
 
         protected override void Awake()
         {
             base.Awake();
-            m_Label = this.GetComponent<Text>();
+            m_Label = this.GetComponent<TezText>();
         }
 
         protected override void Start()
@@ -30,21 +27,21 @@ namespace tezcat.UI
             m_LabelColor = m_Label.color;
         }
 
-        public override void clear()
+        protected override void clear()
         {
-
+            base.clear();
+            m_Label = null;
+            m_Tweener = null;
         }
 
         protected override void onInteractable(bool value)
         {
-            if (value)
-            {
-                m_Label.color = m_LabelColor;
-            }
-            else
-            {
-                m_Label.color = Color.gray;
-            }
+            m_Label.interactable = value;
+        }
+
+        protected override void onRefresh()
+        {
+            m_Label.dirty = true;
         }
 
         public override void OnPointerDown(PointerEventData eventData)
@@ -84,7 +81,7 @@ namespace tezcat.UI
                 return;
             }
 
-            m_Tweener = m_Label.DOColor(ShipProject.Colors.button_hover, 0.8f);
+            m_Tweener = m_Label.handler.DOColor(ShipProject.Colors.button_hover, 0.8f);
             m_Tweener.SetAutoKill(false);
         }
 
@@ -101,7 +98,12 @@ namespace tezcat.UI
 
         public void setText(string text)
         {
-            m_Label.text = text;
+            m_Label.handler.text = text;
+        }
+
+        public void setGetFunction(TezEventBus.Function<string> function)
+        {
+            m_Label.setGetFunction(function);
         }
     }
 }

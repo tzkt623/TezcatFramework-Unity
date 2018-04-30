@@ -7,7 +7,7 @@ namespace tezcat.UI
     /// <summary>
     /// 基础控件
     /// </summary>
-    public interface IWidget
+    public interface ITezWidget
     {
 
     }

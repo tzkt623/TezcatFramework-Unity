@@ -1,17 +1,14 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 
 namespace tezcat.UI
 {
-    public class TezIconLabel
-        : TezUIObjectMB
+    public class TezIconLabel : TezWidget
     {
         [SerializeField]
         Image m_Icon = null;
         [SerializeField]
-        Text m_Label = null;
+        TezText m_Label = null;
 
         public Sprite icon
         {
@@ -25,9 +22,26 @@ namespace tezcat.UI
             set { m_Label.text = value; }
         }
 
-        public override void clear()
+        protected override void Awake()
         {
+            base.Awake();
+        }
 
+        protected override void Start()
+        {
+            base.Start();
+            this.dirty = true;
+        }
+
+        protected override void onRefresh()
+        {
+            m_Label.dirty = true;
+        }
+
+        protected override void clear()
+        {
+            m_Icon = null;
+            m_Label = null;
         }
     }
 }

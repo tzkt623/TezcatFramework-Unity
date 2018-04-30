@@ -12,7 +12,7 @@ namespace tezcat.UI
         [SerializeField]
         Image m_BG = null;
         [SerializeField]
-        Text m_Label = null;
+        TezText m_Label = null;
         [SerializeField]
         Color m_PressColor;
 
@@ -54,9 +54,14 @@ namespace tezcat.UI
             }
         }
 
-        public override void clear()
+        protected override void clear()
         {
 
+        }
+
+        protected override void onRefresh()
+        {
+            m_Label.dirty = true;
         }
 
         public override void OnPointerDown(PointerEventData eventData)

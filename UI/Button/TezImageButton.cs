@@ -5,7 +5,6 @@ using UnityEngine.UI;
 
 namespace tezcat.UI
 {
-
     public class TezImageButton : TezButton
     {
         public event TezEventBus.Action<PointerEventData.InputButton> onClick;
@@ -23,9 +22,9 @@ namespace tezcat.UI
             m_OrgColor = m_Image.color;
         }
 
-        public override void clear()
+        protected override void clear()
         {
-
+            base.clear();
         }
 
         protected override void onInteractable(bool value)
@@ -38,6 +37,11 @@ namespace tezcat.UI
             {
                 m_Image.color = Color.gray;
             }
+        }
+
+        protected override void onRefresh()
+        {
+
         }
 
         public override void OnPointerEnter(PointerEventData eventData)

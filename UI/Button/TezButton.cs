@@ -4,32 +4,26 @@ using UnityEngine.UI;
 namespace tezcat.UI
 {
     public abstract class TezButton
-        : TezUIObjectMB
-        , IPointerEnterHandler
-        , IPointerExitHandler
-        , IPointerDownHandler
-        , IPointerUpHandler
+        : TezWidget
+        , ITezFocusableWidget
+        , ITezClickable
     {
         Graphic m_Graphic = null;
-
-        public sealed override bool interactable
-        {
-            get { return base.interactable; }
-
-            set
-            {
-                base.interactable = value;
-                m_Graphic.raycastTarget = value;
-                this.onInteractable(value);
-            }
-        }
-
-        protected abstract void onInteractable(bool value);
 
         protected override void Awake()
         {
             base.Awake();
             m_Graphic = this.gameObject.GetComponent<Graphic>();
+        }
+
+        protected override void onInteractable(bool value)
+        {
+            m_Graphic.raycastTarget = value;
+        }
+
+        protected override void clear()
+        {
+            m_Graphic = null;
         }
 
         public abstract void OnPointerEnter(PointerEventData eventData);
