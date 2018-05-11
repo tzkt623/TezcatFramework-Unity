@@ -1,9 +1,8 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
 
-namespace tezcat
+namespace tezcat.DataBase
 {
     public enum TezIconType
     {
@@ -46,7 +45,7 @@ namespace tezcat
 
         public TezSprite(string name)
         {
-            m_ID = TezTextureManager.instance.getSpriteID(name);
+            m_ID = TezTextureManager.getSpriteID(name);
         }
 
         public static implicit operator TezSprite(string name)
@@ -56,17 +55,17 @@ namespace tezcat
 
         public Sprite convertToSprite()
         {
-            return TezTextureManager.instance.getSprite(m_ID);
+            return TezTextureManager.getSprite(m_ID);
         }
     }
 
-    public class TezTextureManager : TezSingleton<TezTextureManager>
+    public class TezTextureManager
     {
-        Dictionary<string, int> m_SpriteDic = new Dictionary<string, int>();
+        static Dictionary<string, int> m_SpriteDic = new Dictionary<string, int>();
 
-        List<Sprite> m_SpriteList = new List<Sprite>();
+        static List<Sprite> m_SpriteList = new List<Sprite>();
 
-        public void setErrorSprite(Sprite sprite)
+        public static void setErrorSprite(Sprite sprite)
         {
             if (m_SpriteList.Count == 0)
             {
@@ -80,14 +79,14 @@ namespace tezcat
             m_SpriteDic.Add(sprite.name, 0);
         }
 
-        public void add(Sprite sprite)
+        public static void add(Sprite sprite)
         {
             int id = m_SpriteList.Count;
             m_SpriteList.Add(sprite);
             m_SpriteDic.Add(sprite.name, id);
         }
 
-        public int getSpriteID(string name)
+        public static int getSpriteID(string name)
         {
             if (string.IsNullOrEmpty(name))
             {
@@ -99,9 +98,20 @@ namespace tezcat
             return id;
         }
 
-        public Sprite getSprite(int id)
+        public static Sprite getSprite(int id)
         {
             return m_SpriteList[id];
+        }
+
+        public static Sprite getSprite(string name)
+        {
+            int id = -1;
+            if(m_SpriteDic.TryGetValue(name, out id))
+            {
+                return m_SpriteList[id];
+            }
+
+            return m_SpriteList[0];
         }
     }
 }

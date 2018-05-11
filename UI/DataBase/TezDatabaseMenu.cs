@@ -40,10 +40,10 @@ namespace tezcat.UI
 
         private void onSave(PointerEventData.InputButton button)
         {
-            TezDatabase.instance.clearZeroRefItem();
+            TezDatabase.clearZeroRefItem();
             TezJsonWriter writer = new TezJsonWriter(true);
 
-            TezDatabase.instance.foreachInnateItem((TezItem item) =>
+            TezDatabase.foreachInnateItem((TezItem item) =>
             {
                 if(item != null)
                 {

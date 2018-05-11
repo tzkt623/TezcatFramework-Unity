@@ -69,11 +69,11 @@ namespace tezcat.UI
                 return;
             }
 
-            List<TezDatabase.ContainerSlot> items = null;
-            if (TezDatabase.instance.tryGetItems(m_Group.groupType.ID, m_Group.categoryType.ID, out items))
-            {
-                this.reset();
+            this.reset();
 
+            TezDatabase.tryForeachItems(m_Group.groupType.ID, m_Group.categoryType.ID,
+            (TezDatabase.ContainerSlot slot) =>
+            {
                 m_PageController.calculateMaxPage(items.Count);
                 m_MaxPage.text = "/" + m_PageController.maxPage.ToString();
                 m_Page.text = m_PageController.currentPage.ToString();
@@ -90,7 +90,7 @@ namespace tezcat.UI
                 {
                     m_SlotList[i].bind(new TezDatabaseItemWrapper(items[i].item.GUID));
                 }
-            }
+            });
         }
 
         private void onPageSet(string page)

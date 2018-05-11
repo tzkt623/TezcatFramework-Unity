@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 using UnityEngine.EventSystems;
 
 namespace tezcat.UI
@@ -14,6 +15,8 @@ namespace tezcat.UI
     {
         public TezWindow window { get; set; } = null;
         public TezUIEvent.Switcher eventSwitcher { get; private set; }
+
+        List<TezArea> m_Children = new List<TezArea>();
 
         [SerializeField]
         private int m_AreaID = -1;
@@ -43,11 +46,12 @@ namespace tezcat.UI
         {
             base.Awake();
             this.eventSwitcher = new TezUIEvent.Switcher();
-        }
 
-        public sealed override void close()
-        {
-            base.close();
+            foreach (RectTransform item in this.transform)
+            {
+                var area = item.GetComponent<TezArea>();
+                this.addChild(area);
+            }
         }
 
         public virtual bool checkOnClose()
@@ -57,6 +61,13 @@ namespace tezcat.UI
 
         protected override void clear()
         {
+            foreach (var child in m_Children)
+            {
+                child?.close();
+            }
+            m_Children.Clear();
+            m_Children = null;
+
             window.removeArea(this);
             window = null;
         }
@@ -74,6 +85,26 @@ namespace tezcat.UI
         public void onEvent(int event_id, object data)
         {
             this.eventSwitcher.invoke(event_id, data);
+        }
+
+        private void growSpace(TezArea area)
+        {
+            while(m_Children.Count <= area.areaID)
+            {
+                m_Children.Add(null);
+            }
+        }
+
+        public void addChild(TezArea area)
+        {
+            this.growSpace(area);
+            m_Children[area.areaID] = area;
+            area.window = window;
+        }
+
+        public void removeChild(TezArea area)
+        {
+            m_Children[area.areaID] = null;
         }
     }
 }

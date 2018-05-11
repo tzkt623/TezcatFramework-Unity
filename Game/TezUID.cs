@@ -1,25 +1,16 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
 
 namespace tezcat
 {
     public class TezUID
         : IEquatable<TezUID>
         , IComparable<TezUID>
-        , IEqualityComparer<TezUID>
-        , IComparer<TezUID>
     {
         static Stack<uint> m_FreeIDList = new Stack<uint>();
         static uint m_Giver = 0;
 
         uint m_UID = 0;
-        public uint UID
-        {
-            get { return m_UID; }
-        }
-
         public TezUID()
         {
             if (m_FreeIDList.Count > 0)
@@ -35,6 +26,11 @@ namespace tezcat
         ~TezUID()
         {
             m_FreeIDList.Push(m_UID);
+        }
+
+        public override string ToString()
+        {
+            return string.Format("[{0}]", m_UID);
         }
 
         public override bool Equals(object obj)
@@ -63,19 +59,24 @@ namespace tezcat
             return m_UID.CompareTo(other.m_UID);
         }
 
-        public bool Equals(TezUID x, TezUID y)
+        public static bool operator == (TezUID a, TezUID b)
         {
-            return x.m_UID == y.m_UID;
+            return a.m_UID == b.m_UID;
         }
 
-        public int GetHashCode(TezUID obj)
+        public static bool operator !=(TezUID a, TezUID b)
         {
-            return obj.GetHashCode();
+            return a.m_UID != b.m_UID;
         }
 
-        public int Compare(TezUID x, TezUID y)
+        public static implicit operator uint(TezUID uid)
         {
-            return x.m_UID.CompareTo(y.m_UID);
+            return uid.m_UID;
+        }
+
+        public static bool operator !(TezUID uid)
+        {
+            return object.ReferenceEquals(uid, null);
         }
     }
 }

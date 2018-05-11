@@ -28,16 +28,16 @@
     /// <typeparam name="T"></typeparam>
     public abstract class TezSingleDataSlot<T> : TezSingleDataSlot where T : class, ITezData
     {
-        public T data { get; protected set; } = null;
+        public T myData { get; protected set; } = null;
 
-        public override ITezData getTezData()
+        public sealed override ITezData getTezData()
         {
-            return data;
+            return myData;
         }
 
         public override void clear()
         {
-            this.data = null;
+            this.myData = null;
         }
     }
 

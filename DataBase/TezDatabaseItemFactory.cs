@@ -17,7 +17,7 @@ namespace tezcat.DataBase
                 this.name = name;
             }
 
-            public Group createType(TezStaticString type_name, int type_id, TezEventBus.Function<TezItem> function)
+            public Group create(TezStaticString type_name, int type_id, TezEventBus.Function<TezItem> function)
             {
                 Container container = null;
                 if(!m_Dic.TryGetValue(type_name, out container))

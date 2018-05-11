@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace tezcat
+namespace tezcat.Core
 {
     public interface ITezPrefab
     {

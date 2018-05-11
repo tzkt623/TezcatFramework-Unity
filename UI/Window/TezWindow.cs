@@ -112,12 +112,9 @@ namespace tezcat.UI
             }
         }
 
-        public override void close()
+        protected override bool onClose()
         {
-            if(this.checkForClose())
-            {
-                base.close();
-            }
+            return this.checkForClose();
         }
 
         protected virtual bool checkForClose()

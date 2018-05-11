@@ -43,6 +43,11 @@ namespace tezcat.UI
             m_Icon = null;
             m_Label = null;
         }
+
+        public void setGetFunction(TezEventBus.Function<string> function)
+        {
+            m_Label.setGetFunction(function);
+        }
     }
 }
 

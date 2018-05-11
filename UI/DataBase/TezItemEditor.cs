@@ -67,7 +67,7 @@ namespace tezcat.UI
         {
             if (button == PointerEventData.InputButton.Left)
             {
-                TezDatabase.instance.registerInnateItem(m_NewItem);
+                TezDatabase.registerInnateItem(m_NewItem);
                 this.dirty = true;
             }
         }

@@ -24,10 +24,10 @@ namespace tezcat.UI
 
         }
 
-        public override void close()
+        protected override bool onClose()
         {
             this.window.closePopup(this);
-            base.close();
+            return base.onClose();
         }
 
         protected override void clear()

@@ -45,6 +45,11 @@ namespace tezcat.UI
             this.dirty = true;
         }
 
+        protected override void OnDestroy()
+        {
+            this.clear();
+        }
+
         protected abstract void onRefresh();
 
         /// <summary>
@@ -55,10 +60,14 @@ namespace tezcat.UI
         /// <summary>
         /// 关闭并销毁控件
         /// </summary>
-        public virtual void close()
+        public void close()
         {
-            this.clear();
             Destroy(this.gameObject);
+        }
+
+        protected virtual bool onClose()
+        {
+            return true;
         }
 
         public void open()

@@ -48,7 +48,7 @@ namespace tezcat.UI
 
             TezTreeNode current_group = null;
             TezTreeNode current_type = null;
-            TezDatabase.instance.foreachCategoryType(
+            TezDatabase.foreachCategoryType(
 
                 (TezDatabase.GroupType group) =>
                 {

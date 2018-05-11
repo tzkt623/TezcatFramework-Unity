@@ -1,67 +1,37 @@
 ﻿using tezcat.DataBase;
-using UnityEngine;
-
 using tezcat.Utility;
+using UnityEngine;
 namespace tezcat.Wrapper
 {
-    public class TezDatabaseItemWrapper : ITezItemWrapper
+    /// <summary>
+    /// 数据库专用Item包装器
+    /// </summary>
+    public class TezDatabaseItemWrapper : TezItemWrapper<TezItem>
     {
-        public TezItem item
+        public TezDatabaseItemWrapper(int GUID) : base(GUID)
         {
-            get { return TezDatabase.instance.getItem(m_GUID); }
-        }
 
-        public int count
-        {
-            get { return -1; }
-        }
-
-        public string name
-        {
-            get { return TezLocalization.getName(this.item.nameID); }
-        }
-
-        public string description
-        {
-            get { return TezLocalization.getDescription(this.item.nameID); }
         }
 
         public Sprite getIcon()
         {
-            return new TezSprite().convertToSprite();
+            return TezTextureManager.getSprite(this.myItem.asset.icon_0);
         }
 
-        int m_GUID = -1;
-        public TezDatabaseItemWrapper(int id)
-        {
-            m_GUID = id;
-        }
-
-        public void showTip()
+        public override void showTip()
         {
             var tips = TezTipManager.instance
-                .setName(this.name)
-                .setDescription(this.description)
-                .pushAttributeSeparator()
-                .pushAttribute("GUID", m_GUID)
-                .pushAttribute("ObjectID", item.objectID);
+                .setName(this.myName)
+                .setDescription(this.myDescription)
+                .pushAttribute(TezReadOnlyString.Database.GUID, this.myItem.GUID)
+                .pushAttribute(TezReadOnlyString.Database.object_id, this.myItem.objectID);
 
             tips.show();
         }
 
-        public void hideTip()
+        public override void hideTip()
         {
             TezTipManager.instance.hide();
-        }
-
-        public void onDrop()
-        {
-
-        }
-
-        public void clear()
-        {
-            m_GUID = -1;
         }
     }
 }
