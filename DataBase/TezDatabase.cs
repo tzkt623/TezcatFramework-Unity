@@ -188,7 +188,7 @@ namespace tezcat.DataBase
 
             public void foreachItem<T>(TezEventBus.Action<T> function) where T : TezItem
             {
-                foreach (var slot in m_Slots)
+                foreach (var slot in slots)
                 {
                     function((T)slot.item);
                 }
@@ -497,16 +497,9 @@ namespace tezcat.DataBase
             return (T)m_Group[group_id][type_id][object_id].item;
         }
 
-        public static bool tryForeachItems(int group_id, int type_id, TezEventBus.Action<ContainerSlot> action)
+        public static List<ContainerSlot> getItems(int group_id, int type_id)
         {
-            var container = m_Group[group_id][type_id];
-            if (container.slotCount > 0)
-            {
-                container.foreachSlot(action);
-                return true;
-            }
-
-            return false;
+            return m_Group[group_id][type_id].slots;
         }
 
         /// <summary>

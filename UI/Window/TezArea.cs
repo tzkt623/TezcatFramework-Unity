@@ -50,7 +50,10 @@ namespace tezcat.UI
             foreach (RectTransform item in this.transform)
             {
                 var area = item.GetComponent<TezArea>();
-                this.addChild(area);
+                if(area)
+                {
+                    this.addChild(area);
+                }
             }
         }
 

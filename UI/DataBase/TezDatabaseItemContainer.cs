@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using tezcat.DataBase;
-using tezcat.TypeTraits;
 using tezcat.Wrapper;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -71,8 +70,8 @@ namespace tezcat.UI
 
             this.reset();
 
-            TezDatabase.tryForeachItems(m_Group.groupType.ID, m_Group.categoryType.ID,
-            (TezDatabase.ContainerSlot slot) =>
+            var items = TezDatabase.getItems(m_Group.groupType.ID, m_Group.categoryType.ID);
+            if(items.Count > 0)
             {
                 m_PageController.calculateMaxPage(items.Count);
                 m_MaxPage.text = "/" + m_PageController.maxPage.ToString();
@@ -90,7 +89,7 @@ namespace tezcat.UI
                 {
                     m_SlotList[i].bind(new TezDatabaseItemWrapper(items[i].item.GUID));
                 }
-            });
+            }
         }
 
         private void onPageSet(string page)

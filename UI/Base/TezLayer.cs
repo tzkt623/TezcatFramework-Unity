@@ -22,7 +22,7 @@ namespace tezcat.UI
             foreach (RectTransform child in this.transform)
             {
                 var window = child.GetComponent<TezWindow>();
-                if (window != null)
+                if (window)
                 {
                     this.registerWindow(window);
                 }

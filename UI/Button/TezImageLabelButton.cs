@@ -5,7 +5,8 @@ using UnityEngine.UI;
 
 namespace tezcat.UI
 {
-    public class TezImageLabelButton : TezButton
+    public class TezImageLabelButton
+        : TezButton
     {
         public event TezEventBus.Action<PointerEventData.InputButton> onClick;
 
@@ -34,12 +35,12 @@ namespace tezcat.UI
         protected override void Awake()
         {
             base.Awake();
-            m_LabelColor = m_Label.color;
         }
 
         protected override void Start()
         {
             base.Start();
+            this.dirty = true;
         }
 
         protected override void onInteractable(bool value)
@@ -62,6 +63,7 @@ namespace tezcat.UI
         protected override void onRefresh()
         {
             m_Label.dirty = true;
+            m_LabelColor = m_Label.color;
         }
 
         public override void OnPointerDown(PointerEventData eventData)

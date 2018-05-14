@@ -25,17 +25,17 @@ namespace tezcat.Core
     /// </summary>
     public abstract class TezItemSlotManager<T> : ITezItemSlotManager where T : TezItemSlot, new()
     {
-        protected List<T> m_Slots = new List<T>();
+        public List<T> slots { get; private set; } = new List<T>();
         protected Queue<T> m_EmptySlots = new Queue<T>();
 
         public int slotCount
         {
-            get { return m_Slots.Count; }
+            get { return slots.Count; }
         }
 
         public T this[int slot_id]
         {
-            get { return m_Slots[slot_id]; }
+            get { return slots[slot_id]; }
         }
 
         public void setCapacity(int count)
@@ -44,19 +44,19 @@ namespace tezcat.Core
             {
                 var slot = new T();
                 slot.manager = this;
-                slot.ID = m_Slots.Count;
-                this.m_Slots.Add(slot);
+                slot.ID = slots.Count;
+                this.slots.Add(slot);
             }
         }
 
         public void grow(int slot_count)
         {
-            while (m_Slots.Count <= slot_count)
+            while (slots.Count <= slot_count)
             {
                 var slot = new T();
                 slot.manager = this;
-                slot.ID = m_Slots.Count;
-                m_Slots.Add(slot);
+                slot.ID = slots.Count;
+                slots.Add(slot);
             }
         }
 
@@ -64,20 +64,20 @@ namespace tezcat.Core
         {
             var slot = new T();
             slot.manager = this;
-            slot.ID = m_Slots.Count;
-            m_Slots.Add(slot);
+            slot.ID = slots.Count;
+            slots.Add(slot);
             set_slot(slot);
         }
 
         protected void set(int slot_id, TezEventBus.Action<T> set_slot)
         {
-            var slot = m_Slots[slot_id];
+            var slot = slots[slot_id];
             set_slot(slot);
         }
 
         protected void remove(int slot_id)
         {
-            var slot = m_Slots[slot_id];
+            var slot = slots[slot_id];
             slot.item = null;
         }
 
@@ -85,18 +85,18 @@ namespace tezcat.Core
         {
             slot = default(T);
 
-            if (slot_id >= m_Slots.Count)
+            if (slot_id >= slots.Count)
             {
                 return false;
             }
 
-            slot = m_Slots[slot_id];
+            slot = slots[slot_id];
             return slot != null;
         }
 
         public void foreachSlot(TezEventBus.Action<T> function)
         {
-            foreach (var slot in m_Slots)
+            foreach (var slot in slots)
             {
                 function(slot);
             }
@@ -104,12 +104,12 @@ namespace tezcat.Core
 
         public void clear()
         {
-            foreach (var slot in m_Slots)
+            foreach (var slot in slots)
             {
                 slot.clear();
             }
 
-            m_Slots.Clear();
+            slots.Clear();
         }
     }
 }
