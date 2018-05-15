@@ -20,25 +20,9 @@ namespace tezcat.UI
         Text m_KeyName = null;
         public int index { get; private set; } = -1;
 
-        protected override void Awake()
-        {
-            base.Awake();
-            m_Flag = this.GetComponentInChildren<Image>();
-            m_KeyName = this.GetComponentInChildren<Text>();
-
-            m_Edit.onClick += onEditClick;
-        }
-
         private void onEditClick(PointerEventData.InputButton button)
         {
             listArea.editItem(index);
-        }
-
-        protected override void Start()
-        {
-            base.Start();
-
-            this.dirty = true;
         }
 
         public void set(int index)
@@ -85,6 +69,44 @@ namespace tezcat.UI
         }
 
         void IPointerDownHandler.OnPointerDown(PointerEventData eventData)
+        {
+
+        }
+
+        protected override void preInit()
+        {
+            m_Flag = this.GetComponentInChildren<Image>();
+            m_KeyName = this.GetComponentInChildren<Text>();
+
+            m_Edit.onClick += onEditClick;
+        }
+
+        protected override void initWidget()
+        {
+
+        }
+
+        protected override void linkEvent()
+        {
+
+        }
+
+        protected override void unLinkEvent()
+        {
+
+        }
+
+        protected override void onShow()
+        {
+
+        }
+
+        protected override void onHide()
+        {
+
+        }
+
+        public override void reset()
         {
 
         }

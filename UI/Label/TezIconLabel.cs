@@ -22,17 +22,6 @@ namespace tezcat.UI
             set { m_Label.text = value; }
         }
 
-        protected override void Awake()
-        {
-            base.Awake();
-        }
-
-        protected override void Start()
-        {
-            base.Start();
-            this.dirty = true;
-        }
-
         protected override void onRefresh()
         {
             m_Label.dirty = true;
@@ -47,6 +36,41 @@ namespace tezcat.UI
         public void setGetFunction(TezEventBus.Function<string> function)
         {
             m_Label.setGetFunction(function);
+        }
+
+        protected override void preInit()
+        {
+
+        }
+
+        protected override void initWidget()
+        {
+
+        }
+
+        protected override void linkEvent()
+        {
+
+        }
+
+        protected override void unLinkEvent()
+        {
+
+        }
+
+        protected override void onShow()
+        {
+
+        }
+
+        protected override void onHide()
+        {
+
+        }
+
+        public override void reset()
+        {
+
         }
     }
 }

@@ -18,14 +18,9 @@ namespace tezcat.UI
         TezDatabaseGroup m_Group = null;
         TezDatabaseWindow m_Window = null;
 
-        protected override void Awake()
+        protected override void initWidget()
         {
-            base.Awake();
-        }
-
-        protected override void Start()
-        {
-            base.Start();
+            base.initWidget();
 
             m_Save.onClick += onSave;
             m_AddItem.onClick += onAddItem;
@@ -82,7 +77,21 @@ namespace tezcat.UI
             m_AddItem = null;
             m_RefreshDataBase = null;
 
+            m_Save.onClick -= onSave;
+            m_AddItem.onClick -= onAddItem;
+            m_RefreshDataBase.onClick -= onRefreshDataBase;
+
             base.clear();
+        }
+
+        protected override void onShow()
+        {
+
+        }
+
+        protected override void onHide()
+        {
+
         }
     }
 }

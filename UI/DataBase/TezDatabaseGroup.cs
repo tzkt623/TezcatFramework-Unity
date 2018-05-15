@@ -29,11 +29,16 @@ namespace tezcat.UI
             }
         }
 
-        protected override void Start()
+        protected override void initWidget()
         {
-            base.Start();
+            base.initWidget();
             m_Tree.onSelectNode += onSelectNode;
-            this.dirty = true;
+        }
+
+        protected override void clear()
+        {
+            base.clear();
+            m_Tree.onSelectNode -= onSelectNode;
         }
 
         protected override void onRefresh()
@@ -104,6 +109,16 @@ namespace tezcat.UI
             }
 
             m_Container.dirty = true;
+        }
+
+        protected override void onShow()
+        {
+
+        }
+
+        protected override void onHide()
+        {
+
         }
     }
 }

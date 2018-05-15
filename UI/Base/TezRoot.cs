@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.EventSystems;
 
 namespace tezcat.UI
 {
@@ -11,28 +10,6 @@ namespace tezcat.UI
 
         List<TezLayer> m_LayerList = new List<TezLayer>();
         Dictionary<string, int> m_LayerDic = new Dictionary<string, int>();
-
-        protected override void Awake()
-        {
-            base.Awake();
-            instance?.close();
-            instance = this;
-
-            this.addLayer(this.GetComponent<TezLayer>());
-            foreach (RectTransform child in this.transform)
-            {
-                var layer = child.GetComponent<TezLayer>();
-                if (layer != null)
-                {
-                    this.addLayer(layer);
-                }
-            }
-        }
-
-        protected override void Start()
-        {
-            base.Start();
-        }
 
         public void addLayer(TezLayer layer)
         {
@@ -149,6 +126,52 @@ namespace tezcat.UI
 
             m_LayerDic.Clear();
             m_LayerDic = null;
+        }
+
+        protected override void preInit()
+        {
+            instance?.close();
+            instance = this;
+
+            this.addLayer(this.GetComponent<TezLayer>());
+            foreach (RectTransform child in this.transform)
+            {
+                var layer = child.GetComponent<TezLayer>();
+                if (layer != null)
+                {
+                    this.addLayer(layer);
+                }
+            }
+        }
+
+        protected override void initWidget()
+        {
+
+        }
+
+        protected override void linkEvent()
+        {
+
+        }
+
+        protected override void unLinkEvent()
+        {
+
+        }
+
+        protected override void onShow()
+        {
+
+        }
+
+        protected override void onHide()
+        {
+
+        }
+
+        public override void reset()
+        {
+
         }
     }
 }

@@ -26,23 +26,6 @@ namespace tezcat.UI
         [SerializeField]
         TezOptionWindow m_OptionWindow = null;
 
-        protected override void Awake()
-        {
-            base.Awake();
-
-            m_DatabaseButton.onClick += onDatabaseButtonClick;
-            m_LocalizationButton.onClick += onLocalizationButtonClick;
-            m_OptionButton.onClick += onOptionButtonClick;
-            m_CloseButton.onClick += onCloseButtonClick;
-        }
-
-        protected override void Start()
-        {
-            base.Start();
-
-            TezcatFramework.checkNeedFile();
-        }
-
         private void onCloseButtonClick(PointerEventData.InputButton button)
         {
             m_Menu.SetActive(false);
@@ -82,6 +65,44 @@ namespace tezcat.UI
             {
                 m_Menu.SetActive(true);
             }
+        }
+
+        protected override void preInit()
+        {
+            m_DatabaseButton.onClick += onDatabaseButtonClick;
+            m_LocalizationButton.onClick += onLocalizationButtonClick;
+            m_OptionButton.onClick += onOptionButtonClick;
+            m_CloseButton.onClick += onCloseButtonClick;
+        }
+
+        protected override void initWidget()
+        {
+            TezcatFramework.checkNeedFile();
+        }
+
+        protected override void linkEvent()
+        {
+
+        }
+
+        protected override void unLinkEvent()
+        {
+
+        }
+
+        protected override void onShow()
+        {
+
+        }
+
+        protected override void onHide()
+        {
+
+        }
+
+        public override void reset()
+        {
+
         }
     }
 }

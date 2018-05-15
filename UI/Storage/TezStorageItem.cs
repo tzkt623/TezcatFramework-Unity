@@ -11,21 +11,9 @@ namespace tezcat.UI
     {
         Image m_Image = null;
 
-        protected override void Awake()
-        {
-            base.Awake();
-            m_Image = this.GetComponent<Image>();
-        }
-
-        protected override void OnDestroy()
-        {
-            base.OnDestroy();
-            m_Image = null;
-        }
-
         protected override void clear()
         {
-
+            m_Image = null;
         }
 
         protected override void onRefresh()
@@ -34,6 +22,41 @@ namespace tezcat.UI
         }
 
         public void bind(ITezItemWrapper wrapper)
+        {
+
+        }
+
+        protected override void preInit()
+        {
+            m_Image = this.GetComponent<Image>();
+        }
+
+        protected override void initWidget()
+        {
+
+        }
+
+        protected override void linkEvent()
+        {
+
+        }
+
+        protected override void unLinkEvent()
+        {
+
+        }
+
+        public override void reset()
+        {
+
+        }
+
+        protected override void onShow()
+        {
+
+        }
+
+        protected override void onHide()
         {
 
         }

@@ -35,7 +35,10 @@ namespace tezcat.Core
 
         public T this[int slot_id]
         {
-            get { return slots[slot_id]; }
+            get
+            {
+                return slots[slot_id];
+            }
         }
 
         public void setCapacity(int count)

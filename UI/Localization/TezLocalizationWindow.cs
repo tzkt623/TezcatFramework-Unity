@@ -10,9 +10,9 @@ namespace tezcat.UI
         TezLocalizationNameList m_NameList = null;
         TezLocalizationDescriptionList m_DescriptionList = null;
 
-        protected override void Awake()
+        protected override void preInit()
         {
-            base.Awake();
+            base.preInit();
 
             m_Menu = this.GetComponentInChildren<TezLocalizationMenu>();
             m_NameList = this.GetComponentInChildren<TezLocalizationNameList>();
@@ -22,21 +22,14 @@ namespace tezcat.UI
             m_Menu.descriptionList = m_DescriptionList;
         }
 
-        protected override void Start()
-        {
-            base.Start();
-            this.dirty = true;
-        }
-
         protected override void onRefresh()
         {
             base.onRefresh();
         }
 
-        protected override void OnDisable()
+        protected override void onHide()
         {
-            base.OnDisable();
-
+            base.onHide();
             m_RootMenu.SetActive(true);
         }
     }

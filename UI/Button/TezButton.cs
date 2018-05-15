@@ -10,9 +10,8 @@ namespace tezcat.UI
     {
         Graphic m_Graphic = null;
 
-        protected override void Awake()
+        protected override void preInit()
         {
-            base.Awake();
             m_Graphic = this.gameObject.GetComponent<Graphic>();
         }
 

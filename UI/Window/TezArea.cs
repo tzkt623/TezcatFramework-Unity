@@ -42,24 +42,42 @@ namespace tezcat.UI
             }
         }
 
-        protected override void Awake()
+        #region Widget
+        protected override void preInit()
         {
-            base.Awake();
             this.eventSwitcher = new TezUIEvent.Switcher();
 
             foreach (RectTransform item in this.transform)
             {
                 var area = item.GetComponent<TezArea>();
-                if(area)
+                if (area)
                 {
                     this.addChild(area);
                 }
             }
         }
 
-        public virtual bool checkOnClose()
+        protected override void initWidget()
         {
-            return true;
+
+        }
+
+        protected override void linkEvent()
+        {
+
+        }
+
+        protected override void unLinkEvent()
+        {
+
+        }
+
+        public override void reset()
+        {
+            foreach (var child in m_Children)
+            {
+                child?.reset();
+            }
         }
 
         protected override void clear()
@@ -74,6 +92,8 @@ namespace tezcat.UI
             window.removeArea(this);
             window = null;
         }
+        #endregion
+
 
         public virtual void OnPointerEnter(PointerEventData eventData)
         {

@@ -19,20 +19,13 @@ namespace tezcat.UI
 
         int m_Index = -1;
 
-        protected override void Awake()
+        protected override void preInit()
         {
-            base.Awake();
-
+            base.preInit();
             m_Confirm.onClick += onConfirmClick;
             m_Cancel.onClick += onCancelClick;
 
             m_Key.onEndEdit.AddListener(this.checkKey);
-        }
-
-        protected override void Start()
-        {
-            base.Start();
-            this.dirty = true;
         }
 
         private void checkKey(string key)

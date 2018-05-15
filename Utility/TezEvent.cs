@@ -14,6 +14,11 @@
     {
         TezEventBus.Action m_OnHandler = null;
 
+        public TezEvent()
+        {
+            m_OnHandler = this.defaultFunction;
+        }
+
         public void add(TezEventBus.Action action)
         {
             if(m_Count == 0)
@@ -63,6 +68,11 @@
     public class TezEvent<T1> : TezBaseEvent
     {
         TezEventBus.Action<T1> m_OnHandler = null;
+
+        public TezEvent()
+        {
+            m_OnHandler = this.defaultFunction;
+        }
 
         public void add(TezEventBus.Action<T1> action)
         {
@@ -114,6 +124,11 @@
     public class TezEvent<T1, T2> : TezBaseEvent
     {
         TezEventBus.Action<T1, T2> m_OnHandler = null;
+
+        public TezEvent()
+        {
+            m_OnHandler = this.defaultFunction;
+        }
 
         public void add(TezEventBus.Action<T1, T2> action)
         {
@@ -167,6 +182,11 @@
     {
         TezEventBus.Action<T1, T2, T3> m_OnHandler = null;
 
+        public TezEvent()
+        {
+            m_OnHandler = this.defaultFunction;
+        }
+
         public void add(TezEventBus.Action<T1, T2, T3> action)
         {
             if (m_Count == 0)
@@ -215,6 +235,11 @@
     {
         TezEventBus.Function<R> m_OnHandler = null;
 
+        public TezFunction()
+        {
+            m_OnHandler = this.defaultFunction;
+        }
+
         public void add(TezEventBus.Function<R> action)
         {
             if (m_Count == 0)
@@ -260,6 +285,11 @@
     public class TezFunction<R, T1> : TezBaseEvent
     {
         TezEventBus.Function<R, T1> m_OnHandler = null;
+
+        public TezFunction()
+        {
+            m_OnHandler = this.defaultFunction;
+        }
 
         public void add(TezEventBus.Function<R, T1> action)
         {
@@ -307,6 +337,11 @@
     {
         TezEventBus.Function<R, T1, T2> m_OnHandler = null;
 
+        public TezFunction()
+        {
+            m_OnHandler = this.defaultFunction;
+        }
+
         public void add(TezEventBus.Function<R, T1, T2> action)
         {
             if (m_Count == 0)
@@ -352,6 +387,11 @@
     public class TezFunction<R, T1, T2, T3> : TezBaseEvent
     {
         TezEventBus.Function<R, T1, T2, T3> m_OnHandler = null;
+
+        public TezFunction()
+        {
+            m_OnHandler = this.defaultFunction;
+        }
 
         public void add(TezEventBus.Function<R, T1, T2, T3> action)
         {

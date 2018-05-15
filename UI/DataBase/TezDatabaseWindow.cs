@@ -24,15 +24,9 @@ namespace tezcat.UI
         [SerializeField]
         TezDatabaseItemContainer m_Container = null;
 
-        protected override void Awake()
+        protected override void initWidget()
         {
-            base.Awake();
-        }
-
-        protected override void Start()
-        {
-            base.Start();
-
+            base.initWidget();
             foreach (var item in m_PrefabEditorArray)
             {
                 foreach (var category in item.categoryTypes)
@@ -46,8 +40,6 @@ namespace tezcat.UI
             m_Menu.setGroup(m_Group);
             m_Container.setGroup(m_Group);
             m_Group.setContainer(m_Container);
-
-            this.dirty = true;
         }
 
         protected override void onRefresh()
@@ -55,9 +47,9 @@ namespace tezcat.UI
             base.onRefresh();
         }
 
-        protected override void OnDisable()
+        protected override void onHide()
         {
-            base.OnDisable();
+            base.onHide();
             m_RootMenu.SetActive(true);
         }
 
@@ -66,16 +58,20 @@ namespace tezcat.UI
             TezBaseItemEditor prefab = null;
             if(m_EditorDic.TryGetValue(category, out prefab))
             {
-                var editor = Instantiate(prefab);
-                editor.bind(category);
+                var editor = Instantiate(prefab, this.layer.transform, false);
                 this.layer.addWindow(editor);
+
+                editor.transform.localPosition = Vector3.zero;
+                editor.bind(category);
                 editor.open();
             }
             else
             {
-                var editor = Instantiate(m_PrefabBaseItemEditor);
-                editor.bind(category);
+                var editor = Instantiate(m_PrefabBaseItemEditor, this.layer.transform, false);
                 this.layer.addWindow(editor);
+
+                editor.transform.localPosition = Vector3.zero;
+                editor.bind(category);
                 editor.open();
             }
         }

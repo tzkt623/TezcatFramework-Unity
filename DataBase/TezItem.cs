@@ -40,6 +40,10 @@ namespace tezcat.DataBase
         public virtual TezStaticString NID { get; set; }
         public int objectID { get; set; } = -1;
         public int GUID { get; set; } = -1;
+        public bool unregistered
+        {
+            get { return objectID == -1 || GUID == -1; }
+        }
 
 
         int refrence { get; set; } = 0;

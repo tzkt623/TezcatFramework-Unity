@@ -1,4 +1,5 @@
-﻿using tezcat.Utility;
+﻿using tezcat.Core;
+using tezcat.ShipProject;
 using tezcat.Wrapper;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -9,17 +10,12 @@ namespace tezcat.UI
     public class TezDatabaseSlot
         : TezWidget
         , ITezFocusableWidget
-        , ITezDragableItemWidget
-        , ITezWrapperBinder<TezDatabaseItemWrapper>
+        , ITezClickable
     {
         [SerializeField]
         Image m_Icon = null;
 
         TezDatabaseItemWrapper m_Wrapper = null;
-        public ITezItemWrapper wrapper
-        {
-            get { return m_Wrapper; }
-        }
 
         public void bind(TezDatabaseItemWrapper wrapper)
         {
@@ -46,57 +42,6 @@ namespace tezcat.UI
             }
         }
 
-        void IBeginDragHandler.OnBeginDrag(PointerEventData eventData)
-        {
-            switch (eventData.button)
-            {
-                case PointerEventData.InputButton.Left:
-                    if (wrapper != null)
-                    {
-                        TezDragDropManager.beginDragItem(this);
-                    }
-                    break;
-                case PointerEventData.InputButton.Right:
-                    break;
-                case PointerEventData.InputButton.Middle:
-                    break;
-                default:
-                    break;
-            }
-        }
-
-        void IDragHandler.OnDrag(PointerEventData eventData)
-        {
-            switch (eventData.button)
-            {
-                case PointerEventData.InputButton.Left:
-                    TezDragDropManager.draggingItem(eventData);
-                    break;
-                case PointerEventData.InputButton.Right:
-                    break;
-                case PointerEventData.InputButton.Middle:
-                    break;
-                default:
-                    break;
-            }
-        }
-
-        void IEndDragHandler.OnEndDrag(PointerEventData eventData)
-        {
-            switch (eventData.button)
-            {
-                case PointerEventData.InputButton.Left:
-                    TezDragDropManager.endDragItem(eventData);
-                    break;
-                case PointerEventData.InputButton.Right:
-                    break;
-                case PointerEventData.InputButton.Middle:
-                    break;
-                default:
-                    break;
-            }
-        }
-
         void IPointerEnterHandler.OnPointerEnter(PointerEventData eventData)
         {
             m_Wrapper?.showTip();
@@ -105,6 +50,63 @@ namespace tezcat.UI
         void IPointerExitHandler.OnPointerExit(PointerEventData eventData)
         {
             m_Wrapper?.hideTip();
+        }
+
+        void IPointerUpHandler.OnPointerUp(PointerEventData eventData)
+        {
+            switch (eventData.button)
+            {
+                case PointerEventData.InputButton.Left:
+                    TezStateController.add(GameState.PickAnItem);
+                    TezSelectController.select(new TezItemSelector(m_Wrapper.mySlot));
+                    break;
+                case PointerEventData.InputButton.Right:
+                    break;
+                case PointerEventData.InputButton.Middle:
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        void IPointerDownHandler.OnPointerDown(PointerEventData eventData)
+        {
+
+        }
+
+        protected override void preInit()
+        {
+            throw new System.NotImplementedException();
+        }
+
+        protected override void initWidget()
+        {
+            throw new System.NotImplementedException();
+        }
+
+        protected override void linkEvent()
+        {
+            throw new System.NotImplementedException();
+        }
+
+        protected override void unLinkEvent()
+        {
+            throw new System.NotImplementedException();
+        }
+
+        protected override void onShow()
+        {
+            throw new System.NotImplementedException();
+        }
+
+        protected override void onHide()
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public override void reset()
+        {
+            throw new System.NotImplementedException();
         }
     }
 }

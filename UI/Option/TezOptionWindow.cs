@@ -23,9 +23,9 @@ namespace tezcat.UI
         [SerializeField]
         TezImageLabelButton m_SaveAndClose = null;
 
-        protected override void Awake()
+        protected override void preInit()
         {
-            base.Awake();
+            base.preInit();
             m_RootPath.readOnly = true;
             m_LocalizationName.readOnly = true;
             m_DatabaseName.readOnly = true;
@@ -37,12 +37,6 @@ namespace tezcat.UI
         private void onSaveAndCloseClick(PointerEventData.InputButton button)
         {
             this.hide();
-        }
-
-        protected override void Start()
-        {
-            base.Start();
-            this.dirty = true;
         }
 
         private void checkFile(string path)
@@ -64,9 +58,9 @@ namespace tezcat.UI
             m_SaveName.text = TezcatFramework.saveFile;
         }
 
-        protected override void OnDisable()
+        protected override void onHide()
         {
-            base.OnDisable();
+            base.onHide();
             m_RootMenu.SetActive(true);
         }
     }

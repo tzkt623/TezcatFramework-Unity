@@ -10,12 +10,6 @@ namespace tezcat.UI
         [SerializeField]
         Text m_PorpertyValue = null;
 
-        protected override void Start()
-        {
-            base.Start();
-            this.dirty = true;
-        }
-
         public void setInfo(string name, string value)
         {
             m_PropertyName.text = name;
@@ -28,6 +22,41 @@ namespace tezcat.UI
         }
 
         protected override void onRefresh()
+        {
+
+        }
+
+        protected override void preInit()
+        {
+
+        }
+
+        protected override void initWidget()
+        {
+
+        }
+
+        protected override void linkEvent()
+        {
+
+        }
+
+        protected override void unLinkEvent()
+        {
+
+        }
+
+        protected override void onShow()
+        {
+
+        }
+
+        protected override void onHide()
+        {
+
+        }
+
+        public override void reset()
         {
 
         }

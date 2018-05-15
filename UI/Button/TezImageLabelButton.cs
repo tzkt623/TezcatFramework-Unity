@@ -32,17 +32,6 @@ namespace tezcat.UI
             set { m_BG.sprite = value; }
         }
 
-        protected override void Awake()
-        {
-            base.Awake();
-        }
-
-        protected override void Start()
-        {
-            base.Start();
-            this.dirty = true;
-        }
-
         protected override void onInteractable(bool value)
         {
             if(value)
@@ -96,6 +85,37 @@ namespace tezcat.UI
         {
             m_Tweener.Rewind();
             m_Tweener.Kill();
+        }
+
+        protected override void initWidget()
+        {
+
+        }
+
+        protected override void linkEvent()
+        {
+
+        }
+
+        protected override void unLinkEvent()
+        {
+
+        }
+
+        protected override void onShow()
+        {
+
+        }
+
+        protected override void onHide()
+        {
+            m_Tweener.Rewind();
+            m_Tweener.Kill();
+        }
+
+        public override void reset()
+        {
+
         }
     }
 }

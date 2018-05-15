@@ -46,32 +46,6 @@ namespace tezcat.UI
             set { handler.text = value; }
         }
 
-        protected override void Awake()
-        {
-            base.Awake();
-            m_Node = new LinkedListNode<TezText>(this);
-            handler = this.GetComponent<Text>();
-            m_GetValue = () => handler.text;
-        }
-
-        protected override void Start()
-        {
-            base.Start();
-            this.dirty = true;
-        }
-
-        protected override void OnEnable()
-        {
-            base.OnEnable();
-            add(this);
-        }
-
-        protected override void OnDisable()
-        {
-            base.OnDisable();
-            remove(this);
-        }
-
         public void setGetFunction(TezEventBus.Function<string> function)
         {
             m_GetValue = function;
@@ -91,6 +65,43 @@ namespace tezcat.UI
         }
 
         protected override void onInteractable(bool value)
+        {
+
+        }
+
+        protected override void preInit()
+        {
+            handler = this.GetComponent<Text>();
+            m_GetValue = () => handler.text;
+        }
+
+        protected override void initWidget()
+        {
+            m_Node = new LinkedListNode<TezText>(this);
+            add(this);
+        }
+
+        protected override void linkEvent()
+        {
+
+        }
+
+        protected override void unLinkEvent()
+        {
+
+        }
+
+        protected override void onShow()
+        {
+            add(this);
+        }
+
+        protected override void onHide()
+        {
+            remove(this);
+        }
+
+        public override void reset()
         {
 
         }

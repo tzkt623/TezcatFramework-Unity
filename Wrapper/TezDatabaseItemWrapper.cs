@@ -6,16 +6,15 @@ namespace tezcat.Wrapper
     /// <summary>
     /// 数据库专用Item包装器
     /// </summary>
-    public class TezDatabaseItemWrapper : TezItemWrapper<TezItem>
+    public class TezDatabaseItemWrapper : TezItemSlotWrapper<TezDatabase.ContainerSlot>
     {
-        public TezDatabaseItemWrapper(int GUID) : base(GUID)
+        public TezDatabaseItemWrapper(TezDatabase.ContainerSlot slot) : base(slot)
         {
-
         }
 
         public Sprite getIcon()
         {
-            return TezTextureManager.getSprite(this.myItem.asset.icon_0);
+            return TezTextureManager.getSprite(this.mySlot.item.asset.icon_0);
         }
 
         public override void showTip()
@@ -23,8 +22,8 @@ namespace tezcat.Wrapper
             var tips = TezTipManager.instance
                 .setName(this.myName)
                 .setDescription(this.myDescription)
-                .pushAttribute(TezReadOnlyString.Database.GUID, this.myItem.GUID)
-                .pushAttribute(TezReadOnlyString.Database.object_id, this.myItem.objectID);
+                .pushAttribute(TezReadOnlyString.Database.GUID, this.mySlot.item.GUID)
+                .pushAttribute(TezReadOnlyString.Database.object_id, this.mySlot.item.objectID);
 
             tips.show();
         }

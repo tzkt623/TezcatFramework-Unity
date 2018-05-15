@@ -16,18 +16,6 @@ namespace tezcat.UI
         List<TezWindow> m_WindowsList = new List<TezWindow>();
         Dictionary<string, int> m_WindowDic = new Dictionary<string, int>();
 
-        protected override void Awake()
-        {
-            base.Awake();
-            foreach (RectTransform child in this.transform)
-            {
-                var window = child.GetComponent<TezWindow>();
-                if (window)
-                {
-                    this.registerWindow(window);
-                }
-            }
-        }
 
         private void registerWindow(TezWindow window)
         {
@@ -165,6 +153,48 @@ namespace tezcat.UI
 
             m_WindowDic.Clear();
             m_WindowDic = null;
+        }
+
+        protected override void preInit()
+        {
+            foreach (RectTransform child in this.transform)
+            {
+                var window = child.GetComponent<TezWindow>();
+                if (window)
+                {
+                    this.registerWindow(window);
+                }
+            }
+        }
+
+        protected override void initWidget()
+        {
+
+        }
+
+        protected override void linkEvent()
+        {
+
+        }
+
+        protected override void unLinkEvent()
+        {
+
+        }
+
+        protected override void onShow()
+        {
+
+        }
+
+        protected override void onHide()
+        {
+
+        }
+
+        public override void reset()
+        {
+
         }
     }
 }

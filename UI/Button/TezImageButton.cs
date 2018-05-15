@@ -15,18 +15,6 @@ namespace tezcat.UI
         Color m_PressColor;
         Color m_OrgColor;
 
-
-        protected override void Start()
-        {
-            base.Start();
-            m_OrgColor = m_Image.color;
-        }
-
-        protected override void clear()
-        {
-            base.clear();
-        }
-
         protected override void onInteractable(bool value)
         {
             if(value)
@@ -69,6 +57,36 @@ namespace tezcat.UI
         {
             m_Image.color = m_OrgColor;
             onClick?.Invoke(eventData.button);
+        }
+
+        protected override void initWidget()
+        {
+            m_OrgColor = m_Image.color;
+        }
+
+        protected override void linkEvent()
+        {
+
+        }
+
+        protected override void unLinkEvent()
+        {
+
+        }
+
+        protected override void onShow()
+        {
+
+        }
+
+        protected override void onHide()
+        {
+
+        }
+
+        public override void reset()
+        {
+
         }
     }
 }

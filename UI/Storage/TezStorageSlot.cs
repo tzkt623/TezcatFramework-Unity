@@ -12,9 +12,8 @@ namespace tezcat.UI
         TezStorageItem m_StorageItem = null;
         public T wrapper { get; protected set; }
 
-        protected override void Awake()
+        protected override void preInit()
         {
-            base.Awake();
             m_StorageItem = this.GetComponent<TezStorageItem>();
         }
 

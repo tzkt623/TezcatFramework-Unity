@@ -110,7 +110,7 @@ namespace tezcat.Core
 
         public static void cancelSelect()
         {
-            onSelect.invoke(m_Current);
+            onCancelSelect.invoke(m_Current);
             m_Current = null;
         }
 

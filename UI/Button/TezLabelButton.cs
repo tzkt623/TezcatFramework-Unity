@@ -15,25 +15,6 @@ namespace tezcat.UI
         TezText m_Label = null;
         Tweener m_Tweener = null;
 
-        protected override void Awake()
-        {
-            base.Awake();
-            m_Label = this.GetComponent<TezText>();
-        }
-
-        protected override void Start()
-        {
-            base.Start();
-            m_LabelColor = m_Label.color;
-        }
-
-        protected override void clear()
-        {
-            base.clear();
-            m_Label = null;
-            m_Tweener = null;
-        }
-
         protected override void onInteractable(bool value)
         {
             m_Label.interactable = value;
@@ -104,6 +85,49 @@ namespace tezcat.UI
         public void setGetFunction(TezEventBus.Function<string> function)
         {
             m_Label.setGetFunction(function);
+        }
+
+        protected override void preInit()
+        {
+            base.preInit();
+            m_Label = this.GetComponent<TezText>();
+        }
+
+        protected override void initWidget()
+        {
+            m_LabelColor = m_Label.color;
+        }
+
+        protected override void linkEvent()
+        {
+
+        }
+
+        protected override void unLinkEvent()
+        {
+
+        }
+
+        protected override void onShow()
+        {
+
+        }
+
+        protected override void onHide()
+        {
+
+        }
+
+        public override void reset()
+        {
+
+        }
+
+        protected override void clear()
+        {
+            base.clear();
+            m_Label = null;
+            m_Tweener = null;
         }
     }
 }

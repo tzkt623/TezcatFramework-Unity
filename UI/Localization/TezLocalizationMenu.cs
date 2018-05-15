@@ -15,10 +15,9 @@ namespace tezcat.UI
         public TezLocalizationNameList nameList { get; set; }
         public TezLocalizationDescriptionList descriptionList { get; set; }
 
-        protected override void Awake()
+        protected override void preInit()
         {
-            base.Awake();
-
+            base.preInit();
             m_Refresh.onClick += onRefreshClick;
             m_Save.onClick += onSaveClick;
         }
@@ -43,6 +42,16 @@ namespace tezcat.UI
         }
 
         protected override void onRefresh()
+        {
+
+        }
+
+        protected override void onShow()
+        {
+
+        }
+
+        protected override void onHide()
         {
 
         }

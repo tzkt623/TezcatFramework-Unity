@@ -1,11 +1,14 @@
 ﻿using System.Collections.Generic;
 using tezcat.Core;
+using tezcat.Event;
 using tezcat.TypeTraits;
 
 namespace tezcat.DataBase
 {
     public sealed class TezDatabase
     {
+        public static TezEvent<ContainerSlot> onRegsiterItem { get; } = new TezEvent<ContainerSlot>();
+
         /// <summary>
         /// 组别类型
         /// </summary>
@@ -164,6 +167,7 @@ namespace tezcat.DataBase
                     this.add((ContainerSlot slot) =>
                     {
                         slot.registerItem(new_item);
+                        onRegsiterItem.invoke(slot);
                     });
                 }
                 else
@@ -172,6 +176,7 @@ namespace tezcat.DataBase
                     this.set(new_item.objectID, (ContainerSlot slot) =>
                     {
                         slot.item = new_item;
+                        onRegsiterItem.invoke(slot);
                     });
                 }
             }
@@ -489,12 +494,24 @@ namespace tezcat.DataBase
 
         public static TezItem getItem(int group_id, int type_id, int object_id)
         {
-            return m_Group[group_id][type_id][object_id].item;
+            ContainerSlot slot = null;
+            if (m_Group[group_id][type_id].tryGet(object_id, out slot))
+            {
+                return slot.item;
+            }
+
+            return null;
         }
 
         public static T getItem<T>(int group_id, int type_id, int object_id) where T : TezItem
         {
-            return (T)m_Group[group_id][type_id][object_id].item;
+            ContainerSlot slot = null;
+            if(m_Group[group_id][type_id].tryGet(object_id, out slot))
+            {
+                return (T)slot.item;
+            }
+
+            return null;
         }
 
         public static List<ContainerSlot> getItems(int group_id, int type_id)

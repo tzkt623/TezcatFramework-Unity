@@ -41,16 +41,33 @@ namespace tezcat.UI
         ScrollRect m_ScrollRect = null;
         List<TezTreeNode> m_Children = new List<TezTreeNode>();
 
-        protected override void Awake()
+        protected override void preInit()
         {
-            base.Awake();
             m_ScrollRect = this.GetComponent<ScrollRect>();
         }
 
-        protected override void Start()
+        protected override void initWidget()
         {
-            base.Start();
-            this.dirty = true;
+
+        }
+
+        public override void reset()
+        {
+            foreach (var child in m_Children)
+            {
+                child.close();
+            }
+            m_Children.Clear();
+        }
+
+        protected override void linkEvent()
+        {
+
+        }
+
+        protected override void unLinkEvent()
+        {
+
         }
 
         public bool tryGet(ITezTreeData data, out TezTreeNode node)
@@ -66,15 +83,6 @@ namespace tezcat.UI
 
             node = null;
             return false;
-        }
-
-        public void reset()
-        {
-            foreach (var child in m_Children)
-            {
-                child.close();
-            }
-            m_Children.Clear();
         }
 
         public TezTreeNode addData(ITezTreeData data)
@@ -146,6 +154,16 @@ namespace tezcat.UI
         public void selectNode(TezTreeNode node)
         {
             onSelectNode?.Invoke(node);
+        }
+
+        protected override void onShow()
+        {
+
+        }
+
+        protected override void onHide()
+        {
+
         }
     }
 }

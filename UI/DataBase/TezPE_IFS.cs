@@ -11,16 +11,39 @@ namespace tezcat.UI
         [SerializeField]
         InputField m_Input = null;
 
-        protected override void Awake()
+        protected override void preInit()
         {
-            base.Awake();
             m_Input.onEndEdit.AddListener(this.onValueSet);
         }
 
-        protected override void Start()
+        protected override void initWidget()
         {
-            base.Start();
-            this.dirty = true;
+
+        }
+
+        protected override void linkEvent()
+        {
+
+        }
+
+        protected override void unLinkEvent()
+        {
+
+        }
+
+        protected override void onShow()
+        {
+
+        }
+
+        protected override void onHide()
+        {
+
+        }
+
+        public override void reset()
+        {
+
         }
 
         private void onValueSet(string value)
@@ -35,6 +58,9 @@ namespace tezcat.UI
                     break;
                 case TezPropertyType.String:
                     (m_Property as TezPV_String).value = value;
+                    break;
+                case TezPropertyType.StaticString:
+                    (m_Property as TezPV_StaticString).value = value;
                     break;
             }
         }
@@ -55,6 +81,10 @@ namespace tezcat.UI
                 case TezPropertyType.String:
                     m_Input.contentType = InputField.ContentType.Standard;
                     m_Input.text = (m_Property as TezPV_String).value;
+                    break;
+                case TezPropertyType.StaticString:
+                    m_Input.contentType = InputField.ContentType.Standard;
+                    m_Input.text = (m_Property as TezPV_StaticString).value;
                     break;
             }
         }

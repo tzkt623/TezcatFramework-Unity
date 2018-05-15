@@ -32,19 +32,12 @@ namespace tezcat.UI
 
         TezItem m_NewItem = null;
 
-        protected override void Awake()
+        protected override void preInit()
         {
-            base.Awake();
-
+            base.preInit();
             m_Confirm.onClick += onConfirmClick;
             m_Cancel.onClick += onCancelClick;
             m_Save.onClick += onSaveClick;
-        }
-
-        protected override void Start()
-        {
-            base.Start();
-            this.dirty = true;
         }
 
         private void onCancelClick(PointerEventData.InputButton button)
@@ -59,7 +52,12 @@ namespace tezcat.UI
         {
             if (button == PointerEventData.InputButton.Left)
             {
+                if (m_NewItem.unregistered)
+                {
+                    TezDatabase.registerInnateItem(m_NewItem);
+                }
 
+                this.close();
             }
         }
 
@@ -67,7 +65,11 @@ namespace tezcat.UI
         {
             if (button == PointerEventData.InputButton.Left)
             {
-                TezDatabase.registerInnateItem(m_NewItem);
+                if(m_NewItem.unregistered)
+                {
+                    TezDatabase.registerInnateItem(m_NewItem);
+                }
+
                 this.dirty = true;
             }
         }
@@ -96,7 +98,7 @@ namespace tezcat.UI
         {
             foreach (RectTransform item in m_Content)
             {
-                Destroy(item.gameObject);
+                item.GetComponent<TezWidget>().close();
             }
 
             if (m_NewItem != null)
@@ -115,8 +117,7 @@ namespace tezcat.UI
                 var properties = m_NewItem.properties;
                 for (int i = 0; i < properties.Count; i++)
                 {
-                    var property = properties[i];
-                    var editor = this.createPE(property);
+                    var editor = this.createPE(properties[i]);
                     editor.open();
                 }
             }

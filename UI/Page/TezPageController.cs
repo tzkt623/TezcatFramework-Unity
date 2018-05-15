@@ -8,19 +8,29 @@ namespace tezcat.UI
 
         public int currentPage { get; private set; } = 1;
         public int maxPage { get; private set; } = 0;
-        public int countPerPage { get; set; } = 10;
+        public int pageCapacity { get; set; } = 10;
 
         int m_CurrentPageBegin;
         int m_CurrentPageEnd;
 
-        public void calculateMaxPage(int total_count)
-        {
-            this.maxPage = Mathf.CeilToInt(total_count / (float)countPerPage);
-        }
-
         public void setListener(TezEventBus.Action<int, int> function)
         {
             m_OnPageChanged = function;
+        }
+
+        public void calculateMaxPage(int total_count)
+        {
+            this.maxPage = Mathf.CeilToInt(total_count / (float)pageCapacity);
+        }
+
+        public int isInPage(int index)
+        {
+            if(m_CurrentPageEnd > index)
+            {
+                return index - m_CurrentPageBegin;
+            }
+
+            return -1;
         }
 
         public void pageUp()
@@ -55,11 +65,6 @@ namespace tezcat.UI
 
         public void setPage(int page)
         {
-            if(this.maxPage == 0)
-            {
-                return;
-            }
-
             if(page <= 1)
             {
                 this.currentPage = 1;
@@ -82,9 +87,9 @@ namespace tezcat.UI
 
         private bool calculateCurrentPage()
         {
-            this.m_CurrentPageBegin = (this.currentPage - 1) * countPerPage;
-            this.m_CurrentPageEnd = this.m_CurrentPageBegin + countPerPage;
-            return this.m_CurrentPageBegin >= 0 && this.m_CurrentPageEnd > 0;
+            m_CurrentPageBegin = (currentPage - 1) * pageCapacity;
+            m_CurrentPageEnd = m_CurrentPageBegin + pageCapacity;
+            return m_CurrentPageBegin >= 0 && m_CurrentPageEnd > 0;
         }
     }
 }

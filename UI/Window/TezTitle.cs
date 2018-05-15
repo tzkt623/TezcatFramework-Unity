@@ -23,10 +23,13 @@ namespace tezcat.UI
         TezWidget m_ParenWidget = null;
         bool m_Pin = false;
 
-        protected override void Start()
+        protected override void preInit()
         {
-            base.Start();
 
+        }
+
+        protected override void initWidget()
+        {
             m_ParenWidget = this.transform.parent.GetComponent<TezWidget>();
             if (m_ParenWidget == null)
             {
@@ -53,6 +56,21 @@ namespace tezcat.UI
                 m_PinToggle.isOn = m_Pin;
                 m_PinToggle.onValueChanged.AddListener(pin);
             }
+        }
+
+        protected override void linkEvent()
+        {
+
+        }
+
+        protected override void unLinkEvent()
+        {
+
+        }
+
+        public override void reset()
+        {
+
         }
 
         protected override void onRefresh()
@@ -102,6 +120,16 @@ namespace tezcat.UI
         }
 
         void IPointerExitHandler.OnPointerExit(PointerEventData eventData)
+        {
+
+        }
+
+        protected override void onShow()
+        {
+
+        }
+
+        protected override void onHide()
         {
 
         }

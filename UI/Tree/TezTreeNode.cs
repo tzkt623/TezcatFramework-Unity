@@ -53,21 +53,34 @@ namespace tezcat.UI
 
         public TezTree tree { get; set; } = null;
 
-        protected override void Awake()
+        protected override void preInit()
         {
-            base.Awake();
             m_BG = this.GetComponent<Image>();
+        }
+
+        protected override void initWidget()
+        {
+
+        }
+
+        protected override void linkEvent()
+        {
+
+        }
+
+        protected override void unLinkEvent()
+        {
+
+        }
+
+        public override void reset()
+        {
+
         }
 
         public void setPosition(int index)
         {
             this.rectTransform.anchoredPosition = new Vector2(this.level * tree.horizontalOffset, -index * (this.length + tree.verticalOffset));
-        }
-
-        protected override void Start()
-        {
-            base.Start();
-            this.dirty = true;
         }
 
         public void setData(ITezTreeData data)
@@ -188,6 +201,16 @@ namespace tezcat.UI
             {
                 tree.selectNode(this);
             }
+        }
+
+        protected override void onShow()
+        {
+
+        }
+
+        protected override void onHide()
+        {
+ 
         }
     }
 }

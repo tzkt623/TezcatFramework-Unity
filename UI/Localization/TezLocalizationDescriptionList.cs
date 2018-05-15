@@ -60,9 +60,9 @@ namespace tezcat.UI
 
         List<TezLocalizationDescriptionItem> m_ItemList = new List<TezLocalizationDescriptionItem>();
 
-        protected override void Awake()
+        protected override void preInit()
         {
-            base.Awake();
+            base.preInit();
 
             ///function
             m_Add.onClick += onAddClick;
@@ -75,7 +75,7 @@ namespace tezcat.UI
             m_ClearSearch.onClick += onClearSearchClick;
 
             ///page
-            m_PageController.countPerPage = m_CountPerPage;
+            m_PageController.pageCapacity = m_CountPerPage;
             m_PageController.setListener(this.onPageChanged);
             m_PageUp.onClick += onPageUpClick;
             m_PageDown.onClick += onPageDownClick;
@@ -83,10 +83,14 @@ namespace tezcat.UI
             m_Page.onEndEdit.AddListener(this.onPageSet);
         }
 
-        protected override void Start()
+        protected override void onShow()
         {
-            base.Start();
-            this.dirty = true;
+
+        }
+
+        protected override void onHide()
+        {
+
         }
 
         protected override void onRefresh()

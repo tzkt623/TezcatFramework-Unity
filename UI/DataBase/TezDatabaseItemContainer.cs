@@ -37,12 +37,12 @@ namespace tezcat.UI
 
         TezDatabaseGroup m_Group = null;
 
-        protected override void Awake()
+        protected override void preInit()
         {
-            base.Awake();
+            base.preInit();
 
             ///page
-            m_PageController.countPerPage = m_CountPerPage;
+            m_PageController.pageCapacity = m_CountPerPage;
             m_PageController.setListener(this.onPageChanged);
             m_PageUp.onClick += onPageUpClick;
             m_PageDown.onClick += onPageDownClick;
@@ -50,10 +50,35 @@ namespace tezcat.UI
             m_Page.onEndEdit.AddListener(this.onPageSet);
         }
 
-        protected override void Start()
+        protected override void onShow()
         {
-            base.Start();
-            this.dirty = true;
+            TezDatabase.onRegsiterItem.add(this.onAdd);
+        }
+
+        protected override void onHide()
+        {
+            TezDatabase.onRegsiterItem.remove(this.onAdd);
+        }
+
+        private void onAdd(TezDatabase.ContainerSlot slot)
+        {
+            var id = m_PageController.isInPage(slot.ID);
+            if(id >= 0)
+            {
+                while(m_SlotList.Count <= id)
+                {
+                    var ui = Instantiate(m_Prefab, m_Content, false);
+                    ui.open();
+                    m_SlotList.Add(ui);
+                }
+
+                m_SlotList[id].bind(new TezDatabaseItemWrapper(slot));
+
+                var items = TezDatabase.getItems(m_Group.groupType.ID, m_Group.categoryType.ID);
+                m_PageController.calculateMaxPage(items.Count);
+                m_MaxPage.text = "/" + m_PageController.maxPage.ToString();
+                m_Page.text = m_PageController.currentPage.ToString();
+            }
         }
 
         protected override void onRefresh()
@@ -87,7 +112,7 @@ namespace tezcat.UI
 
                 for (int i = 0; i < items.Count; i++)
                 {
-                    m_SlotList[i].bind(new TezDatabaseItemWrapper(items[i].item.GUID));
+                    m_SlotList[i].bind(new TezDatabaseItemWrapper(items[i]));
                 }
             }
         }
@@ -114,7 +139,7 @@ namespace tezcat.UI
             m_PageController.pageUp();
         }
 
-        private void reset()
+        public override void reset()
         {
             foreach (var slot in m_SlotList)
             {

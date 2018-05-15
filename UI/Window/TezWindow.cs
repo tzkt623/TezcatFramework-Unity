@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using tezcat.Utility;
 using UnityEngine;
-using UnityEngine.EventSystems;
 
 namespace tezcat.UI
 {
@@ -11,11 +10,8 @@ namespace tezcat.UI
     /// </summary>
     public class TezWindow
         : TezWidget
-        , ITezFocusableWidget
         , ITezEventHandler
         , ITezEventDispather
-        , IPointerDownHandler
-        , IPointerUpHandler
     {
         public TezLayer layer { get; set; } = null;
 
@@ -54,21 +50,16 @@ namespace tezcat.UI
         List<TezArea> m_AreaList = new List<TezArea>();
         Dictionary<string, int> m_AreaDic = new Dictionary<string, int>();
 
-
         protected ITezFocusableWidget m_FocusWidget = null;
         public TezUIEvent.Switcher eventSwitcher { get; private set; } = null;
         public List<ITezEventHandler> handlers { get; private set; } = new List<ITezEventHandler>();
-
 
         TezPopupContent m_PopupContent = null;
         List<TezPopup> m_PopupList = new List<TezPopup>();
 
         #region Core
-
-        protected override void Awake()
+        protected override void preInit()
         {
-            base.Awake();
-
             List<TezArea> list = new List<TezArea>();
             this.GetComponentsInChildren<TezArea>(true, list);
             foreach (var sub in list)
@@ -87,12 +78,10 @@ namespace tezcat.UI
             });
         }
 
-        protected override void Start()
+        protected override void initWidget()
         {
-            base.Start();
-
             m_PopupContent = this.GetComponentInChildren<TezPopupContent>();
-            if(m_PopupContent == null)
+            if (m_PopupContent == null)
             {
                 GameObject go = new GameObject();
                 var rect = go.AddComponent<RectTransform>();
@@ -104,27 +93,34 @@ namespace tezcat.UI
             }
         }
 
-        protected override void onRefresh()
+        protected override void linkEvent()
         {
-            foreach (var sub in m_AreaList)
-            {
-                sub.dirty = true;
-            }
+
         }
 
-        protected override bool onClose()
+        protected override void unLinkEvent()
         {
-            return this.checkForClose();
+
         }
 
-        protected virtual bool checkForClose()
+        protected override void onHide()
         {
+
+        }
+
+        protected override void onShow()
+        {
+
+        }
+
+        public override bool checkForClose()
+        {
+            bool result = true;
             List<TezEventBus.Action> close_function_list = new List<TezEventBus.Action>(m_AreaList.Count);
 
-            bool result = true;
             foreach (var area in m_AreaList)
             {
-                result &= area.checkOnClose();
+                result &= area.checkForClose();
                 if (result)
                 {
                     close_function_list.Add(area.close);
@@ -141,6 +137,19 @@ namespace tezcat.UI
             }
 
             return true;
+        }
+
+        public override void reset()
+        {
+            foreach (var popup in m_PopupList)
+            {
+                popup.reset();
+            }
+
+            foreach (var area in m_AreaList)
+            {
+                area.reset();
+            }
         }
 
         protected override void clear()
@@ -161,6 +170,14 @@ namespace tezcat.UI
 
             m_AreaDic.Clear();
             m_AreaDic = null;
+        }
+
+        protected override void onRefresh()
+        {
+            foreach (var sub in m_AreaList)
+            {
+                sub.dirty = true;
+            }
         }
 
         public void setFocusWidget(ITezFocusableWidget widget)
@@ -333,25 +350,5 @@ namespace tezcat.UI
             this.eventSwitcher.invoke(event_id, data);
         }
         #endregion
-
-        void IPointerDownHandler.OnPointerDown(PointerEventData eventData)
-        {
-
-        }
-
-        void IPointerUpHandler.OnPointerUp(PointerEventData eventData)
-        {
-
-        }
-
-        void IPointerEnterHandler.OnPointerEnter(PointerEventData eventData)
-        {
-
-        }
-
-        void IPointerExitHandler.OnPointerExit(PointerEventData eventData)
-        {
-
-        }
     }
 }
