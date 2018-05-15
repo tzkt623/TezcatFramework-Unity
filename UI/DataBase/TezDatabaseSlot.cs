@@ -1,5 +1,4 @@
 ﻿using tezcat.Core;
-using tezcat.ShipProject;
 using tezcat.Wrapper;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -21,6 +20,41 @@ namespace tezcat.UI
         {
             m_Wrapper = wrapper;
             this.dirty = true;
+        }
+
+        protected override void preInit()
+        {
+
+        }
+
+        protected override void initWidget()
+        {
+
+        }
+
+        protected override void linkEvent()
+        {
+
+        }
+
+        protected override void unLinkEvent()
+        {
+
+        }
+
+        protected override void onShow()
+        {
+
+        }
+
+        protected override void onHide()
+        {
+
+        }
+
+        public override void reset()
+        {
+
         }
 
         protected override void clear()
@@ -57,7 +91,7 @@ namespace tezcat.UI
             switch (eventData.button)
             {
                 case PointerEventData.InputButton.Left:
-                    TezStateController.add(GameState.PickAnItem);
+                    TezStateController.add(TezBuildInState.PickAnItem);
                     TezSelectController.select(new TezItemSelector(m_Wrapper.mySlot));
                     break;
                 case PointerEventData.InputButton.Right:
@@ -72,41 +106,6 @@ namespace tezcat.UI
         void IPointerDownHandler.OnPointerDown(PointerEventData eventData)
         {
 
-        }
-
-        protected override void preInit()
-        {
-            throw new System.NotImplementedException();
-        }
-
-        protected override void initWidget()
-        {
-            throw new System.NotImplementedException();
-        }
-
-        protected override void linkEvent()
-        {
-            throw new System.NotImplementedException();
-        }
-
-        protected override void unLinkEvent()
-        {
-            throw new System.NotImplementedException();
-        }
-
-        protected override void onShow()
-        {
-            throw new System.NotImplementedException();
-        }
-
-        protected override void onHide()
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public override void reset()
-        {
-            throw new System.NotImplementedException();
         }
     }
 }

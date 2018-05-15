@@ -46,24 +46,6 @@ namespace tezcat.UI
             set { handler.text = value; }
         }
 
-        public void setGetFunction(TezEventBus.Function<string> function)
-        {
-            m_GetValue = function;
-            this.dirty = true;
-        }
-
-        protected override void onRefresh()
-        {
-            handler.text = m_GetValue();
-        }
-
-        protected override void clear()
-        {
-            m_GetValue = null;
-            handler = null;
-            m_Node = null;
-        }
-
         protected override void onInteractable(bool value)
         {
 
@@ -72,7 +54,10 @@ namespace tezcat.UI
         protected override void preInit()
         {
             handler = this.GetComponent<Text>();
-            m_GetValue = () => handler.text;
+            if(m_GetValue == null)
+            {
+                m_GetValue = () => handler.text;
+            }
         }
 
         protected override void initWidget()
@@ -90,6 +75,27 @@ namespace tezcat.UI
         {
 
         }
+
+        public void setGetFunction(TezEventBus.Function<string> function)
+        {
+            m_GetValue = function;
+            this.dirty = true;
+        }
+
+        protected override void onRefresh()
+        {
+            var v = m_GetValue();
+            handler.text = v;
+            Debug.Log(v);
+        }
+
+        protected override void clear()
+        {
+            m_GetValue = null;
+            handler = null;
+            m_Node = null;
+        }
+
 
         protected override void onShow()
         {

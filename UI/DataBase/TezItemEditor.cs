@@ -65,7 +65,7 @@ namespace tezcat.UI
         {
             if (button == PointerEventData.InputButton.Left)
             {
-                if(m_NewItem.unregistered)
+                if (m_NewItem.unregistered)
                 {
                     TezDatabase.registerInnateItem(m_NewItem);
                 }
@@ -83,7 +83,7 @@ namespace tezcat.UI
         private TezPropertyView createPV(string name, string value)
         {
             var pv = Instantiate(m_PrefabPV, m_Content, false);
-            pv.setInfo(name, value);
+            pv.set(name, value);
             return pv;
         }
 
@@ -103,14 +103,14 @@ namespace tezcat.UI
 
             if (m_NewItem != null)
             {
-                var view = this.createPV(
-                    TezLocalization.getName(TezReadOnlyString.Database.object_id, TezReadOnlyString.Database.object_id),
-                    m_NewItem.objectID.ToString());
+                var view = Instantiate(m_PrefabPV, m_Content, false);
+                view.set(() => TezLocalization.getName(TezReadOnlyString.Database.object_id, TezReadOnlyString.Database.object_id),
+                    () => m_NewItem.objectID.ToString());
                 view.open();
 
-                view = this.createPV(
-                    TezLocalization.getName(TezReadOnlyString.Database.GUID, TezReadOnlyString.Database.GUID),
-                    m_NewItem.GUID.ToString());
+                view = Instantiate(m_PrefabPV, m_Content, false);
+                view.set(() => TezLocalization.getName(TezReadOnlyString.Database.GUID, TezReadOnlyString.Database.GUID),
+                    () => m_NewItem.GUID.ToString());
                 view.open();
 
 

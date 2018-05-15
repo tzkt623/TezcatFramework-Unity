@@ -72,6 +72,16 @@ namespace tezcat.UI
 
         }
 
+        protected override void onShow()
+        {
+
+        }
+
+        protected override void onHide()
+        {
+
+        }
+
         public override void reset()
         {
             foreach (var child in m_Children)

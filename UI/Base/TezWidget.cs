@@ -43,8 +43,8 @@ namespace tezcat.UI
         protected sealed override void Start()
         {
             base.Start();
-            this.initWidget();
             this.linkEvent();
+            this.initWidget();
             m_Init = true;
             this.dirty = true;
         }

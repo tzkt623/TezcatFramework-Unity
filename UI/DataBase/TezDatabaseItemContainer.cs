@@ -50,13 +50,15 @@ namespace tezcat.UI
             m_Page.onEndEdit.AddListener(this.onPageSet);
         }
 
-        protected override void onShow()
+        protected override void linkEvent()
         {
+            base.linkEvent();
             TezDatabase.onRegsiterItem.add(this.onAdd);
         }
 
-        protected override void onHide()
+        protected override void unLinkEvent()
         {
+            base.unLinkEvent();
             TezDatabase.onRegsiterItem.remove(this.onAdd);
         }
 

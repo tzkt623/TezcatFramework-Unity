@@ -3,6 +3,14 @@ using tezcat.Event;
 
 namespace tezcat.Core
 {
+    public class TezBuildInState
+    {
+        public static readonly TezState Empty = TezState.register();
+        public static readonly TezState Pause = TezState.register();
+        public static readonly TezState PickAnItem = TezState.register();
+        public static readonly TezState PickAnObject = TezState.register();
+    }
+
     public class TezState
     {
         static TezState[] Cache = new TezState[33];
