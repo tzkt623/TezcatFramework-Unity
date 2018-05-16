@@ -19,6 +19,11 @@ namespace tezcat.String
 
         private int m_ID = -1;
 
+        public bool isEmpty
+        {
+            get { return m_ID == -1; }
+        }
+
         public TezStaticString()
         {
             m_ID = 0;

@@ -1,4 +1,5 @@
 ﻿using System;
+using tezcat.Extension;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -7,9 +8,7 @@ namespace tezcat.UI
 {
     public class TezTitle
         : TezWidget
-        , IPointerEnterHandler
-        , IPointerExitHandler
-        , IDragHandler
+        , ITezDragableWidget
     {
         [SerializeField]
         Text m_TitleName = null;
@@ -20,8 +19,9 @@ namespace tezcat.UI
         [SerializeField]
         Toggle m_PinToggle = null;
 
-        TezWidget m_ParenWidget = null;
+        TezWidget m_ParentWidget = null;
         bool m_Pin = false;
+        bool m_Dragging = false;
 
         protected override void preInit()
         {
@@ -30,8 +30,8 @@ namespace tezcat.UI
 
         protected override void initWidget()
         {
-            m_ParenWidget = this.transform.parent.GetComponent<TezWidget>();
-            if (m_ParenWidget == null)
+            m_ParentWidget = this.transform.parent.GetComponent<TezWidget>();
+            if (m_ParentWidget == null)
             {
                 throw new ArgumentNullException("ParenWidget Not Found");
             }
@@ -40,7 +40,10 @@ namespace tezcat.UI
             {
                 m_TitleName = this.GetComponentInChildren<Text>();
             }
+        }
 
+        protected override void linkEvent()
+        {
             if (m_CloseButton)
             {
                 m_CloseButton.onClick.AddListener(this.closeParent);
@@ -58,14 +61,22 @@ namespace tezcat.UI
             }
         }
 
-        protected override void linkEvent()
-        {
-
-        }
-
         protected override void unLinkEvent()
         {
+            if (m_CloseButton)
+            {
+                m_CloseButton.onClick.RemoveListener(this.closeParent);
+            }
 
+            if (m_HideButton)
+            {
+                m_HideButton.onClick.RemoveListener(this.hideParent);
+            }
+
+            if (m_PinToggle)
+            {
+                m_PinToggle.onValueChanged.RemoveListener(pin);
+            }
         }
 
         public override void reset()
@@ -80,17 +91,17 @@ namespace tezcat.UI
 
         protected override void clear()
         {
-            m_ParenWidget = null;
+            m_ParentWidget = null;
         }
 
         void closeParent()
         {
-            m_ParenWidget.close();
+            m_ParentWidget.close();
         }
 
         void hideParent()
         {
-            m_ParenWidget.hide();
+            m_ParentWidget.hide();
         }
 
         void pin(bool pin)
@@ -103,27 +114,6 @@ namespace tezcat.UI
             m_TitleName.text = name;
         }
 
-        void IDragHandler.OnDrag(PointerEventData eventData)
-        {
-            if (m_Pin)
-            {
-                return;
-            }
-
-            var offset = eventData.delta;
-            m_ParenWidget.transform.localPosition += new Vector3(offset.x, offset.y, 0);
-        }
-
-        void IPointerEnterHandler.OnPointerEnter(PointerEventData eventData)
-        {
-
-        }
-
-        void IPointerExitHandler.OnPointerExit(PointerEventData eventData)
-        {
-
-        }
-
         protected override void onShow()
         {
 
@@ -132,6 +122,29 @@ namespace tezcat.UI
         protected override void onHide()
         {
 
+        }
+
+        void IBeginDragHandler.OnBeginDrag(PointerEventData eventData)
+        {
+            if(eventData.button == PointerEventData.InputButton.Left)
+            {
+                m_Dragging = true;
+            }
+        }
+
+        void IEndDragHandler.OnEndDrag(PointerEventData eventData)
+        {
+            m_Dragging = false;
+        }
+
+        void IDragHandler.OnDrag(PointerEventData eventData)
+        {
+            if (m_Pin || !m_Dragging)
+            {
+                return;
+            }
+
+            m_ParentWidget.transform.localPosition = m_ParentWidget.transform.localPosition.add(eventData.delta);
         }
     }
 }

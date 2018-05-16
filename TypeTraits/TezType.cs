@@ -3,6 +3,21 @@ using tezcat.String;
 
 namespace tezcat.TypeTraits
 {
+    public class TezTypeRegisterHelper
+    {
+        static Dictionary<System.Type, TezEventBus.Function<List<TezType>>> Registers = new Dictionary<System.Type, TezEventBus.Function<List<TezType>>>();
+
+        public static void add(System.Type type, TezEventBus.Function<List<TezType>> function)
+        {
+            Registers.Add(type, function);
+        }
+
+        public static List<TezType> getList(System.Type type)
+        {
+            return Registers[type]();
+        }
+    }
+
     public class TezTypeRegister<T> where T : TezType, new()
     {
         public static List<T> TYPE { get; private set; } = new List<T>();
@@ -11,6 +26,11 @@ namespace tezcat.TypeTraits
         public static int count
         {
             get { return TYPE.Count; }
+        }
+
+        static TezTypeRegister()
+        {
+            TezTypeRegisterHelper.add(typeof(T), () => new List<TezType>(TYPE));
         }
 
         public static T register(string name)
@@ -246,7 +266,7 @@ namespace tezcat.TypeTraits
             return TezTypeRegister<T>.get(name);
         }
 
-        public static bool operator != (TezType x, TezType y)
+        public static bool operator !=(TezType x, TezType y)
         {
             /// (!true || !false) && (true || false) || (x)
             /// (!false || !false) && (false || false) || (x.ID != y.ID || x.name != y.name)
@@ -257,7 +277,7 @@ namespace tezcat.TypeTraits
             return (!flagx || !flagy) && (flagx || flagy) || (x.ID != y.ID || x.name != y.name);
         }
 
-        public static bool operator == (TezType x, TezType y)
+        public static bool operator ==(TezType x, TezType y)
         {
             ///(false && false) || (x.ID == y.ID && x.name == y.name)
             ///(true && true) || (x)

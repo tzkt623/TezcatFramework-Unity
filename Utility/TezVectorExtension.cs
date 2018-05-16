@@ -1,9 +1,8 @@
 ﻿using UnityEngine;
 
-namespace tezcat
+namespace tezcat.Extension
 {
-
-    public static class TezVectorEx
+    public static class TezVectorExtension
     {
 
         public static Vector2 toVector2(this Vector3 vector)

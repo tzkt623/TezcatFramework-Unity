@@ -7,13 +7,12 @@ namespace tezcat.UI
     public class TezPE_IFS : TezPropertyEditor
     {
         [SerializeField]
-        Text m_PropertyName = null;
+        TezText m_PropertyName = null;
         [SerializeField]
         InputField m_Input = null;
 
         protected override void preInit()
         {
-            m_Input.onEndEdit.AddListener(this.onValueSet);
         }
 
         protected override void initWidget()
@@ -23,12 +22,12 @@ namespace tezcat.UI
 
         protected override void linkEvent()
         {
-
+            m_Input.onEndEdit.AddListener(this.onValueSet);
         }
 
         protected override void unLinkEvent()
         {
-
+            m_Input.onEndEdit.RemoveListener(this.onValueSet);
         }
 
         protected override void onShow()

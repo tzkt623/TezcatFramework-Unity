@@ -6,15 +6,16 @@ namespace tezcat.UI
 {
     public class TezDatabaseWindow : TezWindow
     {
-        [SerializeField]
-        GameObject m_RootMenu = null;
-
         [Header("Prefab")]
         [SerializeField]
         TezItemEditor m_PrefabBaseItemEditor = null;
         [SerializeField]
-        TezBaseItemEditor[] m_PrefabEditorArray = null;
-        Dictionary<TezDatabase.CategoryType, TezBaseItemEditor> m_EditorDic = new Dictionary<TezDatabase.CategoryType, TezBaseItemEditor>();
+        TezBasicItemEditor[] m_PrefabEditorArray = null;
+        Dictionary<TezDatabase.CategoryType, TezBasicItemEditor> m_EditorDic = new Dictionary<TezDatabase.CategoryType, TezBasicItemEditor>();
+
+        [Header("Root Menu")]
+        [SerializeField]
+        GameObject m_RootMenu = null;
 
         [Header("Area")]
         [SerializeField]
@@ -23,6 +24,8 @@ namespace tezcat.UI
         TezDatabaseGroup m_Group = null;
         [SerializeField]
         TezDatabaseItemContainer m_Container = null;
+
+        TezBasicItemEditor m_CurrentEditor = null;
 
         protected override void initWidget()
         {
@@ -42,11 +45,6 @@ namespace tezcat.UI
             m_Group.setContainer(m_Container);
         }
 
-        protected override void onRefresh()
-        {
-            base.onRefresh();
-        }
-
         protected override void onHide()
         {
             base.onHide();
@@ -55,25 +53,31 @@ namespace tezcat.UI
 
         public void createItemEditor(TezDatabase.CategoryType category)
         {
-            TezBaseItemEditor prefab = null;
+            if(m_CurrentEditor)
+            {
+                return;
+            }
+
+            TezBasicItemEditor prefab = null;
             if(m_EditorDic.TryGetValue(category, out prefab))
             {
-                var editor = Instantiate(prefab, this.layer.transform, false);
-                this.layer.addWindow(editor);
-
-                editor.transform.localPosition = Vector3.zero;
-                editor.bind(category);
-                editor.open();
+                m_CurrentEditor = Instantiate(prefab, this.layer.transform, false);
             }
             else
             {
-                var editor = Instantiate(m_PrefabBaseItemEditor, this.layer.transform, false);
-                this.layer.addWindow(editor);
-
-                editor.transform.localPosition = Vector3.zero;
-                editor.bind(category);
-                editor.open();
+                m_CurrentEditor = Instantiate(m_PrefabBaseItemEditor, this.layer.transform, false);
             }
+            this.layer.addWindow(m_CurrentEditor);
+
+            m_CurrentEditor.transform.localPosition = Vector3.zero;
+            m_CurrentEditor.onClose.add(this.onEditorClose);
+            m_CurrentEditor.bind(category);
+            m_CurrentEditor.open();
+        }
+
+        private void onEditorClose()
+        {
+            m_CurrentEditor = null;
         }
     }
 }

@@ -60,18 +60,6 @@ namespace tezcat.Utility
         }
     }
 
-    public class TezPF_T<T> : TezPropertyFunctionT<T>
-    {
-        public TezPF_T(TezPropertyName name) : base(name)
-        {
-        }
-
-        public override TezPropertyType parameterType
-        {
-            get { return TezPropertyType.T; }
-        }
-    }
-
     public class TezPF_Float : TezPropertyFunctionT<float>
     {
         public TezPF_Float(TezPropertyName name) : base(name)

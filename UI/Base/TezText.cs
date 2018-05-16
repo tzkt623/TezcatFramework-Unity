@@ -84,9 +84,7 @@ namespace tezcat.UI
 
         protected override void onRefresh()
         {
-            var v = m_GetValue();
-            handler.text = v;
-            Debug.Log(v);
+            handler.text = m_GetValue();
         }
 
         protected override void clear()
@@ -95,7 +93,6 @@ namespace tezcat.UI
             handler = null;
             m_Node = null;
         }
-
 
         protected override void onShow()
         {

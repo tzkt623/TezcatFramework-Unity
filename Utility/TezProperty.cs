@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using tezcat.String;
+using tezcat.TypeTraits;
 
 namespace tezcat.Utility
 {
@@ -11,7 +12,6 @@ namespace tezcat.Utility
 
     public enum TezPropertyType
     {
-        T,
         Float,
         Int,
         Bool,
@@ -21,7 +21,8 @@ namespace tezcat.Utility
         Dictionary,
         Class,
         Function,
-        StaticString
+        StaticString,
+        Type
     }
 
     public abstract class TezPropertyValue
@@ -68,6 +69,16 @@ namespace tezcat.Utility
         {
             return this.propertyName.CompareTo(other.propertyName);
         }
+
+        public static bool operator true(TezPropertyValue value)
+        {
+            return !object.ReferenceEquals(value, null);
+        }
+
+        public static bool operator false(TezPropertyValue value)
+        {
+            return object.ReferenceEquals(value, null);
+        }
     }
 
     public abstract class TezPropertyValue<T> : TezPropertyValue
@@ -98,29 +109,6 @@ namespace tezcat.Utility
         {
             base.clear();
             m_Value = default(T);
-        }
-    }
-
-    public class TezPV_T<T> : TezPropertyValue<T>
-    {
-        public TezPV_T(TezPropertyName name) : base(name)
-        {
-        }
-
-        public TezPV_T()
-        {
-
-        }
-
-        public override void accept(TezPropertyFunction pf)
-        {
-            TezPF_T<T> tpf = pf as TezPF_T<T>;
-            tpf.invoke(m_Value);
-        }
-
-        public override TezPropertyType getParameterType()
-        {
-            return TezPropertyType.T;
         }
     }
 
@@ -241,9 +229,12 @@ namespace tezcat.Utility
 
     public class TezPV_List<Item> : TezPropertyValue<List<Item>>
     {
-        public TezPV_List(TezPropertyName name) : base(name)
+        public TezPV_List(TezPropertyName name, bool init = false) : base(name)
         {
-
+            if (init)
+            {
+                m_Value = new List<Item>();
+            }
         }
 
         public override void accept(TezPropertyFunction pf)
@@ -259,8 +250,12 @@ namespace tezcat.Utility
 
     public class TezPV_HashSet<Item> : TezPropertyValue<HashSet<Item>>
     {
-        public TezPV_HashSet(TezPropertyName name) : base(name)
+        public TezPV_HashSet(TezPropertyName name, bool init = false) : base(name)
         {
+            if (init)
+            {
+                m_Value = new HashSet<Item>();
+            }
         }
 
         public override void accept(TezPropertyFunction pf)
@@ -276,8 +271,12 @@ namespace tezcat.Utility
 
     public class TezPV_Dictionary<Key, Value> : TezPropertyValue<Dictionary<Key, Value>>
     {
-        public TezPV_Dictionary(TezPropertyName name) : base(name)
+        public TezPV_Dictionary(TezPropertyName name, bool init = false) : base(name)
         {
+            if (init)
+            {
+                m_Value = new Dictionary<Key, Value>();
+            }
         }
 
         public override void accept(TezPropertyFunction pf)
@@ -345,6 +344,47 @@ namespace tezcat.Utility
         {
             base.clear();
             m_Function = null;
+        }
+    }
+
+    public abstract class TezPV_Type : TezPropertyValue
+    {
+        public abstract TezType baseValue { get; set; }
+
+        public TezPV_Type(TezPropertyName name) : base(name)
+        {
+
+        }
+
+        public override void accept(TezPropertyFunction pf)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override TezPropertyType getParameterType()
+        {
+            return TezPropertyType.Type;
+        }
+    }
+
+    public class TezPV_Type<T> : TezPV_Type where T : TezType, new()
+    {
+        public T value { get; set; }
+
+        public override TezType baseValue
+        {
+            get { return value; }
+            set { this.value = (T)value; }
+        }
+
+        public override Type propertyType
+        {
+            get { return typeof(T); }
+        }
+
+        public TezPV_Type(TezPropertyName name) : base(name)
+        {
+
         }
     }
 }
