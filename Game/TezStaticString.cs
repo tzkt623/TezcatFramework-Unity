@@ -6,22 +6,21 @@ namespace tezcat.String
     {
         private static List<string> StringList = null;
         private static Dictionary<string, int> StringDic = null;
-        public static TezStaticString empty { get; private set; }
+        private const string ErrorString = "$Error_StaticString";
 
         static TezStaticString()
         {
             TezStaticString.StringDic = new Dictionary<string, int>();
-            TezStaticString.StringDic.Add(string.Empty, 0);
+            TezStaticString.StringDic.Add(ErrorString, 0);
             TezStaticString.StringList = new List<string>();
-            TezStaticString.StringList.Add(string.Empty);
-            TezStaticString.empty = new TezStaticString();
+            TezStaticString.StringList.Add(ErrorString);
         }
 
         private int m_ID = -1;
 
-        public bool isEmpty
+        public bool isNullOrEmpty
         {
-            get { return m_ID == -1; }
+            get { return m_ID == 0; }
         }
 
         public TezStaticString()
@@ -63,14 +62,73 @@ namespace tezcat.String
             }
         }
 
-        public static implicit operator string(TezStaticString tstring)
+        /// <summary>
+        /// 修改当前位置的String内容
+        /// 而不是新加一个
+        /// </summary>
+        public void replace(string content)
         {
-            if (tstring == null)
+            int id = -1;
+            if(StringDic.TryGetValue(content, out id))
             {
-                return string.Empty;
+                m_ID = id;
+            }
+            else
+            {
+                if (m_ID == 0)
+                {
+                    m_ID = StringList.Count;
+                    StringList.Add(content);
+                    StringDic.Add(content, m_ID);
+                }
+                else
+                {
+                    StringDic.Remove(StringList[m_ID]);
+                    StringDic.Add(content, m_ID);
+                    StringList[m_ID] = content;
+                }
+            }
+        }
+
+        public override bool Equals(object other)
+        {
+            var temp = other as TezStaticString;
+            if (temp)
+            {
+                return temp.m_ID == m_ID;
             }
 
-            return StringList[tstring.m_ID];
+            return false;
+        }
+
+        public override int GetHashCode()
+        {
+            return m_ID;
+        }
+
+        public string convertToString()
+        {
+            return TezStaticString.StringList[m_ID];
+        }
+
+        public TezStaticString convertFormString(string str)
+        {
+            return new TezStaticString(str);
+        }
+
+        public void reset()
+        {
+            m_ID = 0;
+        }
+
+        public static bool operator true(TezStaticString str)
+        {
+            return !object.ReferenceEquals(str, null);
+        }
+
+        public static bool operator false(TezStaticString str)
+        {
+            return object.ReferenceEquals(str, null);
         }
 
         public static implicit operator TezStaticString(string str)
@@ -98,11 +156,6 @@ namespace tezcat.String
             return (!flagX || !flagY) && (flagX || flagY) || (x.m_ID != y.m_ID);
         }
 
-        public static bool isNullOrEmpty(TezStaticString tstring)
-        {
-            return object.ReferenceEquals(tstring, null) || tstring.m_ID == 0;
-        }
-
         public static int getIDFromString(string str)
         {
             int id = -1;
@@ -116,40 +169,14 @@ namespace tezcat.String
             return id;
         }
 
-        public override bool Equals(object other)
+        public static implicit operator string(TezStaticString tstring)
         {
-            if (object.ReferenceEquals(other, null))
+            if (tstring == null)
             {
-                return false;
+                return string.Empty;
             }
 
-            var temp = other as TezStaticString;
-            if (temp != null)
-            {
-                return temp.m_ID == m_ID;
-            }
-
-            return false;
-        }
-
-        public override int GetHashCode()
-        {
-            return m_ID;
-        }
-
-        public string convertToString()
-        {
-            return TezStaticString.StringList[m_ID];
-        }
-
-        public TezStaticString convertFormString(string str)
-        {
-            return new TezStaticString(str);
-        }
-
-        public void reset()
-        {
-            m_ID = 0;
+            return StringList[tstring.m_ID];
         }
     }
 }

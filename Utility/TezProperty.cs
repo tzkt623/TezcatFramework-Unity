@@ -209,7 +209,7 @@ namespace tezcat.Utility
             get { return typeof(TezStaticString); }
         }
 
-        public TezStaticString value { get; set; } = TezStaticString.empty;
+        public TezStaticString value { get; set; } = new TezStaticString();
 
         public TezPV_StaticString(TezPropertyName name) : base(name)
         {
@@ -307,7 +307,7 @@ namespace tezcat.Utility
         }
     }
 
-    public class TezPV_Function<Return> : TezPropertyValue
+    public class TezPV_ReadOnly<Return> : TezPropertyValue
     {
         TezEventBus.Function<Return> m_Function = null;
         public TezEventBus.Function<Return> function
@@ -325,7 +325,7 @@ namespace tezcat.Utility
             get { return typeof(Return); }
         }
 
-        public TezPV_Function(TezPropertyName name) : base(name)
+        public TezPV_ReadOnly(TezPropertyName name) : base(name)
         {
 
         }

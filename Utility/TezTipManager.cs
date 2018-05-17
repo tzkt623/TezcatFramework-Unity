@@ -218,6 +218,44 @@ namespace tezcat.Utility
             return this;
         }
 
+        public TezTipManager pushAttribute(TezPropertyValue property)
+        {
+            switch (property.getParameterType())
+            {
+                case TezPropertyType.Float:
+                    this.pushAttribute(TezLocalization.getName(property.name), ((TezPV_Float)property).value);
+                    break;
+                case TezPropertyType.Int:
+                    this.pushAttribute(TezLocalization.getName(property.name), ((TezPV_Int)property).value);
+                    break;
+                case TezPropertyType.Bool:
+                    break;
+                case TezPropertyType.String:
+                    this.pushAttribute(TezLocalization.getName(property.name), ((TezPV_String)property).value);
+                    break;
+                case TezPropertyType.List:
+                    break;
+                case TezPropertyType.HashSet:
+                    break;
+                case TezPropertyType.Dictionary:
+                    break;
+                case TezPropertyType.Class:
+                    break;
+                case TezPropertyType.Function:
+                    break;
+                case TezPropertyType.StaticString:
+                    this.pushAttribute(TezLocalization.getName(property.name), ((TezPV_StaticString)property).value);
+                    break;
+                case TezPropertyType.Type:
+                    this.pushAttribute(TezLocalization.getName(property.name), TezLocalization.getName(((TezPV_Type)property).baseValue.name));
+                    break;
+                default:
+                    break;
+            }
+
+            return this;
+        }
+
         public TezTipManager pushAttributeSeparator()
         {
             return this;

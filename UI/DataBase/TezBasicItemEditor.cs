@@ -47,7 +47,7 @@ namespace tezcat.UI
         {
             if (button == PointerEventData.InputButton.Left)
             {
-                if (!this.getItem().NID.isEmpty)
+                if (!this.getItem().NID.isNullOrEmpty)
                 {
                     if (this.getItem().GUID == -1)
                     {
@@ -67,7 +67,7 @@ namespace tezcat.UI
         {
             if (button == PointerEventData.InputButton.Left)
             {
-                if (!this.getItem().NID.isEmpty)
+                if (!this.getItem().NID.isNullOrEmpty)
                 {
                     if(this.getItem().GUID == -1)
                     {

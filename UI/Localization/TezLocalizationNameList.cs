@@ -83,6 +83,25 @@ namespace tezcat.UI
             m_Page.contentType = InputField.ContentType.IntegerNumber;
         }
 
+        protected override void clear()
+        {
+            m_Add.onClick -= onAddClick;
+            m_Remove.onClick -= onRemoveClick;
+            m_LoadProperty.onClick -= onLoadPropertyClick;
+
+            ///
+            m_SearchKey.onEndEdit.RemoveListener(this.onSearch);
+            m_Search.onClick -= onSearchClick;
+            m_ClearSearch.onClick -= onClearSearchClick;
+
+            ///
+            m_PageUp.onClick -= onPageUpClick;
+            m_PageDown.onClick -= onPageDownClick;
+            m_Page.onValueChanged.RemoveListener(this.onPageSet);
+
+            base.clear();
+        }
+
         protected override void onRefresh()
         {
             m_PageController.calculateMaxPage(TezLocalization.nameCount);
@@ -110,10 +129,7 @@ namespace tezcat.UI
             }
             m_ItemList.Clear();
 
-            TezLocalization.foreachName(
-                this.createItem,
-                begin,
-                end);
+            TezLocalization.foreachName(this.createItem, begin, end);
         }
 
         private void onPageDownClick(PointerEventData.InputButton button)
@@ -159,11 +175,11 @@ namespace tezcat.UI
             {
                 m_SearchResult.close();
                 m_SearchResult = null;
-                this.showAllItem();
             }
 
             m_SearchKey.text = string.Empty;
             m_PageGO.SetActive(true);
+            this.showAllItem();
         }
 
         private void onSearch(string key)
@@ -174,7 +190,6 @@ namespace tezcat.UI
                 int index = -1;
                 if (TezLocalization.getName(key, out value, out index))
                 {
-                    this.hideAllItem();
                     if (m_SearchResult != null)
                     {
                         m_SearchResult.set(index);
@@ -188,6 +203,7 @@ namespace tezcat.UI
                     }
                 }
 
+                this.hideAllItem();
                 m_PageGO.SetActive(false);
             }
         }

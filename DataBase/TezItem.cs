@@ -37,14 +37,29 @@ namespace tezcat.DataBase
         /// </summary>
         public TezAsset asset { get; protected set; } = new TezAsset();
 
-        public virtual TezStaticString NID { get; set; }
-        public int objectID { get; set; } = -1;
+        #region IDs
+        /// <summary>
+        /// Name ID
+        /// </summary>
+        public TezStaticString NID { get; set; } = new TezStaticString();
+
+        /// <summary>
+        /// Object ID
+        /// </summary>
+        public int OID { get; set; } = -1;
+
+        /// <summary>
+        /// Global ID
+        /// </summary>
         public int GUID { get; set; } = -1;
+        #endregion
+
         public bool unregistered
         {
-            get { return objectID == -1 || GUID == -1; }
+            get { return OID == -1 || GUID == -1; }
         }
 
+        public bool isSubItem { get; set; } = false;
 
         int refrence { get; set; } = 0;
 
@@ -53,6 +68,11 @@ namespace tezcat.DataBase
         {
             get { return m_PorpertyManager.properties; }
         }
+
+        protected abstract void onRefInit();
+        protected abstract void onRefZero();
+
+        public abstract void clear();
 
         public void addRef()
         {
@@ -102,9 +122,10 @@ namespace tezcat.DataBase
 
         protected virtual void onSerializationID(TezWriter writer)
         {
+            writer.write(TezReadOnlyString.Database.NID, this.NID);
             writer.write(TezReadOnlyString.Database.group_id, groupType.name);
             writer.write(TezReadOnlyString.Database.type_id, categoryType.name);
-            writer.write(TezReadOnlyString.Database.object_id, objectID >= 0 ? objectID : -1);
+            writer.write(TezReadOnlyString.Database.OID, OID >= 0 ? OID : -1);
             writer.write(TezReadOnlyString.Database.GUID, this.GUID);
         }
 
@@ -117,14 +138,10 @@ namespace tezcat.DataBase
 
         protected virtual void onDeserializationID(TezReader reader)
         {
-            this.objectID = reader.readInt(TezReadOnlyString.Database.object_id);
+            this.NID = reader.readString(TezReadOnlyString.Database.NID);
+            this.OID = reader.readInt(TezReadOnlyString.Database.OID);
             this.GUID = reader.readInt(TezReadOnlyString.Database.GUID);
         }
-
-        protected abstract void onRefInit();
-        protected abstract void onRefZero();
-
-        public abstract void clear();
 
         public static T readItem<T>(TezReader reader) where T : TezItem
         {

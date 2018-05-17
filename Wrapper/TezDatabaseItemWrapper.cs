@@ -23,7 +23,12 @@ namespace tezcat.Wrapper
                 .setName(this.myName)
                 .setDescription(this.myDescription)
                 .pushAttribute(TezReadOnlyString.Database.GUID, this.mySlot.item.GUID)
-                .pushAttribute(TezReadOnlyString.Database.object_id, this.mySlot.item.objectID);
+                .pushAttribute(TezReadOnlyString.Database.OID, this.mySlot.item.OID);
+
+            foreach (var item in mySlot.item.properties)
+            {
+                tips.pushAttribute(item);
+            }
 
             tips.show();
         }

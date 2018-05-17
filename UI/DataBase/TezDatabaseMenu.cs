@@ -40,7 +40,7 @@ namespace tezcat.UI
 
             TezDatabase.foreachInnateItem((TezItem item) =>
             {
-                if(item != null)
+                if(item)
                 {
                     writer.beginObject(item.GUID);
                     item.serialization(writer);

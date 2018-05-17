@@ -148,7 +148,7 @@ namespace tezcat.DataBase
         {
             public void registerItem(TezItem item)
             {
-                item.objectID = this.ID;
+                item.OID = this.ID;
                 this.item = item;
             }
         }
@@ -162,7 +162,7 @@ namespace tezcat.DataBase
 
             public void registerItem(TezItem new_item)
             {
-                if (new_item.objectID == -1)
+                if (new_item.OID == -1)
                 {
                     this.add((ContainerSlot slot) =>
                     {
@@ -172,8 +172,8 @@ namespace tezcat.DataBase
                 }
                 else
                 {
-                    this.grow(new_item.objectID);
-                    this.set(new_item.objectID, (ContainerSlot slot) =>
+                    this.grow(new_item.OID);
+                    this.set(new_item.OID, (ContainerSlot slot) =>
                     {
                         slot.item = new_item;
                         onRegsiterItem.invoke(slot);
@@ -183,7 +183,7 @@ namespace tezcat.DataBase
 
             public void unregisterItem(TezItem item)
             {
-                this.remove(item.objectID);
+                this.remove(item.OID);
             }
 
             public void unregisterItem(int object_id)

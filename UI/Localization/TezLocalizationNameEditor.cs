@@ -44,7 +44,6 @@ namespace tezcat.UI
             }
         }
 
-
         public void set(int index)
         {
             m_Key.readOnly = true;
@@ -59,14 +58,19 @@ namespace tezcat.UI
 
         private void onCancelClick(PointerEventData.InputButton button)
         {
-            this.close();
+            if(button == PointerEventData.InputButton.Left)
+            {
+                this.close();
+            }
         }
 
         private void onConfirmClick(PointerEventData.InputButton button)
         {
-            TezLocalization.saveName(m_Index, m_Localization.text);
-            this.close();
-            handleItem.dirty = true;
+            if(button == PointerEventData.InputButton.Left)
+            {
+                TezLocalization.saveName(m_Index, m_Localization.text);
+                this.close();
+            }
         }
 
         protected override void onRefresh()

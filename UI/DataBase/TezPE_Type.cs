@@ -22,17 +22,17 @@ namespace tezcat.UI
 
         protected override void initWidget()
         {
-            m_DropDown.onValueChanged.AddListener(this.onValueChanged);
+
         }
 
         protected override void linkEvent()
         {
-
+            m_DropDown.onValueChanged.AddListener(this.onValueChanged);
         }
 
         protected override void unLinkEvent()
         {
-
+            m_DropDown.onValueChanged.RemoveListener(this.onValueChanged);
         }
 
         public override void reset()
@@ -44,18 +44,23 @@ namespace tezcat.UI
         {
             m_Types.Clear();
             m_Types = null;
-            m_DropDown.onValueChanged.RemoveListener(this.onValueChanged);
         }
 
         protected override void onRefresh()
         {
             m_PropertyName.text = TezLocalization.getName(m_Property.name, m_Property.name);
             m_Types = TezTypeRegisterHelper.getList(m_Property.propertyType);
-            m_DropDown.options.Clear();
+
+            m_DropDown.ClearOptions();
+            List<Dropdown.OptionData> options = new List<Dropdown.OptionData>();
             for (int i = 0; i < m_Types.Count; i++)
             {
-                m_DropDown.options.Add(new Dropdown.OptionData(m_Types[i].name));
+                options.Add(new Dropdown.OptionData(m_Types[i].name));
             }
+            m_DropDown.AddOptions(options);
+
+            m_DropDown.value = ((TezPV_Type)m_Property).baseValue.ID;
+            m_DropDown.captionText.text = ((TezPV_Type)m_Property).baseValue.name;
         }
 
         protected override void onShow()

@@ -13,7 +13,9 @@ namespace tezcat.UI
         [SerializeField]
         TezPE_Type m_PrefabPE_Type = null;
         [SerializeField]
-        TezPropertyView m_PrefabPV = null;
+        TezPropertyView m_PrefabPE_View = null;
+        [SerializeField]
+        TezPE_StaticString m_PrefabPE_StaticString = null;
 
         [SerializeField]
         RectTransform m_Content = null;
@@ -43,7 +45,7 @@ namespace tezcat.UI
 
         private TezPropertyView createPV(string name, string value)
         {
-            var pv = Instantiate(m_PrefabPV, m_Content, false);
+            var pv = Instantiate(m_PrefabPE_View, m_Content, false);
             pv.set(name, value);
             return pv;
         }
@@ -71,16 +73,19 @@ namespace tezcat.UI
 
             if (m_Item != null)
             {
-                var view = Instantiate(m_PrefabPV, m_Content, false);
-                view.set(() => TezLocalization.getName(TezReadOnlyString.Database.object_id, TezReadOnlyString.Database.object_id),
-                    () => m_Item.objectID.ToString());
+                var view = Instantiate(m_PrefabPE_View, m_Content, false);
+                view.set(() => TezLocalization.getName(TezReadOnlyString.Database.OID, TezReadOnlyString.Database.OID),
+                    () => m_Item.OID.ToString());
                 view.open();
 
-                view = Instantiate(m_PrefabPV, m_Content, false);
+                view = Instantiate(m_PrefabPE_View, m_Content, false);
                 view.set(() => TezLocalization.getName(TezReadOnlyString.Database.GUID, TezReadOnlyString.Database.GUID),
                     () => m_Item.GUID.ToString());
                 view.open();
 
+                var editor = Instantiate(m_PrefabPE_StaticString, m_Content, false);
+                editor.bind(() => TezLocalization.getName(TezReadOnlyString.Database.NID, TezReadOnlyString.Database.NID), m_Item.NID);
+                editor.open();
 
                 var properties = m_Item.properties;
                 for (int i = 0; i < properties.Count; i++)

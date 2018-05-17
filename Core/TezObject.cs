@@ -24,7 +24,7 @@ namespace tezcat.Core
         /// <summary>
         /// 全局唯一名称ID
         /// </summary>
-        public TezStaticString NID { get; private set; } = TezStaticString.empty;
+        public TezStaticString NID { get; private set; } = new TezStaticString();
 
         /// <summary>
         /// 来源数据

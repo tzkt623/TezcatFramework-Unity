@@ -1,9 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-
-
-namespace tezcat.Utility
+﻿namespace tezcat.Utility
 {
     public class TezReadOnlyString
     {
@@ -15,7 +10,9 @@ namespace tezcat.Utility
 
             public const string group_id = "group_id";
             public const string type_id = "type_id";
-            public const string object_id = "object_id";
+
+            public const string NID = "NID";
+            public const string OID = "OID";
             public const string GUID = "GUID";
         }
     }
