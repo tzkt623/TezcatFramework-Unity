@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using tezcat.Core;
 using tezcat.Wrapper;
 using UnityEngine.EventSystems;
 
@@ -7,7 +8,7 @@ namespace tezcat.UI
     /// <summary>
     /// 基础控件
     /// </summary>
-    public interface ITezWidget
+    public interface ITezWidget : ITezClearable
     {
 
     }

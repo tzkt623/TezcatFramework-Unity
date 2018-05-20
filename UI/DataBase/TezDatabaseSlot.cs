@@ -1,4 +1,6 @@
-﻿using tezcat.Core;
+﻿using System;
+using tezcat.Core;
+using tezcat.DataBase;
 using tezcat.Wrapper;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -13,6 +15,8 @@ namespace tezcat.UI
     {
         [SerializeField]
         Image m_Icon = null;
+
+        public TezDatabaseItemContainer container { get; set; }
 
         TezDatabaseItemWrapper m_Wrapper = null;
 
@@ -57,9 +61,9 @@ namespace tezcat.UI
 
         }
 
-        protected override void clear()
+        public override void clear()
         {
-            m_Wrapper?.clear();
+            m_Wrapper?.clean();
             m_Wrapper = null;
         }
 
@@ -91,8 +95,16 @@ namespace tezcat.UI
             switch (eventData.button)
             {
                 case PointerEventData.InputButton.Left:
-                    TezStateController.add(TezBuildInState.PickAnItem);
-                    TezSelectController.select(new TezItemSelector(m_Wrapper.mySlot));
+                    if(eventData.clickCount == 2)
+                    {
+
+                        TezStateController.add(TezBuildInState.PickAnItem);
+                        TezSelectController.select(m_Wrapper.mySlot);
+                    }
+                    else
+                    {
+                        container.onSelectSlot(this);
+                    }
                     break;
                 case PointerEventData.InputButton.Right:
                     break;
@@ -101,6 +113,14 @@ namespace tezcat.UI
                 default:
                     break;
             }
+        }
+
+        public void removeItem()
+        {
+            TezDatabase.unregisterItem(m_Wrapper.getItem());
+            m_Wrapper.clean();
+            m_Wrapper = null;
+            this.dirty = true;
         }
 
         void IPointerDownHandler.OnPointerDown(PointerEventData eventData)

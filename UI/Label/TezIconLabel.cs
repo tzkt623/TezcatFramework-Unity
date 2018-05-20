@@ -27,7 +27,7 @@ namespace tezcat.UI
             m_Label.dirty = true;
         }
 
-        protected override void clear()
+        public override void clear()
         {
             m_Icon = null;
             m_Label = null;

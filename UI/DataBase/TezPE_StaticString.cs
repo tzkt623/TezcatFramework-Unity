@@ -52,7 +52,7 @@ namespace tezcat.UI
 
         }
 
-        protected override void clear()
+        public override void clear()
         {
             m_PropertyName = null;
         }
@@ -66,6 +66,7 @@ namespace tezcat.UI
         {
             m_PropertyName.setGetFunction(function);
             m_String = str;
+            m_Input.text = m_String;
         }
     }
 }

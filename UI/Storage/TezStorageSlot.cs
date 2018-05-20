@@ -17,9 +17,9 @@ namespace tezcat.UI
             m_StorageItem = this.GetComponent<TezStorageItem>();
         }
 
-        protected override void clear()
+        public override void clear()
         {
-            this.wrapper.clear();
+            this.wrapper.clean();
             this.wrapper = default(T);
         }
 

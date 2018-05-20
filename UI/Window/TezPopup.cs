@@ -30,7 +30,7 @@ namespace tezcat.UI
             return base.checkForClose();
         }
 
-        protected override void clear()
+        public override void clear()
         {
             this.window = null;
         }

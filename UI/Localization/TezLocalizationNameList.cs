@@ -83,7 +83,7 @@ namespace tezcat.UI
             m_Page.contentType = InputField.ContentType.IntegerNumber;
         }
 
-        protected override void clear()
+        public override void clear()
         {
             m_Add.onClick -= onAddClick;
             m_Remove.onClick -= onRemoveClick;

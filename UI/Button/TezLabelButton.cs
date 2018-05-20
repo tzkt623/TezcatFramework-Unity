@@ -123,7 +123,7 @@ namespace tezcat.UI
 
         }
 
-        protected override void clear()
+        public override void clear()
         {
             base.clear();
             m_Label = null;

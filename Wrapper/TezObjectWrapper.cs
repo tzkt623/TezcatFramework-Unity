@@ -8,7 +8,7 @@ namespace tezcat.Wrapper
         string myName { get; }
         string myDescription { get; }
 
-        void clear();
+        void clean();
     }
 
     public interface ITezObjectWrapper : ITezWrapper
@@ -28,7 +28,7 @@ namespace tezcat.Wrapper
             get { return TezLocalization.getDescription(this.getObject().NID); }
         }
 
-        public abstract void clear();
+        public abstract void clean();
 
         public abstract TezObject getObject();
     }
@@ -54,7 +54,7 @@ namespace tezcat.Wrapper
             return this.myObject;
         }
 
-        public override void clear()
+        public override void clean()
         {
             myObject.clear();
             myObject = null;

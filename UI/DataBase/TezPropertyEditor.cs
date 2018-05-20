@@ -11,7 +11,7 @@ namespace tezcat.UI
             this.dirty = true;
         }
 
-        protected override void clear()
+        public override void clear()
         {
             m_Property = null;
         }

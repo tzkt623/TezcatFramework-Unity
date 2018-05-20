@@ -12,7 +12,7 @@ namespace tezcat.Core
     /// 
     /// </summary>
     public abstract class TezObject
-        : TezSingleDataSlot<TezItem>
+        : TezSingleDataSlot
         , ITezPropertyOwner
         , ITezSelectable
     {
@@ -28,23 +28,24 @@ namespace tezcat.Core
 
         /// <summary>
         /// 来源数据
-        /// Object本身并不持有这个来源Item的数据 而是拷贝一份使用
+        /// 
+        /// Object本身并不持有这个来源Item的数据
+        /// 而是拷贝一份使用
         /// 因为数据可能会随时发生变化
-        /// 并且不能影响到来源的原本数据
+        /// 并且不能影响到来源数据
         /// </summary>
         public TezItem sourceItem
         {
-            get { return this.myData; }
-            protected set { this.myData = value; }
+            get; protected set;
         }
 
         /// <summary>
         /// 此Object可被选择器选中
         /// 并且是Object类型数据
         /// </summary>
-        public TezSelectType selectType
+        public TezSelectorType selectorType
         {
-            get { return TezSelectType.Object; }
+            get { return TezSelectorType.Object; }
         }
 
         /// <summary>
@@ -58,19 +59,22 @@ namespace tezcat.Core
         public abstract TezDatabase.CategoryType categoryType { get; }
 
         /// <summary>
-        /// 属性注册器
+        /// 标签
         /// </summary>
-        protected TezPropertyManager m_PropertyManager = null;
-        public TezPropertyManager propertyManager
-        {
-            get { return m_PropertyManager; }
-        }
+        public TezTagSet tags { get; private set; } = new TezTagSet();
 
+        /// <summary>
+        /// 属性
+        /// </summary>
+        public TezPropertyManager propertyManager { get; private set; }
         public List<TezPropertyValue> properties
         {
-            get { return m_PropertyManager.properties; }
+            get { return propertyManager.properties; }
         }
 
+        /// <summary>
+        /// 初始化Object
+        /// </summary>
         public void initObject()
         {
             if (!this.UID)
@@ -86,14 +90,19 @@ namespace tezcat.Core
 
         }
 
+        public override ITezData getTezData()
+        {
+            return this.sourceItem;
+        }
+
         /// <summary>
         /// 注册当前Item的所有属性
         /// </summary>
-        public void registerProperty()
+        private void registerProperty()
         {
-            m_PropertyManager = new TezPropertyManager(this);
-            this.onRegisterProperty(m_PropertyManager);
-            m_PropertyManager.sortProperties();
+            this.propertyManager = new TezPropertyManager(this);
+            this.onRegisterProperty(propertyManager);
+            propertyManager.sortProperties();
         }
 
         /// <summary>
@@ -132,12 +141,17 @@ namespace tezcat.Core
             this.sourceItem.subRef();
             this.sourceItem = null;
 
-            m_PropertyManager.clear();
-            m_PropertyManager = null;
+            propertyManager.clear();
+            propertyManager = null;
 
             this.UID = null;
             this.NID = null;
+
+            tags.clear();
+            tags = null;
         }
+
+
 
         #region 重载操作
         public static bool operator true(TezObject obj)

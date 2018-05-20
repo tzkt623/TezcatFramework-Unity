@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using tezcat.Core;
 using tezcat.Event;
 using tezcat.TypeTraits;
@@ -109,11 +110,6 @@ namespace tezcat.DataBase
                 this.containers[type_id].registerItem(new_item);
             }
 
-            public void unregisterItem(int type_id, int object_id)
-            {
-                this.containers[type_id].unregisterItem(object_id);
-            }
-
             public Container this[int type_id]
             {
                 get { return this.containers[type_id]; }
@@ -142,6 +138,10 @@ namespace tezcat.DataBase
                 }
             }
 
+            public void addItem(TezItem item)
+            {
+
+            }
         }
 
         public class ContainerSlot : TezItemSlot
@@ -160,22 +160,22 @@ namespace tezcat.DataBase
             public Container() { }
             public Container(CategoryType category_type) { this.categoryType = category_type; }
 
-            public void registerItem(TezItem new_item)
+            public void registerItem(TezItem item)
             {
-                if (new_item.OID == -1)
+                if (item.OID == -1)
                 {
                     this.add((ContainerSlot slot) =>
                     {
-                        slot.registerItem(new_item);
+                        slot.registerItem(item);
                         onRegsiterItem.invoke(slot);
                     });
                 }
                 else
                 {
-                    this.grow(new_item.OID);
-                    this.set(new_item.OID, (ContainerSlot slot) =>
+                    this.grow(item.OID);
+                    this.set(item.OID, (ContainerSlot slot) =>
                     {
-                        slot.item = new_item;
+                        slot.item = item;
                         onRegsiterItem.invoke(slot);
                     });
                 }
@@ -184,11 +184,6 @@ namespace tezcat.DataBase
             public void unregisterItem(TezItem item)
             {
                 this.remove(item.OID);
-            }
-
-            public void unregisterItem(int object_id)
-            {
-                this.remove(object_id);
             }
 
             public void foreachItem<T>(TezEventBus.Action<T> function) where T : TezItem
@@ -205,111 +200,62 @@ namespace tezcat.DataBase
             public TezDatabase database { get; set; }
 
             List<TezItem> m_Items = new List<TezItem>();
-
             Queue<int> m_FreeInnate = new Queue<int>();
-            Queue<int> m_FreeRuntime = new Queue<int>();
-
-            HashSet<int> m_Collide = new HashSet<int>();
-
-            public int innateCount
-            {
-                get; private set;
-            }
-
-            int m_GUID = 0;
 
             public TezItem this[int index]
             {
                 get { return m_Items[index]; }
             }
 
-            int filterGUID(TezEventBus.Function<int> function)
-            {
-                int guid = -1;
-                do
-                {
-                    guid = function();
-                }
-                while (m_Items[guid] != null);
-                return guid;
-            }
-
             /// <summary>
             /// 注册固有物品
             /// </summary>
             /// <param name="item"></param>
-            public void registerInnateItem(TezItem item)
+            public void registerItem(TezItem item)
             {
-                if (item.GUID < 0)
+                if(item.GUID > 0)
                 {
-                    ///过滤掉InnateID中的重复ID
-                    var guid = this.filterGUID(this.giveInnateGUID);
-                    item.GUID = guid;
-                    m_Items[guid] = item;
+                    this.grow(item.GUID);
                 }
                 else
                 {
-                    this.growInnate(item.GUID);
-                    var temp = m_Items[item.GUID];
-                    if (temp != null)
-                    {
-                        ///如果当前物品冲突了,优先让有ID的物品先设置
-                        ///把无关的物品后移
-                        if (m_Collide.Contains(item.GUID))
-                        {
-                            throw new System.Exception("TezItem Collide!!!");
-                        }
-                        m_Collide.Add(item.GUID);
-
-                        temp.GUID = -1;
-                        this.registerInnateItem(temp);
-                    }
-
-                    m_Items[item.GUID] = item;
+                    item.GUID = this.giveGUID();
                 }
 
+                m_Items[item.GUID] = item;
             }
 
             /// <summary>
             /// 移除固有物品
             /// </summary>
             /// <param name="item"></param>
-            public void unregisterInnateItem(TezItem item)
+            public void unregisterItem(TezItem item)
             {
-#if UNITY_EDITOR
-                TezDebug.isTrue(item.GUID < innateCount, "TezDataBase", "This is not a Innate TezItem");
-#endif
-                if (item.GUID == innateCount - 1)
+                if (item.GUID == m_Items.Count - 1)
                 {
-                    m_Items[item.GUID] = null;
-                    m_FreeInnate.Enqueue(item.GUID);
+                    m_Items.RemoveAt(item.GUID);
                 }
                 else
                 {
-                    var last_id = innateCount - 1;
+                    var last_id = m_Items.Count - 1;
                     var last_innate = m_Items[last_id];
-                    m_Items[last_id] = null;
+                    m_Items.RemoveAt(last_id);
 
-                    m_FreeInnate.Enqueue(last_innate.GUID);
                     m_Items[item.GUID] = last_innate;
                     last_innate.GUID = item.GUID;
                 }
-
-                innateCount -= 1;
             }
 
-            void growInnate(int guid)
+            void grow(int guid)
             {
                 while (m_Items.Count <= guid)
                 {
-                    m_FreeInnate.Enqueue(m_GUID++);
+                    m_FreeInnate.Enqueue(m_Items.Count);
                     m_Items.Add(null);
                 }
-
-                this.innateCount = m_Items.Count;
             }
 
-            int giveInnateGUID()
+            int giveGUID()
             {
                 if (m_FreeInnate.Count > 0)
                 {
@@ -317,8 +263,9 @@ namespace tezcat.DataBase
                 }
                 else
                 {
+                    int id = m_Items.Count;
                     m_Items.Add(null);
-                    return m_GUID++;
+                    return id++;
                 }
             }
 
@@ -333,120 +280,34 @@ namespace tezcat.DataBase
                 }
             }
 
-            public void foreachInnateItem(TezEventBus.Action<TezItem> action)
+            public void sortItems()
             {
-                for (int i = 0; i < this.innateCount; i++)
+                List<TezItem> temp = new List<TezItem>(m_Items);
+                m_Items.Clear();
+
+                for (int i = 0; i < temp.Count; i++)
                 {
-                    action(m_Items[i]);
+                    var item = temp[i];
+                    if (item)
+                    {
+                        item.GUID = m_Items.Count;
+                        m_Items.Add(item);
+                    }
                 }
+
+                temp.Clear();
+                temp = null;
             }
 
-            public void foreachRuntimeItem(TezEventBus.Action<TezItem> action)
+            public void addItem(TezItem item)
             {
-                for (int i = this.innateCount; i < m_Items.Count; i++)
-                {
-                    action(m_Items[i]);
-                }
-            }
-
-            public void foreachRuntimeItem<T>(TezEventBus.Action<T> action) where T : TezItem
-            {
-                for (int i = this.innateCount; i < m_Items.Count; i++)
-                {
-                    action((T)m_Items[i]);
-                }
-            }
-
-            /// <summary>
-            /// 增加运行时物品
-            /// </summary>
-            /// <param name="item"></param>
-            public void add(TezItem item)
-            {
-                var guid = this.giveRuntimeGUID();
-                item.GUID = guid;
-                m_Items[guid] = item;
-            }
-
-            /// <summary>
-            /// 移除运行时物品
-            /// </summary>
-            /// <param name="item"></param>
-            public void remove(TezItem item)
-            {
-                var guid = item.GUID;
-                if (guid == m_Items.Count - 1)
-                {
-                    m_Items.RemoveAt(guid);
-                    m_FreeRuntime.Enqueue(guid);
-                }
-                else
-                {
-                    var last_id = m_Items.Count - 1;
-                    var last_runtime = m_Items[last_id];
-                    m_Items.RemoveAt(last_id);
-
-                    m_FreeRuntime.Enqueue(last_runtime.GUID);
-                    m_Items[guid] = last_runtime;
-                    last_runtime.GUID = guid;
-                }
-            }
-
-            void growRuntime(int guid)
-            {
-                while (m_Items.Count <= guid)
-                {
-                    m_FreeRuntime.Enqueue(m_GUID++);
-                    m_Items.Add(null);
-                }
-            }
-
-            int giveRuntimeGUID()
-            {
-                if (m_FreeRuntime.Count > 0)
-                {
-                    return m_FreeRuntime.Dequeue();
-                }
-                else
-                {
-                    m_Items.Add(null);
-                    return m_GUID++;
-                }
-            }
-
-            public void registerRuntimeItem(TezItem item)
-            {
-                this.growRuntime(item.GUID);
-                var guid = this.filterGUID(this.giveRuntimeGUID);
-                m_Items[guid] = item;
-            }
-
-            public void clearZeroRefItem()
-            {
-//                 int i = this.innateCount;
-//                 while (i < m_Items.Count)
-//                 {
-//                     var item = m_Items[i];
-//                     if (item != null && item.refrence <= 0)
-//                     {
-//                         TezDatabase.removeItem(item);
-//                     }
-//                     else
-//                     {
-//                         i++;
-//                     }
-//                 }
+                this.grow(item.GUID);
+                m_Items[item.GUID] = item;
             }
         }
 
         static List<Group> m_Group = new List<Group>();
         static Global m_Global = new Global();
-
-        public static int itemCount { get; private set; } = 0;
-        public static int innateCount
-        {
-            get { return m_Global.innateCount; }
-        }
 
         public static void initialization(int container_count)
         {
@@ -506,7 +367,7 @@ namespace tezcat.DataBase
         public static T getItem<T>(int group_id, int type_id, int object_id) where T : TezItem
         {
             ContainerSlot slot = null;
-            if(m_Group[group_id][type_id].tryGet(object_id, out slot))
+            if (m_Group[group_id][type_id].tryGet(object_id, out slot))
             {
                 return (T)slot.item;
             }
@@ -520,68 +381,29 @@ namespace tezcat.DataBase
         }
 
         /// <summary>
-        /// 增加Runtime数据
-        /// </summary>
-        /// <param name="item"></param>
-        public static void addItem(TezItem item)
-        {
-            if (item.GUID < 0)
-            {
-                m_Global.add(item);
-                m_Group[item.groupType.ID].registerItem(item);
-            }
-        }
-
-        /// <summary>
-        /// 删除Runtime数据
-        /// </summary>
-        /// <param name="item"></param>
-        public static void removeItem(TezItem item)
-        {
-            if (item.GUID >= m_Global.innateCount)
-            {
-                m_Global.remove(item);
-                m_Group[item.groupType.ID].unregisterItem(item);
-            }
-        }
-
-        /// <summary>
-        /// 注册Runtime数据
-        /// </summary>
-        /// <param name="item"></param>
-        public static void registerRuntimeItem(TezItem item)
-        {
-            if (item.GUID >= m_Global.innateCount)
-            {
-                m_Global.registerRuntimeItem(item);
-                m_Group[item.groupType.ID].registerItem(item);
-            }
-        }
-
-        /// <summary>
         /// 注册Innate数据
         /// </summary>
-        /// <param name="new_item"></param>
-        public static void registerInnateItem(TezItem new_item)
+        /// <param name="item"></param>
+        public static void registerItem(TezItem item)
         {
 #if UNITY_EDITOR
             TezDebug.isTrue(
-                m_Group.Count > new_item.groupType.ID && m_Group[new_item.groupType.ID] != null,
+                m_Group.Count > item.groupType.ID && m_Group[item.groupType.ID] != null,
                 "TezDataBase",
                 "This TezItem is out of range");
 #endif
-            m_Global.registerInnateItem(new_item);
-            m_Group[new_item.groupType.ID].registerItem(new_item);
+            m_Global.registerItem(item);
+            m_Group[item.groupType.ID].registerItem(item);
         }
 
         /// <summary>
         /// 移除Innate数据
         /// </summary>
         /// <param name="item"></param>
-        public static void unregisterInnateItem(TezItem item)
+        public static void unregisterItem(TezItem item)
         {
             m_Group[item.groupType.ID].unregisterItem(item);
-            m_Global.unregisterInnateItem(item);
+            m_Global.unregisterItem(item);
         }
 
         public static void foreachCategoryType(
@@ -607,11 +429,6 @@ namespace tezcat.DataBase
             }
         }
 
-        public static void foreachInnateItem(TezEventBus.Action<TezItem> action)
-        {
-            m_Global.foreachInnateItem(action);
-        }
-
         public static void foreachItemByGroup(TezEventBus.Action<TezItem> action)
         {
             foreach (var group in m_Group)
@@ -625,14 +442,9 @@ namespace tezcat.DataBase
             m_Global.foreachItem(action);
         }
 
-        public static void foreachRuntimeItem<T>(TezEventBus.Action<T> action) where T : TezItem
+        public static void sortItems()
         {
-            m_Global.foreachRuntimeItem(action);
-        }
-
-        public static void foreachRuntimeItem(TezEventBus.Action<TezItem> action)
-        {
-            m_Global.foreachRuntimeItem(action);
+            m_Global.sortItems();
         }
 
         public static void clear()
@@ -641,31 +453,6 @@ namespace tezcat.DataBase
             {
                 group.clear();
             }
-        }
-
-        /// <summary>
-        /// 重新映射物品的GUID
-        /// 如果物品的GUID小于old_innate_count值,则说明是Innate数据,不需要映射
-        /// 如果大于等于old_innate_count值,说明是Runtime数据,重新映射
-        /// </summary>
-        /// <param name="old_innate_count">老版本的innate数据数量</param>
-        /// <param name="guid">当前的GUID</param>
-        /// <returns></returns>
-        public static int remapGUID(int old_innate_count, int guid)
-        {
-            if (guid < old_innate_count)
-            {
-                return guid;
-            }
-            else
-            {
-                return guid + (innateCount - old_innate_count);
-            }
-        }
-
-        public static void clearZeroRefItem()
-        {
-            m_Global.clearZeroRefItem();
         }
     }
 }

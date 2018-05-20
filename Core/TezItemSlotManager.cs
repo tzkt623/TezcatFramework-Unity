@@ -26,7 +26,7 @@ namespace tezcat.Core
     public abstract class TezItemSlotManager<T> : ITezItemSlotManager where T : TezItemSlot, new()
     {
         public List<T> slots { get; private set; } = new List<T>();
-        protected Queue<T> m_EmptySlots = new Queue<T>();
+        Queue<T> m_EmptySlots = new Queue<T>();
 
         public int slotCount
         {
@@ -65,23 +65,30 @@ namespace tezcat.Core
 
         protected void add(TezEventBus.Action<T> set_slot)
         {
-            var slot = new T();
-            slot.manager = this;
-            slot.ID = slots.Count;
-            slots.Add(slot);
-            set_slot(slot);
+            if(m_EmptySlots.Count > 0)
+            {
+                set_slot(m_EmptySlots.Dequeue());
+            }
+            else
+            {
+                var slot = new T();
+                slot.manager = this;
+                slot.ID = slots.Count;
+                slots.Add(slot);
+                set_slot(slot);
+            }
         }
 
         protected void set(int slot_id, TezEventBus.Action<T> set_slot)
         {
-            var slot = slots[slot_id];
-            set_slot(slot);
+            set_slot(slots[slot_id]);
         }
 
         protected void remove(int slot_id)
         {
             var slot = slots[slot_id];
             slot.item = null;
+            m_EmptySlots.Enqueue(slot);
         }
 
         public bool tryGet(int slot_id, out T slot)

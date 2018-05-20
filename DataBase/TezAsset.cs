@@ -2,14 +2,14 @@
 using tezcat.String;
 using UnityEngine;
 
-namespace tezcat
+namespace tezcat.DataBase
 {
     public class TezAsset
     {
-        public TezStaticString icon_0 { get; set; }
-        public TezStaticString icon_1 { get; set; }
-        public TezStaticString icon_2 { get; set; }
-        public TezStaticString icon_3 { get; set; }
+        public TezStaticString icon_0 { get; set; } = new TezStaticString();
+        public TezStaticString icon_1 { get; set; } = new TezStaticString();
+        public TezStaticString icon_2 { get; set; } = new TezStaticString();
+        public TezStaticString icon_3 { get; set; } = new TezStaticString();
 
         public Sprite sprite_0 { get; set; }
         public Sprite sprite_1 { get; set; }

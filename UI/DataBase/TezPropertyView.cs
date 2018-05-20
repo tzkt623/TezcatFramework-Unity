@@ -24,7 +24,7 @@ namespace tezcat.UI
             m_PorpertyValue.setGetFunction(value);
         }
 
-        protected override void clear()
+        public override void clear()
         {
             m_PropertyName = null;
             m_PorpertyValue = null;

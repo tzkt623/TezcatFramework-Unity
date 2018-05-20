@@ -32,7 +32,7 @@ namespace tezcat.UI
             base.initWidget();
             foreach (var item in m_PrefabEditorArray)
             {
-                foreach (var category in item.categoryTypes)
+                foreach (var category in item.supportCategory)
                 {
                     m_EditorDic.Add(category, item);
                 }
@@ -41,7 +41,10 @@ namespace tezcat.UI
             m_PrefabEditorArray = null;
 
             m_Menu.setGroup(m_Group);
+            m_Menu.setContainer(m_Container);
+
             m_Container.setGroup(m_Group);
+
             m_Group.setContainer(m_Container);
         }
 

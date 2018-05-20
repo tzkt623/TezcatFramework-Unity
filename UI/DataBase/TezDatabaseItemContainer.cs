@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using tezcat.DataBase;
 using tezcat.Wrapper;
 using UnityEngine;
@@ -36,6 +37,7 @@ namespace tezcat.UI
         List<TezDatabaseSlot> m_SlotList = new List<TezDatabaseSlot>();
 
         TezDatabaseGroup m_Group = null;
+        TezDatabaseSlot m_Current = null;
 
         protected override void preInit()
         {
@@ -62,6 +64,14 @@ namespace tezcat.UI
             TezDatabase.onRegsiterItem.remove(this.onAdd);
         }
 
+        public void removeItem()
+        {
+            if(m_Current)
+            {
+                m_Current.removeItem();
+            }
+        }
+
         private void onAdd(TezDatabase.ContainerSlot slot)
         {
             var id = m_PageController.isInPage(slot.ID);
@@ -70,6 +80,7 @@ namespace tezcat.UI
                 while(m_SlotList.Count <= id)
                 {
                     var ui = Instantiate(m_Prefab, m_Content, false);
+                    ui.container = this;
                     ui.open();
                     m_SlotList.Add(ui);
                 }
@@ -81,6 +92,17 @@ namespace tezcat.UI
                 m_MaxPage.text = "/" + m_PageController.maxPage.ToString();
                 m_Page.text = m_PageController.currentPage.ToString();
             }
+        }
+
+        public void onSelectSlot(TezDatabaseSlot slot)
+        {
+            m_Current = slot;
+
+            m_Vernier.SetParent(slot.transform, false);
+            m_Vernier.localScale = Vector3.one;
+            m_Vernier.localPosition = Vector3.zero;
+            TezUILayout.setLayout(m_Vernier, -4, -4, 4, 4);
+            m_Vernier.gameObject.SetActive(true);
         }
 
         protected override void onRefresh()
@@ -107,14 +129,18 @@ namespace tezcat.UI
                 end = Mathf.Min(end, items.Count);
                 for (int i = begin; i < end; i++)
                 {
-                    var slot = Instantiate(m_Prefab, m_Content, false);
-                    slot.open();
-                    m_SlotList.Add(slot);
+                    var ui = Instantiate(m_Prefab, m_Content, false);
+                    ui.container = this;
+                    ui.open();
+                    m_SlotList.Add(ui);
                 }
 
-                for (int i = 0; i < items.Count; i++)
+                for (int i = begin; i < end; i++)
                 {
-                    m_SlotList[i].bind(new TezDatabaseItemWrapper(items[i]));
+                    if(items[i].item)
+                    {
+                        m_SlotList[i].bind(new TezDatabaseItemWrapper(items[i]));
+                    }
                 }
             }
         }
@@ -143,6 +169,13 @@ namespace tezcat.UI
 
         public override void reset()
         {
+            m_Current = null;
+            if(m_Vernier.gameObject.activeSelf)
+            {
+                m_Vernier.parent = null;
+                m_Vernier.gameObject.SetActive(false);
+            }
+
             foreach (var slot in m_SlotList)
             {
                 slot.close();

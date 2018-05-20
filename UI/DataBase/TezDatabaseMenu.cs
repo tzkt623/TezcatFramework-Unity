@@ -9,21 +9,27 @@ namespace tezcat.UI
     public class TezDatabaseMenu : TezArea
     {
         [SerializeField]
-        TezImageLabelButton m_Save = null;
-        [SerializeField]
         TezImageLabelButton m_AddItem = null;
+        [SerializeField]
+        TezImageLabelButton m_RemoveItem = null;
+
+        [SerializeField]
+        TezImageLabelButton m_Save = null;
         [SerializeField]
         TezImageLabelButton m_RefreshDataBase = null;
 
         TezDatabaseGroup m_Group = null;
         TezDatabaseWindow m_Window = null;
+        TezDatabaseItemContainer m_Container = null;
 
         protected override void initWidget()
         {
             base.initWidget();
 
-            m_Save.onClick += onSave;
             m_AddItem.onClick += onAddItem;
+            m_RemoveItem.onClick += onRemoveItem;
+
+            m_Save.onClick += onSave;
             m_RefreshDataBase.onClick += onRefreshDataBase;
         }
 
@@ -33,12 +39,36 @@ namespace tezcat.UI
             m_Window = (TezDatabaseWindow)this.window;
         }
 
+        public void setContainer(TezDatabaseItemContainer container)
+        {
+            m_Container = container;
+        }
+
+
+        private void onAddItem(PointerEventData.InputButton button)
+        {
+            if(button == PointerEventData.InputButton.Left)
+            {
+                if (m_Group.categoryType != null)
+                {
+                    m_Window.createItemEditor(m_Group.categoryType);
+                }
+            }
+        }
+
+        private void onRemoveItem(PointerEventData.InputButton button)
+        {
+            if (button == PointerEventData.InputButton.Left)
+            {
+                m_Container.removeItem();
+            }
+        }
+
         private void onSave(PointerEventData.InputButton button)
         {
-            TezDatabase.clearZeroRefItem();
             TezJsonWriter writer = new TezJsonWriter(true);
-
-            TezDatabase.foreachInnateItem((TezItem item) =>
+            TezDatabase.sortItems();
+            TezDatabase.foreachItemByGUID((TezItem item) =>
             {
                 if(item)
                 {
@@ -47,16 +77,7 @@ namespace tezcat.UI
                     writer.endObject(item.GUID);
                 }
             });
-
             writer.save(TezcatFramework.rootPath + TezcatFramework.databaseFile);
-        }
-
-        private void onAddItem(PointerEventData.InputButton button)
-        {
-            if (m_Group.categoryType != null)
-            {
-                m_Window.createItemEditor(m_Group.categoryType);
-            }
         }
 
         private void onRefreshDataBase(PointerEventData.InputButton button)
@@ -72,7 +93,7 @@ namespace tezcat.UI
 
         }
 
-        protected override void clear()
+        public override void clear()
         {
             m_AddItem = null;
             m_RefreshDataBase = null;

@@ -56,7 +56,7 @@ namespace tezcat.UI
             this.gameObject.SetActive(false);
         }
 
-        protected override void clear()
+        public override void clear()
         {
             TezSelectController.onSelect.remove(onSelect);
             TezSelectController.onCancelSelect.remove(onCancelSelect);
@@ -71,11 +71,11 @@ namespace tezcat.UI
         {
             this.transform.position = Input.mousePosition;
             this.gameObject.SetActive(true);
-            switch (selector.selectType)
+            switch (selector.selectorType)
             {
-                case TezSelectType.Object:
+                case TezSelectorType.Object:
                     break;
-                case TezSelectType.Item:
+                case TezSelectorType.Item:
                     m_Icon.sprite = TezTextureManager.getSprite(((TezItemSelector)selector).convertItem<TezItem>().asset.icon_0);
                     break;
                 default:

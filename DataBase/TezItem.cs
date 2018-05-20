@@ -7,6 +7,19 @@ using tezcat.Utility;
 
 namespace tezcat.DataBase
 {
+    public class TezItemHelper
+    {
+        public static T create<T>(TezReader reader) where T : TezItem
+        {
+            reader.beginObject(TezReadOnlyString.Database.id);
+            var item = TezDatabaseItemFactory.create<T>(
+                reader.readString(TezReadOnlyString.Database.GID),
+                reader.readString(TezReadOnlyString.Database.CID));
+            reader.endObject(TezReadOnlyString.Database.id);
+            return item;
+        }
+    }
+
     public abstract class TezItem
         : ITezData
         , ITezSerializable
@@ -27,9 +40,9 @@ namespace tezcat.DataBase
         /// <summary>
         /// 可被选择器选中的Item类数据
         /// </summary>
-        public TezSelectType selectType
+        public TezSelectorType selectorType
         {
-            get { return TezSelectType.Item; }
+            get { return TezSelectorType.Item; }
         }
 
         /// <summary>
@@ -69,8 +82,8 @@ namespace tezcat.DataBase
             get { return m_PorpertyManager.properties; }
         }
 
-        protected abstract void onRefInit();
-        protected abstract void onRefZero();
+//         protected abstract void onRefInit();
+//         protected abstract void onRefZero();
 
         public abstract void clear();
 
@@ -78,7 +91,7 @@ namespace tezcat.DataBase
         {
             if (refrence == 0)
             {
-                this.onRefInit();
+//                this.onRefInit();
             }
             refrence += 1;
         }
@@ -88,7 +101,7 @@ namespace tezcat.DataBase
             refrence -= 1;
             if (refrence == 0)
             {
-                this.onRefZero();
+//                this.onRefZero();
             }
         }
 
@@ -116,44 +129,25 @@ namespace tezcat.DataBase
         public virtual void serialization(TezWriter writer)
         {
             writer.beginObject(TezReadOnlyString.Database.id);
-            this.onSerializationID(writer);
-            writer.endObject(TezReadOnlyString.Database.id);
-        }
-
-        protected virtual void onSerializationID(TezWriter writer)
-        {
             writer.write(TezReadOnlyString.Database.NID, this.NID);
-            writer.write(TezReadOnlyString.Database.group_id, groupType.name);
-            writer.write(TezReadOnlyString.Database.type_id, categoryType.name);
             writer.write(TezReadOnlyString.Database.OID, OID >= 0 ? OID : -1);
             writer.write(TezReadOnlyString.Database.GUID, this.GUID);
+            writer.write(TezReadOnlyString.Database.GID, groupType.name);
+            writer.write(TezReadOnlyString.Database.CID, categoryType.name);
+            writer.endObject(TezReadOnlyString.Database.id);
         }
 
         public virtual void deserialization(TezReader reader)
         {
             reader.beginObject(TezReadOnlyString.Database.id);
-            this.onDeserializationID(reader);
-            reader.endObject(TezReadOnlyString.Database.id);
-        }
-
-        protected virtual void onDeserializationID(TezReader reader)
-        {
             this.NID = reader.readString(TezReadOnlyString.Database.NID);
             this.OID = reader.readInt(TezReadOnlyString.Database.OID);
             this.GUID = reader.readInt(TezReadOnlyString.Database.GUID);
-        }
-
-        public static T readItem<T>(TezReader reader) where T : TezItem
-        {
-            reader.beginObject(TezReadOnlyString.Database.id);
-            var item = TezDatabaseItemFactory.create<T>(
-                reader.readString(TezReadOnlyString.Database.group_id),
-                reader.readString(TezReadOnlyString.Database.type_id));
+            this.onDeserializationGroupAndCategory(reader);
             reader.endObject(TezReadOnlyString.Database.id);
-
-            item.deserialization(reader);
-            return item;
         }
+
+        protected abstract void onDeserializationGroupAndCategory(TezReader reader);
 
         bool IEquatable<TezItem>.Equals(TezItem other)
         {

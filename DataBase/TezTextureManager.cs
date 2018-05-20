@@ -62,7 +62,6 @@ namespace tezcat.DataBase
     public class TezTextureManager
     {
         static Dictionary<string, int> m_SpriteDic = new Dictionary<string, int>();
-
         static List<Sprite> m_SpriteList = new List<Sprite>();
 
         public static void setErrorSprite(Sprite sprite)

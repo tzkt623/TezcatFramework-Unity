@@ -87,7 +87,7 @@ namespace tezcat.UI
             handler.text = m_GetValue();
         }
 
-        protected override void clear()
+        public override void clear()
         {
             m_GetValue = null;
             handler = null;

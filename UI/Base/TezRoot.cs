@@ -114,7 +114,7 @@ namespace tezcat.UI
 
         }
 
-        protected override void clear()
+        public override void clear()
         {
             foreach (var layer in m_LayerList)
             {

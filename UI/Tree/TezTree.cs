@@ -141,7 +141,7 @@ namespace tezcat.UI
             m_ScrollRect.content.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, m_ScrollRect.content.rect.height - length);
         }
 
-        protected override void clear()
+        public override void clear()
         {
             foreach (var child in m_Children)
             {

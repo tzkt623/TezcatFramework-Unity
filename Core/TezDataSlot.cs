@@ -1,6 +1,6 @@
 ﻿namespace tezcat.Core
 {
-    public abstract class TezBaseDataSlot
+    public abstract class TezBaseDataSlot : ITezClearable
     {
         public enum Type
         {

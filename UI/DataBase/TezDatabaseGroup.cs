@@ -35,7 +35,7 @@ namespace tezcat.UI
             m_Tree.onSelectNode += onSelectNode;
         }
 
-        protected override void clear()
+        public override void clear()
         {
             base.clear();
             m_Tree.onSelectNode -= onSelectNode;

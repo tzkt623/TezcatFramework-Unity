@@ -20,7 +20,7 @@ namespace tezcat.UI
         [SerializeField]
         RectTransform m_Content = null;
 
-        public override TezDatabase.CategoryType[] categoryTypes
+        public override TezDatabase.CategoryType[] supportCategory
         {
             get { throw new NotImplementedException(); }
         }

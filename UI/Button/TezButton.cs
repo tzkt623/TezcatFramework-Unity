@@ -20,7 +20,7 @@ namespace tezcat.UI
             m_Graphic.raycastTarget = value;
         }
 
-        protected override void clear()
+        public override void clear()
         {
             m_Graphic = null;
         }

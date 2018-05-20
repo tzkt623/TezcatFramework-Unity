@@ -49,7 +49,7 @@ namespace tezcat.UI
             m_Menu.SetActive(false);
         }
 
-        protected override void clear()
+        public override void clear()
         {
 
         }

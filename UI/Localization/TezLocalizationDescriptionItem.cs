@@ -31,7 +31,7 @@ namespace tezcat.UI
             this.dirty = true;
         }
 
-        protected override void clear()
+        public override void clear()
         {
             m_Flag = null;
             m_KeyName = null;

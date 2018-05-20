@@ -74,6 +74,7 @@ namespace tezcat.UI
         {
             base.OnDestroy();
             this.unLinkEvent();
+            this.clear();
         }
 
         protected virtual void onInteractable(bool value)
@@ -124,7 +125,7 @@ namespace tezcat.UI
         /// <summary>
         /// 在这里清理所有的托管资源
         /// </summary>
-        protected abstract void clear();
+        public abstract void clear();
 
         /// <summary>
         /// 关闭并销毁控件

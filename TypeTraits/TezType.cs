@@ -256,16 +256,6 @@ namespace tezcat.TypeTraits
             return e;
         }
 
-        public static T get<T>(int id) where T : TezType, new()
-        {
-            return TezTypeRegister<T>.get(id);
-        }
-
-        public static T get<T>(string name) where T : TezType, new()
-        {
-            return TezTypeRegister<T>.get(name);
-        }
-
         public static bool operator !=(TezType x, TezType y)
         {
             /// (!true || !false) && (true || false) || (x)

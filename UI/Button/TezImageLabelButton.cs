@@ -44,7 +44,7 @@ namespace tezcat.UI
             }
         }
 
-        protected override void clear()
+        public override void clear()
         {
 
         }

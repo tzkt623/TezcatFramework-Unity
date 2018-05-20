@@ -12,7 +12,7 @@ namespace tezcat.UI
             throw new System.NotImplementedException();
         }
 
-        protected override void clear()
+        public override void clear()
         {
 
         }

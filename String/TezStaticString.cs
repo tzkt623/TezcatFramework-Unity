@@ -6,7 +6,7 @@ namespace tezcat.String
     {
         private static List<string> StringList = null;
         private static Dictionary<string, int> StringDic = null;
-        private const string ErrorString = "$Error_StaticString";
+        private const string ErrorString = "$Error";
 
         static TezStaticString()
         {

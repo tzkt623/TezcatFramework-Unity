@@ -24,7 +24,7 @@ namespace tezcat.Wrapper
             get { return TezLocalization.getDescription(this.getItem().NID); }
         }
 
-        public abstract void clear();
+        public abstract void clean();
 
         public abstract TezItem getItem();
         public abstract void showTip();
@@ -73,7 +73,7 @@ namespace tezcat.Wrapper
             return myItem;
         }
 
-        public override void clear()
+        public override void clean()
         {
             myItem = null;
         }
@@ -101,7 +101,7 @@ namespace tezcat.Wrapper
             return mySlot.item;
         }
 
-        public override void clear()
+        public override void clean()
         {
             mySlot = null;
         }

@@ -6,12 +6,12 @@ namespace tezcat.Core
 {
     public interface ITezPrefab
     {
-        System.Type GetType();
+        Type GetType();
     }
 
-    public class TezPrefabManager : TezSingleton<TezPrefabManager>
+    public class TezPrefabManager
     {
-        static Dictionary<System.Type, ITezPrefab> m_PrefabDic = new Dictionary<System.Type, ITezPrefab>();
+        static Dictionary<Type, ITezPrefab> m_PrefabDic = new Dictionary<Type, ITezPrefab>();
         public static void register(GameObject go)
         {
             var prefab = go.GetComponent<ITezPrefab>();
@@ -40,7 +40,7 @@ namespace tezcat.Core
             return (T)result;
         }
 
-        public static ITezPrefab get(System.Type type)
+        public static ITezPrefab get(Type type)
         {
             ITezPrefab result = null;
             m_PrefabDic.TryGetValue(type, out result);

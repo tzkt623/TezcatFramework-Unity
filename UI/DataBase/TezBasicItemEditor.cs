@@ -17,7 +17,7 @@ namespace tezcat.UI
 
         public TezEvent onClose { get; private set; } = new TezEvent();
 
-        public abstract TezDatabase.CategoryType[] categoryTypes { get; }
+        public abstract TezDatabase.CategoryType[] supportCategory { get; }
 
         public abstract void bind(TezDatabase.CategoryType category_type);
 
@@ -31,7 +31,7 @@ namespace tezcat.UI
             m_Cancel.onClick += cancel;
         }
 
-        protected override void clear()
+        public override void clear()
         {
             m_Confirm.onClick -= confirm;
             m_Save.onClick -= save;
@@ -51,7 +51,7 @@ namespace tezcat.UI
                 {
                     if (this.getItem().GUID == -1)
                     {
-                        TezDatabase.registerInnateItem(this.getItem());
+                        TezDatabase.registerItem(this.getItem());
                     }
 
                     this.close();
@@ -71,7 +71,7 @@ namespace tezcat.UI
                 {
                     if(this.getItem().GUID == -1)
                     {
-                        TezDatabase.registerInnateItem(this.getItem());
+                        TezDatabase.registerItem(this.getItem());
                     }
 
                     this.dirty = true;

@@ -74,7 +74,7 @@ namespace tezcat.Wrapper
         private void OnDestroy()
         {
             this.unLinkEvent();
-            this.clear();
+            this.clean();
         }
 
         /// <summary>
@@ -105,7 +105,7 @@ namespace tezcat.Wrapper
         /// <summary>
         /// 
         /// </summary>
-        public abstract void clear();
+        public abstract void clean();
     }
 
     public abstract class TezObjectMB<T> : TezObjectMB where T : TezObject
@@ -126,7 +126,7 @@ namespace tezcat.Wrapper
 
         protected abstract void onBind();
 
-        public override void clear()
+        public override void clean()
         {
             this.myObject = null;
         }

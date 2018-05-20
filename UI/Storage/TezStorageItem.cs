@@ -11,7 +11,7 @@ namespace tezcat.UI
     {
         Image m_Image = null;
 
-        protected override void clear()
+        public override void clear()
         {
             m_Image = null;
         }

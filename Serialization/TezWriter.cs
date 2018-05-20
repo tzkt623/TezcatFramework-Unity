@@ -26,6 +26,7 @@ namespace tezcat.Serialization
             }
             else
             {
+                m_CheckStringKey.Pop();
                 this.onEndArray(key);
             }
         }
@@ -52,6 +53,7 @@ namespace tezcat.Serialization
             }
             else
             {
+                m_CheckIntKey.Pop();
                 this.onEndArray(key);
             }
         }
@@ -76,6 +78,7 @@ namespace tezcat.Serialization
             }
             else
             {
+                m_CheckStringKey.Pop();
                 this.onEndObject(key);
             }
         }
@@ -100,6 +103,7 @@ namespace tezcat.Serialization
             }
             else
             {
+                m_CheckIntKey.Pop();
                 this.onEndObject(key);
             }
         }
