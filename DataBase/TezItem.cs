@@ -74,35 +74,17 @@ namespace tezcat.DataBase
 
         public bool isSubItem { get; set; } = false;
 
-        int refrence { get; set; } = 0;
-
         TezPropertyManager m_PorpertyManager = null;
         public List<TezPropertyValue> properties
         {
             get { return m_PorpertyManager.properties; }
         }
 
-//         protected abstract void onRefInit();
-//         protected abstract void onRefZero();
-
         public abstract void clear();
 
-        public void addRef()
+        bool IEquatable<TezItem>.Equals(TezItem other)
         {
-            if (refrence == 0)
-            {
-//                this.onRefInit();
-            }
-            refrence += 1;
-        }
-
-        public void subRef()
-        {
-            refrence -= 1;
-            if (refrence == 0)
-            {
-//                this.onRefZero();
-            }
+            return this.GUID == other.GUID;
         }
 
         /// <summary>
@@ -148,11 +130,6 @@ namespace tezcat.DataBase
         }
 
         protected abstract void onDeserializationGroupAndCategory(TezReader reader);
-
-        bool IEquatable<TezItem>.Equals(TezItem other)
-        {
-            return this.GUID == other.GUID;
-        }
 
 
         public static bool operator true(TezItem item)

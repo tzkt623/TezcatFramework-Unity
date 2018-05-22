@@ -20,6 +20,7 @@ namespace tezcat.UI
         public abstract TezDatabase.CategoryType[] supportCategory { get; }
 
         public abstract void bind(TezDatabase.CategoryType category_type);
+        public abstract void bind(TezItem item);
 
         protected abstract TezItem getItem();
 

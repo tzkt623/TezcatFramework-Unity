@@ -1,24 +1,24 @@
 ﻿using System.Collections.Generic;
 namespace tezcat.UI
 {
-    public class TezUIEvent
+    public class TezWidgetEvent
     {
-        static List<TezUIEvent> m_List = new List<TezUIEvent>();
+        static List<TezWidgetEvent> m_List = new List<TezWidgetEvent>();
         public static int register(string name)
         {
             var id = m_List.Count;
-            m_List.Add(new TezUIEvent(name, id));
+            m_List.Add(new TezWidgetEvent(name, id));
             return id;
         }
 
         public string name { get; private set; }
         public int id { get; private set; }
-        TezUIEvent(string name, int id)
+        TezWidgetEvent(string name, int id)
         {
             this.name = name;
             this.id = id;
         }
-
+        
         public class Switcher
         {
             TezEventBus.Action<object>[] m_OnEvent = null;
@@ -56,9 +56,9 @@ namespace tezcat.UI
 
         public static void initEvent()
         {
-            ShowWindow = TezUIEvent.register("ShowWindow");
-            HideWindow = TezUIEvent.register("HideWindow");
-            ShowArea = TezUIEvent.register("ShowSubwindow");
+            ShowWindow = TezWidgetEvent.register("ShowWindow");
+            HideWindow = TezWidgetEvent.register("HideWindow");
+            ShowArea = TezWidgetEvent.register("ShowSubwindow");
         }
     }
 }

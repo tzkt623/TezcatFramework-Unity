@@ -234,7 +234,7 @@ namespace tezcat.UI
             m_SelectItem = item;
             m_Vernier.gameObject.SetActive(true);
             m_Vernier.SetParent(m_SelectItem.transform, false);
-            TezUILayout.setLayout(m_Vernier, -4, -4, 4, 4);
+            TezLayout.setLayout(m_Vernier, -4, -4, 4, 4);
         }
 
         private void hideAllItem()

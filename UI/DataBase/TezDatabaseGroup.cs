@@ -94,7 +94,7 @@ namespace tezcat.UI
                 m_SelectNode = node;
                 m_Vernier.gameObject.SetActive(true);
                 m_Vernier.SetParent(m_SelectNode.transform, false);
-                TezUILayout.setLayout(m_Vernier, -2, -2, 2, 2);
+                TezLayout.setLayout(m_Vernier, -2, -2, 2, 2);
 
                 var group = node.parent.data as NodeData;
                 var type = node.data as NodeData;

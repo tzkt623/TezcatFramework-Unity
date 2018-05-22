@@ -43,6 +43,12 @@ namespace tezcat.UI
             this.dirty = true;
         }
 
+        public override void bind(TezItem item)
+        {
+            m_Item = item;
+            this.dirty = true;
+        }
+
         private TezPropertyView createPV(string name, string value)
         {
             var pv = Instantiate(m_PrefabPE_View, m_Content, false);

@@ -19,7 +19,7 @@ namespace tezcat.UI
 
         public override void clear()
         {
-            this.wrapper.clean();
+            this.wrapper.clear();
             this.wrapper = default(T);
         }
 

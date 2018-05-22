@@ -3,12 +3,10 @@ using tezcat.Utility;
 
 namespace tezcat.Wrapper
 {
-    public interface ITezWrapper
+    public interface ITezWrapper : ITezClearable
     {
         string myName { get; }
         string myDescription { get; }
-
-        void clean();
     }
 
     public interface ITezObjectWrapper : ITezWrapper
@@ -28,7 +26,7 @@ namespace tezcat.Wrapper
             get { return TezLocalization.getDescription(this.getObject().NID); }
         }
 
-        public abstract void clean();
+        public abstract void clear();
 
         public abstract TezObject getObject();
     }
@@ -54,7 +52,7 @@ namespace tezcat.Wrapper
             return this.myObject;
         }
 
-        public override void clean()
+        public override void clear()
         {
             myObject.clear();
             myObject = null;

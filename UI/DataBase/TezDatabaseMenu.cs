@@ -12,6 +12,8 @@ namespace tezcat.UI
         TezImageLabelButton m_AddItem = null;
         [SerializeField]
         TezImageLabelButton m_RemoveItem = null;
+        [SerializeField]
+        TezImageLabelButton m_EditItem = null;
 
         [SerializeField]
         TezImageLabelButton m_Save = null;
@@ -28,6 +30,7 @@ namespace tezcat.UI
 
             m_AddItem.onClick += onAddItem;
             m_RemoveItem.onClick += onRemoveItem;
+            m_EditItem.onClick += onEditItem;
 
             m_Save.onClick += onSave;
             m_RefreshDataBase.onClick += onRefreshDataBase;
@@ -43,7 +46,6 @@ namespace tezcat.UI
         {
             m_Container = container;
         }
-
 
         private void onAddItem(PointerEventData.InputButton button)
         {
@@ -61,6 +63,17 @@ namespace tezcat.UI
             if (button == PointerEventData.InputButton.Left)
             {
                 m_Container.removeItem();
+            }
+        }
+
+        private void onEditItem(PointerEventData.InputButton button)
+        {
+            if(button == PointerEventData.InputButton.Left)
+            {
+                if(m_Container.currentItem != null)
+                {
+                    m_Window.editItem(m_Container.currentItem);
+                }
             }
         }
 

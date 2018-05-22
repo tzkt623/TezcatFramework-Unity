@@ -78,6 +78,30 @@ namespace tezcat.UI
             m_CurrentEditor.open();
         }
 
+        public void editItem(TezItem item)
+        {
+            if (m_CurrentEditor)
+            {
+                return;
+            }
+
+            TezBasicItemEditor prefab = null;
+            if (m_EditorDic.TryGetValue(item.categoryType, out prefab))
+            {
+                m_CurrentEditor = Instantiate(prefab, this.layer.transform, false);
+            }
+            else
+            {
+                m_CurrentEditor = Instantiate(m_PrefabBaseItemEditor, this.layer.transform, false);
+            }
+            this.layer.addWindow(m_CurrentEditor);
+
+            m_CurrentEditor.transform.localPosition = Vector3.zero;
+            m_CurrentEditor.onClose.add(this.onEditorClose);
+            m_CurrentEditor.bind(item);
+            m_CurrentEditor.open();
+        }
+
         private void onEditorClose()
         {
             m_CurrentEditor = null;

@@ -14,7 +14,7 @@ namespace tezcat.UI
         , ITezEventHandler
     {
         public TezWindow window { get; set; } = null;
-        public TezUIEvent.Switcher eventSwitcher { get; private set; }
+        public TezWidgetEvent.Switcher eventSwitcher { get; private set; }
 
         List<TezArea> m_Children = new List<TezArea>();
 
@@ -45,7 +45,7 @@ namespace tezcat.UI
         #region Widget
         protected override void preInit()
         {
-            this.eventSwitcher = new TezUIEvent.Switcher();
+            this.eventSwitcher = new TezWidgetEvent.Switcher();
 
             foreach (RectTransform item in this.transform)
             {

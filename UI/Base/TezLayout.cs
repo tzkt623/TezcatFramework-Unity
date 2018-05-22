@@ -1,11 +1,8 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-using UnityEngine.UI;
+﻿using UnityEngine;
 
 namespace tezcat.UI
 {
-    public static class TezUILayout
+    public static class TezLayout
     {
         /*
          * <pivot>

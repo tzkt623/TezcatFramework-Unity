@@ -89,7 +89,7 @@ namespace tezcat
                 return (Mathf.Abs(x - other.x) + Mathf.Abs(y - other.y) + Mathf.Abs(z - other.z)) / 2;
             }
         }
-        public struct AxialCoordinate
+        public struct AxialCoordinate : IEquatable<AxialCoordinate>
         {
             public static readonly AxialCoordinate zero = new AxialCoordinate(0, 0);
             public static readonly AxialCoordinate one = new AxialCoordinate(1, 1);
@@ -160,6 +160,11 @@ namespace tezcat
 
                     return hash;
                 }
+            }
+
+            bool IEquatable<AxialCoordinate>.Equals(AxialCoordinate other)
+            {
+                return this.q == other.q && this.r == other.r;
             }
         }
 

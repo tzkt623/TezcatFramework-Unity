@@ -9,8 +9,5 @@ namespace tezcat.UI
             base.Awake();
             this.name = "Popup";
         }
-
-
-
     }
 }

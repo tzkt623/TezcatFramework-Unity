@@ -1,5 +1,4 @@
-﻿using tezcat.Utility;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.EventSystems;
 
 namespace tezcat.UI

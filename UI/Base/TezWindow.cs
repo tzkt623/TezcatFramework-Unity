@@ -51,7 +51,7 @@ namespace tezcat.UI
         Dictionary<string, int> m_AreaDic = new Dictionary<string, int>();
 
         protected ITezFocusableWidget m_FocusWidget = null;
-        public TezUIEvent.Switcher eventSwitcher { get; private set; } = null;
+        public TezWidgetEvent.Switcher eventSwitcher { get; private set; } = null;
         public List<ITezEventHandler> handlers { get; private set; } = new List<ITezEventHandler>();
 
         TezPopupContent m_PopupContent = null;
@@ -67,8 +67,8 @@ namespace tezcat.UI
                 this.registerArea(sub);
             }
 
-            this.eventSwitcher = new TezUIEvent.Switcher();
-            this.eventSwitcher.register(TezUIEvent.ShowArea, (object data) =>
+            this.eventSwitcher = new TezWidgetEvent.Switcher();
+            this.eventSwitcher.register(TezWidgetEvent.ShowArea, (object data) =>
             {
                 int id = -1;
                 if (m_AreaDic.TryGetValue((string)data, out id))
@@ -89,7 +89,7 @@ namespace tezcat.UI
                 go.transform.localPosition = Vector3.zero;
                 go.transform.SetAsLastSibling();
                 m_PopupContent = go.AddComponent<TezPopupContent>();
-                TezUILayout.setLayout(rect, 0, 0, 0, 0);
+                TezLayout.setLayout(rect, 0, 0, 0, 0);
             }
         }
 
@@ -285,9 +285,9 @@ namespace tezcat.UI
                 });
         }
 
-        public void removeArea(TezArea subwindow)
+        public void removeArea(TezArea area)
         {
-            this.removeArea(subwindow.areaID);
+            this.removeArea(area.areaID);
         }
 
         public T getArea<T>() where T : TezArea

@@ -121,13 +121,8 @@ namespace tezcat.Core
             {
                 return;
             }
-
-            this.sourceItem?.subRef();
             this.sourceItem = item;
-            this.sourceItem.addRef();
-
             this.NID = this.sourceItem.NID;
-
             this.onCopyDataFromSourceItem(item);
         }
 
@@ -138,17 +133,16 @@ namespace tezcat.Core
         /// </summary>
         public override void clear()
         {
-            this.sourceItem.subRef();
             this.sourceItem = null;
 
             propertyManager.clear();
             propertyManager = null;
 
-            this.UID = null;
-            this.NID = null;
-
             tags.clear();
             tags = null;
+
+            this.UID = null;
+            this.NID = null;
         }
 
 

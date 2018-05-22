@@ -1,36 +1,28 @@
-﻿using System.Collections.Generic;
-using tezcat.Core;
+﻿using tezcat.Core;
 
 
 namespace tezcat.AI
 {
     public class TezAIBrain : ITezClearable
     {
-        HashSet<TezAICondition> m_ConditionSet = new HashSet<TezAICondition>();
+        TezAIBehaviour m_Root = null;
 
         public void clear()
         {
 
         }
 
-        public void think()
+        public void setBehaviour(TezAIBehaviour behaviour)
         {
-
+            m_Root = behaviour;
         }
 
-        public void beginBehaviour(string name)
+        public void executing(TezAICollection collection)
         {
-
-        }
-
-        public void endBehaviour()
-        {
-
-        }
-
-        public void addCondition(TezAICondition condition)
-        {
-            m_ConditionSet.Add(condition);
+            if(m_Root.evaluate(collection))
+            {
+                m_Root.executing(collection);
+            }
         }
     }
 }

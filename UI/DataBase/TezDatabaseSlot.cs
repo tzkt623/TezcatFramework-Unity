@@ -1,5 +1,4 @@
-﻿using System;
-using tezcat.Core;
+﻿using tezcat.Core;
 using tezcat.DataBase;
 using tezcat.Wrapper;
 using UnityEngine;
@@ -63,7 +62,7 @@ namespace tezcat.UI
 
         public override void clear()
         {
-            m_Wrapper?.clean();
+            m_Wrapper?.clear();
             m_Wrapper = null;
         }
 
@@ -103,7 +102,7 @@ namespace tezcat.UI
                     }
                     else
                     {
-                        container.onSelectSlot(this);
+                        container.onSelectSlot(this, m_Wrapper.getItem());
                     }
                     break;
                 case PointerEventData.InputButton.Right:
@@ -118,7 +117,7 @@ namespace tezcat.UI
         public void removeItem()
         {
             TezDatabase.unregisterItem(m_Wrapper.getItem());
-            m_Wrapper.clean();
+            m_Wrapper.clear();
             m_Wrapper = null;
             this.dirty = true;
         }

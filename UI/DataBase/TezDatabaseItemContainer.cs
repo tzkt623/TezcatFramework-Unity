@@ -37,7 +37,11 @@ namespace tezcat.UI
         List<TezDatabaseSlot> m_SlotList = new List<TezDatabaseSlot>();
 
         TezDatabaseGroup m_Group = null;
-        TezDatabaseSlot m_Current = null;
+        TezDatabaseSlot m_CurrentSlot = null;
+        public TezItem currentItem
+        {
+            get; private set;
+        }
 
         protected override void preInit()
         {
@@ -66,9 +70,9 @@ namespace tezcat.UI
 
         public void removeItem()
         {
-            if(m_Current)
+            if(m_CurrentSlot)
             {
-                m_Current.removeItem();
+                m_CurrentSlot.removeItem();
             }
         }
 
@@ -94,14 +98,15 @@ namespace tezcat.UI
             }
         }
 
-        public void onSelectSlot(TezDatabaseSlot slot)
+        public void onSelectSlot(TezDatabaseSlot slot, TezItem item)
         {
-            m_Current = slot;
+            m_CurrentSlot = slot;
+            this.currentItem = item;
 
             m_Vernier.SetParent(slot.transform, false);
             m_Vernier.localScale = Vector3.one;
             m_Vernier.localPosition = Vector3.zero;
-            TezUILayout.setLayout(m_Vernier, -4, -4, 4, 4);
+            TezLayout.setLayout(m_Vernier, -4, -4, 4, 4);
             m_Vernier.gameObject.SetActive(true);
         }
 
@@ -169,8 +174,9 @@ namespace tezcat.UI
 
         public override void reset()
         {
-            m_Current = null;
-            if(m_Vernier.gameObject.activeSelf)
+            m_CurrentSlot = null;
+            this.currentItem = null;
+            if (m_Vernier.gameObject.activeSelf)
             {
                 m_Vernier.parent = null;
                 m_Vernier.gameObject.SetActive(false);
