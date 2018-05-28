@@ -73,8 +73,6 @@ namespace tezcat.UI
         protected sealed override void OnDestroy()
         {
             base.OnDestroy();
-            this.unLinkEvent();
-            this.clear();
         }
 
         protected virtual void onInteractable(bool value)
@@ -117,6 +115,7 @@ namespace tezcat.UI
         /// </summary>
         protected abstract void onHide();
 
+
         /// <summary>
         /// 重置你的Widget
         /// </summary>
@@ -132,6 +131,8 @@ namespace tezcat.UI
         /// </summary>
         public void close()
         {
+            this.unLinkEvent();
+            this.clear();
             Destroy(this.gameObject);
         }
 

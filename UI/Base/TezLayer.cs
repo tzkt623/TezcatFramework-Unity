@@ -14,8 +14,8 @@ namespace tezcat.UI
         }
 
         List<TezWindow> m_WindowsList = new List<TezWindow>();
-        Dictionary<string, int> m_WindowDic = new Dictionary<string, int>();
 
+        Dictionary<string, int> m_WindowDic = new Dictionary<string, int>();
 
         private void registerWindow(TezWindow window)
         {

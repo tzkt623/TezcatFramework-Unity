@@ -9,6 +9,7 @@ namespace tezcat.UI
     public class TezTitle
         : TezWidget
         , ITezDragableWidget
+        , ITezClickable
     {
         [SerializeField]
         Text m_TitleName = null;
@@ -126,7 +127,7 @@ namespace tezcat.UI
 
         void IBeginDragHandler.OnBeginDrag(PointerEventData eventData)
         {
-            if(eventData.button == PointerEventData.InputButton.Left)
+            if (eventData.button == PointerEventData.InputButton.Left)
             {
                 m_Dragging = true;
             }
@@ -145,6 +146,22 @@ namespace tezcat.UI
             }
 
             m_ParentWidget.transform.localPosition = m_ParentWidget.transform.localPosition.add(eventData.delta);
+        }
+
+        void IPointerUpHandler.OnPointerUp(PointerEventData eventData)
+        {
+            if (eventData.button == PointerEventData.InputButton.Left)
+            {
+                if (m_ParentWidget.transform.childCount != this.transform.GetSiblingIndex())
+                {
+                    m_ParentWidget.transform.SetAsLastSibling();
+                }
+            }
+        }
+
+        void IPointerDownHandler.OnPointerDown(PointerEventData eventData)
+        {
+
         }
     }
 }

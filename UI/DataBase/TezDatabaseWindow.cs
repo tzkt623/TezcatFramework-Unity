@@ -8,10 +8,7 @@ namespace tezcat.UI
     {
         [Header("Prefab")]
         [SerializeField]
-        TezItemEditor m_PrefabBaseItemEditor = null;
-        [SerializeField]
-        TezBasicItemEditor[] m_PrefabEditorArray = null;
-        Dictionary<TezDatabase.CategoryType, TezBasicItemEditor> m_EditorDic = new Dictionary<TezDatabase.CategoryType, TezBasicItemEditor>();
+        TezItemEditor m_PrefabItemEditor = null;
 
         [Header("Root Menu")]
         [SerializeField]
@@ -25,20 +22,24 @@ namespace tezcat.UI
         [SerializeField]
         TezDatabaseItemContainer m_Container = null;
 
+        Dictionary<TezDatabase.CategoryType, TezBasicItemEditor> m_EditorDic = new Dictionary<TezDatabase.CategoryType, TezBasicItemEditor>();
         TezBasicItemEditor m_CurrentEditor = null;
 
         protected override void initWidget()
         {
             base.initWidget();
-            foreach (var item in m_PrefabEditorArray)
-            {
-                foreach (var category in item.supportCategory)
-                {
-                    m_EditorDic.Add(category, item);
-                }
-            }
 
-            m_PrefabEditorArray = null;
+            TezPrefabDatabase.foreachPrefab((TezPrefabDatabase.Prefab prefab) =>
+            {
+                var editor = prefab.prefab as TezBasicItemEditor;
+                if (editor)
+                {
+                    foreach (var category in editor.supportCategory)
+                    {
+                        m_EditorDic.Add(category, editor);
+                    }
+                }
+            });
 
             m_Menu.setGroup(m_Group);
             m_Menu.setContainer(m_Container);
@@ -68,7 +69,7 @@ namespace tezcat.UI
             }
             else
             {
-                m_CurrentEditor = Instantiate(m_PrefabBaseItemEditor, this.layer.transform, false);
+                m_CurrentEditor = Instantiate(m_PrefabItemEditor, this.layer.transform, false);
             }
             this.layer.addWindow(m_CurrentEditor);
 
@@ -92,7 +93,7 @@ namespace tezcat.UI
             }
             else
             {
-                m_CurrentEditor = Instantiate(m_PrefabBaseItemEditor, this.layer.transform, false);
+                m_CurrentEditor = Instantiate(m_PrefabItemEditor, this.layer.transform, false);
             }
             this.layer.addWindow(m_CurrentEditor);
 

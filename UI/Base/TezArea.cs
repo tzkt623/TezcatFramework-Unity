@@ -11,13 +11,7 @@ namespace tezcat.UI
     public abstract class TezArea
         : TezWidget
         , ITezFocusableWidget
-        , ITezEventHandler
     {
-        public TezWindow window { get; set; } = null;
-        public TezWidgetEvent.Switcher eventSwitcher { get; private set; }
-
-        List<TezArea> m_Children = new List<TezArea>();
-
         [SerializeField]
         private int m_AreaID = -1;
         public int areaID
@@ -36,17 +30,19 @@ namespace tezcat.UI
             }
             set
             {
-                this.window?.onAreaNameChanged(m_AreaName, value);
+                this.window?.onAreaNameChanged(this, value);
                 m_AreaName = value;
-                this.name = m_AreaName;
+                this.name = m_AreaName + m_AreaID;
             }
         }
+
+        public TezWindow window { get; set; } = null;
+        protected TezWidgetEvent.Dispatcher m_EventDispatcher = new TezWidgetEvent.Dispatcher();
+        List<TezArea> m_Children = new List<TezArea>();
 
         #region Widget
         protected override void preInit()
         {
-            this.eventSwitcher = new TezWidgetEvent.Switcher();
-
             foreach (RectTransform item in this.transform)
             {
                 var area = item.GetComponent<TezArea>();
@@ -59,7 +55,14 @@ namespace tezcat.UI
 
         protected override void initWidget()
         {
+            Transform parent = this.transform;
+            do
+            {
+                parent = parent.parent;
+                this.window = parent.GetComponent<TezWindow>();
+            } while (this.window == null);
 
+            this.window.addArea(this);
         }
 
         protected override void linkEvent()
@@ -117,7 +120,7 @@ namespace tezcat.UI
 
         public void onEvent(int event_id, object data)
         {
-            this.eventSwitcher.invoke(event_id, data);
+            this.m_EventDispatcher.invoke(event_id, data);
         }
 
         private void growSpace(TezArea area)

@@ -29,6 +29,24 @@ namespace tezcat.Wrapper
         public abstract void clear();
 
         public abstract TezObject getObject();
+
+
+        #region 重载操作
+        public static bool operator true(TezObjectWrapper obj)
+        {
+            return !object.ReferenceEquals(obj, null);
+        }
+
+        public static bool operator false(TezObjectWrapper obj)
+        {
+            return object.ReferenceEquals(obj, null);
+        }
+
+        public static bool operator !(TezObjectWrapper obj)
+        {
+            return object.ReferenceEquals(obj, null);
+        }
+        #endregion
     }
 
     /// <summary>

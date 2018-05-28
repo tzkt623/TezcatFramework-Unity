@@ -1,4 +1,6 @@
-﻿namespace tezcat.Event
+﻿using System;
+
+namespace tezcat.Event
 {
     public abstract class TezBaseEvent
     {

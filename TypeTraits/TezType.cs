@@ -76,9 +76,10 @@ namespace tezcat.TypeTraits
                 m_CallBack[item.ID]();
             }
 
-            public void register(T item, TezEventBus.Action call_back)
+            public Switcher register(T item, TezEventBus.Action call_back)
             {
                 m_CallBack[item.ID] = call_back;
+                return this;
             }
         }
 
@@ -105,9 +106,10 @@ namespace tezcat.TypeTraits
                 m_CallBack[item.ID](p1);
             }
 
-            public void register(T item, TezEventBus.Action<P1> call_back)
+            public Switcher<P1> register(T item, TezEventBus.Action<P1> call_back)
             {
                 m_CallBack[item.ID] = call_back;
+                return this;
             }
         }
 
@@ -134,9 +136,10 @@ namespace tezcat.TypeTraits
                 m_CallBack[type.ID](p1, p2);
             }
 
-            public void register(T type, TezEventBus.Action<P1, P2> call_back)
+            public Switcher<P1, P2> register(T type, TezEventBus.Action<P1, P2> call_back)
             {
                 m_CallBack[type.ID] = call_back;
+                return this;
             }
         }
 
@@ -163,9 +166,10 @@ namespace tezcat.TypeTraits
                 return m_CallBack[type.ID]();
             }
 
-            public void register(T type, TezEventBus.Function<R> call_back)
+            public ReturnSwitcher<R> register(T type, TezEventBus.Function<R> call_back)
             {
                 m_CallBack[type.ID] = call_back;
+                return this;
             }
         }
 
@@ -192,9 +196,10 @@ namespace tezcat.TypeTraits
                 return m_CallBack[type.ID](p1);
             }
 
-            public void register(T type, TezEventBus.Function<R, P1> call_back)
+            public ReturnSwitcher<R, P1> register(T type, TezEventBus.Function<R, P1> call_back)
             {
                 m_CallBack[type.ID] = call_back;
+                return this;
             }
         }
 
@@ -221,12 +226,12 @@ namespace tezcat.TypeTraits
                 return m_CallBack[item.ID](p1, p2);
             }
 
-            public void register(T item, TezEventBus.Function<R, P1, P2> call_back)
+            public ReturnSwitcher<R, P1, P2> register(T item, TezEventBus.Function<R, P1, P2> call_back)
             {
                 m_CallBack[item.ID] = call_back;
+                return this;
             }
         }
-
         #endregion
     }
 
@@ -241,12 +246,17 @@ namespace tezcat.TypeTraits
             this.name = name;
         }
 
+        public override bool Equals(object obj)
+        {
+            return base.Equals(obj);
+        }
+
         public override int GetHashCode()
         {
             return this.ID;
         }
 
-        protected static T initType<T>(T e, string name) where T : TezType, new()
+        protected static T register<T>(T e, string name) where T : TezType, new()
         {
             if (e == null)
             {
@@ -277,11 +287,6 @@ namespace tezcat.TypeTraits
             var flagy = object.ReferenceEquals(y, null);
 
             return (flagx && flagy) || (!flagx && !flagy) && (x.ID == y.ID && x.name == y.name);
-        }
-
-        public override bool Equals(object obj)
-        {
-            return base.Equals(obj);
         }
     }
 }

@@ -19,47 +19,43 @@ namespace tezcat.UI
             this.id = id;
         }
         
-        public class Switcher
+        public class Dispatcher
         {
-            TezEventBus.Action<object>[] m_OnEvent = null;
-
-            public Switcher()
-            {
-                m_OnEvent = new TezEventBus.Action<object>[m_List.Count];
-            }
-
-            ~Switcher()
-            {
-                for (int i = 0; i < m_OnEvent.Length; i++)
-                {
-                    m_OnEvent[i] = null;
-                }
-            }
+            List<TezEventBus.Action<object>> m_OnEvent = new List<TezEventBus.Action<object>>();
 
             public void register(int event_id, TezEventBus.Action<object> action)
             {
+                while(m_OnEvent.Count <= event_id)
+                {
+                    m_OnEvent.Add(this.defaultFunction);
+                }
+
                 m_OnEvent[event_id] = action;
+            }
+
+            void defaultFunction(object obj)
+            {
+
             }
 
             public void invoke(int event_id, object data)
             {
                 m_OnEvent[event_id](data);
             }
-        }
 
+            public void clear()
+            {
+                m_OnEvent.Clear();
+            }
+        }
 
         #region BuildInEvent
-        public static int ShowWindow { get; private set; } = -1;
-        public static int HideWindow { get; private set; } = -1;
-        public static int ShowArea { get; private set; } = -1;
+        public static readonly int CloseWidget = TezWidgetEvent.register("CloseWidget");
+        public static readonly int ShowWindow = TezWidgetEvent.register("ShowWindow");
+        public static readonly int HideWindow = TezWidgetEvent.register("HideWindow");
+        public static readonly int ShowArea = TezWidgetEvent.register("ShowArea");
+        public static readonly int HideArea = TezWidgetEvent.register("HideArea");
         #endregion
-
-        public static void initEvent()
-        {
-            ShowWindow = TezWidgetEvent.register("ShowWindow");
-            HideWindow = TezWidgetEvent.register("HideWindow");
-            ShowArea = TezWidgetEvent.register("ShowSubwindow");
-        }
     }
 }
 

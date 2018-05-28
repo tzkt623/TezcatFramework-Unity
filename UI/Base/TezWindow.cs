@@ -10,10 +10,39 @@ namespace tezcat.UI
     /// </summary>
     public class TezWindow
         : TezWidget
-        , ITezEventHandler
-        , ITezEventDispather
     {
-        public TezLayer layer { get; set; } = null;
+        public TezUICenter center { get; set; } = null;
+
+        TezLayer m_Layer = null;
+        public TezLayer layer
+        {
+            get
+            {
+                if (!m_Layer)
+                {
+                    var parent = this.transform.parent;
+                    while (true)
+                    {
+                        var layer = parent.GetComponent<TezLayer>();
+                        if (layer)
+                        {
+                            m_Layer = layer;
+                            break;
+                        }
+                        else
+                        {
+                            parent = parent.parent;
+                        }
+                    }
+                }
+
+                return m_Layer;
+            }
+            set
+            {
+                m_Layer = value;
+            }
+        }
 
         [SerializeField]
         int m_WindowID = -1;
@@ -29,7 +58,7 @@ namespace tezcat.UI
         {
             get
             {
-                if(string.IsNullOrEmpty(m_WindowName))
+                if (string.IsNullOrEmpty(m_WindowName))
                 {
                     m_WindowName = this.name;
                 }
@@ -49,10 +78,10 @@ namespace tezcat.UI
         /// </summary>
         List<TezArea> m_AreaList = new List<TezArea>();
         Dictionary<string, int> m_AreaDic = new Dictionary<string, int>();
+        Queue<int> m_FreeID = new Queue<int>();
 
         protected ITezFocusableWidget m_FocusWidget = null;
-        public TezWidgetEvent.Switcher eventSwitcher { get; private set; } = null;
-        public List<ITezEventHandler> handlers { get; private set; } = new List<ITezEventHandler>();
+        protected TezWidgetEvent.Dispatcher m_EventDispatcher = new TezWidgetEvent.Dispatcher();
 
         TezPopupContent m_PopupContent = null;
         List<TezPopup> m_PopupList = new List<TezPopup>();
@@ -60,15 +89,8 @@ namespace tezcat.UI
         #region Core
         protected override void preInit()
         {
-            List<TezArea> list = new List<TezArea>();
-            this.GetComponentsInChildren<TezArea>(true, list);
-            foreach (var sub in list)
-            {
-                this.registerArea(sub);
-            }
-
-            this.eventSwitcher = new TezWidgetEvent.Switcher();
-            this.eventSwitcher.register(TezWidgetEvent.ShowArea, (object data) =>
+            m_EventDispatcher.register(TezWidgetEvent.ShowArea,
+            (object data) =>
             {
                 int id = -1;
                 if (m_AreaDic.TryGetValue((string)data, out id))
@@ -80,6 +102,13 @@ namespace tezcat.UI
 
         protected override void initWidget()
         {
+            List<TezArea> list = new List<TezArea>();
+            this.GetComponentsInChildren<TezArea>(true, list);
+            foreach (var area in list)
+            {
+                this.registerArea(area);
+            }
+
             m_PopupContent = this.GetComponentInChildren<TezPopupContent>();
             if (m_PopupContent == null)
             {
@@ -154,6 +183,9 @@ namespace tezcat.UI
 
         public override void clear()
         {
+            this.center.removeWindow(this);
+            this.center = null;
+
             foreach (var popup in m_PopupList)
             {
                 popup.close();
@@ -216,25 +248,60 @@ namespace tezcat.UI
         #endregion
 
         #region Area
+        private void growArea(int id)
+        {
+            while (m_AreaList.Count <= id)
+            {
+                m_FreeID.Enqueue(m_AreaList.Count);
+                m_AreaList.Add(null);
+            }
+        }
+
+        private int giveID()
+        {
+            int id = -1;
+            if (m_FreeID.Count > 0)
+            {
+                id = m_FreeID.Dequeue();
+                while (m_AreaList[id])
+                {
+                    if (m_FreeID.Count == 0)
+                    {
+                        id = -1;
+                        break;
+                    }
+                    id = m_FreeID.Dequeue();
+                }
+            }
+
+            if (id == -1)
+            {
+                id = m_AreaList.Count;
+                m_AreaList.Add(null);
+            }
+
+            return id;
+        }
+
         private void registerArea(TezArea area)
         {
 #if UNITY_EDITOR
             TezDebug.isTrue(area.areaID >= 0, "UIWindow (" + m_WindowName + ")", "Window (" + area.areaName + ") ID Must EqualGreater Than 0");
 #endif
-            while (m_AreaList.Count <= area.areaID)
+            this.growArea(area.areaID);
+
+            if (string.IsNullOrEmpty(area.areaName))
             {
-                m_AreaList.Add(null);
+                area.areaName = "Area_" + area.areaID;
             }
 
-            if (area.areaName == null)
+            if (m_AreaList[area.areaID])
             {
-                area.areaName = m_WindowName + "_Area_" + m_AreaList.Count;
+                area.areaID = this.giveID();
             }
-
             area.window = this;
             m_AreaList[area.areaID] = area;
-            m_AreaDic.Add(area.areaName, area.areaID);
-            this.handlers.Add(area);
+            m_AreaDic.Add(area.areaName + area.areaID, area.areaID);
 
 #if UNITY_EDITOR
             TezDebug.info("UIWindow (" + m_WindowName + ")", "Register Area: " + area.areaName + " ID:" + area.areaID);
@@ -244,57 +311,38 @@ namespace tezcat.UI
 
         public void addArea(TezArea area)
         {
-            if (area.areaName == null)
+            if (area.areaID != -1 && !m_AreaDic.ContainsKey(area.areaName + area.areaID))
             {
-                area.areaName = m_WindowName + "_Area_" + m_AreaList.Count;
-            }
+                this.growArea(area.areaID);
 
-            if (!m_AreaDic.ContainsKey(area.areaName))
-            {
+                if (string.IsNullOrEmpty(area.areaName))
+                {
+                    area.areaName = "Area_" + area.areaID;
+                }
+
+                area.areaID = this.giveID();
                 area.window = this;
-                area.areaID = m_AreaList.Count;
-                m_AreaList.Add(area);
-                m_AreaDic.Add(area.areaName, area.areaID);
+                m_AreaList[area.areaID] = area;
+                m_AreaDic.Add(area.areaName + area.areaID, area.areaID);
+
 #if UNITY_EDITOR
                 TezDebug.info("UIWindow (" + m_WindowName + ")", "Add Area: " + area.areaName + " ID:" + area.areaID);
 #endif
             }
-#if UNITY_EDITOR
-            else
-            {
-                TezDebug.waring("UIWindow(" + m_WindowName + ")", "Area Didn't Exist : " + area.areaName + " ID: " + area.areaID);
-            }
-#endif
-        }
-
-        public void removeArea(int id)
-        {
-            m_AreaList.Remove(
-                id,
-
-                (TezArea remove, TezArea last) =>
-                {
-                    last.areaID = remove.areaID;
-                    m_AreaDic.Remove(remove.areaName);
-                    m_AreaDic[last.areaName] = last.areaID;
-                },
-
-                (TezArea remove) =>
-                {
-                    m_AreaDic.Remove(remove.areaName);
-                });
         }
 
         public void removeArea(TezArea area)
         {
-            this.removeArea(area.areaID);
+            m_AreaList[area.areaID] = null;
+            m_AreaDic.Remove(area.areaName + area.areaID);
+            m_FreeID.Enqueue(area.areaID);
         }
 
         public T getArea<T>() where T : TezArea
         {
             foreach (var area in m_AreaList)
             {
-                if(area is T)
+                if (area is T)
                 {
                     return (T)area;
                 }
@@ -324,15 +372,13 @@ namespace tezcat.UI
             return (T)m_AreaList[id];
         }
 
-        public void onAreaNameChanged(string old_name, string new_name)
+        public void onAreaNameChanged(TezArea area, string new_name)
         {
 #if UNITY_EDITOR
-            TezDebug.info("UIWindow (" + m_WindowName + ")", "Area Name: " + old_name + " Change To: " + new_name);
+            TezDebug.info("UIWindow (" + m_WindowName + ")", "Area Name: " + area.areaName + " Change To: " + new_name);
 #endif
-
-            int id = m_AreaDic[old_name];
-            m_AreaDic.Remove(old_name);
-            m_AreaDic.Add(new_name, id);
+            m_AreaDic.Remove(area.areaName + area.areaID);
+            m_AreaDic.Add(new_name + area.areaID, area.areaID);
         }
         #endregion
 
@@ -347,7 +393,7 @@ namespace tezcat.UI
 
         public void onEvent(int event_id, object data)
         {
-            this.eventSwitcher.invoke(event_id, data);
+            m_EventDispatcher.invoke(event_id, data);
         }
         #endregion
     }

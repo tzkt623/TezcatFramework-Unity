@@ -4,12 +4,21 @@ using UnityEngine;
 namespace tezcat.UI
 {
     [RequireComponent(typeof(TezLayer))]
-    public class TezRoot : TezWidget
+    public class TezUICenter : TezWidget
     {
-        public static TezRoot instance { get; private set; } = null;
+        public static TezUICenter instance { get; private set; } = null;
+
+        [SerializeField]
+        List<TezWindow> m_Prefabs = new List<TezWindow>();
+
+        Dictionary<System.Type, TezWindow> m_WindowPrefabDic = new Dictionary<System.Type, TezWindow>();
+        Dictionary<string, int> m_LayerDic = new Dictionary<string, int>();
+
+        List<TezWindow> m_WindowList = new List<TezWindow>();
+        Dictionary<string, int> m_WindowDic = new Dictionary<string, int>();
+        Queue<int> m_FreeWindowID = new Queue<int>();
 
         List<TezLayer> m_LayerList = new List<TezLayer>();
-        Dictionary<string, int> m_LayerDic = new Dictionary<string, int>();
 
         public void addLayer(TezLayer layer)
         {
@@ -109,29 +118,17 @@ namespace tezcat.UI
             return popup;
         }
 
-        protected override void onRefresh()
-        {
-
-        }
-
-        public override void clear()
-        {
-            foreach (var layer in m_LayerList)
-            {
-                layer.close();
-            }
-
-            m_LayerList.Clear();
-            m_LayerList = null;
-
-            m_LayerDic.Clear();
-            m_LayerDic = null;
-        }
-
         protected override void preInit()
         {
             instance?.close();
             instance = this;
+
+            foreach (var item in m_Prefabs)
+            {
+                m_WindowPrefabDic.Add(item.GetType(), item);
+            }
+            m_Prefabs.Clear();
+            m_Prefabs = null;
 
             this.addLayer(this.GetComponent<TezLayer>());
             foreach (RectTransform child in this.transform)
@@ -159,6 +156,11 @@ namespace tezcat.UI
 
         }
 
+        protected override void onRefresh()
+        {
+
+        }
+
         protected override void onShow()
         {
 
@@ -172,6 +174,72 @@ namespace tezcat.UI
         public override void reset()
         {
 
+        }
+
+        public override void clear()
+        {
+            foreach (var layer in m_LayerList)
+            {
+                layer.close();
+            }
+
+            m_LayerList.Clear();
+            m_LayerList = null;
+
+            m_LayerDic.Clear();
+            m_LayerDic = null;
+        }
+
+        public void register(TezWindow window)
+        {
+            int id = -1;
+            if (m_FreeWindowID.Count > 0)
+            {
+                id = m_FreeWindowID.Dequeue();
+            }
+            else
+            {
+                id = m_WindowList.Count;
+                m_WindowList.Add(null);
+            }
+
+            window.windowID = id;
+            window.transform.localPosition = Vector3.zero;
+            window.open();
+
+            m_WindowList[id] = window;
+            m_WindowDic.Add(name, id);
+        }
+
+        public Window createWindow<Window>(string name, int layer) where Window : TezWindow
+        {
+            int id = -1;
+            if (m_FreeWindowID.Count > 0)
+            {
+                id = m_FreeWindowID.Dequeue();
+            }
+            else
+            {
+                id = m_WindowList.Count;
+                m_WindowList.Add(null);
+            }
+
+            var window = Instantiate(m_WindowPrefabDic[typeof(Window)], m_LayerList[layer].transform, false);
+            window.windowID = id;
+            window.layer = m_LayerList[layer];
+            window.transform.localPosition = Vector3.zero;
+            window.open();
+
+            m_WindowList[id] = window;
+            m_WindowDic.Add(name, id);
+            return (Window)window;
+        }
+
+        public void removeWindow(TezWindow window)
+        {
+            m_FreeWindowID.Enqueue(window.windowID);
+            m_WindowList[window.windowID] = null;
+            m_WindowDic.Remove(window.windowName);
         }
     }
 }

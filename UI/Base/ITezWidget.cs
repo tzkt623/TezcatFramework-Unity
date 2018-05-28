@@ -79,7 +79,7 @@ namespace tezcat.UI
     /// </summary>
     public interface ITezEventHandler
     {
-        TezWidgetEvent.Switcher eventSwitcher { get; }
+        TezWidgetEvent.Dispatcher m_EventSwitcher { get; }
         void onEvent(int event_id, object data);
     }
 
