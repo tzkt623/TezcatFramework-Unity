@@ -8,6 +8,7 @@ namespace tezcat.Wrapper
     public abstract class TezObjectMB
         : MonoBehaviour
         , ITezObjectWrapper
+        , ITezPrefab
     {
         bool m_Init = false;
         bool m_Dirty = false;

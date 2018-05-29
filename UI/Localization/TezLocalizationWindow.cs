@@ -1,11 +1,9 @@
-﻿using UnityEngine;
+﻿using tezcat.Core;
+
 namespace tezcat.UI
 {
     public class TezLocalizationWindow : TezWindow
     {
-        [SerializeField]
-        GameObject m_RootMenu = null;
-
         TezLocalizationMenu m_Menu = null;
         TezLocalizationNameList m_NameList = null;
         TezLocalizationDescriptionList m_DescriptionList = null;
@@ -27,10 +25,10 @@ namespace tezcat.UI
             base.onRefresh();
         }
 
-        protected override void onHide()
+        public override void clear()
         {
-            base.onHide();
-            m_RootMenu.SetActive(true);
+            base.clear();
+            TezcatFramework.instance.createWindow<TezcatToolWindow>("TezcatToolWindow", TezLayer.last).open();
         }
     }
 }

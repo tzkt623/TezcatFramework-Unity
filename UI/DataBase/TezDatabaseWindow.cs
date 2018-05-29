@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using tezcat.Core;
 using tezcat.DataBase;
 using UnityEngine;
 
@@ -10,10 +11,6 @@ namespace tezcat.UI
         [SerializeField]
         TezItemEditor m_PrefabItemEditor = null;
 
-        [Header("Root Menu")]
-        [SerializeField]
-        GameObject m_RootMenu = null;
-
         [Header("Area")]
         [SerializeField]
         TezDatabaseMenu m_Menu = null;
@@ -24,6 +21,17 @@ namespace tezcat.UI
 
         Dictionary<TezDatabase.CategoryType, TezBasicItemEditor> m_EditorDic = new Dictionary<TezDatabase.CategoryType, TezBasicItemEditor>();
         TezBasicItemEditor m_CurrentEditor = null;
+
+        protected override void preInit()
+        {
+            base.preInit();
+
+            m_Menu.setGroup(m_Group);
+            m_Container.setGroup(m_Group);
+
+            m_Menu.setContainer(m_Container);
+            m_Group.setContainer(m_Container);
+        }
 
         protected override void initWidget()
         {
@@ -40,19 +48,6 @@ namespace tezcat.UI
                     }
                 }
             });
-
-            m_Menu.setGroup(m_Group);
-            m_Menu.setContainer(m_Container);
-
-            m_Container.setGroup(m_Group);
-
-            m_Group.setContainer(m_Container);
-        }
-
-        protected override void onHide()
-        {
-            base.onHide();
-            m_RootMenu.SetActive(true);
         }
 
         public void createItemEditor(TezDatabase.CategoryType category)
@@ -71,7 +66,6 @@ namespace tezcat.UI
             {
                 m_CurrentEditor = Instantiate(m_PrefabItemEditor, this.layer.transform, false);
             }
-            this.layer.addWindow(m_CurrentEditor);
 
             m_CurrentEditor.transform.localPosition = Vector3.zero;
             m_CurrentEditor.onClose.add(this.onEditorClose);
@@ -95,7 +89,6 @@ namespace tezcat.UI
             {
                 m_CurrentEditor = Instantiate(m_PrefabItemEditor, this.layer.transform, false);
             }
-            this.layer.addWindow(m_CurrentEditor);
 
             m_CurrentEditor.transform.localPosition = Vector3.zero;
             m_CurrentEditor.onClose.add(this.onEditorClose);
@@ -106,6 +99,12 @@ namespace tezcat.UI
         private void onEditorClose()
         {
             m_CurrentEditor = null;
+        }
+
+        public override void clear()
+        {
+            base.clear();
+            TezcatFramework.instance.createWindow<TezcatToolWindow>("TezcatToolWindow", TezLayer.last).open();
         }
     }
 }

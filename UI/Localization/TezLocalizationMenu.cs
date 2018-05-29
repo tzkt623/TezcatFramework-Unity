@@ -28,7 +28,7 @@ namespace tezcat.UI
             {
                 TezJsonWriter writer = new TezJsonWriter();
                 TezLocalization.serialization(writer);
-                writer.save(TezcatFramework.localizationPath);
+                writer.save(TezcatGameEngine.localizationPath);
             }
         }
 

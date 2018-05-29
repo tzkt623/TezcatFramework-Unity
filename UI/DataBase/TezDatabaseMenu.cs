@@ -5,7 +5,6 @@ using UnityEngine.EventSystems;
 
 namespace tezcat.UI
 {
-
     public class TezDatabaseMenu : TezArea
     {
         [SerializeField]
@@ -90,7 +89,7 @@ namespace tezcat.UI
                     writer.endObject(item.GUID);
                 }
             });
-            writer.save(TezcatFramework.rootPath + TezcatFramework.databaseFile);
+            writer.save(TezcatGameEngine.rootPath + TezcatGameEngine.databaseFile);
         }
 
         private void onRefreshDataBase(PointerEventData.InputButton button)
@@ -108,9 +107,6 @@ namespace tezcat.UI
 
         public override void clear()
         {
-            m_AddItem = null;
-            m_RefreshDataBase = null;
-
             m_Save.onClick -= onSave;
             m_AddItem.onClick -= onAddItem;
             m_RefreshDataBase.onClick -= onRefreshDataBase;

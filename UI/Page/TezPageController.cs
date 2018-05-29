@@ -1,8 +1,9 @@
-﻿using UnityEngine;
+﻿using tezcat.Core;
+using UnityEngine;
 
 namespace tezcat.UI
 {
-    public class TezPageController
+    public class TezPageController : ITezClearable
     {
         TezEventBus.Action<int, int> m_OnPageChanged;
 
@@ -90,6 +91,11 @@ namespace tezcat.UI
             m_CurrentPageBegin = (currentPage - 1) * pageCapacity;
             m_CurrentPageEnd = m_CurrentPageBegin + pageCapacity;
             return m_CurrentPageBegin >= 0 && m_CurrentPageEnd > 0;
+        }
+
+        public void clear()
+        {
+            m_OnPageChanged = null;
         }
     }
 }

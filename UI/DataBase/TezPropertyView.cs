@@ -20,8 +20,8 @@ namespace tezcat.UI
 
         public void set(TezEventBus.Function<string> name, TezEventBus.Function<string> value)
         {
-            m_PropertyName.setGetFunction(name);
-            m_PorpertyValue.setGetFunction(value);
+            m_PropertyName.setGetter(name);
+            m_PorpertyValue.setGetter(value);
         }
 
         public override void clear()

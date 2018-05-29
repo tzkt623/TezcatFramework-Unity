@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using tezcat.UI;
+using tezcat.Wrapper;
 using UnityEngine;
 
 namespace tezcat.DataBase
@@ -48,14 +50,48 @@ namespace tezcat.DataBase
             }
         }
 
+        public static void load(List<TezWindow> list)
+        {
+            foreach (var go in list)
+            {
+                if(go)
+                {
+                    TezPrefabDatabase.register(go);
+                }
+            }
+        }
+
+        public static void load(List<TezWidget> list)
+        {
+            foreach (var go in list)
+            {
+                if (go)
+                {
+                    TezPrefabDatabase.register(go);
+                }
+            }
+        }
+
+        public static void load(List<TezObjectMB> list)
+        {
+            foreach (var go in list)
+            {
+                if (go)
+                {
+                    TezPrefabDatabase.register(go);
+                }
+            }
+        }
+
         public static void load(List<GameObject> list)
         {
             foreach (var go in list)
             {
-                TezPrefabDatabase.register(go);
+                if (go)
+                {
+                    TezPrefabDatabase.register(go);
+                }
             }
-
-            list.Clear();
         }
 
         public static void register(GameObject go)
@@ -63,21 +99,26 @@ namespace tezcat.DataBase
             var prefab = go.GetComponent<ITezPrefab>();
             if (prefab != null)
             {
-                int id = -1;
-                if (!m_PrefabDic.TryGetValue(prefab.GetType(), out id))
-                {
-                    id = m_List.Count;
-                    var p = new Prefab(id, prefab);
-                    m_List.Add(p);
-                    m_PrefabDic.Add(prefab.GetType(), id);
-                }
-
-                m_List[id].setPrefab(prefab);
+                register(prefab);
             }
             else
             {
                 throw new ArgumentNullException(go.name + "`s Prefab Not Found");
             }
+        }
+
+        private static void register(ITezPrefab prefab)
+        {
+            int id = -1;
+            if (!m_PrefabDic.TryGetValue(prefab.GetType(), out id))
+            {
+                id = m_List.Count;
+                var p = new Prefab(id, prefab);
+                m_List.Add(p);
+                m_PrefabDic.Add(prefab.GetType(), id);
+            }
+
+            m_List[id].setPrefab(prefab);
         }
 
         public static Prefab register<T>() where T : ITezPrefab
@@ -126,11 +167,17 @@ namespace tezcat.DataBase
         #endregion
 
         [SerializeField]
-        List<GameObject> Editor = new List<GameObject>();
+        List<TezWindow> Window = new List<TezWindow>();
+        [SerializeField]
+        List<TezWidget> Widget = new List<TezWidget>();
+        [SerializeField]
+        List<TezObjectMB> ObjectMB = new List<TezObjectMB>();
 
         public virtual void init()
         {
-            load(Editor);
+            load(Window);
+            load(Widget);
+            load(ObjectMB);
         }
     }
 }

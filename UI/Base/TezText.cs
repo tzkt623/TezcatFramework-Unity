@@ -76,7 +76,7 @@ namespace tezcat.UI
 
         }
 
-        public void setGetFunction(TezEventBus.Function<string> function)
+        public void setGetter(TezEventBus.Function<string> function)
         {
             m_GetValue = function;
             this.dirty = true;

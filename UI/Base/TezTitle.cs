@@ -20,7 +20,7 @@ namespace tezcat.UI
         [SerializeField]
         Toggle m_PinToggle = null;
 
-        TezWidget m_ParentWidget = null;
+        TezBasicWidget m_ParentWidget = null;
         bool m_Pin = false;
         bool m_Dragging = false;
 
@@ -31,7 +31,7 @@ namespace tezcat.UI
 
         protected override void initWidget()
         {
-            m_ParentWidget = this.transform.parent.GetComponent<TezWidget>();
+            m_ParentWidget = this.transform.parent.GetComponent<TezBasicWidget>();
             if (m_ParentWidget == null)
             {
                 throw new ArgumentNullException("ParenWidget Not Found");

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using tezcat.Core;
 using tezcat.Utility;
 using UnityEngine;
 
@@ -8,11 +9,8 @@ namespace tezcat.UI
     /// Window本身只包含Area
     /// 用于划分其中的显示区域
     /// </summary>
-    public class TezWindow
-        : TezWidget
+    public class TezWindow : TezBasicWidget
     {
-        public TezUICenter center { get; set; } = null;
-
         TezLayer m_Layer = null;
         public TezLayer layer
         {
@@ -67,7 +65,6 @@ namespace tezcat.UI
             }
             set
             {
-                this.layer?.onWindowNameChanged(m_WindowName, value);
                 m_WindowName = value;
                 this.name = m_WindowName;
             }
@@ -183,8 +180,7 @@ namespace tezcat.UI
 
         public override void clear()
         {
-            this.center.removeWindow(this);
-            this.center = null;
+            TezcatFramework.instance.removeWindow(this);
 
             foreach (var popup in m_PopupList)
             {
@@ -193,9 +189,9 @@ namespace tezcat.UI
             m_PopupList.Clear();
             m_PopupList = null;
 
-            foreach (var area in m_AreaList)
+            for (int i = 0; i < m_AreaList.Count; i++)
             {
-                area.close();
+                m_AreaList[i].close();
             }
             m_AreaList.Clear();
             m_AreaList = null;

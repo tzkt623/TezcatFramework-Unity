@@ -35,7 +35,7 @@ namespace tezcat.UI
 
         public void setGetFunction(TezEventBus.Function<string> function)
         {
-            m_Label.setGetFunction(function);
+            m_Label.setGetter(function);
         }
 
         protected override void preInit()

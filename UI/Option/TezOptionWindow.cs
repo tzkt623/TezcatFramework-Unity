@@ -51,11 +51,11 @@ namespace tezcat.UI
         {
             base.onRefresh();
 
-            m_RootPath.text = TezcatFramework.rootPath;
+            m_RootPath.text = TezcatGameEngine.rootPath;
 
-            m_LocalizationName.text = TezcatFramework.localizationFile;
-            m_DatabaseName.text = TezcatFramework.databaseFile;
-            m_SaveName.text = TezcatFramework.saveFile;
+            m_LocalizationName.text = TezcatGameEngine.localizationFile;
+            m_DatabaseName.text = TezcatGameEngine.databaseFile;
+            m_SaveName.text = TezcatGameEngine.saveFile;
         }
 
         protected override void onHide()

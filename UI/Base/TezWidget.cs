@@ -1,10 +1,12 @@
-﻿using UnityEngine.EventSystems;
+﻿using tezcat.DataBase;
+using UnityEngine.EventSystems;
 
 namespace tezcat.UI
 {
-    public abstract class TezWidget
+    public abstract class TezBasicWidget
         : UIBehaviour
         , ITezWidget
+        , ITezPrefab
     {
         bool m_Interactable;
         public bool interactable
@@ -150,5 +152,10 @@ namespace tezcat.UI
         {
             this.gameObject.SetActive(false);
         }
+    }
+
+    public abstract class TezWidget : TezBasicWidget
+    {
+        
     }
 }

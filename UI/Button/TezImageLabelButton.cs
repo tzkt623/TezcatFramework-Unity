@@ -26,6 +26,11 @@ namespace tezcat.UI
             set { m_Label.text = value; }
         }
 
+        public TezText textDelegate
+        {
+            get { return m_Label; }
+        }
+
         public Sprite bg
         {
             get { return m_BG.sprite; }
@@ -34,14 +39,7 @@ namespace tezcat.UI
 
         protected override void onInteractable(bool value)
         {
-            if(value)
-            {
-                m_Label.color = m_LabelColor;
-            }
-            else
-            {
-                m_Label.color = Color.gray;
-            }
+
         }
 
         public override void clear()

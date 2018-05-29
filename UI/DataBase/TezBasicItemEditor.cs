@@ -7,7 +7,6 @@ namespace tezcat.UI
 {
     public abstract class TezBasicItemEditor
         : TezWindow
-        , ITezPrefab
     {
         [Header("Menu")]
         [SerializeField]

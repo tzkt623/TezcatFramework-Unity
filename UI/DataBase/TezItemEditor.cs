@@ -22,7 +22,7 @@ namespace tezcat.UI
 
         public override TezDatabase.CategoryType[] supportCategory
         {
-            get { throw new NotImplementedException(); }
+            get { return new TezDatabase.CategoryType[0]; }
         }
 
         TezItem m_Item = null;

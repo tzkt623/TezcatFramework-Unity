@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using tezcat.DataBase;
 using tezcat.Wrapper;
 using UnityEngine;
@@ -54,6 +53,28 @@ namespace tezcat.UI
             m_PageDown.onClick += onPageDownClick;
             m_Page.contentType = InputField.ContentType.IntegerNumber;
             m_Page.onEndEdit.AddListener(this.onPageSet);
+        }
+
+        public override void clear()
+        {
+            foreach (var slot in m_SlotList)
+            {
+                slot.close();
+            }
+            m_SlotList.Clear();
+            m_SlotList = null;
+
+            m_PageController.clear();
+            m_PageController = null;
+            m_PageUp.onClick -= onPageUpClick;
+            m_PageDown.onClick -= onPageDownClick;
+            m_Page.onEndEdit.RemoveListener(this.onPageSet);
+
+            m_Group = null;
+            m_CurrentSlot = null;
+            this.currentItem = null;
+
+            base.clear();
         }
 
         protected override void linkEvent()
