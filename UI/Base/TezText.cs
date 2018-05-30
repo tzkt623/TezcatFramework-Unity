@@ -31,7 +31,7 @@ namespace tezcat.UI
 
         LinkedListNode<TezText> m_Node = null;
 
-        TezEventBus.Function<string> m_GetValue = null;
+        TezEventBus.Function<string> m_Getter = null;
         public Text handler { get; private set; } = null;
 
         public Color color
@@ -54,9 +54,9 @@ namespace tezcat.UI
         protected override void preInit()
         {
             handler = this.GetComponent<Text>();
-            if(m_GetValue == null)
+            if(m_Getter == null)
             {
-                m_GetValue = () => handler.text;
+                m_Getter = () => handler.text;
             }
         }
 
@@ -76,20 +76,20 @@ namespace tezcat.UI
 
         }
 
-        public void setGetter(TezEventBus.Function<string> function)
+        public void setGetter(TezEventBus.Function<string> getter)
         {
-            m_GetValue = function;
+            m_Getter = getter;
             this.dirty = true;
         }
 
         protected override void onRefresh()
         {
-            handler.text = m_GetValue();
+            handler.text = m_Getter();
         }
 
         public override void clear()
         {
-            m_GetValue = null;
+            m_Getter = null;
             handler = null;
             m_Node = null;
         }

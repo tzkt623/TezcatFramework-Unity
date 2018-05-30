@@ -71,6 +71,11 @@ namespace tezcat.UI
         }
 
         /// <summary>
+        /// 当前窗口的覆盖层
+        /// </summary>
+        public RectTransform overlay { get; private set; }
+
+        /// <summary>
         /// Area
         /// </summary>
         List<TezArea> m_AreaList = new List<TezArea>();
@@ -79,9 +84,6 @@ namespace tezcat.UI
 
         protected ITezFocusableWidget m_FocusWidget = null;
         protected TezWidgetEvent.Dispatcher m_EventDispatcher = new TezWidgetEvent.Dispatcher();
-
-        TezPopupContent m_PopupContent = null;
-        List<TezPopup> m_PopupList = new List<TezPopup>();
 
         #region Core
         protected override void preInit()
@@ -95,6 +97,14 @@ namespace tezcat.UI
                     m_AreaList[id].open();
                 }
             });
+
+            GameObject go = new GameObject();
+            overlay = go.AddComponent<RectTransform>();
+            overlay.parent = this.transform;
+            overlay.localPosition = Vector3.zero;
+            overlay.name = "WindowOverlay";
+            overlay.setLayoutZeroRect();
+            overlay.SetAsLastSibling();
         }
 
         protected override void initWidget()
@@ -104,18 +114,6 @@ namespace tezcat.UI
             foreach (var area in list)
             {
                 this.registerArea(area);
-            }
-
-            m_PopupContent = this.GetComponentInChildren<TezPopupContent>();
-            if (m_PopupContent == null)
-            {
-                GameObject go = new GameObject();
-                var rect = go.AddComponent<RectTransform>();
-                go.transform.SetParent(this.transform);
-                go.transform.localPosition = Vector3.zero;
-                go.transform.SetAsLastSibling();
-                m_PopupContent = go.AddComponent<TezPopupContent>();
-                TezLayout.setLayout(rect, 0, 0, 0, 0);
             }
         }
 
@@ -167,11 +165,6 @@ namespace tezcat.UI
 
         public override void reset()
         {
-            foreach (var popup in m_PopupList)
-            {
-                popup.reset();
-            }
-
             foreach (var area in m_AreaList)
             {
                 area.reset();
@@ -180,14 +173,7 @@ namespace tezcat.UI
 
         public override void clear()
         {
-            TezcatFramework.instance.removeWindow(this);
-
-            foreach (var popup in m_PopupList)
-            {
-                popup.close();
-            }
-            m_PopupList.Clear();
-            m_PopupList = null;
+            overlay = null;
 
             for (int i = 0; i < m_AreaList.Count; i++)
             {
@@ -198,6 +184,8 @@ namespace tezcat.UI
 
             m_AreaDic.Clear();
             m_AreaDic = null;
+
+            TezcatFramework.instance.removeWindow(this);
         }
 
         protected override void onRefresh()
@@ -211,35 +199,6 @@ namespace tezcat.UI
         public void setFocusWidget(ITezFocusableWidget widget)
         {
             m_FocusWidget = widget;
-        }
-        #endregion
-
-
-        #region Popup
-        public T createPopup<T>(T prefab) where T : TezPopup
-        {
-            var widget = Instantiate(prefab, m_PopupContent.transform, false);
-            widget.window = this;
-            widget.transform.localPosition = Vector3.zero;
-            widget.popupID = m_PopupList.Count;
-            m_PopupList.Add(widget);
-            return widget;
-        }
-
-        public void closePopup(TezPopup popup)
-        {
-            m_PopupList.Remove(
-                popup.popupID,
-
-                (TezPopup remove, TezPopup last) =>
-                {
-                    last.popupID = remove.popupID;
-                },
-
-                (TezPopup remove) =>
-                {
-
-                });
         }
         #endregion
 

@@ -290,8 +290,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ac59ef2e20b74584485e2891f3a06964, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_Key: {fileID: 114616086505056234}
-  m_Localization: {fileID: 114447336387960934}
+  m_KeyInput: {fileID: 114616086505056234}
+  m_LocalizationInput: {fileID: 114447336387960934}
   m_Confirm: {fileID: 114831155341439266}
   m_Cancel: {fileID: 114025336761369106}
 --- !u!114 &114183419904899110

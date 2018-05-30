@@ -27,6 +27,10 @@ namespace tezcat.UI
 
         public override void clear()
         {
+            m_Menu = null;
+            m_NameList = null;
+            m_DescriptionList = null;
+
             base.clear();
             TezcatFramework.instance.createWindow<TezcatToolWindow>("TezcatToolWindow", TezLayer.last).open();
         }

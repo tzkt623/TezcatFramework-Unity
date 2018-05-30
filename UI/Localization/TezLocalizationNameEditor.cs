@@ -5,60 +5,92 @@ using UnityEngine.UI;
 
 namespace tezcat.UI
 {
-    public class TezLocalizationNameEditor : TezPopup
+    public class TezLocalizationNameEditor : TezWidget
     {
         [SerializeField]
-        InputField m_Key = null;
+        InputField m_KeyInput = null;
         [SerializeField]
-        InputField m_Localization = null;
+        InputField m_LocalizationInput = null;
 
         [SerializeField]
         TezImageLabelButton m_Confirm = null;
         [SerializeField]
         TezImageLabelButton m_Cancel = null;
 
-        public TezLocalizationNameItem handleItem { get; set; }
-
-        int m_Index = -1;
+        public TezLocalizationNameList listArea { get; set; }
 
         protected override void preInit()
         {
-            base.preInit();
             m_Confirm.onClick += onConfirmClick;
             m_Cancel.onClick += onCancelClick;
 
-            m_Key.onEndEdit.AddListener(this.checkKey);
+            m_KeyInput.onEndEdit.AddListener(this.checkKey);
+        }
+
+        protected override void initWidget()
+        {
+
+        }
+
+        protected override void linkEvent()
+        {
+
+        }
+
+        protected override void unLinkEvent()
+        {
+
+        }
+
+        protected override void onShow()
+        {
+
+        }
+
+        protected override void onHide()
+        {
+
+        }
+
+        public override void reset()
+        {
+
+        }
+
+        public override void clear()
+        {
+            m_Confirm.onClick -= onConfirmClick;
+            m_Cancel.onClick -= onCancelClick;
+
+            m_KeyInput.onEndEdit.RemoveListener(this.checkKey);
+
+            listArea = null;
         }
 
         private void checkKey(string key)
         {
             string value;
-            if (TezLocalization.getName(key, out value, out m_Index))
+            if (TezTranslater.translateName(key, out value))
             {
-                m_Localization.text = value;
-            }
-            else
-            {
-                m_Index = TezLocalization.addName(key, value);
-                this.dirty = true;
+                m_LocalizationInput.text = value;
             }
         }
 
-        public void set(int index)
+        public void set(string key)
         {
-            m_Key.readOnly = true;
-            m_Index = index;
+            m_KeyInput.readOnly = true;
+            m_KeyInput.text = key;
             this.dirty = true;
         }
 
         public void newItem()
         {
-            m_Key.readOnly = false;
+            m_KeyInput.readOnly = false;
         }
 
         private void onCancelClick(PointerEventData.InputButton button)
         {
-            if(button == PointerEventData.InputButton.Left)
+            if (button == PointerEventData.InputButton.Left)
             {
                 this.close();
             }
@@ -66,23 +98,24 @@ namespace tezcat.UI
 
         private void onConfirmClick(PointerEventData.InputButton button)
         {
-            if(button == PointerEventData.InputButton.Left)
+            if (button == PointerEventData.InputButton.Left)
             {
-                TezLocalization.saveName(m_Index, m_Localization.text);
+                TezTranslater.saveName(m_KeyInput.text, m_LocalizationInput.text);
+                listArea.dirty = true;
                 this.close();
             }
         }
 
         protected override void onRefresh()
         {
-            if (m_Index != -1)
+            string value;
+            if (TezTranslater.translateName(m_KeyInput.text, out value))
             {
-                string key, value;
-                if (TezLocalization.getName(m_Index, out key, out value))
-                {
-                    m_Key.text = key;
-                    m_Localization.text = value;
-                }
+                m_LocalizationInput.text = value;
+            }
+            else
+            {
+                m_LocalizationInput.text = m_KeyInput.text;
             }
         }
     }

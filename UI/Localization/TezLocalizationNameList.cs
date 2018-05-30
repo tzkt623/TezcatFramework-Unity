@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using tezcat.Core;
 using tezcat.Utility;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -8,12 +9,6 @@ namespace tezcat.UI
 {
     public class TezLocalizationNameList : TezArea
     {
-        [Header("Prefab")]
-        [SerializeField]
-        TezLocalizationNameItem m_Prefab = null;
-        [SerializeField]
-        TezLocalizationNameEditor m_PrefabEditor = null;
-
         [Header("Widget")]
         [SerializeField]
         RectTransform m_Content = null;
@@ -104,7 +99,7 @@ namespace tezcat.UI
 
         protected override void onRefresh()
         {
-            m_PageController.calculateMaxPage(TezLocalization.nameCount);
+            m_PageController.calculateMaxPage(TezTranslater.nameCount);
             m_PageController.setPage(m_PageController.currentPage);
         }
 
@@ -129,7 +124,7 @@ namespace tezcat.UI
             }
             m_ItemList.Clear();
 
-            TezLocalization.foreachName(this.createItem, begin, end);
+            TezTranslater.foreachName(this.createItem, begin, end);
         }
 
         private void onPageDownClick(PointerEventData.InputButton button)
@@ -156,17 +151,27 @@ namespace tezcat.UI
 
         private void onAddClick(PointerEventData.InputButton button)
         {
-            var editor = this.window.createPopup(m_PrefabEditor);
-            editor.newItem();
-            editor.open();
+            if(button == PointerEventData.InputButton.Left)
+            {
+                var editor = TezcatFramework.instance.createWidget<TezLocalizationNameEditor>("NameEditor", this.window.overlay);
+                editor.listArea = this;
+                editor.transform.SetAsLastSibling();
+                editor.newItem();
+                editor.open();
+            }
         }
 
         private void onRemoveClick(PointerEventData.InputButton button)
         {
-            TezLocalization.removeName(m_SelectItem.index);
-            m_Vernier.SetParent(this.transform, false);
-            m_Vernier.gameObject.SetActive(false);
-            this.dirty = true;
+            if(button == PointerEventData.InputButton.Left)
+            {
+                if(TezTranslater.removeName(m_SelectItem.key))
+                {
+                    m_Vernier.SetParent(this.transform, false);
+                    m_Vernier.gameObject.SetActive(false);
+                    this.dirty = true;
+                }
+            }
         }
 
         private void onClearSearchClick(PointerEventData.InputButton button)
@@ -187,18 +192,17 @@ namespace tezcat.UI
             if (!string.IsNullOrEmpty(key))
             {
                 string value = null;
-                int index = -1;
-                if (TezLocalization.getName(key, out value, out index))
+                if (TezTranslater.translateName(key, out value))
                 {
                     if (m_SearchResult != null)
                     {
-                        m_SearchResult.set(index);
+                        m_SearchResult.set(key, value);
                     }
                     else
                     {
-                        m_SearchResult = Instantiate(m_Prefab, m_Content, false);
+                        m_SearchResult = TezcatFramework.instance.createWidget<TezLocalizationNameItem>("NameItem", m_Content);
                         m_SearchResult.listArea = this;
-                        m_SearchResult.set(index);
+                        m_SearchResult.set(key, value);
                         m_SearchResult.open();
                     }
                 }
@@ -222,7 +226,7 @@ namespace tezcat.UI
             {
                 TezPropertyManager.foreachProperty((TezPropertyName name) =>
                 {
-                    TezLocalization.tryAddName(name.name, name.name);
+                    TezTranslater.tryAddName(name.name, name.name);
                 });
 
                 this.dirty = true;
@@ -253,20 +257,22 @@ namespace tezcat.UI
             }
         }
 
-        public void edit(TezLocalizationNameItem item, int index)
+        public void edit(string key)
         {
-            var editor = this.window.createPopup(m_PrefabEditor);
-            editor.set(index);
-            editor.handleItem = item;
+            var editor = TezcatFramework.instance.createWidget<TezLocalizationNameEditor>("NameEditor", this.window.overlay);
+            editor.listArea = this;
+            editor.transform.SetAsLastSibling();
+            editor.set(key);
             editor.open();
         }
 
-        private void createItem(int index, string name, string value)
+        private void createItem(string key, string value)
         {
-            var item = Instantiate(m_Prefab, m_Content, false);
+            var item = TezcatFramework.instance.createWidget<TezLocalizationNameItem>("NameItem", m_Content);
             item.listArea = this;
-            item.set(index);
+            item.set(key, value);
             item.open();
+
             m_ItemList.Add(item);
         }
     }

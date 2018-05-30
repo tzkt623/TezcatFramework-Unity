@@ -18,59 +18,9 @@ namespace tezcat.UI
 
         Image m_Flag = null;
         Text m_KeyName = null;
-        public int index { get; private set; } = -1;
-
-        private void onEditClick(PointerEventData.InputButton button)
+        public string key
         {
-            listArea.editItem(index);
-        }
-
-        public void set(int index)
-        {
-            this.index = index;
-            this.dirty = true;
-        }
-
-        public override void clear()
-        {
-            m_Flag = null;
-            m_KeyName = null;
-            listArea = null;
-        }
-
-        protected override void onRefresh()
-        {
-            string key = null, value = null;
-            if (TezLocalization.getDescription(index, out key, out value))
-            {
-                m_KeyName.text = key;
-            }
-        }
-
-        void IPointerEnterHandler.OnPointerEnter(PointerEventData eventData)
-        {
-            string key = null, value = null;
-            if (TezLocalization.getDescription(index, out key, out value))
-            {
-                TezTipManager.instance
-                    .setDescription(value)
-                    .show();
-            }
-        }
-
-        void IPointerExitHandler.OnPointerExit(PointerEventData eventData)
-        {
-            TezTipManager.instance.hide();
-        }
-
-        void IPointerUpHandler.OnPointerUp(PointerEventData eventData)
-        {
-            this.listArea.onFocus(this);
-        }
-
-        void IPointerDownHandler.OnPointerDown(PointerEventData eventData)
-        {
-
+            get { return m_KeyName.text; }
         }
 
         protected override void preInit()
@@ -107,6 +57,54 @@ namespace tezcat.UI
         }
 
         public override void reset()
+        {
+
+        }
+
+        public void set(string key)
+        {
+            m_KeyName.text = key;
+        }
+
+        public override void clear()
+        {
+            m_Flag = null;
+            m_KeyName = null;
+            listArea = null;
+        }
+
+        private void onEditClick(PointerEventData.InputButton button)
+        {
+            listArea.editItem(m_KeyName.text);
+        }
+
+        protected override void onRefresh()
+        {
+
+        }
+
+        void IPointerEnterHandler.OnPointerEnter(PointerEventData eventData)
+        {
+            string value = null;
+            if (TezTranslater.translateDescription(m_KeyName.text, out value))
+            {
+                TezTipManager.instance
+                    .setDescription(value)
+                    .show();
+            }
+        }
+
+        void IPointerExitHandler.OnPointerExit(PointerEventData eventData)
+        {
+            TezTipManager.instance.hide();
+        }
+
+        void IPointerUpHandler.OnPointerUp(PointerEventData eventData)
+        {
+            this.listArea.onFocus(this);
+        }
+
+        void IPointerDownHandler.OnPointerDown(PointerEventData eventData)
         {
 
         }

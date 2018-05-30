@@ -20,7 +20,10 @@ namespace tezcat.UI
         TezImageLabelButton m_RefreshDataBase = null;
 
         TezDatabaseGroup m_Group = null;
-        TezDatabaseWindow m_Window = null;
+        new TezDatabaseWindow window
+        {
+            get { return (TezDatabaseWindow)base.window; }
+        }
         TezDatabaseItemContainer m_Container = null;
 
         protected override void initWidget()
@@ -38,7 +41,6 @@ namespace tezcat.UI
         public void setGroup(TezDatabaseGroup group)
         {
             m_Group = group;
-            m_Window = (TezDatabaseWindow)this.window;
         }
 
         public void setContainer(TezDatabaseItemContainer container)
@@ -52,7 +54,7 @@ namespace tezcat.UI
             {
                 if (m_Group.categoryType != null)
                 {
-                    m_Window.createItemEditor(m_Group.categoryType);
+                    window.createItemEditor(m_Group.categoryType);
                 }
             }
         }
@@ -71,7 +73,7 @@ namespace tezcat.UI
             {
                 if(m_Container.currentItem != null)
                 {
-                    m_Window.editItem(m_Container.currentItem);
+                    window.editItem(m_Container.currentItem);
                 }
             }
         }

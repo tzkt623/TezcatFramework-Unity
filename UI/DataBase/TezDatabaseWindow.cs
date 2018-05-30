@@ -7,10 +7,6 @@ namespace tezcat.UI
 {
     public class TezDatabaseWindow : TezWindow
     {
-        [Header("Prefab")]
-        [SerializeField]
-        TezItemEditor m_PrefabItemEditor = null;
-
         [Header("Area")]
         [SerializeField]
         TezDatabaseMenu m_Menu = null;
@@ -60,14 +56,14 @@ namespace tezcat.UI
             TezBasicItemEditor prefab = null;
             if(m_EditorDic.TryGetValue(category, out prefab))
             {
-                m_CurrentEditor = Instantiate(prefab, this.layer.transform, false);
+                m_CurrentEditor = TezcatFramework.instance.createWindow(prefab, "TezItemEditor", this.layer.ID) as TezBasicItemEditor;
             }
             else
             {
-                m_CurrentEditor = Instantiate(m_PrefabItemEditor, this.layer.transform, false);
+                m_CurrentEditor = TezcatFramework.instance.createWindow<TezItemEditor>("TezItemEditor", this.layer.ID);
             }
 
-            m_CurrentEditor.transform.localPosition = Vector3.zero;
+            m_CurrentEditor.transform.SetAsLastSibling();
             m_CurrentEditor.onClose.add(this.onEditorClose);
             m_CurrentEditor.bind(category);
             m_CurrentEditor.open();
@@ -83,14 +79,14 @@ namespace tezcat.UI
             TezBasicItemEditor prefab = null;
             if (m_EditorDic.TryGetValue(item.categoryType, out prefab))
             {
-                m_CurrentEditor = Instantiate(prefab, this.layer.transform, false);
+                m_CurrentEditor = TezcatFramework.instance.createWindow(prefab, "TezItemEditor", this.layer.ID) as TezBasicItemEditor;
             }
             else
             {
-                m_CurrentEditor = Instantiate(m_PrefabItemEditor, this.layer.transform, false);
+                m_CurrentEditor = TezcatFramework.instance.createWindow<TezItemEditor>("TezItemEditor", this.layer.ID);
             }
 
-            m_CurrentEditor.transform.localPosition = Vector3.zero;
+            m_CurrentEditor.transform.SetAsLastSibling();
             m_CurrentEditor.onClose.add(this.onEditorClose);
             m_CurrentEditor.bind(item);
             m_CurrentEditor.open();

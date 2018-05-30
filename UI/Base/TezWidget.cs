@@ -19,19 +19,18 @@ namespace tezcat.UI
             }
         }
 
+
         bool m_Init = false;
+        bool m_Clear = false;
         bool m_Dirty = false;
 
         public bool dirty
         {
-            get { return m_Dirty; }
             set
             {
-                m_Dirty = value;
-                if (m_Init && this.gameObject.activeSelf && m_Dirty)
+                if (m_Init && this.gameObject.activeSelf)
                 {
                     this.onRefresh();
-                    m_Dirty = false;
                 }
             }
         }
@@ -69,6 +68,11 @@ namespace tezcat.UI
             {
                 this.onHide();
                 this.unLinkEvent();
+            }
+
+            if (m_Clear)
+            {
+                this.clear();
             }
         }
 
@@ -133,8 +137,7 @@ namespace tezcat.UI
         /// </summary>
         public void close()
         {
-            this.unLinkEvent();
-            this.clear();
+            m_Clear = true;
             Destroy(this.gameObject);
         }
 
@@ -152,10 +155,27 @@ namespace tezcat.UI
         {
             this.gameObject.SetActive(false);
         }
+
+        #region 重载操作
+        public static bool operator true(TezBasicWidget obj)
+        {
+            return !object.ReferenceEquals(obj, null);
+        }
+
+        public static bool operator false(TezBasicWidget obj)
+        {
+            return object.ReferenceEquals(obj, null);
+        }
+
+        public static bool operator !(TezBasicWidget obj)
+        {
+            return object.ReferenceEquals(obj, null);
+        }
+        #endregion
     }
 
     public abstract class TezWidget : TezBasicWidget
     {
-        
+
     }
 }

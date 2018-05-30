@@ -301,8 +301,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d00641ddd881255469c63fa394ec6add, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_Key: {fileID: 114840346470118684}
-  m_Description: {fileID: 114925717509644854}
+  m_KeyInput: {fileID: 114840346470118684}
+  m_DescriptionInput: {fileID: 114925717509644854}
   m_Confirm: {fileID: 114097240080470652}
   m_Cancel: {fileID: 114566994156178088}
 --- !u!114 &114399776556479066

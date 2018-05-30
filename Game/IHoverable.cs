@@ -1,12 +1,10 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace tezcat
 {
     public interface ITezHoverable
     {
-        void onEnter();
+        void onEnter(ref RaycastHit hit);
 
         void onExit();
 

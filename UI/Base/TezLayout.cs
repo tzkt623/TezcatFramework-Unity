@@ -60,6 +60,16 @@ namespace tezcat.UI
             transform.offsetMin = new Vector2(left, bottom);
             transform.offsetMax = new Vector2(right, top);
         }
+
+        public static void setLayoutZeroRect(this RectTransform transform)
+        {
+            transform.anchorMin = new Vector2(0.5f, 0.5f);
+            transform.anchorMax = new Vector2(0.5f, 0.5f);
+            transform.pivot = new Vector2(0.5f, 0.5f);
+
+            transform.offsetMin = Vector2.zero;
+            transform.offsetMax = Vector2.zero;
+        }
     }
 }
 

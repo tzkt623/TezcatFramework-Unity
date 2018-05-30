@@ -27,7 +27,7 @@ namespace tezcat.UI
             if(button == PointerEventData.InputButton.Left)
             {
                 TezJsonWriter writer = new TezJsonWriter();
-                TezLocalization.serialization(writer);
+                TezTranslater.serialization(writer);
                 writer.save(TezcatGameEngine.localizationPath);
             }
         }

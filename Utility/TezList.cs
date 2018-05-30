@@ -2,9 +2,9 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 
-namespace tezcat
+namespace tezcat.Utility
 {
-    public class FastList<T> : IList<T>, ICollection<T>, IEnumerable<T>
+    public class TezList<T> : IList<T>, ICollection<T>, IEnumerable<T>
     {
         private T[] m_Data = new T[4];
 
@@ -38,8 +38,7 @@ namespace tezcat
 
         int IList<T>.IndexOf(T item)
         {
-            var count = m_Data.Length;
-            for (int i = 0; i < count; i++)
+            for (int i = 0; i < m_Count; i++)
             {
                 if (object.Equals(item, m_Data[i]))
                 {
@@ -119,7 +118,7 @@ namespace tezcat
             return m_Data.GetEnumerator();
         }
 
-        public FastList(int capacity = -1)
+        public TezList(int capacity = -1)
         {
             if (capacity <= 0)
             {
@@ -198,25 +197,12 @@ namespace tezcat
             m_Count--;
         }
 
-        public void ensureCapacity(int estimated_capacity)
-        {
-            if (estimated_capacity < m_Capacity)
-            {
-                return;
-            }
-
-            m_Capacity = Math.Max(m_Capacity * 2, estimated_capacity);
-            T[] array = new T[m_Capacity];
-            Array.Copy(m_Data, array, m_Count);
-            m_Data = array;
-        }
-
         private void setCapacity(int new_capacity)
         {
-            int num = m_Capacity;
+            int old = m_Capacity;
             m_Capacity = Math.Max(new_capacity, m_Count);
 
-            if (m_Capacity != num)
+            if (m_Capacity != old)
             {
                 T[] array = new T[m_Capacity];
                 Array.Copy(m_Data, array, m_Count);

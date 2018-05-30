@@ -608,7 +608,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_WindowID: -1
-  m_WindowName: 
+  m_WindowName: ItemEditorWindow
   m_Confirm: {fileID: 114975299042963428}
   m_Save: {fileID: 114775321548704638}
   m_Cancel: {fileID: 114994462531143380}

@@ -97,7 +97,7 @@ namespace tezcat.UI
                     if(eventData.clickCount == 2)
                     {
 
-                        TezStateController.add(TezBuildInState.PickAnItem);
+                        TezStateController.add(TezStateSet.PickAnItem);
                         TezSelectController.select(m_Wrapper.mySlot);
                     }
                     else

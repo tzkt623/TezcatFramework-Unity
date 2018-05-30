@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using UnityEngine;
 
 namespace tezcat.UI
 {
@@ -13,11 +12,13 @@ namespace tezcat.UI
             get { return Manager.Count - 1; }
         }
 
+        public static TezLayer overlay { get; protected set; } = null;
+
         private static void register(TezLayer layer)
         {
-            if(layer.ID == -1)
+            if (layer.ID == -1)
             {
-                layer.m_ID = Manager.Count;
+                layer.ID = Manager.Count;
                 Manager.Add(layer);
             }
             else
@@ -32,12 +33,7 @@ namespace tezcat.UI
         }
         #endregion
 
-        [SerializeField]
-        int m_ID = -1;
-        public int ID
-        {
-            get { return m_ID; }
-        }
+        public int ID { get; private set; } = -1;
 
         protected override void preInit()
         {
@@ -46,7 +42,8 @@ namespace tezcat.UI
 
         protected override void initWidget()
         {
-            this.transform.SetSiblingIndex(m_ID);
+            this.transform.SetSiblingIndex(ID);
+            this.name = "Layer_" + ID;
         }
 
         protected override void linkEvent()
@@ -83,5 +80,6 @@ namespace tezcat.UI
         {
 
         }
+
     }
 }

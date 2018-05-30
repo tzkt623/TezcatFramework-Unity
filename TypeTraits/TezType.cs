@@ -288,5 +288,22 @@ namespace tezcat.TypeTraits
 
             return (flagx && flagy) || (!flagx && !flagy) && (x.ID == y.ID && x.name == y.name);
         }
+
+        #region 重载操作
+        public static bool operator true(TezType obj)
+        {
+            return !object.ReferenceEquals(obj, null);
+        }
+
+        public static bool operator false(TezType obj)
+        {
+            return object.ReferenceEquals(obj, null);
+        }
+
+        public static bool operator !(TezType obj)
+        {
+            return object.ReferenceEquals(obj, null);
+        }
+        #endregion
     }
 }

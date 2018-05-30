@@ -16,45 +16,9 @@ namespace tezcat.UI
         TezImageButton m_Edit = null;
 
         public TezLocalizationNameList listArea { get; set; }
-
-        public int index { get; private set; } = -1;
-
-        private void onEditClick(PointerEventData.InputButton button)
+        public string key
         {
-            listArea.edit(this, index);
-        }
-
-        public void set(int index)
-        {
-            this.index = index;
-            this.dirty = true;
-        }
-
-        public override void clear()
-        {
-            m_KeyName = null;
-            m_LocalizationName = null;
-            this.listArea = null;
-        }
-
-        protected override void onRefresh()
-        {
-            string key = null, value = null;
-            if (TezLocalization.getName(index, out key, out value))
-            {
-                m_KeyName.text = key;
-                m_LocalizationName.text = value;
-            }
-        }
-
-        void IPointerUpHandler.OnPointerUp(PointerEventData eventData)
-        {
-            this.listArea.onFocus(this);
-        }
-
-        void IPointerDownHandler.OnPointerDown(PointerEventData eventData)
-        {
-
+            get { return m_KeyName.text; }
         }
 
         protected override void preInit()
@@ -88,6 +52,57 @@ namespace tezcat.UI
         }
 
         public override void reset()
+        {
+
+        }
+
+        public override void clear()
+        {
+            m_Edit.onClick -= onEditClick;
+            m_KeyName = null;
+            m_LocalizationName = null;
+            this.listArea = null;
+        }
+
+        protected override void onRefresh()
+        {
+            string value = null;
+            if (TezTranslater.translateName(m_KeyName.text, out value))
+            {
+                m_LocalizationName.text = value;
+            }
+            else
+            {
+                m_LocalizationName.text = m_KeyName.text;
+            }
+        }
+
+        private void onEditClick(PointerEventData.InputButton button)
+        {
+            if(button == PointerEventData.InputButton.Left)
+            {
+                listArea.edit(m_KeyName.text);
+            }
+        }
+
+        public void set(string key)
+        {
+            m_KeyName.text = key;
+            this.dirty = true;
+        }
+
+        public void set(string key, string value)
+        {
+            m_KeyName.text = key;
+            m_LocalizationName.text = value;
+        }
+
+        void IPointerUpHandler.OnPointerUp(PointerEventData eventData)
+        {
+            this.listArea.onFocus(this);
+        }
+
+        void IPointerDownHandler.OnPointerDown(PointerEventData eventData)
         {
 
         }

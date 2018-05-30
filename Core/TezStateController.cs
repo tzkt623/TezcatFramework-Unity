@@ -3,7 +3,7 @@ using tezcat.Event;
 
 namespace tezcat.Core
 {
-    public class TezBuildInState
+    public class TezStateSet
     {
         public static readonly TezState Empty = TezState.register();
         public static readonly TezState Pause = TezState.register();

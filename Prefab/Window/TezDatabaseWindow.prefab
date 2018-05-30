@@ -1351,7 +1351,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_AreaID: 2
   m_AreaName: ItemContainer
-  m_Prefab: {fileID: 0}
   m_Content: {fileID: 224081122842039140}
   m_Vernier: {fileID: 224192944946107402}
   m_CountPerPage: 100
@@ -1878,10 +1877,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7b5da99e530b5b5418d3e70bd91a768d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_WindowID: 0
+  m_WindowID: -1
   m_WindowName: Database
-  m_PrefabItemEditor: {fileID: 114957747506357382, guid: 5ad8857ed49235144979910382dd28d8,
-    type: 2}
   m_Menu: {fileID: 114465136586718500}
   m_Group: {fileID: 114018517813957272}
   m_Container: {fileID: 114422645396956492}

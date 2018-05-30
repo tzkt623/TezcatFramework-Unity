@@ -7,10 +7,6 @@ namespace tezcat.UI
 {
     public class TezOptionWindow : TezWindow
     {
-        [Header("RootMenu")]
-        [SerializeField]
-        GameObject m_RootMenu = null;
-
         [SerializeField]
         InputField m_RootPath = null;
 
@@ -56,12 +52,6 @@ namespace tezcat.UI
             m_LocalizationName.text = TezcatGameEngine.localizationFile;
             m_DatabaseName.text = TezcatGameEngine.databaseFile;
             m_SaveName.text = TezcatGameEngine.saveFile;
-        }
-
-        protected override void onHide()
-        {
-            base.onHide();
-            m_RootMenu.SetActive(true);
         }
     }
 }

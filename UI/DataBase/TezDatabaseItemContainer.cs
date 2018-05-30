@@ -10,10 +10,6 @@ namespace tezcat.UI
     public class TezDatabaseItemContainer
         : TezArea
     {
-        [Header("Prefab")]
-        [SerializeField]
-        TezDatabaseSlot m_Prefab = null;
-
         [Header("Widget")]
         [SerializeField]
         RectTransform m_Content = null;
@@ -104,7 +100,7 @@ namespace tezcat.UI
             {
                 while(m_SlotList.Count <= id)
                 {
-                    var ui = Instantiate(m_Prefab, m_Content, false);
+                    var ui = Instantiate(TezPrefabDatabase.get<TezDatabaseSlot>(), m_Content, false);
                     ui.container = this;
                     ui.open();
                     m_SlotList.Add(ui);
@@ -155,7 +151,7 @@ namespace tezcat.UI
                 end = Mathf.Min(end, items.Count);
                 for (int i = begin; i < end; i++)
                 {
-                    var ui = Instantiate(m_Prefab, m_Content, false);
+                    var ui = Instantiate(TezPrefabDatabase.get<TezDatabaseSlot>(), m_Content, false);
                     ui.container = this;
                     ui.open();
                     m_SlotList.Add(ui);

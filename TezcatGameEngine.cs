@@ -114,17 +114,5 @@ namespace tezcat
         protected abstract IEnumerator startGame();
 
         public abstract void clear();
-
-        public abstract void newGame();
-
-        public abstract void loadGame();
-
-        public abstract void option();
-
-        public abstract void quit();
-
-        public abstract void menu();
-
-        public abstract void pause();
     }
 }

@@ -223,15 +223,15 @@ namespace tezcat.Utility
             switch (property.getParameterType())
             {
                 case TezPropertyType.Float:
-                    this.pushAttribute(TezLocalization.getName(property.name), ((TezPV_Float)property).value);
+                    this.pushAttribute(TezTranslater.translateName(property.name), ((TezPV_Float)property).value);
                     break;
                 case TezPropertyType.Int:
-                    this.pushAttribute(TezLocalization.getName(property.name), ((TezPV_Int)property).value);
+                    this.pushAttribute(TezTranslater.translateName(property.name), ((TezPV_Int)property).value);
                     break;
                 case TezPropertyType.Bool:
                     break;
                 case TezPropertyType.String:
-                    this.pushAttribute(TezLocalization.getName(property.name), ((TezPV_String)property).value);
+                    this.pushAttribute(TezTranslater.translateName(property.name), ((TezPV_String)property).value);
                     break;
                 case TezPropertyType.List:
                     break;
@@ -244,10 +244,10 @@ namespace tezcat.Utility
                 case TezPropertyType.Function:
                     break;
                 case TezPropertyType.StaticString:
-                    this.pushAttribute(TezLocalization.getName(property.name), ((TezPV_StaticString)property).value);
+                    this.pushAttribute(TezTranslater.translateName(property.name), ((TezPV_StaticString)property).value);
                     break;
                 case TezPropertyType.Type:
-                    this.pushAttribute(TezLocalization.getName(property.name), TezLocalization.getName(((TezPV_Type)property).baseValue.name));
+                    this.pushAttribute(TezTranslater.translateName(property.name), TezTranslater.translateName(((TezPV_Type)property).baseValue.name));
                     break;
                 default:
                     break;
@@ -273,7 +273,7 @@ namespace tezcat.Utility
 
             if (result.Length == 0)
             {
-                result = TezLocalization.getDescription(string.Intern("Info_MissingInfo"));
+                result = TezTranslater.translateDescription(string.Intern("Info_MissingInfo"));
             }
             else
             {

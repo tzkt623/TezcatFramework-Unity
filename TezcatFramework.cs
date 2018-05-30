@@ -94,14 +94,9 @@ namespace tezcat.Core
         #endregion
 
         #region Window
-        public Window createWindow<Window>(string name, int layer) where Window : TezWindow, ITezPrefab
+        private int giveID()
         {
             int id = -1;
-            if (m_WindowDic.TryGetValue(name, out id))
-            {
-                return (Window)m_WindowList[id];
-            }
-
             if (m_FreeWindowID.Count > 0)
             {
                 id = m_FreeWindowID.Dequeue();
@@ -111,7 +106,27 @@ namespace tezcat.Core
                 id = m_WindowList.Count;
                 m_WindowList.Add(null);
             }
-            var window = Instantiate(TezPrefabDatabase.get<Window>(), m_LayerList[layer].transform, false);
+            return id;
+        }
+
+        public Widget createWidget<Widget>(string name, RectTransform parent) where Widget : TezWidget
+        {
+            var widget = Instantiate(TezPrefabDatabase.get<Widget>(), parent, false);
+            widget.transform.localPosition = Vector3.zero;
+            widget.name = name;
+            return widget;
+        }
+
+        public Widget createWidget<Widget>(RectTransform parent) where Widget : TezWidget
+        {
+            var widget = Instantiate(TezPrefabDatabase.get<Widget>(), parent, false);
+            widget.transform.localPosition = Vector3.zero;
+            return widget;
+        }
+
+        private Window create<Window>(Window prefab, string name, int id, int layer) where Window : TezWindow, ITezPrefab
+        {
+            var window = Instantiate(prefab, m_LayerList[layer].transform, false);
             window.windowID = id;
             window.windowName = name;
             window.layer = m_LayerList[layer];
@@ -119,8 +134,29 @@ namespace tezcat.Core
 
             m_WindowList[id] = window;
             m_WindowDic.Add(name, id);
-            this.onCreateWindow(typeof(Window), window);
             return window;
+        }
+
+        public TezWindow createWindow(ITezPrefab prefab, string name, int layer)
+        {
+            int id = -1;
+            if (m_WindowDic.TryGetValue(name, out id))
+            {
+                return m_WindowList[id];
+            }
+
+            return this.create(prefab as TezWindow, name, this.giveID(), layer);
+        }
+
+        public Window createWindow<Window>(string name, int layer) where Window : TezWindow, ITezPrefab
+        {
+            int id = -1;
+            if (m_WindowDic.TryGetValue(name, out id))
+            {
+                return (Window)m_WindowList[id];
+            }
+
+            return this.create(TezPrefabDatabase.get<Window>(), name, this.giveID(), layer);
         }
 
         public void removeWindow(TezWindow window)
