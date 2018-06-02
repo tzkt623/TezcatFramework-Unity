@@ -8,7 +8,7 @@ using UnityEngine.UI;
 namespace tezcat.UI
 {
     public class TezDatabaseSlot
-        : TezWidget
+        : TezToolWidget
         , ITezFocusableWidget
         , ITezClickable
     {

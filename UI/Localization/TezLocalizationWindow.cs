@@ -2,7 +2,7 @@
 
 namespace tezcat.UI
 {
-    public class TezLocalizationWindow : TezWindow
+    public class TezLocalizationWindow : TezToolWindow
     {
         TezLocalizationMenu m_Menu = null;
         TezLocalizationNameList m_NameList = null;

@@ -73,23 +73,23 @@ namespace tezcat.UI
         {
             foreach (RectTransform item in m_Content)
             {
-                item.GetComponent<TezWidget>().close();
+                item.GetComponent<TezGameWidget>().close();
             }
 
             if (m_Item != null)
             {
                 var view = Instantiate(m_PrefabPE_View, m_Content, false);
-                view.set(() => TezTranslater.translateName(TezReadOnlyString.Database.OID, TezReadOnlyString.Database.OID),
+                view.set(() => TezTranslator.translateName(TezReadOnlyString.Database.OID, TezReadOnlyString.Database.OID),
                     () => m_Item.OID.ToString());
                 view.open();
 
                 view = Instantiate(m_PrefabPE_View, m_Content, false);
-                view.set(() => TezTranslater.translateName(TezReadOnlyString.Database.GUID, TezReadOnlyString.Database.GUID),
+                view.set(() => TezTranslator.translateName(TezReadOnlyString.Database.GUID, TezReadOnlyString.Database.GUID),
                     () => m_Item.GUID.ToString());
                 view.open();
 
                 var editor = Instantiate(m_PrefabPE_StaticString, m_Content, false);
-                editor.bind(() => TezTranslater.translateName(TezReadOnlyString.Database.NID, TezReadOnlyString.Database.NID), m_Item.NID);
+                editor.bind(() => TezTranslator.translateName(TezReadOnlyString.Database.NID, TezReadOnlyString.Database.NID), m_Item.NID);
                 editor.open();
 
                 var properties = m_Item.properties;
@@ -111,6 +111,11 @@ namespace tezcat.UI
                     }
                 }
             }
+        }
+
+        protected override void saveFailed()
+        {
+
         }
     }
 }

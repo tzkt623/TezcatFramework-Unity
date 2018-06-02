@@ -7,7 +7,7 @@ using UnityEngine.UI;
 namespace tezcat.UI
 {
     public class TezTitle
-        : TezWidget
+        : TezGameWidget
         , ITezDragableWidget
         , ITezClickable
     {
@@ -20,7 +20,7 @@ namespace tezcat.UI
         [SerializeField]
         Toggle m_PinToggle = null;
 
-        TezBasicWidget m_ParentWidget = null;
+        TezWidget m_ParentWidget = null;
         bool m_Pin = false;
         bool m_Dragging = false;
 
@@ -31,7 +31,7 @@ namespace tezcat.UI
 
         protected override void initWidget()
         {
-            m_ParentWidget = this.transform.parent.GetComponent<TezBasicWidget>();
+            m_ParentWidget = this.transform.parent.GetComponent<TezWidget>();
             if (m_ParentWidget == null)
             {
                 throw new ArgumentNullException("ParenWidget Not Found");
@@ -152,16 +152,19 @@ namespace tezcat.UI
         {
             if (eventData.button == PointerEventData.InputButton.Left)
             {
-                if (m_ParentWidget.transform.childCount != this.transform.GetSiblingIndex())
-                {
-                    m_ParentWidget.transform.SetAsLastSibling();
-                }
+
             }
         }
 
         void IPointerDownHandler.OnPointerDown(PointerEventData eventData)
         {
-
+            if (eventData.button == PointerEventData.InputButton.Left)
+            {
+                if (m_ParentWidget.transform.childCount != this.transform.GetSiblingIndex())
+                {
+                    m_ParentWidget.transform.SetAsLastSibling();
+                }
+            }
         }
     }
 }

@@ -15,12 +15,12 @@ namespace tezcat.Wrapper
 
         public string myName
         {
-            get { return TezTranslater.translateName(this.getObject().NID); }
+            get { return TezTranslator.translateName(this.getObject().NID); }
         }
 
         public string myDescription
         {
-            get { return TezTranslater.translateDescription(this.getObject().NID); }
+            get { return TezTranslator.translateDescription(this.getObject().NID); }
         }
 
         public TezDatabase.GroupType group

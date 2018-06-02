@@ -5,7 +5,7 @@ using UnityEngine.UI;
 
 namespace tezcat.UI
 {
-    public class TezLocalizationNameEditor : TezWidget
+    public class TezLocalizationNameEditor : TezToolWidget
     {
         [SerializeField]
         InputField m_KeyInput = null;
@@ -70,7 +70,7 @@ namespace tezcat.UI
         private void checkKey(string key)
         {
             string value;
-            if (TezTranslater.translateName(key, out value))
+            if (TezTranslator.translateName(key, out value))
             {
                 m_LocalizationInput.text = value;
             }
@@ -100,7 +100,7 @@ namespace tezcat.UI
         {
             if (button == PointerEventData.InputButton.Left)
             {
-                TezTranslater.saveName(m_KeyInput.text, m_LocalizationInput.text);
+                TezTranslator.saveName(m_KeyInput.text, m_LocalizationInput.text);
                 listArea.dirty = true;
                 this.close();
             }
@@ -109,7 +109,7 @@ namespace tezcat.UI
         protected override void onRefresh()
         {
             string value;
-            if (TezTranslater.translateName(m_KeyInput.text, out value))
+            if (TezTranslator.translateName(m_KeyInput.text, out value))
             {
                 m_LocalizationInput.text = value;
             }

@@ -43,7 +43,17 @@ namespace tezcat.UI
         public string text
         {
             get { return handler.text; }
-            set { handler.text = value; }
+            set
+            {
+                if (!handler)
+                {
+                    m_Getter = () => value;
+                }
+                else
+                {
+                    handler.text = value;
+                }
+            }
         }
 
         protected override void onInteractable(bool value)
@@ -54,7 +64,7 @@ namespace tezcat.UI
         protected override void preInit()
         {
             handler = this.GetComponent<Text>();
-            if(m_Getter == null)
+            if (m_Getter == null)
             {
                 m_Getter = () => handler.text;
             }

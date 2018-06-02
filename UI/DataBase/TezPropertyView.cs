@@ -1,11 +1,8 @@
-﻿using tezcat.DataBase;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace tezcat.UI
 {
-    public class TezPropertyView
-        : TezWidget
-        , ITezPrefab
+    public class TezPropertyView : TezToolWidget
     {
         [SerializeField]
         TezText m_PropertyName = null;

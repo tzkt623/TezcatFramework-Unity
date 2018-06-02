@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace tezcat.UI
 {
-    public class TezDatabaseWindow : TezWindow
+    public class TezDatabaseWindow : TezToolWindow
     {
         [Header("Area")]
         [SerializeField]
@@ -56,11 +56,11 @@ namespace tezcat.UI
             TezBasicItemEditor prefab = null;
             if(m_EditorDic.TryGetValue(category, out prefab))
             {
-                m_CurrentEditor = TezcatFramework.instance.createWindow(prefab, "TezItemEditor", this.layer.ID) as TezBasicItemEditor;
+                m_CurrentEditor = TezcatFramework.instance.createWindow(prefab, "TezItemEditor", this.layer) as TezBasicItemEditor;
             }
             else
             {
-                m_CurrentEditor = TezcatFramework.instance.createWindow<TezItemEditor>("TezItemEditor", this.layer.ID);
+                m_CurrentEditor = TezcatFramework.instance.createWindow<TezItemEditor>("TezItemEditor", this.layer);
             }
 
             m_CurrentEditor.transform.SetAsLastSibling();
@@ -79,11 +79,11 @@ namespace tezcat.UI
             TezBasicItemEditor prefab = null;
             if (m_EditorDic.TryGetValue(item.categoryType, out prefab))
             {
-                m_CurrentEditor = TezcatFramework.instance.createWindow(prefab, "TezItemEditor", this.layer.ID) as TezBasicItemEditor;
+                m_CurrentEditor = TezcatFramework.instance.createWindow(prefab, "TezItemEditor", this.layer) as TezBasicItemEditor;
             }
             else
             {
-                m_CurrentEditor = TezcatFramework.instance.createWindow<TezItemEditor>("TezItemEditor", this.layer.ID);
+                m_CurrentEditor = TezcatFramework.instance.createWindow<TezItemEditor>("TezItemEditor", this.layer);
             }
 
             m_CurrentEditor.transform.SetAsLastSibling();

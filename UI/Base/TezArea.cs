@@ -9,7 +9,7 @@ namespace tezcat.UI
     /// 用于功能区域的设计
     /// </summary>
     public abstract class TezArea
-        : TezBasicWidget
+        : TezWidget
         , ITezFocusableWidget
     {
         [SerializeField]

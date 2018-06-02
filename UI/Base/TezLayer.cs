@@ -2,14 +2,19 @@
 
 namespace tezcat.UI
 {
-    public class TezLayer : TezBasicWidget
+    public class TezLayer : TezWidget
     {
         #region Manater
         static List<TezLayer> Manager = new List<TezLayer>();
 
-        public static int last
+        public static TezLayer get(int index)
         {
-            get { return Manager.Count - 1; }
+            return Manager[index];
+        }
+
+        public static TezLayer last
+        {
+            get { return Manager[Manager.Count - 1]; }
         }
 
         public static TezLayer overlay { get; protected set; } = null;

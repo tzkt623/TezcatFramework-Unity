@@ -50,35 +50,13 @@ namespace tezcat.DataBase
             }
         }
 
-        public static void load(List<TezWindow> list)
+        public static void load<Prefab>(List<Prefab> list) where Prefab : ITezPrefab
         {
-            foreach (var go in list)
+            foreach (var widget in list)
             {
-                if(go)
+                if (widget != null)
                 {
-                    TezPrefabDatabase.register(go);
-                }
-            }
-        }
-
-        public static void load(List<TezWidget> list)
-        {
-            foreach (var go in list)
-            {
-                if (go)
-                {
-                    TezPrefabDatabase.register(go);
-                }
-            }
-        }
-
-        public static void load(List<TezObjectMB> list)
-        {
-            foreach (var go in list)
-            {
-                if (go)
-                {
-                    TezPrefabDatabase.register(go);
+                    TezPrefabDatabase.register(widget);
                 }
             }
         }
@@ -167,16 +145,24 @@ namespace tezcat.DataBase
         #endregion
 
         [SerializeField]
-        List<TezWindow> Window = new List<TezWindow>();
+        List<TezToolWindow> ToolWindow = new List<TezToolWindow>();
         [SerializeField]
-        List<TezWidget> Widget = new List<TezWidget>();
+        List<TezToolWidget> ToolWidget = new List<TezToolWidget>();
+
+        [SerializeField]
+        List<TezGameWindow> GameWindow = new List<TezGameWindow>();
+        [SerializeField]
+        List<TezGameWidget> GameWidget = new List<TezGameWidget>();
+
         [SerializeField]
         List<TezObjectMB> ObjectMB = new List<TezObjectMB>();
 
         public virtual void init()
         {
-            load(Window);
-            load(Widget);
+            load(ToolWindow);
+            load(ToolWidget);
+            load(GameWindow);
+            load(GameWidget);
             load(ObjectMB);
         }
     }

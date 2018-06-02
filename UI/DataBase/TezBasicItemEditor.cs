@@ -5,8 +5,7 @@ using UnityEngine.EventSystems;
 
 namespace tezcat.UI
 {
-    public abstract class TezBasicItemEditor
-        : TezWindow
+    public abstract class TezBasicItemEditor : TezToolWindow
     {
         [Header("Menu")]
         [SerializeField]
@@ -60,7 +59,7 @@ namespace tezcat.UI
                 }
                 else
                 {
-                    ///名称不能为空
+                    this.saveFailed();
                 }
             }
         }
@@ -71,7 +70,7 @@ namespace tezcat.UI
             {
                 if (!this.getItem().NID.isNullOrEmpty)
                 {
-                    if(this.getItem().GUID == -1)
+                    if (this.getItem().GUID == -1)
                     {
                         TezDatabase.registerItem(this.getItem());
                     }
@@ -80,7 +79,7 @@ namespace tezcat.UI
                 }
                 else
                 {
-                    ///名称不能为空
+                    this.saveFailed();
                 }
             }
         }
@@ -92,5 +91,7 @@ namespace tezcat.UI
                 this.close();
             }
         }
+
+        protected abstract void saveFailed();
     }
 }

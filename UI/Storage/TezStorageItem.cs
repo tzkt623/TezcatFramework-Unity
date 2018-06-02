@@ -6,7 +6,7 @@ namespace tezcat.UI
 {
     [RequireComponent(typeof(Image))]
     public class TezStorageItem
-        : TezWidget
+        : TezToolWidget
         , ITezWrapperBinder<ITezItemWrapper>
     {
         Image m_Image = null;

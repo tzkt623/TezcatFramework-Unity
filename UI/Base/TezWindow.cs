@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using tezcat.Core;
-using tezcat.Utility;
 using UnityEngine;
 
 namespace tezcat.UI
@@ -9,7 +8,7 @@ namespace tezcat.UI
     /// Window本身只包含Area
     /// 用于划分其中的显示区域
     /// </summary>
-    public class TezWindow : TezBasicWidget
+    public abstract class TezWindow : TezWidget
     {
         TezLayer m_Layer = null;
         public TezLayer layer

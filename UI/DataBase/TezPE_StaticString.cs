@@ -4,7 +4,7 @@ using UnityEngine.UI;
 
 namespace tezcat.UI
 {
-    public class TezPE_StaticString : TezWidget
+    public class TezPE_StaticString : TezToolWidget
     {
         [SerializeField]
         TezText m_PropertyName = null;

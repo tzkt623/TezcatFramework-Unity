@@ -14,7 +14,7 @@ namespace tezcat.Wrapper
 
         public Sprite getIcon()
         {
-            return TezTextureManager.getSprite(this.mySlot.item.asset.icon_0);
+            return TezTextureManager.getSprite("Icon_File");
         }
 
         public override void showTip()

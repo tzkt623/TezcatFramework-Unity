@@ -1,7 +1,7 @@
 ﻿using tezcat.Utility;
 namespace tezcat.UI
 {
-    public abstract class TezPropertyEditor : TezWidget
+    public abstract class TezPropertyEditor : TezToolWidget
     {
         protected TezPropertyValue m_Property;
 

@@ -6,7 +6,7 @@ using tezcat.Utility;
 namespace tezcat.UI
 {
     public class TezLocalizationDescriptionItem
-        : TezWidget
+        : TezToolWidget
         , IPointerEnterHandler
         , IPointerExitHandler
         , ITezClickable
@@ -86,7 +86,7 @@ namespace tezcat.UI
         void IPointerEnterHandler.OnPointerEnter(PointerEventData eventData)
         {
             string value = null;
-            if (TezTranslater.translateDescription(m_KeyName.text, out value))
+            if (TezTranslator.translateDescription(m_KeyName.text, out value))
             {
                 TezTipManager.instance
                     .setDescription(value)

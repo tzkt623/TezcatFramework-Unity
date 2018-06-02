@@ -5,7 +5,7 @@ using UnityEngine.UI;
 
 namespace tezcat.UI
 {
-    public class TezOptionWindow : TezWindow
+    public class TezOptionWindow : TezToolWindow
     {
         [SerializeField]
         InputField m_RootPath = null;

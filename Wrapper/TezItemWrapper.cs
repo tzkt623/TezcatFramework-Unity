@@ -16,12 +16,12 @@ namespace tezcat.Wrapper
     {
         public string myName
         {
-            get { return TezTranslater.translateName(this.getItem().NID); }
+            get { return TezTranslator.translateName(this.getItem().NID); }
         }
 
         public string myDescription
         {
-            get { return TezTranslater.translateDescription(this.getItem().NID); }
+            get { return TezTranslator.translateDescription(this.getItem().NID); }
         }
 
         public abstract void clear();

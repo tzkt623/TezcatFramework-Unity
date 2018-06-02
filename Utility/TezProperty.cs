@@ -24,7 +24,7 @@ namespace tezcat.Utility
         HashSet,
         Dictionary,
         Class,
-        Function,
+        Getter,
         StaticString,
         Type
     }
@@ -315,7 +315,7 @@ namespace tezcat.Utility
     #endregion
 
     #region 特殊Value
-    public class TezPV_ReadOnly<Return> : TezPropertyValue
+    public class TezPV_Getter<Return> : TezPropertyValue
     {
         TezEventBus.Function<Return> m_Getter = null;
         public TezEventBus.Function<Return> getter
@@ -333,7 +333,7 @@ namespace tezcat.Utility
             get { return typeof(Return); }
         }
 
-        public TezPV_ReadOnly(TezPropertyName name) : base(name)
+        public TezPV_Getter(TezPropertyName name) : base(name)
         {
 
         }
@@ -345,7 +345,7 @@ namespace tezcat.Utility
 
         public override TezPropertyType getParameterType()
         {
-            return TezPropertyType.Function;
+            return TezPropertyType.Getter;
         }
 
         public override void clear()

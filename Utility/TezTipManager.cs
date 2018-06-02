@@ -223,15 +223,23 @@ namespace tezcat.Utility
             switch (property.getParameterType())
             {
                 case TezPropertyType.Float:
-                    this.pushAttribute(TezTranslater.translateName(property.name), ((TezPV_Float)property).value);
+                    this.pushAttribute(TezTranslator.translateName(property.name), ((TezPV_Float)property).value);
+                    break;
+                case TezPropertyType.Limit_Float:
+                    this.pushAttribute(TezTranslator.translateName(property.name),
+                        string.Format("{0:N1}/{1:N1}", ((TezPV_LimitFloat)property).value, ((TezPV_LimitFloat)property).limit));
                     break;
                 case TezPropertyType.Int:
-                    this.pushAttribute(TezTranslater.translateName(property.name), ((TezPV_Int)property).value);
+                    this.pushAttribute(TezTranslator.translateName(property.name), ((TezPV_Int)property).value);
+                    break;
+                case TezPropertyType.Limit_Int:
+                    this.pushAttribute(TezTranslator.translateName(property.name),
+                        string.Format("{0}/{1}", ((TezPV_LimitInt)property).value, ((TezPV_LimitInt)property).limit));
                     break;
                 case TezPropertyType.Bool:
                     break;
                 case TezPropertyType.String:
-                    this.pushAttribute(TezTranslater.translateName(property.name), ((TezPV_String)property).value);
+                    this.pushAttribute(TezTranslator.translateName(property.name), ((TezPV_String)property).value);
                     break;
                 case TezPropertyType.List:
                     break;
@@ -241,13 +249,14 @@ namespace tezcat.Utility
                     break;
                 case TezPropertyType.Class:
                     break;
-                case TezPropertyType.Function:
+                case TezPropertyType.Getter:
+
                     break;
                 case TezPropertyType.StaticString:
-                    this.pushAttribute(TezTranslater.translateName(property.name), ((TezPV_StaticString)property).value);
+                    this.pushAttribute(TezTranslator.translateName(property.name), ((TezPV_StaticString)property).value);
                     break;
                 case TezPropertyType.Type:
-                    this.pushAttribute(TezTranslater.translateName(property.name), TezTranslater.translateName(((TezPV_Type)property).baseValue.name));
+                    this.pushAttribute(TezTranslator.translateName(property.name), TezTranslator.translateName(((TezPV_Type)property).baseValue.name));
                     break;
                 default:
                     break;
@@ -273,7 +282,7 @@ namespace tezcat.Utility
 
             if (result.Length == 0)
             {
-                result = TezTranslater.translateDescription(string.Intern("Info_MissingInfo"));
+                result = TezTranslator.translateDescription(string.Intern("Info_MissingInfo"));
             }
             else
             {

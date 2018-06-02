@@ -4,8 +4,7 @@ using UnityEngine.EventSystems;
 
 namespace tezcat.UI
 {
-    public class TezcatToolWindow
-        : TezWindow
+    public class TezcatToolWindow : TezToolWindow
     {
         [Header("Menu")]
         [SerializeField]

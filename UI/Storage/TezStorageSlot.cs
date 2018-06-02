@@ -4,7 +4,7 @@ using UnityEngine.EventSystems;
 namespace tezcat.UI
 {
     public abstract class TezStorageSlot<T>
-        : TezWidget
+        : TezGameWidget
         , ITezFocusableWidget
         , ITezClickable
         where T : ITezItemWrapper

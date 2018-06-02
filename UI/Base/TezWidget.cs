@@ -3,7 +3,7 @@ using UnityEngine.EventSystems;
 
 namespace tezcat.UI
 {
-    public abstract class TezBasicWidget
+    public abstract class TezWidget
         : UIBehaviour
         , ITezWidget
         , ITezPrefab
@@ -22,7 +22,6 @@ namespace tezcat.UI
 
         bool m_Init = false;
         bool m_Clear = false;
-        bool m_Dirty = false;
 
         public bool dirty
         {
@@ -157,24 +156,29 @@ namespace tezcat.UI
         }
 
         #region 重载操作
-        public static bool operator true(TezBasicWidget obj)
+        public static bool operator true(TezWidget obj)
         {
             return !object.ReferenceEquals(obj, null);
         }
 
-        public static bool operator false(TezBasicWidget obj)
+        public static bool operator false(TezWidget obj)
         {
             return object.ReferenceEquals(obj, null);
         }
 
-        public static bool operator !(TezBasicWidget obj)
+        public static bool operator !(TezWidget obj)
         {
             return object.ReferenceEquals(obj, null);
         }
         #endregion
     }
 
-    public abstract class TezWidget : TezBasicWidget
+    public abstract class TezGameWidget : TezWidget
+    {
+
+    }
+
+    public abstract class TezToolWidget : TezWidget
     {
 
     }

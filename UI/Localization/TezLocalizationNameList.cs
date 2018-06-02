@@ -99,7 +99,7 @@ namespace tezcat.UI
 
         protected override void onRefresh()
         {
-            m_PageController.calculateMaxPage(TezTranslater.nameCount);
+            m_PageController.calculateMaxPage(TezTranslator.nameCount);
             m_PageController.setPage(m_PageController.currentPage);
         }
 
@@ -124,7 +124,7 @@ namespace tezcat.UI
             }
             m_ItemList.Clear();
 
-            TezTranslater.foreachName(this.createItem, begin, end);
+            TezTranslator.foreachName(this.createItem, begin, end);
         }
 
         private void onPageDownClick(PointerEventData.InputButton button)
@@ -165,7 +165,7 @@ namespace tezcat.UI
         {
             if(button == PointerEventData.InputButton.Left)
             {
-                if(TezTranslater.removeName(m_SelectItem.key))
+                if(TezTranslator.removeName(m_SelectItem.key))
                 {
                     m_Vernier.SetParent(this.transform, false);
                     m_Vernier.gameObject.SetActive(false);
@@ -192,7 +192,7 @@ namespace tezcat.UI
             if (!string.IsNullOrEmpty(key))
             {
                 string value = null;
-                if (TezTranslater.translateName(key, out value))
+                if (TezTranslator.translateName(key, out value))
                 {
                     if (m_SearchResult != null)
                     {
@@ -226,7 +226,7 @@ namespace tezcat.UI
             {
                 TezPropertyManager.foreachProperty((TezPropertyName name) =>
                 {
-                    TezTranslater.tryAddName(name.name, name.name);
+                    TezTranslator.tryAddName(name.name, name.name);
                 });
 
                 this.dirty = true;

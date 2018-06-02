@@ -70,6 +70,14 @@ namespace tezcat.UI
             transform.offsetMin = Vector2.zero;
             transform.offsetMax = Vector2.zero;
         }
+
+        public static void setAsTopWindow(this TezWindow window)
+        {
+            if(window.transform.GetSiblingIndex() != window.transform.parent.childCount)
+            {
+                window.transform.SetAsLastSibling();
+            }
+        }
     }
 }
 

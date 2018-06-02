@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using tezcat.Core;
 using tezcat.Event;
 using tezcat.TypeTraits;
@@ -63,6 +62,21 @@ namespace tezcat.DataBase
             public Group() { }
             public Group(GroupType group_type) { this.groupType = group_type; }
 
+            public Container this[int type_id]
+            {
+                get { return this.containers[type_id]; }
+            }
+
+            public void registerContainers<T>(List<T> types) where T : CategoryType
+            {
+                for (int i = 0; i < types.Count; i++)
+                {
+                    this.containers.Add(new Container(types[i]));
+                    TezDatabaseItemFactory.getGroup(groupType.ID)
+                        .create(types[i].name, types[i].ID, types[i].function);
+                }
+            }
+
             public void registerContainer(CategoryType container_type)
             {
                 while (this.containers.Count <= container_type.ID)
@@ -72,6 +86,22 @@ namespace tezcat.DataBase
 
                 var container = new Container(container_type);
                 this.containers[container_type.ID] = container;
+            }
+
+            public void registerItem(TezItem new_item)
+            {
+                int type_id = new_item.categoryType.ID;
+                while (this.containers.Count <= type_id)
+                {
+                    this.containers.Add(new Container());
+                }
+
+                this.containers[type_id].registerItem(new_item);
+            }
+
+            public void unregisterItem(TezItem item)
+            {
+                this.containers[item.categoryType.ID].unregisterItem(item);
             }
 
             public void foreachItem<T>(TezEventBus.Action<CategoryType> get_type, TezEventBus.Action<T> action) where T : TezItem
@@ -99,48 +129,12 @@ namespace tezcat.DataBase
                 }
             }
 
-            public void registerItem(TezItem new_item)
-            {
-                int type_id = new_item.categoryType.ID;
-                while (this.containers.Count <= type_id)
-                {
-                    this.containers.Add(new Container());
-                }
-
-                this.containers[type_id].registerItem(new_item);
-            }
-
-            public Container this[int type_id]
-            {
-                get { return this.containers[type_id]; }
-            }
-
             public void clear()
             {
                 foreach (var container in this.containers)
                 {
                     container.clear();
                 }
-            }
-
-            public void unregisterItem(TezItem item)
-            {
-                this.containers[item.categoryType.ID].unregisterItem(item);
-            }
-
-            public void registerContainers<T>(List<T> types) where T : CategoryType
-            {
-                for (int i = 0; i < types.Count; i++)
-                {
-                    this.containers.Add(new Container(types[i]));
-                    TezDatabaseItemFactory.getGroup(groupType.ID)
-                        .create(types[i].name, types[i].ID, types[i].function);
-                }
-            }
-
-            public void addItem(TezItem item)
-            {
-
             }
         }
 
@@ -200,20 +194,16 @@ namespace tezcat.DataBase
             public TezDatabase database { get; set; }
 
             List<TezItem> m_Items = new List<TezItem>();
-            Queue<int> m_FreeInnate = new Queue<int>();
+            Queue<int> m_FreeID = new Queue<int>();
 
             public TezItem this[int index]
             {
                 get { return m_Items[index]; }
             }
 
-            /// <summary>
-            /// 注册固有物品
-            /// </summary>
-            /// <param name="item"></param>
             public void registerItem(TezItem item)
             {
-                if(item.GUID > 0)
+                if (item.GUID > 0)
                 {
                     this.grow(item.GUID);
                 }
@@ -225,10 +215,6 @@ namespace tezcat.DataBase
                 m_Items[item.GUID] = item;
             }
 
-            /// <summary>
-            /// 移除固有物品
-            /// </summary>
-            /// <param name="item"></param>
             public void unregisterItem(TezItem item)
             {
                 if (item.GUID == m_Items.Count - 1)
@@ -246,27 +232,29 @@ namespace tezcat.DataBase
                 }
             }
 
-            void grow(int guid)
+            private void grow(int guid)
             {
                 while (m_Items.Count <= guid)
                 {
-                    m_FreeInnate.Enqueue(m_Items.Count);
+                    m_FreeID.Enqueue(m_Items.Count);
                     m_Items.Add(null);
                 }
             }
 
-            int giveGUID()
+            private int giveGUID()
             {
-                if (m_FreeInnate.Count > 0)
+                while (m_FreeID.Count > 0)
                 {
-                    return m_FreeInnate.Dequeue();
+                    int temp = m_FreeID.Dequeue();
+                    if (!m_Items[temp])
+                    {
+                        return temp;
+                    }
                 }
-                else
-                {
-                    int id = m_Items.Count;
-                    m_Items.Add(null);
-                    return id++;
-                }
+
+                int id = m_Items.Count;
+                m_Items.Add(null);
+                return id;
             }
 
             public void foreachItem(TezEventBus.Action<TezItem> action)
@@ -297,12 +285,6 @@ namespace tezcat.DataBase
 
                 temp.Clear();
                 temp = null;
-            }
-
-            public void addItem(TezItem item)
-            {
-                this.grow(item.GUID);
-                m_Items[item.GUID] = item;
             }
         }
 

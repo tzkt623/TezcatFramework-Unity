@@ -66,7 +66,7 @@ namespace tezcat.UI
 
         protected override void onRefresh()
         {
-            m_PropertyName.text = TezTranslater.translateName(m_Property.name, m_Property.name);
+            m_PropertyName.text = TezTranslator.translateName(m_Property.name, m_Property.name);
             switch (m_Property.getParameterType())
             {
                 case TezPropertyType.Float:

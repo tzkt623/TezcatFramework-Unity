@@ -5,7 +5,7 @@ using UnityEngine.UI;
 namespace tezcat.UI
 {
     public class TezLocalizationNameItem
-        : TezWidget
+        : TezToolWidget
         , ITezClickable
     {
         [SerializeField]
@@ -67,7 +67,7 @@ namespace tezcat.UI
         protected override void onRefresh()
         {
             string value = null;
-            if (TezTranslater.translateName(m_KeyName.text, out value))
+            if (TezTranslator.translateName(m_KeyName.text, out value))
             {
                 m_LocalizationName.text = value;
             }

@@ -4,15 +4,15 @@ using UnityEngine;
 
 namespace tezcat.Utility
 {
-    public static class TezTranslater
+    public static class TezTranslator
     {
-        class Package
+        public class Text
         {
             public readonly string key;
             public string value;
             public int ID = -1;
 
-            public Package(string key, string value)
+            public Text(string key, string value)
             {
                 this.key = key;
                 this.value = value;
@@ -24,15 +24,15 @@ namespace tezcat.Utility
             }
         }
 
-        static Dictionary<string, Package> m_NameDic = new Dictionary<string, Package>();
-        static List<Package> m_NameList = new List<Package>();
+        static Dictionary<string, Text> m_NameDic = new Dictionary<string, Text>();
+        static List<Text> m_NameList = new List<Text>();
         public static int nameCount
         {
             get { return m_NameList.Count; }
         }
 
-        static Dictionary<string, Package> m_DescriptionDic = new Dictionary<string, Package>();
-        static List<Package> m_DescriptionList = new List<Package>();
+        static Dictionary<string, Text> m_DescriptionDic = new Dictionary<string, Text>();
+        static List<Text> m_DescriptionList = new List<Text>();
         public static int descriptionCount
         {
             get { return m_DescriptionList.Count; }
@@ -43,7 +43,7 @@ namespace tezcat.Utility
             reader.beginObject("name");
             foreach (var key in reader.getKeys())
             {
-                var package = new Package(key, reader.readString(key));
+                var package = new Text(key, reader.readString(key));
                 package.ID = m_NameList.Count;
                 m_NameDic.Add(key, package);
                 m_NameList.Add(package);
@@ -53,7 +53,7 @@ namespace tezcat.Utility
             reader.beginObject("description");
             foreach (var key in reader.getKeys())
             {
-                var package = new Package(key, reader.readString(key));
+                var package = new Text(key, reader.readString(key));
                 package.ID = m_DescriptionList.Count;
                 m_DescriptionDic.Add(key, package);
                 m_DescriptionList.Add(package);
@@ -84,7 +84,7 @@ namespace tezcat.Utility
         #region Name
         public static void sortName()
         {
-            m_NameList.Sort((Package p1, Package p2) =>
+            m_NameList.Sort((Text p1, Text p2) =>
             {
                 return string.CompareOrdinal(p1.key, p2.key);
             });
@@ -97,7 +97,7 @@ namespace tezcat.Utility
 
         public static bool tryAddName(string key, string value)
         {
-            Package package = null;
+            Text package = null;
             if (!m_NameDic.TryGetValue(key, out package))
             {
                 addName(key, value);
@@ -109,7 +109,7 @@ namespace tezcat.Utility
 
         public static void addName(string key, string value)
         {
-            var package = new Package(key, value);
+            var package = new Text(key, value);
             package.ID = m_NameList.Count;
             m_NameDic.Add(key, package);
             m_NameList.Add(package);
@@ -119,8 +119,8 @@ namespace tezcat.Utility
 
         public static bool removeName(string key)
         {
-            Package package = null;
-            if(m_NameDic.TryGetValue(key, out package))
+            Text package = null;
+            if (m_NameDic.TryGetValue(key, out package))
             {
                 var ID = package.ID;
                 if (ID != m_NameList.Count - 1)
@@ -169,7 +169,7 @@ namespace tezcat.Utility
 
         public static void saveName(string key, string value)
         {
-            Package package = null;
+            Text package = null;
             if (m_NameDic.TryGetValue(key, out package))
             {
                 package.value = value;
@@ -202,7 +202,7 @@ namespace tezcat.Utility
                 return false;
             }
 
-            Package package = null;
+            Text package = null;
             if (m_NameDic.TryGetValue(key, out package))
             {
                 value = package.value;
@@ -212,14 +212,14 @@ namespace tezcat.Utility
             return false;
         }
 
-        public static string translateName(string key, string value = "$error_name")
+        public static string translateName(string key, string value)
         {
             if (string.IsNullOrEmpty(key))
             {
                 return value;
             }
 
-            Package package = null;
+            Text package = null;
             if (m_NameDic.TryGetValue(key, out package))
             {
                 return package.value;
@@ -227,12 +227,28 @@ namespace tezcat.Utility
 
             return value;
         }
+
+        public static string translateName(string key)
+        {
+            if (string.IsNullOrEmpty(key))
+            {
+                return string.Format("#{0}", key);
+            }
+
+            Text package = null;
+            if (m_NameDic.TryGetValue(key, out package))
+            {
+                return package.value;
+            }
+
+            return string.Format("#{0}", key);
+        }
         #endregion
 
         #region Description
         public static void sortDescription()
         {
-            m_DescriptionList.Sort((Package p1, Package p2) =>
+            m_DescriptionList.Sort((Text p1, Text p2) =>
             {
                 return string.CompareOrdinal(p1.key, p2.key);
             });
@@ -245,7 +261,7 @@ namespace tezcat.Utility
 
         public static bool tryAddDescription(string key, string value)
         {
-            Package package = null;
+            Text package = null;
             if (!m_DescriptionDic.TryGetValue(key, out package))
             {
                 addDescription(key, value);
@@ -257,7 +273,7 @@ namespace tezcat.Utility
 
         public static void addDescription(string key, string value)
         {
-            Package package = new Package(key, value);
+            Text package = new Text(key, value);
             package.ID = m_NameList.Count;
             m_DescriptionDic.Add(key, package);
             m_DescriptionList.Add(package);
@@ -267,7 +283,7 @@ namespace tezcat.Utility
 
         public static void removeDescription(string key)
         {
-            Package package = null;
+            Text package = null;
             if (m_DescriptionDic.TryGetValue(key, out package))
             {
                 var ID = package.ID;
@@ -314,7 +330,7 @@ namespace tezcat.Utility
 
         public static void saveDescription(string key, string value)
         {
-            Package package = null;
+            Text package = null;
             if (m_DescriptionDic.TryGetValue(key, out package))
             {
                 package.value = value;
@@ -347,7 +363,7 @@ namespace tezcat.Utility
                 return false;
             }
 
-            Package package = null;
+            Text package = null;
             if (m_DescriptionDic.TryGetValue(key, out package))
             {
                 value = package.value;
@@ -364,13 +380,29 @@ namespace tezcat.Utility
                 return value;
             }
 
-            Package package = null;
+            Text package = null;
             if (m_DescriptionDic.TryGetValue(key, out package))
             {
                 return package.value;
             }
 
             return value;
+        }
+
+        public static string translateDescription(string key)
+        {
+            if (string.IsNullOrEmpty(key))
+            {
+                return string.Format("#{0}", key);
+            }
+
+            Text package = null;
+            if (m_DescriptionDic.TryGetValue(key, out package))
+            {
+                return package.value;
+            }
+
+            return string.Format("#{0}", key);
         }
         #endregion
     }

@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace tezcat.Core
 {
-    public abstract class TezcatFramework : TezWidget
+    public abstract class TezcatFramework : TezGameWidget
     {
         public static TezcatFramework instance { get; private set; }
 
@@ -109,6 +109,14 @@ namespace tezcat.Core
             return id;
         }
 
+        public TezWidget createWidget(TezWidget prefab, string name, RectTransform parent)
+        {
+            var widget = Instantiate(prefab, parent, false);
+            widget.transform.localPosition = Vector3.zero;
+            widget.name = name;
+            return widget;
+        }
+
         public Widget createWidget<Widget>(string name, RectTransform parent) where Widget : TezWidget
         {
             var widget = Instantiate(TezPrefabDatabase.get<Widget>(), parent, false);
@@ -124,12 +132,12 @@ namespace tezcat.Core
             return widget;
         }
 
-        private Window create<Window>(Window prefab, string name, int id, int layer) where Window : TezWindow, ITezPrefab
+        private Window createWindow<Window>(Window prefab, string name, int id, TezLayer layer) where Window : TezWindow, ITezPrefab
         {
-            var window = Instantiate(prefab, m_LayerList[layer].transform, false);
+            var window = Instantiate(prefab, layer.transform, false);
             window.windowID = id;
             window.windowName = name;
-            window.layer = m_LayerList[layer];
+            window.layer = layer;
             window.transform.localPosition = Vector3.zero;
 
             m_WindowList[id] = window;
@@ -137,7 +145,7 @@ namespace tezcat.Core
             return window;
         }
 
-        public TezWindow createWindow(ITezPrefab prefab, string name, int layer)
+        public TezWindow createWindow(ITezPrefab prefab, string name, TezLayer layer)
         {
             int id = -1;
             if (m_WindowDic.TryGetValue(name, out id))
@@ -145,10 +153,10 @@ namespace tezcat.Core
                 return m_WindowList[id];
             }
 
-            return this.create(prefab as TezWindow, name, this.giveID(), layer);
+            return this.createWindow(prefab as TezWindow, name, this.giveID(), layer);
         }
 
-        public Window createWindow<Window>(string name, int layer) where Window : TezWindow, ITezPrefab
+        public Window createWindow<Window>(string name, TezLayer layer) where Window : TezWindow, ITezPrefab
         {
             int id = -1;
             if (m_WindowDic.TryGetValue(name, out id))
@@ -156,7 +164,7 @@ namespace tezcat.Core
                 return (Window)m_WindowList[id];
             }
 
-            return this.create(TezPrefabDatabase.get<Window>(), name, this.giveID(), layer);
+            return this.createWindow(TezPrefabDatabase.get<Window>(), name, this.giveID(), layer);
         }
 
         public void removeWindow(TezWindow window)
