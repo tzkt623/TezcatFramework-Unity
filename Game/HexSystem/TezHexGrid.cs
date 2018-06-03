@@ -1,14 +1,10 @@
-﻿using System.Collections;
+﻿using System;
 using System.Collections.Generic;
-using UnityEngine.Assertions;
-
-
 using UnityEngine;
-using System;
 
-namespace tezcat
+namespace tezcat.Game
 {
-    public class HexGrid
+    public class TezHexGrid
     {
         public static readonly float Sqrt3 = Mathf.Sqrt(3);
         public static readonly float Sqrt3D2 = Mathf.Sqrt(3) / 2;
@@ -20,11 +16,14 @@ namespace tezcat
             public int y;
             public int z;
 
+            bool m_Dirty;
+
             public CubeCoordinate(int x, int y, int z)
             {
                 this.x = x;
                 this.y = y;
                 this.z = z;
+                m_Dirty = true;
             }
 
             public CubeCoordinate(int q, int r)
@@ -32,6 +31,7 @@ namespace tezcat
                 this.x = q;
                 this.z = r;
                 this.y = -q - r;
+                m_Dirty = true;
             }
 
             public static CubeCoordinate operator +(CubeCoordinate v1, CubeCoordinate v2)
@@ -59,6 +59,7 @@ namespace tezcat
                 this.x = x;
                 this.y = y;
                 this.z = z;
+                m_Dirty = true;
             }
 
             public AxialCoordinate toAxial()
@@ -221,12 +222,12 @@ namespace tezcat
 
         bool m_BorderWith = false;
 
-        public HexGrid()
+        public TezHexGrid()
         {
 
         }
 
-        public HexGrid(float size, Layout layout)
+        public TezHexGrid(float size, Layout layout)
         {
             this.init(size, layout);
         }
@@ -253,16 +254,6 @@ namespace tezcat
                     hDistance = cellWidth * 3 / 4;
                     break;
             }
-        }
-
-        public int getDistance(HexCell cell1, HexCell cell2)
-        {
-            var cube1 = cell1.cubeCoordinate;
-            var cube2 = cell2.cubeCoordinate;
-
-            return (Mathf.Abs(cube1.x - cube2.x)
-                + Mathf.Abs(cube1.y - cube2.y)
-                + Mathf.Abs(cube1.z - cube2.z)) / 2;
         }
 
         CubeCoordinate round(Vector3 position)

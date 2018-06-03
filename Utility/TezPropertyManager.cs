@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+using tezcat.Debug;
+using tezcat.Signal;
 
 namespace tezcat.Utility
 {

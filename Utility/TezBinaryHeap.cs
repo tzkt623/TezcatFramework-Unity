@@ -1,17 +1,14 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
 
 
-namespace tezcat
+namespace tezcat.Utility
 {
-    public interface IBinaryHeapItem<T> : IComparable<T>
+    public interface ITezBinaryHeapItem<T> : IComparable<T>
     {
         int index { get; set; }
     }
 
-    public class BinaryHeap<T> where T : IBinaryHeapItem<T>
+    public class TezBinaryHeap<T> where T : ITezBinaryHeapItem<T>
     {
         T[] m_Items = null;
 
@@ -23,12 +20,12 @@ namespace tezcat
             get { return m_Count; }
         }
 
-        public BinaryHeap()
+        public TezBinaryHeap()
         {
 
         }
 
-        public BinaryHeap(int capacity)
+        public TezBinaryHeap(int capacity)
         {
             this.init(capacity);
         }

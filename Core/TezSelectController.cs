@@ -1,5 +1,6 @@
 ﻿using tezcat.DataBase;
 using tezcat.Event;
+using tezcat.Signal;
 
 namespace tezcat.Core
 {

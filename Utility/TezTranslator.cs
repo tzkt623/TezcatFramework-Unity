@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using tezcat.Serialization;
+using tezcat.Signal;
 using UnityEngine;
 
 namespace tezcat.Utility

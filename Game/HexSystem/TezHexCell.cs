@@ -1,20 +1,17 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
-using UnityEngine.Assertions;
 
-namespace tezcat
+namespace tezcat.Game
 {
-    public class HexCell
+    public class TezHexCell
     {
-        HexGrid.AxialCoordinate m_Coorinate = new HexGrid.AxialCoordinate();
-        public HexGrid.CubeCoordinate cubeCoordinate
+        TezHexGrid.AxialCoordinate m_Coorinate = new TezHexGrid.AxialCoordinate();
+        public TezHexGrid.CubeCoordinate cubeCoordinate
         {
             get { return m_Coorinate.toCube(); }
         }
 
-        public HexGrid.AxialCoordinate axialCoordinate
+        public TezHexGrid.AxialCoordinate axialCoordinate
         {
             get { return m_Coorinate; }
         }
@@ -31,15 +28,15 @@ namespace tezcat
             {
                 switch (m_Grid.layout)
                 {
-                    case HexGrid.Layout.Pointy:
+                    case TezHexGrid.Layout.Pointy:
                         return new Vector3(
-                            m_Grid.size * HexGrid.Sqrt3 * (m_Coorinate.q + m_Coorinate.r / 2.0f),
+                            m_Grid.size * TezHexGrid.Sqrt3 * (m_Coorinate.q + m_Coorinate.r / 2.0f),
                             m_Grid.size * 3 / 2 * m_Coorinate.r,
                             0);
-                    case HexGrid.Layout.Flat:
+                    case TezHexGrid.Layout.Flat:
                         return new Vector3(
                             m_Grid.size * 3 / 2 * m_Coorinate.q,
-                            m_Grid.size * HexGrid.Sqrt3 * (m_Coorinate.r + m_Coorinate.q / 2.0f),
+                            m_Grid.size * TezHexGrid.Sqrt3 * (m_Coorinate.r + m_Coorinate.q / 2.0f),
                             0);
                 }
 
@@ -49,9 +46,9 @@ namespace tezcat
 
         public GameObject gameObject { get; set; }
 
-        private HexGrid m_Grid;
+        private TezHexGrid m_Grid;
 
-        public HexCell()
+        public TezHexCell()
         {
             gameObject = null;
         }
@@ -80,7 +77,7 @@ namespace tezcat
             }
         }
 
-        public void init(int x, int z, float depth_offset, HexGrid grid)
+        public void init(int x, int z, float depth_offset, TezHexGrid grid)
         {
             m_Coorinate.q = x;
             m_Coorinate.r = z;
@@ -90,11 +87,11 @@ namespace tezcat
 
             switch (m_Grid.layout)
             {
-                case HexGrid.Layout.Pointy:
+                case TezHexGrid.Layout.Pointy:
                     offset = z * (m_Grid.hDistance / 2);
                     m_Corner = new Vector3(x * m_Grid.hDistance + offset, depth_offset, z * m_Grid.vDistance);
                     break;
-                case HexGrid.Layout.Flat:
+                case TezHexGrid.Layout.Flat:
                     offset = x * (m_Grid.hDistance / 2);
                     m_Corner = new Vector3(x * m_Grid.vDistance + offset, depth_offset, z * m_Grid.hDistance);
                     break;
@@ -107,10 +104,10 @@ namespace tezcat
 
             switch (m_Grid.layout)
             {
-                case HexGrid.Layout.Pointy:
+                case TezHexGrid.Layout.Pointy:
                     angle_deg = 60 * index + 30;
                     break;
-                case HexGrid.Layout.Flat:
+                case TezHexGrid.Layout.Flat:
                     angle_deg = 60 * index;
                     break;
             }
@@ -123,9 +120,9 @@ namespace tezcat
                 m_Corner.z + m_Grid.size * Mathf.Sin(angle_rad));
         }
 
-        public HexGrid.HexMesh getHexMesh()
+        public TezHexGrid.HexMesh getHexMesh()
         {
-            HexGrid.HexMesh mesh = new HexGrid.HexMesh();
+            TezHexGrid.HexMesh mesh = new TezHexGrid.HexMesh();
 
             mesh.vertices = new List<Vector3>()
             {
@@ -151,9 +148,9 @@ namespace tezcat
             return mesh;
         }
 
-        public HexGrid.HexMesh getRectMesh()
+        public TezHexGrid.HexMesh getRectMesh()
         {
-            HexGrid.HexMesh mesh = new HexGrid.HexMesh();
+            TezHexGrid.HexMesh mesh = new TezHexGrid.HexMesh();
 
             mesh.vertices = new List<Vector3>()
             {

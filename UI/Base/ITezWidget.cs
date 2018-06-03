@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using tezcat.Core;
+using tezcat.Signal;
 using tezcat.Wrapper;
 using UnityEngine.EventSystems;
 

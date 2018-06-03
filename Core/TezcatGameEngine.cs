@@ -1,10 +1,10 @@
 ﻿using System.Collections;
 using System.IO;
-using tezcat.Core;
+using tezcat.Signal;
 using tezcat.Utility;
 using UnityEngine;
 
-namespace tezcat
+namespace tezcat.Core
 {
     public abstract class TezcatGameEngine : ITezClearable
     {

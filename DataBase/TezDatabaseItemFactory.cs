@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+using tezcat.Debug;
+using tezcat.Signal;
 using tezcat.String;
 
 namespace tezcat.DataBase

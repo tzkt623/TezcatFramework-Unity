@@ -1,4 +1,5 @@
 ﻿using tezcat.Core;
+using tezcat.Signal;
 using UnityEngine;
 
 namespace tezcat.UI

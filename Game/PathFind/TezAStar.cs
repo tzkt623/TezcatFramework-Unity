@@ -1,14 +1,11 @@
-﻿using System.Collections;
-using UnityEngine;
-using System.Collections.Generic;
-using System.Diagnostics;
+﻿using System.Collections.Generic;
+using tezcat.Utility;
 
-
-namespace tezcat
+namespace tezcat.Game
 {
-    public class AStar
+    public class TezAStar
     {
-        public abstract class Node : IBinaryHeapItem<Node>
+        public abstract class Node : ITezBinaryHeapItem<Node>
         {
             public Node parent { get; set; }
             public int index { get; set; }
@@ -49,7 +46,7 @@ namespace tezcat
 
         public event System.Action<List<Node>> onPathFinded;
 
-        public void findPath(Node start, Node end, BinaryHeap<Node> open_set)
+        public void findPath(Node start, Node end, TezBinaryHeap<Node> open_set)
         {
             //             Stopwatch stopwatch = new Stopwatch();
             //             stopwatch.Start();

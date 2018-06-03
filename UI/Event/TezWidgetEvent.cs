@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+using tezcat.Signal;
+
 namespace tezcat.UI
 {
     public class TezWidgetEvent

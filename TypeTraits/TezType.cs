@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using tezcat.Signal;
 using tezcat.String;
 
 namespace tezcat.TypeTraits

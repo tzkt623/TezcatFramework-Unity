@@ -1,4 +1,5 @@
 ﻿using System;
+using tezcat.Signal;
 
 namespace tezcat.Utility
 {

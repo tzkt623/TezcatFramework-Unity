@@ -1,4 +1,5 @@
 ﻿using DG.Tweening;
+using tezcat.Signal;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -77,12 +78,14 @@ namespace tezcat.UI
         {
             m_Tweener = m_BG.DOColor(ShipProject.Colors.button_hover, 1.2f);
             m_Tweener.SetAutoKill(false).SetLoops(-1, LoopType.Yoyo);
+            m_BG.gameObject.SetActive(true);
         }
 
         public override void OnPointerExit(PointerEventData eventData)
         {
             m_Tweener.Rewind();
             m_Tweener.Kill();
+            m_BG.gameObject.SetActive(false);
         }
 
         protected override void initWidget()

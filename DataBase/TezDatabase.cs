@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
 using tezcat.Core;
+using tezcat.Debug;
 using tezcat.Event;
+using tezcat.Signal;
 using tezcat.TypeTraits;
 
 namespace tezcat.DataBase

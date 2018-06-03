@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace tezcat
+namespace tezcat.Game
 {
     public interface ITezHoverable
     {

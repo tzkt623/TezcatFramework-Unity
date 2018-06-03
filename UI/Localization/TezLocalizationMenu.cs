@@ -3,6 +3,8 @@ using UnityEngine.EventSystems;
 
 using tezcat.Utility;
 using tezcat.Serialization;
+using tezcat.Core;
+
 namespace tezcat.UI
 {
     public class TezLocalizationMenu : TezArea

@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Generic;
 
-namespace tezcat
+namespace tezcat.Utility
 {
-    public static class Hash
+    public static class TezHash
     {
         public static int SDBMLower(string s)
         {
@@ -11,7 +11,7 @@ namespace tezcat
             {
                 return 0;
             }
-            return Hash.SDBM(s.ToLower());
+            return TezHash.SDBM(s.ToLower());
         }
 
         public static int SDBM(string s)
@@ -34,7 +34,7 @@ namespace tezcat
             int[] array = new int[strings.Count];
             for (int i = 0; i < strings.Count; i++)
             {
-                array[i] = Hash.SDBMLower(strings[i]);
+                array[i] = TezHash.SDBMLower(strings[i]);
             }
             return array;
         }

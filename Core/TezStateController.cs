@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using tezcat.Event;
+using tezcat.Signal;
 
 namespace tezcat.Core
 {

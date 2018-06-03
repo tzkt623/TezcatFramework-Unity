@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
 using tezcat.Core;
+using tezcat.Debug;
+using tezcat.Signal;
 using UnityEngine;
 
 namespace tezcat.UI

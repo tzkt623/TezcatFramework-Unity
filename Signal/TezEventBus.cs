@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace tezcat
+namespace tezcat.Signal
 {
     public class TezEventBus : TezSingleton<TezEventBus>
     {

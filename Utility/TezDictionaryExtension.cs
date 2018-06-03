@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace tezcat
+namespace tezcat.Utility
 {
     public static class TezDictionaryExtension
     {

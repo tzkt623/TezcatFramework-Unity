@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using tezcat.Signal;
 
 namespace tezcat.Utility
 {
@@ -7,7 +8,7 @@ namespace tezcat.Utility
         int sortID { get; }
     }
 
-    public static class TezListEx
+    public static class TezListExtension
     {
         /// <summary>
         /// 把要删除的Item和最后的Item交换后再删除

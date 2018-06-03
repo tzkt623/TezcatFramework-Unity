@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace tezcat
+namespace tezcat.Core
 {
     public class TezUID
         : IEquatable<TezUID>
