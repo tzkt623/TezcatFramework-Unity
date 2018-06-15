@@ -292,6 +292,11 @@ namespace tezcat.Game
             return new AxialCoordinate(cube.x, cube.z);
         }
 
+        public Vector3 calculatePosition(CubeCoordinate coordinate)
+        {
+            return this.calculatePosition(coordinate.x, coordinate.z);
+        }
+
         public Vector3 calculatePosition(AxialCoordinate coordinate)
         {
             return this.calculatePosition(coordinate.q, coordinate.r);

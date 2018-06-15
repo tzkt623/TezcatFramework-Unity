@@ -117,7 +117,7 @@ namespace tezcat.Core
         {
             foreach (var slot in slots)
             {
-                slot.clear();
+                slot.close();
             }
 
             slots.Clear();

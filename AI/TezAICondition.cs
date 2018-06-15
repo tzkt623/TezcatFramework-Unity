@@ -5,13 +5,13 @@ using tezcat.Core;
 namespace tezcat.AI
 {
     public class TezAICondition
-        : ITezClearable
+        : ITezCloseable
         , IEquatable<TezAICondition>
         , IComparable<TezAICondition>
     {
         public int ID { get; protected set; } = -1;
 
-        public void clear()
+        public void close()
         {
 
         }

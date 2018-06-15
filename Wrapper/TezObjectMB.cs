@@ -35,7 +35,7 @@ namespace tezcat.Wrapper
 
         public abstract TezObject getObject();
 
-        protected void refresh()
+        public void refresh()
         {
             m_Dirty = true;
             if (m_Dirty && m_Init && this.gameObject.activeSelf)
@@ -55,6 +55,7 @@ namespace tezcat.Wrapper
             if (!m_Init)
             {
                 m_Init = true;
+                this.linkEvent();
                 this.refresh();
             }
         }
@@ -63,6 +64,7 @@ namespace tezcat.Wrapper
         {
             if (m_Init)
             {
+                this.linkEvent();
                 this.refresh();
             }
         }
@@ -74,7 +76,6 @@ namespace tezcat.Wrapper
 
         private void OnDestroy()
         {
-            this.unLinkEvent();
             this.clear();
         }
 
@@ -106,7 +107,25 @@ namespace tezcat.Wrapper
         /// <summary>
         /// 
         /// </summary>
-        public abstract void clear();
+        protected abstract void clear();
+
+        public void show()
+        {
+            this.gameObject.SetActive(true);
+        }
+
+        public void hide()
+        {
+            this.gameObject.SetActive(false);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public void close()
+        {
+            Destroy(this.gameObject);
+        }
     }
 
     public abstract class TezObjectMB<T> : TezObjectMB where T : TezObject
@@ -127,7 +146,7 @@ namespace tezcat.Wrapper
 
         protected abstract void onBind();
 
-        public override void clear()
+        protected override void clear()
         {
             this.myObject = null;
         }

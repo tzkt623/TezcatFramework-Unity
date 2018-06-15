@@ -131,7 +131,7 @@ namespace tezcat.Core
         /// <summary>
         /// 删除Object时调用
         /// </summary>
-        public override void clear()
+        public override void close()
         {
             this.sourceItem = null;
 

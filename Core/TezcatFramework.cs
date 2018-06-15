@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
 using tezcat.DataBase;
 using tezcat.Debug;
 using tezcat.UI;
@@ -180,6 +181,14 @@ namespace tezcat.Core
 
         }
         #endregion
+
+        #region Function
+        public void startCoroutine(IEnumerator enumerator)
+        {
+            StartCoroutine(enumerator);
+        }
+
+        #endregion
     }
 
 
@@ -201,12 +210,20 @@ namespace tezcat.Core
         protected override void initWidget()
         {
             base.initWidget();
-            StartCoroutine(engine.startEngine());
+            StartCoroutine(loading());
         }
+
+        private IEnumerator loading()
+        {
+            yield return engine.launch();
+            this.startMyGame();
+        }
+
+        public abstract void startMyGame();
 
         public override void clear()
         {
-            engine.clear();
+            engine.close();
             engine = null;
         }
     }

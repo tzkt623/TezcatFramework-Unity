@@ -1,7 +1,7 @@
 ﻿namespace tezcat.Core
 {
-    public interface ITezClearable
+    public interface ITezCloseable
     {
-        void clear();
+        void close();
     }
 }

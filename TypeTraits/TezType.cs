@@ -257,6 +257,11 @@ namespace tezcat.TypeTraits
             return this.ID;
         }
 
+        protected static T register<T>(string name) where T : TezType, new()
+        {
+            return TezTypeRegister<T>.register(name);
+        }
+
         protected static T register<T>(T e, string name) where T : TezType, new()
         {
             if (e == null)
@@ -265,6 +270,11 @@ namespace tezcat.TypeTraits
             }
 
             return e;
+        }
+
+        protected static List<T> getList<T>() where T : TezType, new()
+        {
+            return TezTypeRegister<T>.TYPE;
         }
 
         public static bool operator !=(TezType x, TezType y)

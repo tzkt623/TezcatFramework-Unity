@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace tezcat.UI
 {
-    public class TezPageController : ITezClearable
+    public class TezPageController : ITezCloseable
     {
         TezEventBus.Action<int, int> m_OnPageChanged;
 
@@ -94,7 +94,7 @@ namespace tezcat.UI
             return m_CurrentPageBegin >= 0 && m_CurrentPageEnd > 0;
         }
 
-        public void clear()
+        public void close()
         {
             m_OnPageChanged = null;
         }

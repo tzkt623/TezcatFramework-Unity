@@ -104,7 +104,7 @@ namespace tezcat.Utility
             get { return typeof(T); }
         }
 
-        public T value { get; set; } = default(T);
+        public virtual T value { get; set; } = default(T);
 
         public override void clear()
         {
@@ -145,6 +145,40 @@ namespace tezcat.Utility
         }
 
         public TezPV_Int()
+        {
+
+        }
+
+        public override void accept(TezPropertyFunction pf)
+        {
+            TezPF_Int ipf = pf as TezPF_Int;
+            ipf.invoke(value);
+        }
+
+        public override TezPropertyType getParameterType()
+        {
+            return TezPropertyType.Int;
+        }
+    }
+
+    public class TezPV_IntGS : TezPropertyValue<int>
+    {
+        TezEventBus.Function<int> m_Getter = null;
+        TezEventBus.Action<int> m_Setter = null;
+
+        public override int value
+        {
+            get { return m_Getter(); }
+
+            set { m_Setter(value); }
+        }
+
+        public TezPV_IntGS(TezPropertyName name) : base(name)
+        {
+
+        }
+
+        public TezPV_IntGS()
         {
 
         }
@@ -297,7 +331,7 @@ namespace tezcat.Utility
     {
         public TezPV_Class(TezPropertyName name, bool init = false) : base(name)
         {
-            if(init)
+            if (init)
             {
                 value = new T();
             }
@@ -316,6 +350,31 @@ namespace tezcat.Utility
     #endregion
 
     #region 特殊Value
+    public abstract class TezGetterSetter<T> : TezPropertyValue
+    {
+        TezEventBus.Function<T> m_Getter = null;
+        public TezEventBus.Function<T> getter
+        {
+            set { m_Getter = value; }
+        }
+
+        TezEventBus.Action<T> m_Setter = null;
+        public TezEventBus.Action<T> setter
+        {
+            set { m_Setter = value; }
+        }
+
+        public T value
+        {
+            get { return m_Getter(); }
+        }
+
+        public override Type propertyType
+        {
+            get { return typeof(T); }
+        }
+    }
+
     public class TezPV_Getter<Return> : TezPropertyValue
     {
         TezEventBus.Function<Return> m_Getter = null;

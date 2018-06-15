@@ -9,7 +9,7 @@ namespace tezcat.UI
     /// <summary>
     /// 基础控件
     /// </summary>
-    public interface ITezWidget : ITezClearable
+    public interface ITezWidget : ITezCloseable
     {
 
     }

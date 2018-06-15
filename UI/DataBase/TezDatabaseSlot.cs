@@ -62,7 +62,7 @@ namespace tezcat.UI
 
         public override void clear()
         {
-            m_Wrapper?.clear();
+            m_Wrapper?.close();
             m_Wrapper = null;
         }
 
@@ -117,7 +117,7 @@ namespace tezcat.UI
         public void removeItem()
         {
             TezDatabase.unregisterItem(m_Wrapper.getItem());
-            m_Wrapper.clear();
+            m_Wrapper.close();
             m_Wrapper = null;
             this.dirty = true;
         }

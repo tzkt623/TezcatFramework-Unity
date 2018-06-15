@@ -60,7 +60,7 @@ namespace tezcat.UI
             m_SlotList.Clear();
             m_SlotList = null;
 
-            m_PageController.clear();
+            m_PageController.close();
             m_PageController = null;
             m_PageUp.onClick -= onPageUpClick;
             m_PageDown.onClick -= onPageDownClick;

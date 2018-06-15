@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace tezcat.Core
 {
-    public abstract class TezcatGameEngine : ITezClearable
+    public abstract class TezcatGameEngine : ITezCloseable
     {
         #region Static
         static string m_RootDir = null;
@@ -100,19 +100,19 @@ namespace tezcat.Core
 
         public abstract void preInit();
 
-        public IEnumerator startEngine()
+        public IEnumerator launch()
         {
-            yield return this.init();
+            yield return this.begin();
             yield return this.loadResource();
-            yield return this.startGame();
+            yield return this.end();
         }
 
-        protected abstract IEnumerator init();
+        protected abstract IEnumerator begin();
 
         protected abstract IEnumerator loadResource();
 
-        protected abstract IEnumerator startGame();
+        protected abstract IEnumerator end();
 
-        public abstract void clear();
+        public abstract void close();
     }
 }

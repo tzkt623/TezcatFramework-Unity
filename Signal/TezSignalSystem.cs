@@ -20,7 +20,7 @@ namespace tezcat.Signal
         }
     }
 
-    public abstract class TezSignalSystem<Category> : ITezClearable where Category : TezSignal, new()
+    public abstract class TezSignalSystem<Category> : ITezCloseable where Category : TezSignal, new()
     {
         #region Manaer
         static List<Category> Manager = new List<Category>();
@@ -97,7 +97,7 @@ namespace tezcat.Signal
         }
         #endregion
 
-        public void clear()
+        public void close()
         {
             for (int i = 0; i < m_List.Length; i++)
             {

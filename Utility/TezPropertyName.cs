@@ -2,7 +2,7 @@
 
 namespace tezcat.Utility
 {
-    public class TezPropertyName : IComparable<TezPropertyName>
+    public sealed class TezPropertyName : IComparable<TezPropertyName>
     {
         public static readonly TezPropertyName name_id = TezPropertyManager.register("name_id");
 

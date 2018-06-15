@@ -36,10 +36,10 @@ namespace tezcat.Core
         }
 
 
-        public override void clear()
+        public override void close()
         {
             this.manager = null;
-            base.clear();
+            base.close();
         }
     }
 }

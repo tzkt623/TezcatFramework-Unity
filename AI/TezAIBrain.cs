@@ -3,11 +3,11 @@
 
 namespace tezcat.AI
 {
-    public class TezAIBrain : ITezClearable
+    public class TezAIBrain : ITezCloseable
     {
         TezAIBehaviour m_Root = null;
 
-        public void clear()
+        public void close()
         {
 
         }

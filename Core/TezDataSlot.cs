@@ -1,6 +1,6 @@
 ﻿namespace tezcat.Core
 {
-    public abstract class TezBaseDataSlot : ITezClearable
+    public abstract class TezBaseDataSlot : ITezCloseable
     {
         public enum Type
         {
@@ -9,7 +9,7 @@
         }
 
         public abstract Type slotType { get; }
-        public abstract void clear();
+        public abstract void close();
     }
 
     public abstract class TezSingleDataSlot : TezBaseDataSlot
@@ -35,7 +35,7 @@
             return myData;
         }
 
-        public override void clear()
+        public override void close()
         {
             this.myData = null;
         }
@@ -68,7 +68,7 @@
             return new ITezData[] { data1, data2 };
         }
 
-        public override void clear()
+        public override void close()
         {
             data1 = null;
             data2 = null;
@@ -90,7 +90,7 @@
             return new ITezData[] { data1, data2, data3 };
         }
 
-        public override void clear()
+        public override void close()
         {
             data1 = null;
             data2 = null;

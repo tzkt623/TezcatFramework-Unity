@@ -24,7 +24,7 @@ namespace tezcat.Wrapper
             get { return TezTranslator.translateDescription(this.getItem().NID); }
         }
 
-        public abstract void clear();
+        public abstract void close();
 
         public abstract TezItem getItem();
         public abstract void showTip();
@@ -73,7 +73,7 @@ namespace tezcat.Wrapper
             return myItem;
         }
 
-        public override void clear()
+        public override void close()
         {
             myItem = null;
         }
@@ -101,7 +101,7 @@ namespace tezcat.Wrapper
             return mySlot.item;
         }
 
-        public override void clear()
+        public override void close()
         {
             mySlot = null;
         }

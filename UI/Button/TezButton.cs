@@ -8,22 +8,64 @@ namespace tezcat.UI
         , ITezFocusableWidget
         , ITezClickable
     {
-        Graphic m_Graphic = null;
+        protected Graphic m_ControlGraphic = null;
+
+        protected virtual Graphic getGraphic()
+        {
+            return m_ControlGraphic;
+        }
 
         protected override void preInit()
         {
-            m_Graphic = this.gameObject.GetComponent<Graphic>();
+            m_ControlGraphic = this.gameObject.GetComponent<Graphic>();
         }
 
-        protected override void onInteractable(bool value)
+        protected override void initWidget()
         {
-            m_Graphic.raycastTarget = value;
+
+        }
+
+        protected override void linkEvent()
+        {
+
+        }
+
+        protected override void onHide()
+        {
+
+        }
+
+        protected override void onRefresh()
+        {
+
+        }
+
+        protected override void onShow()
+        {
+
+        }
+
+        protected override void unLinkEvent()
+        {
+
+        }
+
+        public override void reset()
+        {
+
         }
 
         public override void clear()
         {
-            m_Graphic = null;
+            m_ControlGraphic = null;
         }
+
+        protected override void onInteractable(bool value)
+        {
+            m_ControlGraphic.raycastTarget = value;
+        }
+
+
 
         public abstract void OnPointerEnter(PointerEventData eventData);
         public abstract void OnPointerExit(PointerEventData eventData);

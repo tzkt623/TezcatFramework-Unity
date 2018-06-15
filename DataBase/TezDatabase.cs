@@ -52,6 +52,13 @@ namespace tezcat.DataBase
 
                 return e;
             }
+
+            protected static T initType<T>(string name, TezEventBus.Function<TezItem> function) where T : CategoryType, new()
+            {
+                var temp = TezTypeRegister<T>.register(name);
+                temp.setCreator(function);
+                return temp;
+            }
         }
 
         class Group

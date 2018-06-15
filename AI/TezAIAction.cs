@@ -3,7 +3,7 @@ using tezcat.Core;
 
 namespace tezcat.AI
 {
-    public abstract class TezAIBehaviour : ITezClearable
+    public abstract class TezAIBehaviour : ITezCloseable
     {
         public TezAIState state { get; protected set; }
 
@@ -17,7 +17,7 @@ namespace tezcat.AI
 
         public abstract void exit();
 
-        public abstract void clear();
+        public abstract void close();
 
         public abstract bool evaluate(TezAICollection collection);
 
@@ -49,11 +49,11 @@ namespace tezcat.AI
             m_Children.Add(action);
         }
 
-        public override void clear()
+        public override void close()
         {
             foreach (var item in m_Children)
             {
-                item.clear();
+                item.close();
             }
 
             m_Children.Clear();
