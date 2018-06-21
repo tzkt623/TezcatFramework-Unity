@@ -55,6 +55,7 @@ namespace tezcat.Wrapper
             if (!m_Init)
             {
                 m_Init = true;
+                this.initObject();
                 this.linkEvent();
                 this.refresh();
             }
@@ -83,6 +84,11 @@ namespace tezcat.Wrapper
         /// 在MB初始化之前调用
         /// </summary>
         protected abstract void preInit();
+
+        /// <summary>
+        /// 
+        /// </summary>
+        protected abstract void initObject();
 
         /// <summary>
         /// 在这里连接你的所有事件通知

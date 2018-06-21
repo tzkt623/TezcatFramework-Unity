@@ -41,7 +41,7 @@ namespace tezcat.DataBase
                 return (T)function();
             }
 
-            protected static T initType<T>(T e, string name, TezEventBus.Function<TezItem> function) where T : CategoryType, new()
+            protected static T register<T>(T e, string name, TezEventBus.Function<TezItem> function) where T : CategoryType, new()
             {
                 if (e == null)
                 {
@@ -53,7 +53,7 @@ namespace tezcat.DataBase
                 return e;
             }
 
-            protected static T initType<T>(string name, TezEventBus.Function<TezItem> function) where T : CategoryType, new()
+            protected static T register<T>(string name, TezEventBus.Function<TezItem> function) where T : CategoryType, new()
             {
                 var temp = TezTypeRegister<T>.register(name);
                 temp.setCreator(function);

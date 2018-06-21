@@ -25,7 +25,5 @@ namespace tezcat.AI
         {
             return this.ID == other.ID;
         }
-
-
     }
 }

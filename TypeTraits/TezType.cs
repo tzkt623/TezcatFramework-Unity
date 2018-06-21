@@ -238,7 +238,7 @@ namespace tezcat.TypeTraits
 
     public abstract class TezType
     {
-        public int ID { get; private set; }
+        public int ID { get; protected set; }
         public TezStaticString name { get; private set; }
 
         public void init(int id, string name)

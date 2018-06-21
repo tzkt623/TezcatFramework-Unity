@@ -89,14 +89,17 @@ namespace tezcat.Utility
     #region 通用Value
     public abstract class TezPropertyValue<T> : TezPropertyValue
     {
+        public delegate void OnValueChange(T value);
+        OnValueChange onValueChange;
+
         public TezPropertyValue(TezPropertyName name) : base(name)
         {
-
+            onValueChange = defaultOnChange;
         }
 
         public TezPropertyValue()
         {
-
+            onValueChange = defaultOnChange;
         }
 
         public override Type propertyType
@@ -104,12 +107,39 @@ namespace tezcat.Utility
             get { return typeof(T); }
         }
 
-        public virtual T value { get; set; } = default(T);
+        private T m_Value = default(T);
+        public virtual T value
+        {
+            get { return m_Value; }
+            set
+            {
+                m_Value = value;
+                onValueChange(m_Value);
+            }
+        }
+
+        public void setOnValueChange(OnValueChange function = null)
+        {
+            if (function == null)
+            {
+                onValueChange = defaultOnChange;
+            }
+            else
+            {
+                onValueChange = function;
+            }
+        }
 
         public override void clear()
         {
             base.clear();
-            value = default(T);
+            onValueChange = null;
+            m_Value = default(T);
+        }
+
+        protected void defaultOnChange(T value)
+        {
+
         }
     }
 
@@ -169,7 +199,6 @@ namespace tezcat.Utility
         public override int value
         {
             get { return m_Getter(); }
-
             set { m_Setter(value); }
         }
 
@@ -541,6 +570,8 @@ namespace tezcat.Utility
     #region 限制Value
     public abstract class TezPropertyLimitValue<T> : TezPropertyValue<T>
     {
+        OnValueChange onLimitChange;
+
         public TezPropertyLimitValue(TezPropertyName name) : base(name)
         {
 
@@ -556,7 +587,28 @@ namespace tezcat.Utility
             get { return typeof(T); }
         }
 
-        public T limit { get; set; }
+        T m_Limit = default(T);
+        public T limit
+        {
+            get { return m_Limit; }
+            set
+            {
+                m_Limit = value;
+                onLimitChange(m_Limit);
+            }
+        }
+
+        public void setOnLimitChange(OnValueChange function = null)
+        {
+            if(function == null)
+            {
+                onLimitChange = defaultOnChange;
+            }
+            else
+            {
+                onLimitChange = function;
+            }
+        }
     }
 
     public class TezPV_LimitInt : TezPropertyLimitValue<int>
