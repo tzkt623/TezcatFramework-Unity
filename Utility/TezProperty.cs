@@ -193,8 +193,8 @@ namespace tezcat.Utility
 
     public class TezPV_IntGS : TezPropertyValue<int>
     {
-        TezEventBus.Function<int> m_Getter = null;
-        TezEventBus.Action<int> m_Setter = null;
+        TezEventCenter.Function<int> m_Getter = null;
+        TezEventCenter.Action<int> m_Setter = null;
 
         public override int value
         {
@@ -381,14 +381,14 @@ namespace tezcat.Utility
     #region 特殊Value
     public abstract class TezGetterSetter<T> : TezPropertyValue
     {
-        TezEventBus.Function<T> m_Getter = null;
-        public TezEventBus.Function<T> getter
+        TezEventCenter.Function<T> m_Getter = null;
+        public TezEventCenter.Function<T> getter
         {
             set { m_Getter = value; }
         }
 
-        TezEventBus.Action<T> m_Setter = null;
-        public TezEventBus.Action<T> setter
+        TezEventCenter.Action<T> m_Setter = null;
+        public TezEventCenter.Action<T> setter
         {
             set { m_Setter = value; }
         }
@@ -406,8 +406,8 @@ namespace tezcat.Utility
 
     public class TezPV_Getter<Return> : TezPropertyValue
     {
-        TezEventBus.Function<Return> m_Getter = null;
-        public TezEventBus.Function<Return> getter
+        TezEventCenter.Function<Return> m_Getter = null;
+        public TezEventCenter.Function<Return> getter
         {
             set { m_Getter = value; }
         }
@@ -574,12 +574,12 @@ namespace tezcat.Utility
 
         public TezPropertyLimitValue(TezPropertyName name) : base(name)
         {
-
+            onLimitChange = defaultOnChange;
         }
 
         public TezPropertyLimitValue()
         {
-
+            onLimitChange = defaultOnChange;
         }
 
         public override Type propertyType

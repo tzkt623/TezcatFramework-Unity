@@ -3,12 +3,6 @@ using tezcat.Utility;
 
 namespace tezcat.Wrapper
 {
-    public interface ITezWrapper : ITezCloseable
-    {
-        string myName { get; }
-        string myDescription { get; }
-    }
-
     public interface ITezObjectWrapper : ITezWrapper
     {
         TezObject getObject();
@@ -29,7 +23,6 @@ namespace tezcat.Wrapper
         public abstract void close();
 
         public abstract TezObject getObject();
-
 
         #region 重载操作
         public static bool operator true(TezObjectWrapper obj)
@@ -72,7 +65,6 @@ namespace tezcat.Wrapper
 
         public override void close()
         {
-            myObject.close();
             myObject = null;
         }
     }

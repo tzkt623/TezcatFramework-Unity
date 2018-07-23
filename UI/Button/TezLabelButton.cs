@@ -8,7 +8,7 @@ namespace tezcat.UI
     [RequireComponent(typeof(TezText))]
     public class TezLabelButton : TezButton
     {
-        public event TezEventBus.Action<PointerEventData.InputButton> onClick;
+        public event TezEventCenter.Action<PointerEventData.InputButton> onClick;
         [SerializeField]
         Color m_PressColor;
         Color m_LabelColor;
@@ -63,7 +63,7 @@ namespace tezcat.UI
                 return;
             }
 
-            m_Tweener = m_Label.handler.DOColor(ShipProject.Colors.button_hover, 0.8f);
+            m_Tweener = m_Label.handler.DOColor(Color.grey, 0.8f);
             m_Tweener.SetAutoKill(false);
         }
 
@@ -83,7 +83,7 @@ namespace tezcat.UI
             m_Label.handler.text = text;
         }
 
-        public void setGetFunction(TezEventBus.Function<string> function)
+        public void setGetFunction(TezEventCenter.Function<string> function)
         {
             m_Label.setGetter(function);
         }

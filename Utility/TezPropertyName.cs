@@ -2,7 +2,9 @@
 
 namespace tezcat.Utility
 {
-    public sealed class TezPropertyName : IComparable<TezPropertyName>
+    public sealed class TezPropertyName
+        : IComparable<TezPropertyName>
+        , IEquatable<TezPropertyName>
     {
         public static readonly TezPropertyName name_id = TezPropertyManager.register("name_id");
 
@@ -18,6 +20,21 @@ namespace tezcat.Utility
         public int CompareTo(TezPropertyName other)
         {
             return ID.CompareTo(other.ID);
+        }
+
+        public bool Equals(TezPropertyName other)
+        {
+            if(other == null)
+            {
+                return false;
+            }
+
+            return ID == other.ID;
+        }
+
+        public override int GetHashCode()
+        {
+            return ID;
         }
     }
 }

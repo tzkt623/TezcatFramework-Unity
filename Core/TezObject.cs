@@ -72,6 +72,13 @@ namespace tezcat.Core
             get { return propertyManager.properties; }
         }
 
+        public static T create<T>() where T : TezObject, new()
+        {
+            var v = new T();
+            v.initObject();
+            return v;
+        }
+
         /// <summary>
         /// 初始化Object
         /// </summary>

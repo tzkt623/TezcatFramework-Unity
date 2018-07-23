@@ -102,8 +102,8 @@ namespace tezcat.Core
 
     public class TezSelectController
     {
-        public static TezEvent<TezBasicSelector> onSelect { get; private set; } = new TezEvent<TezBasicSelector>();
-        public static TezEvent<TezBasicSelector> onCancelSelect { get; private set; } = new TezEvent<TezBasicSelector>();
+        public static TezAction<TezBasicSelector> onSelect { get; private set; } = new TezAction<TezBasicSelector>();
+        public static TezAction<TezBasicSelector> onCancelSelect { get; private set; } = new TezAction<TezBasicSelector>();
 
         static TezBasicSelector m_Current = null;
 
@@ -125,7 +125,7 @@ namespace tezcat.Core
             m_Current = null;
         }
 
-        public static void objectToDo(TezEventBus.Action<TezObjectSelector> action)
+        public static void objectToDo(TezEventCenter.Action<TezObjectSelector> action)
         {
             if (!object.ReferenceEquals(m_Current, null) && m_Current.selectorType == TezSelectorType.Object)
             {
@@ -133,7 +133,7 @@ namespace tezcat.Core
             }
         }
 
-        public static void itemToDo(TezEventBus.Action<TezItemSelector> action)
+        public static void itemToDo(TezEventCenter.Action<TezItemSelector> action)
         {
             if (!object.ReferenceEquals(m_Current, null) && m_Current.selectorType == TezSelectorType.Item)
             {

@@ -6,7 +6,7 @@ namespace tezcat.UI
 {
     public class TezPageController : ITezCloseable
     {
-        TezEventBus.Action<int, int> m_OnPageChanged;
+        TezEventCenter.Action<int, int> m_OnPageChanged;
 
         public int currentPage { get; private set; } = 1;
         public int maxPage { get; private set; } = 0;
@@ -15,7 +15,13 @@ namespace tezcat.UI
         int m_CurrentPageBegin;
         int m_CurrentPageEnd;
 
-        public void setListener(TezEventBus.Action<int, int> function)
+        /// <summary>
+        /// 页面变化时的通知
+        /// begin 当前页面Item开始位置
+        /// end 当前页面Item结束位置的后一位
+        /// </summary>
+        /// <param name="function"></param>
+        public void setListener(TezEventCenter.Action<int, int> function)
         {
             m_OnPageChanged = function;
         }

@@ -188,7 +188,7 @@ namespace tezcat.Core
             return result;
         }
 
-        public void foreachTag(TezEventBus.Action<TezTag> action)
+        public void foreachTag(TezEventCenter.Action<TezTag> action)
         {
             foreach (var tag in m_Set)
             {

@@ -6,9 +6,9 @@ namespace tezcat.TypeTraits
 {
     public class TezTypeRegisterHelper
     {
-        static Dictionary<System.Type, TezEventBus.Function<List<TezType>>> Registers = new Dictionary<System.Type, TezEventBus.Function<List<TezType>>>();
+        static Dictionary<System.Type, TezEventCenter.Function<List<TezType>>> Registers = new Dictionary<System.Type, TezEventCenter.Function<List<TezType>>>();
 
-        public static void add(System.Type type, TezEventBus.Function<List<TezType>> function)
+        public static void add(System.Type type, TezEventCenter.Function<List<TezType>> function)
         {
             Registers.Add(type, function);
         }
@@ -56,11 +56,11 @@ namespace tezcat.TypeTraits
         #region Switcher
         public class Switcher
         {
-            TezEventBus.Action[] m_CallBack = null;
+            TezEventCenter.Action[] m_CallBack = null;
 
             public Switcher()
             {
-                m_CallBack = new TezEventBus.Action[count];
+                m_CallBack = new TezEventCenter.Action[count];
                 for (int i = 0; i < m_CallBack.Length; i++)
                 {
                     m_CallBack[i] = this.defaultCallBack;
@@ -77,7 +77,7 @@ namespace tezcat.TypeTraits
                 m_CallBack[item.ID]();
             }
 
-            public Switcher register(T item, TezEventBus.Action call_back)
+            public Switcher register(T item, TezEventCenter.Action call_back)
             {
                 m_CallBack[item.ID] = call_back;
                 return this;
@@ -86,11 +86,11 @@ namespace tezcat.TypeTraits
 
         public class Switcher<P1>
         {
-            TezEventBus.Action<P1>[] m_CallBack = null;
+            TezEventCenter.Action<P1>[] m_CallBack = null;
 
             public Switcher()
             {
-                m_CallBack = new TezEventBus.Action<P1>[count];
+                m_CallBack = new TezEventCenter.Action<P1>[count];
                 for (int i = 0; i < m_CallBack.Length; i++)
                 {
                     m_CallBack[i] = this.defaultCallBack;
@@ -107,7 +107,7 @@ namespace tezcat.TypeTraits
                 m_CallBack[item.ID](p1);
             }
 
-            public Switcher<P1> register(T item, TezEventBus.Action<P1> call_back)
+            public Switcher<P1> register(T item, TezEventCenter.Action<P1> call_back)
             {
                 m_CallBack[item.ID] = call_back;
                 return this;
@@ -116,11 +116,11 @@ namespace tezcat.TypeTraits
 
         public class Switcher<P1, P2>
         {
-            TezEventBus.Action<P1, P2>[] m_CallBack = null;
+            TezEventCenter.Action<P1, P2>[] m_CallBack = null;
 
             public Switcher()
             {
-                m_CallBack = new TezEventBus.Action<P1, P2>[count];
+                m_CallBack = new TezEventCenter.Action<P1, P2>[count];
                 for (int i = 0; i < m_CallBack.Length; i++)
                 {
                     m_CallBack[i] = this.defaultCallBack;
@@ -137,7 +137,7 @@ namespace tezcat.TypeTraits
                 m_CallBack[type.ID](p1, p2);
             }
 
-            public Switcher<P1, P2> register(T type, TezEventBus.Action<P1, P2> call_back)
+            public Switcher<P1, P2> register(T type, TezEventCenter.Action<P1, P2> call_back)
             {
                 m_CallBack[type.ID] = call_back;
                 return this;
@@ -146,11 +146,11 @@ namespace tezcat.TypeTraits
 
         public class ReturnSwitcher<R>
         {
-            TezEventBus.Function<R>[] m_CallBack = null;
+            TezEventCenter.Function<R>[] m_CallBack = null;
 
             public ReturnSwitcher()
             {
-                m_CallBack = new TezEventBus.Function<R>[count];
+                m_CallBack = new TezEventCenter.Function<R>[count];
                 for (int i = 0; i < m_CallBack.Length; i++)
                 {
                     m_CallBack[i] = this.defaultCallBack;
@@ -167,7 +167,7 @@ namespace tezcat.TypeTraits
                 return m_CallBack[type.ID]();
             }
 
-            public ReturnSwitcher<R> register(T type, TezEventBus.Function<R> call_back)
+            public ReturnSwitcher<R> register(T type, TezEventCenter.Function<R> call_back)
             {
                 m_CallBack[type.ID] = call_back;
                 return this;
@@ -176,11 +176,11 @@ namespace tezcat.TypeTraits
 
         public class ReturnSwitcher<R, P1>
         {
-            TezEventBus.Function<R, P1>[] m_CallBack = null;
+            TezEventCenter.Function<R, P1>[] m_CallBack = null;
 
             public ReturnSwitcher()
             {
-                m_CallBack = new TezEventBus.Function<R, P1>[count];
+                m_CallBack = new TezEventCenter.Function<R, P1>[count];
                 for (int i = 0; i < m_CallBack.Length; i++)
                 {
                     m_CallBack[i] = this.defaultCallBack;
@@ -197,7 +197,7 @@ namespace tezcat.TypeTraits
                 return m_CallBack[type.ID](p1);
             }
 
-            public ReturnSwitcher<R, P1> register(T type, TezEventBus.Function<R, P1> call_back)
+            public ReturnSwitcher<R, P1> register(T type, TezEventCenter.Function<R, P1> call_back)
             {
                 m_CallBack[type.ID] = call_back;
                 return this;
@@ -206,11 +206,11 @@ namespace tezcat.TypeTraits
 
         public class ReturnSwitcher<R, P1, P2>
         {
-            TezEventBus.Function<R, P1, P2>[] m_CallBack = null;
+            TezEventCenter.Function<R, P1, P2>[] m_CallBack = null;
 
             public ReturnSwitcher()
             {
-                m_CallBack = new TezEventBus.Function<R, P1, P2>[count];
+                m_CallBack = new TezEventCenter.Function<R, P1, P2>[count];
                 for (int i = 0; i < m_CallBack.Length; i++)
                 {
                     m_CallBack[i] = this.defaultCallBack;
@@ -227,7 +227,7 @@ namespace tezcat.TypeTraits
                 return m_CallBack[item.ID](p1, p2);
             }
 
-            public ReturnSwitcher<R, P1, P2> register(T item, TezEventBus.Function<R, P1, P2> call_back)
+            public ReturnSwitcher<R, P1, P2> register(T item, TezEventCenter.Function<R, P1, P2> call_back)
             {
                 m_CallBack[item.ID] = call_back;
                 return this;
@@ -240,6 +240,11 @@ namespace tezcat.TypeTraits
     {
         public int ID { get; protected set; }
         public TezStaticString name { get; private set; }
+
+        public TezType()
+        {
+
+        }
 
         public void init(int id, string name)
         {

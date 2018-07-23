@@ -141,7 +141,7 @@ namespace tezcat.UI
         public override bool checkForClose()
         {
             bool result = true;
-            List<TezEventBus.Action> close_function_list = new List<TezEventBus.Action>(m_AreaList.Count);
+            List<TezEventCenter.Action> close_function_list = new List<TezEventCenter.Action>(m_AreaList.Count);
 
             foreach (var area in m_AreaList)
             {

@@ -11,31 +11,36 @@ namespace tezcat.Utility
 
         public interface VirtualItem
         {
-            void onBeginDrag(ITezItemWrapper info);
+            void onBeginDrag(ITezWrapper info);
             void onDragging(PointerEventData event_data);
             void onEndDrag();
         }
 
-
         static VirtualItem m_CurrentVirtualItem = null;
-        static ITezItemWrapper m_DragInfo = null;
-        static ITezDropableWidget m_Slot = null;
+        static ITezWrapper m_DragInfo = null;
 
-        static TezEventBus.Action<ITezItemWrapper> m_ItemDropFunction = null;
+        static TezEventCenter.Action<ITezWrapper> m_ItemDropFunction = null;
 
         public static void setVirtualItem(VirtualItem item)
         {
             m_CurrentVirtualItem = item;
         }
 
-        public static void beginDragItem(ITezDragableItemWidget slot)
+        public static void beginDrag(ITezWrapper wrapper)
+        {
+            m_DragInfo = wrapper;
+            m_Drag = true;
+            m_CurrentVirtualItem.onBeginDrag(m_DragInfo);
+        }
+
+        public static void beginDrag(ITezDragableItemWidget slot)
         {
             m_DragInfo = slot.wrapper;
             m_Drag = true;
             m_CurrentVirtualItem.onBeginDrag(m_DragInfo);
         }
 
-        public static void draggingItem(PointerEventData event_data)
+        public static void dragging(PointerEventData event_data)
         {
             if (m_Drag)
             {
@@ -43,7 +48,7 @@ namespace tezcat.Utility
             }
         }
 
-        public static void endDragItem(PointerEventData eventData)
+        public static bool endDrag(PointerEventData eventData)
         {
             if (m_Drag)
             {
@@ -54,14 +59,26 @@ namespace tezcat.Utility
                 m_Drag = false;
 
                 m_CurrentVirtualItem.onEndDrag();
+
+                return true;
             }
+
+            return false;
         }
 
-        public static void dropItem(ITezDropableWidget widget, PointerEventData eventData)
+        public static void drop(PointerEventData eventData, TezEventCenter.Action<ITezWrapper> drop)
         {
             if (m_Drag)
             {
-                m_ItemDropFunction = widget.checkItemToDrop(m_DragInfo, eventData);
+                drop(m_DragInfo);
+            }
+        }
+
+        public static void drop(ITezDropableWidget widget, PointerEventData eventData)
+        {
+            if (m_Drag)
+            {
+                m_ItemDropFunction = widget.checkDrop(m_DragInfo, eventData);
             }
         }
     }

@@ -1,4 +1,5 @@
-﻿using tezcat.DataBase;
+﻿using tezcat.Core;
+using tezcat.DataBase;
 using UnityEngine.EventSystems;
 
 namespace tezcat.UI
@@ -19,6 +20,10 @@ namespace tezcat.UI
             }
         }
 
+        protected static TezcatFramework framework
+        {
+            get { return TezcatFramework.instance; }
+        }
 
         bool m_Init = false;
         bool m_Clear = false;
@@ -175,7 +180,50 @@ namespace tezcat.UI
 
     public abstract class TezGameWidget : TezWidget
     {
+        public override void clear()
+        {
 
+        }
+
+        public override void reset()
+        {
+
+        }
+
+        protected override void initWidget()
+        {
+
+        }
+
+        protected override void linkEvent()
+        {
+
+        }
+
+        protected override void onHide()
+        {
+
+        }
+
+        protected override void onRefresh()
+        {
+
+        }
+
+        protected override void onShow()
+        {
+
+        }
+
+        protected override void preInit()
+        {
+
+        }
+
+        protected override void unLinkEvent()
+        {
+
+        }
     }
 
     public abstract class TezToolWidget : TezWidget

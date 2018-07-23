@@ -63,7 +63,7 @@ namespace tezcat.UI
             m_String.replace(content);
         }
 
-        public void bind(TezEventBus.Function<string> function, TezStaticString str)
+        public void bind(TezEventCenter.Function<string> function, TezStaticString str)
         {
             m_PropertyName.setGetter(function);
             m_String = str;

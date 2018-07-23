@@ -30,7 +30,7 @@ namespace tezcat.Core
 
         public override string ToString()
         {
-            return string.Format("[{0}]", m_UID);
+            return string.Format("[UID-{0}]", m_UID);
         }
 
         public override bool Equals(object obj)

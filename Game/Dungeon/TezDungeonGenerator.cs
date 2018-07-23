@@ -8,10 +8,10 @@ namespace tezcat.Game
 {
     public class TezDungeonGenerator
     {
-        public event TezEventBus.Action<int, int> onBlockFilled;
-        public event TezEventBus.Action<int, int> onCanPassCreated;
-        public event TezEventBus.Action<int, int> onCanNotPassCreated;
-        public event TezEventBus.Action<int, int> onCanPassConfirmed;
+        public event TezEventCenter.Action<int, int> onBlockFilled;
+        public event TezEventCenter.Action<int, int> onCanPassCreated;
+        public event TezEventCenter.Action<int, int> onCanNotPassCreated;
+        public event TezEventCenter.Action<int, int> onCanPassConfirmed;
 
         List<TezDungeonRoom> m_RoomList = new List<TezDungeonRoom>();
 

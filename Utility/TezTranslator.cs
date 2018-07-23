@@ -141,7 +141,7 @@ namespace tezcat.Utility
             return false;
         }
 
-        public static void foreachName(TezEventBus.Action<string, string> action)
+        public static void foreachName(TezEventCenter.Action<string, string> action)
         {
             for (int i = 0; i < m_NameList.Count; i++)
             {
@@ -149,7 +149,7 @@ namespace tezcat.Utility
             }
         }
 
-        public static void foreachName(TezEventBus.Action<string, string> action, int begin, int end)
+        public static void foreachName(TezEventCenter.Action<string, string> action, int begin, int end)
         {
             end = Mathf.Min(end, m_NameList.Count);
             for (int i = begin; i < end; i++)
@@ -302,7 +302,7 @@ namespace tezcat.Utility
             }
         }
 
-        public static void foreachDescription(TezEventBus.Action<string, string> action)
+        public static void foreachDescription(TezEventCenter.Action<string, string> action)
         {
             for (int i = 0; i < m_DescriptionList.Count; i++)
             {
@@ -310,7 +310,7 @@ namespace tezcat.Utility
             }
         }
 
-        public static void foreachDescription(TezEventBus.Action<string, string> action, int begin, int end)
+        public static void foreachDescription(TezEventCenter.Action<string, string> action, int begin, int end)
         {
             end = Mathf.Min(end, m_DescriptionList.Count);
             for (int i = begin; i < end; i++)

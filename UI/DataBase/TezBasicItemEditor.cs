@@ -15,7 +15,7 @@ namespace tezcat.UI
         [SerializeField]
         TezImageLabelButton m_Cancel = null;
 
-        public TezEvent onClose { get; private set; } = new TezEvent();
+        public TezAction onClose { get; private set; } = new TezAction();
 
         public abstract TezDatabase.CategoryType[] supportCategory { get; }
 

@@ -64,7 +64,7 @@ namespace tezcat.Core
             }
         }
 
-        protected void add(TezEventBus.Action<T> set_slot)
+        protected void add(TezEventCenter.Action<T> set_slot)
         {
             if(m_EmptySlots.Count > 0)
             {
@@ -80,7 +80,7 @@ namespace tezcat.Core
             }
         }
 
-        protected void set(int slot_id, TezEventBus.Action<T> set_slot)
+        protected void set(int slot_id, TezEventCenter.Action<T> set_slot)
         {
             set_slot(slots[slot_id]);
         }
@@ -105,7 +105,7 @@ namespace tezcat.Core
             return slot != null;
         }
 
-        public void foreachSlot(TezEventBus.Action<T> function)
+        public void foreachSlot(TezEventCenter.Action<T> function)
         {
             foreach (var slot in slots)
             {

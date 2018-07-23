@@ -7,7 +7,7 @@ namespace tezcat.UI
 {
     public class TezImageLabelButton : TezButton
     {
-        public event TezEventBus.Action<PointerEventData.InputButton> onClick;
+        public event TezEventCenter.Action<PointerEventData.InputButton> onClick;
 
         [SerializeField]
         Image m_Icon = null;

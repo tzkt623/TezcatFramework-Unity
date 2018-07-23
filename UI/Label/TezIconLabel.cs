@@ -34,7 +34,7 @@ namespace tezcat.UI
             m_Label = null;
         }
 
-        public void setGetFunction(TezEventBus.Function<string> function)
+        public void setGetFunction(TezEventCenter.Function<string> function)
         {
             m_Label.setGetter(function);
         }

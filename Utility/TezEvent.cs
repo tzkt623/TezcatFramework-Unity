@@ -3,7 +3,7 @@ using tezcat.Signal;
 
 namespace tezcat.Event
 {
-    public abstract class TezBaseEvent
+    public abstract class TezBaseAction
     {
         protected int m_Count = 0;
         public abstract void clear();
@@ -13,16 +13,16 @@ namespace tezcat.Event
     /// <summary>
     /// 
     /// </summary>
-    public class TezEvent : TezBaseEvent
+    public class TezAction : TezBaseAction
     {
-        TezEventBus.Action m_OnHandler = null;
+        TezEventCenter.Action m_OnHandler = null;
 
-        public TezEvent()
+        public TezAction()
         {
             m_OnHandler = this.defaultFunction;
         }
 
-        public void add(TezEventBus.Action action)
+        public void add(TezEventCenter.Action action)
         {
             if(m_Count == 0)
             {
@@ -35,7 +35,7 @@ namespace tezcat.Event
             m_Count += 1;
         }
 
-        public void remove(TezEventBus.Action action)
+        public void remove(TezEventCenter.Action action)
         {
             m_Count -= 1;
             if (m_Count == 0)
@@ -68,16 +68,16 @@ namespace tezcat.Event
     /// 
     /// </summary>
     /// <typeparam name="T1"></typeparam>
-    public class TezEvent<T1> : TezBaseEvent
+    public class TezAction<T1> : TezBaseAction
     {
-        TezEventBus.Action<T1> m_OnHandler = null;
+        TezEventCenter.Action<T1> m_OnHandler = null;
 
-        public TezEvent()
+        public TezAction()
         {
             m_OnHandler = this.defaultFunction;
         }
 
-        public void add(TezEventBus.Action<T1> action)
+        public void add(TezEventCenter.Action<T1> action)
         {
             if (m_Count == 0)
             {
@@ -90,7 +90,7 @@ namespace tezcat.Event
             m_Count += 1;
         }
 
-        public void remove(TezEventBus.Action<T1> action)
+        public void remove(TezEventCenter.Action<T1> action)
         {
             m_Count -= 1;
             if (m_Count == 0)
@@ -124,16 +124,16 @@ namespace tezcat.Event
     /// </summary>
     /// <typeparam name="T1"></typeparam>
     /// <typeparam name="T2"></typeparam>
-    public class TezEvent<T1, T2> : TezBaseEvent
+    public class TezAction<T1, T2> : TezBaseAction
     {
-        TezEventBus.Action<T1, T2> m_OnHandler = null;
+        TezEventCenter.Action<T1, T2> m_OnHandler = null;
 
-        public TezEvent()
+        public TezAction()
         {
             m_OnHandler = this.defaultFunction;
         }
 
-        public void add(TezEventBus.Action<T1, T2> action)
+        public void add(TezEventCenter.Action<T1, T2> action)
         {
             if (m_Count == 0)
             {
@@ -146,7 +146,7 @@ namespace tezcat.Event
             m_Count += 1;
         }
 
-        public void remove(TezEventBus.Action<T1, T2> action)
+        public void remove(TezEventCenter.Action<T1, T2> action)
         {
             m_Count -= 1;
             if (m_Count == 0)
@@ -181,16 +181,16 @@ namespace tezcat.Event
     /// <typeparam name="T1"></typeparam>
     /// <typeparam name="T2"></typeparam>
     /// <typeparam name="T3"></typeparam>
-    public class TezEvent<T1, T2, T3> : TezBaseEvent
+    public class TezAction<T1, T2, T3> : TezBaseAction
     {
-        TezEventBus.Action<T1, T2, T3> m_OnHandler = null;
+        TezEventCenter.Action<T1, T2, T3> m_OnHandler = null;
 
-        public TezEvent()
+        public TezAction()
         {
             m_OnHandler = this.defaultFunction;
         }
 
-        public void add(TezEventBus.Action<T1, T2, T3> action)
+        public void add(TezEventCenter.Action<T1, T2, T3> action)
         {
             if (m_Count == 0)
             {
@@ -203,7 +203,7 @@ namespace tezcat.Event
             m_Count += 1;
         }
 
-        public void remove(TezEventBus.Action<T1, T2, T3> action)
+        public void remove(TezEventCenter.Action<T1, T2, T3> action)
         {
             m_Count -= 1;
             if (m_Count == 0)
@@ -234,16 +234,16 @@ namespace tezcat.Event
     #endregion
 
     #region Function
-    public class TezFunction<R> : TezBaseEvent
+    public class TezFunction<R> : TezBaseAction
     {
-        TezEventBus.Function<R> m_OnHandler = null;
+        TezEventCenter.Function<R> m_OnHandler = null;
 
         public TezFunction()
         {
             m_OnHandler = this.defaultFunction;
         }
 
-        public void add(TezEventBus.Function<R> action)
+        public void add(TezEventCenter.Function<R> action)
         {
             if (m_Count == 0)
             {
@@ -256,7 +256,7 @@ namespace tezcat.Event
             m_Count += 1;
         }
 
-        public void remove(TezEventBus.Function<R> action)
+        public void remove(TezEventCenter.Function<R> action)
         {
             m_Count -= 1;
             if (m_Count == 0)
@@ -285,16 +285,16 @@ namespace tezcat.Event
         }
     }
 
-    public class TezFunction<R, T1> : TezBaseEvent
+    public class TezFunction<R, T1> : TezBaseAction
     {
-        TezEventBus.Function<R, T1> m_OnHandler = null;
+        TezEventCenter.Function<R, T1> m_OnHandler = null;
 
         public TezFunction()
         {
             m_OnHandler = this.defaultFunction;
         }
 
-        public void add(TezEventBus.Function<R, T1> action)
+        public void add(TezEventCenter.Function<R, T1> action)
         {
             if (m_Count == 0)
             {
@@ -307,7 +307,7 @@ namespace tezcat.Event
             m_Count += 1;
         }
 
-        public void remove(TezEventBus.Function<R, T1> action)
+        public void remove(TezEventCenter.Function<R, T1> action)
         {
             m_Count -= 1;
             if (m_Count == 0)
@@ -336,16 +336,16 @@ namespace tezcat.Event
         }
     }
 
-    public class TezFunction<R, T1, T2> : TezBaseEvent
+    public class TezFunction<R, T1, T2> : TezBaseAction
     {
-        TezEventBus.Function<R, T1, T2> m_OnHandler = null;
+        TezEventCenter.Function<R, T1, T2> m_OnHandler = null;
 
         public TezFunction()
         {
             m_OnHandler = this.defaultFunction;
         }
 
-        public void add(TezEventBus.Function<R, T1, T2> action)
+        public void add(TezEventCenter.Function<R, T1, T2> action)
         {
             if (m_Count == 0)
             {
@@ -358,7 +358,7 @@ namespace tezcat.Event
             m_Count += 1;
         }
 
-        public void remove(TezEventBus.Function<R, T1, T2> action)
+        public void remove(TezEventCenter.Function<R, T1, T2> action)
         {
             m_Count -= 1;
             if (m_Count == 0)
@@ -387,16 +387,16 @@ namespace tezcat.Event
         }
     }
 
-    public class TezFunction<R, T1, T2, T3> : TezBaseEvent
+    public class TezFunction<R, T1, T2, T3> : TezBaseAction
     {
-        TezEventBus.Function<R, T1, T2, T3> m_OnHandler = null;
+        TezEventCenter.Function<R, T1, T2, T3> m_OnHandler = null;
 
         public TezFunction()
         {
             m_OnHandler = this.defaultFunction;
         }
 
-        public void add(TezEventBus.Function<R, T1, T2, T3> action)
+        public void add(TezEventCenter.Function<R, T1, T2, T3> action)
         {
             if (m_Count == 0)
             {
@@ -409,7 +409,7 @@ namespace tezcat.Event
             m_Count += 1;
         }
 
-        public void remove(TezEventBus.Function<R, T1, T2, T3> action)
+        public void remove(TezEventCenter.Function<R, T1, T2, T3> action)
         {
             m_Count -= 1;
             if (m_Count == 0)

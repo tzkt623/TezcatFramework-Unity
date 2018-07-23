@@ -43,7 +43,7 @@ namespace tezcat.DataBase
         static Dictionary<Type, int> m_PrefabDic = new Dictionary<Type, int>();
         static List<Prefab> m_List = new List<Prefab>();
 
-        public static void foreachPrefab(TezEventBus.Action<Prefab> action)
+        public static void foreachPrefab(TezEventCenter.Action<Prefab> action)
         {
             foreach (var prefab in m_List)
             {
@@ -51,7 +51,7 @@ namespace tezcat.DataBase
             }
         }
 
-        public static void load<Prefab>(List<Prefab> list) where Prefab : ITezPrefab
+        protected static void load<Prefab>(List<Prefab> list) where Prefab : ITezPrefab
         {
             foreach (var widget in list)
             {
@@ -62,7 +62,7 @@ namespace tezcat.DataBase
             }
         }
 
-        public static void load(List<GameObject> list)
+        protected static void load(List<GameObject> list)
         {
             foreach (var go in list)
             {
@@ -157,6 +157,8 @@ namespace tezcat.DataBase
 
         [SerializeField]
         List<TezObjectMB> ObjectMB = new List<TezObjectMB>();
+        [SerializeField]
+        List<TezGameMB> GameMB = new List<TezGameMB>();
 
         public virtual void init()
         {
@@ -165,6 +167,7 @@ namespace tezcat.DataBase
             load(GameWindow);
             load(GameWidget);
             load(ObjectMB);
+            load(GameMB);
         }
     }
 }

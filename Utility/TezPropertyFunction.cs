@@ -37,14 +37,14 @@ namespace tezcat.Utility
 
     public abstract class TezPropertyFunctionT<T> : TezPropertyFunction
     {
-        TezEventBus.Action<T> m_Function = null;
+        TezEventCenter.Action<T> m_Function = null;
 
         public TezPropertyFunctionT(TezPropertyName name) : base(name)
         {
 
         }
 
-        public void setFunction(TezEventBus.Action<T> function)
+        public void setFunction(TezEventCenter.Action<T> function)
         {
             m_Function = function;
         }

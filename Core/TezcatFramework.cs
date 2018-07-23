@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using tezcat.DataBase;
 using tezcat.Debug;
+using tezcat.Signal;
 using tezcat.UI;
+using tezcat.Wrapper;
 using UnityEngine;
 
 namespace tezcat.Core
@@ -10,6 +12,17 @@ namespace tezcat.Core
     public abstract class TezcatFramework : TezGameWidget
     {
         public static TezcatFramework instance { get; private set; }
+
+        
+
+        #region 创建UI
+        Queue<TezEventCenter.Action> m_CreateQueue = new Queue<TezEventCenter.Action>();
+
+        public void createUI(TezEventCenter.Action action)
+        {
+            m_CreateQueue.Enqueue(action);
+        }
+        #endregion
 
         #region Window
         List<TezWindow> m_WindowList = new List<TezWindow>();
@@ -20,6 +33,10 @@ namespace tezcat.Core
         #region Layer
         List<TezLayer> m_LayerList = new List<TezLayer>();
         Dictionary<string, int> m_LayerDic = new Dictionary<string, int>();
+        #endregion
+
+        #region Object
+        List<TezObjectMB> m_ObjectMBList = new List<TezObjectMB>();
         #endregion
 
         protected override void preInit()
@@ -180,14 +197,14 @@ namespace tezcat.Core
         {
 
         }
-        #endregion
 
-        #region Function
-        public void startCoroutine(IEnumerator enumerator)
+        protected virtual void Update()
         {
-            StartCoroutine(enumerator);
+            while(m_CreateQueue.Count > 0)
+            {
+                m_CreateQueue.Dequeue()();
+            }
         }
-
         #endregion
     }
 
@@ -197,7 +214,7 @@ namespace tezcat.Core
     /// </summary>
     public abstract class TezcatFramework<T> : TezcatFramework where T : TezcatGameEngine, new()
     {
-        public static T engine { get; private set; }
+        public T engine { get; private set; }
 
         protected override void preInit()
         {

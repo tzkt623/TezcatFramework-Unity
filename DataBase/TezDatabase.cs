@@ -9,7 +9,7 @@ namespace tezcat.DataBase
 {
     public sealed class TezDatabase
     {
-        public static TezEvent<ContainerSlot> onRegsiterItem { get; } = new TezEvent<ContainerSlot>();
+        public static TezAction<ContainerSlot> onRegsiterItem { get; } = new TezAction<ContainerSlot>();
 
         /// <summary>
         /// 组别类型
@@ -24,9 +24,9 @@ namespace tezcat.DataBase
         /// </summary>
         public abstract class CategoryType : TezType
         {
-            public TezEventBus.Function<TezItem> function { get; private set; } = null;
+            public TezEventCenter.Function<TezItem> function { get; private set; } = null;
 
-            void setCreator(TezEventBus.Function<TezItem> function)
+            void setCreator(TezEventCenter.Function<TezItem> function)
             {
                 this.function = function;
             }
@@ -41,7 +41,7 @@ namespace tezcat.DataBase
                 return (T)function();
             }
 
-            protected static T register<T>(T e, string name, TezEventBus.Function<TezItem> function) where T : CategoryType, new()
+            protected static T register<T>(T e, string name, TezEventCenter.Function<TezItem> function) where T : CategoryType, new()
             {
                 if (e == null)
                 {
@@ -53,7 +53,7 @@ namespace tezcat.DataBase
                 return e;
             }
 
-            protected static T register<T>(string name, TezEventBus.Function<TezItem> function) where T : CategoryType, new()
+            protected static T register<T>(string name, TezEventCenter.Function<TezItem> function) where T : CategoryType, new()
             {
                 var temp = TezTypeRegister<T>.register(name);
                 temp.setCreator(function);
@@ -113,7 +113,7 @@ namespace tezcat.DataBase
                 this.containers[item.categoryType.ID].unregisterItem(item);
             }
 
-            public void foreachItem<T>(TezEventBus.Action<CategoryType> get_type, TezEventBus.Action<T> action) where T : TezItem
+            public void foreachItem<T>(TezEventCenter.Action<CategoryType> get_type, TezEventCenter.Action<T> action) where T : TezItem
             {
                 foreach (var container in this.containers)
                 {
@@ -122,7 +122,7 @@ namespace tezcat.DataBase
                 }
             }
 
-            public void foreachCategoryType(TezEventBus.Action<CategoryType> get_type)
+            public void foreachCategoryType(TezEventCenter.Action<CategoryType> get_type)
             {
                 foreach (var container in this.containers)
                 {
@@ -130,7 +130,7 @@ namespace tezcat.DataBase
                 }
             }
 
-            public void foreachItem(TezEventBus.Action<TezItem> action)
+            public void foreachItem(TezEventCenter.Action<TezItem> action)
             {
                 foreach (var container in this.containers)
                 {
@@ -189,7 +189,7 @@ namespace tezcat.DataBase
                 this.remove(item.OID);
             }
 
-            public void foreachItem<T>(TezEventBus.Action<T> function) where T : TezItem
+            public void foreachItem<T>(TezEventCenter.Action<T> function) where T : TezItem
             {
                 foreach (var slot in slots)
                 {
@@ -266,7 +266,7 @@ namespace tezcat.DataBase
                 return id;
             }
 
-            public void foreachItem(TezEventBus.Action<TezItem> action)
+            public void foreachItem(TezEventCenter.Action<TezItem> action)
             {
                 foreach (var item in m_Items)
                 {
@@ -398,8 +398,8 @@ namespace tezcat.DataBase
         }
 
         public static void foreachCategoryType(
-            TezEventBus.Action<GroupType> get_group,
-            TezEventBus.Action<CategoryType> get_type)
+            TezEventCenter.Action<GroupType> get_group,
+            TezEventCenter.Action<CategoryType> get_type)
         {
             foreach (var group in m_Group)
             {
@@ -409,9 +409,9 @@ namespace tezcat.DataBase
         }
 
         public static void foreachItemByGroup<T>(
-            TezEventBus.Action<GroupType> get_group,
-            TezEventBus.Action<CategoryType> get_type,
-            TezEventBus.Action<T> get_item) where T : TezItem
+            TezEventCenter.Action<GroupType> get_group,
+            TezEventCenter.Action<CategoryType> get_type,
+            TezEventCenter.Action<T> get_item) where T : TezItem
         {
             foreach (var group in m_Group)
             {
@@ -420,7 +420,7 @@ namespace tezcat.DataBase
             }
         }
 
-        public static void foreachItemByGroup(TezEventBus.Action<TezItem> action)
+        public static void foreachItemByGroup(TezEventCenter.Action<TezItem> action)
         {
             foreach (var group in m_Group)
             {
@@ -428,7 +428,7 @@ namespace tezcat.DataBase
             }
         }
 
-        public static void foreachItemByGUID(TezEventBus.Action<TezItem> action)
+        public static void foreachItemByGUID(TezEventCenter.Action<TezItem> action)
         {
             m_Global.foreachItem(action);
         }

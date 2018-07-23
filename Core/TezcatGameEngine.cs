@@ -87,7 +87,7 @@ namespace tezcat.Core
                 });
         }
 
-        private static void checkFile(string path, TezEventBus.Action<StreamWriter> action)
+        private static void checkFile(string path, TezEventCenter.Action<StreamWriter> action)
         {
             if (!TezFileTool.fileExist(path))
             {
@@ -114,5 +114,21 @@ namespace tezcat.Core
         protected abstract IEnumerator end();
 
         public abstract void close();
+
+
+        public void debug(object content)
+        {
+            UnityEngine.Debug.Log(content);
+        }
+
+        public void debugWarning(object content)
+        {
+            UnityEngine.Debug.LogWarning(content);
+        }
+
+        public void debugError(object content)
+        {
+            UnityEngine.Debug.LogError(content);
+        }
     }
 }

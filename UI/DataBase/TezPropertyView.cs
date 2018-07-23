@@ -16,7 +16,7 @@ namespace tezcat.UI
             m_PorpertyValue.text = value;
         }
 
-        public void set(TezEventBus.Function<string> name, TezEventBus.Function<string> value)
+        public void set(TezEventCenter.Function<string> name, TezEventCenter.Function<string> value)
         {
             m_PropertyName.setGetter(name);
             m_PorpertyValue.setGetter(value);

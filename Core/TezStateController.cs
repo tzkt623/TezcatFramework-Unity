@@ -6,58 +6,58 @@ namespace tezcat.Core
 {
     public class TezStateSet
     {
-        public static readonly TezState Empty = TezState.register();
-        public static readonly TezState Pause = TezState.register();
-        public static readonly TezState PickAnItem = TezState.register();
-        public static readonly TezState PickAnObject = TezState.register();
+        public static readonly TezStateTag Empty = TezStateTag.register();
+        public static readonly TezStateTag Pause = TezStateTag.register();
+        public static readonly TezStateTag PickAnItem = TezStateTag.register();
+        public static readonly TezStateTag PickAnObject = TezStateTag.register();
     }
 
-    public class TezState
+    public class TezStateTag
     {
-        static TezState[] Cache = new TezState[33];
+        static TezStateTag[] Cache = new TezStateTag[33];
 
         static int IDGiver = 0;
         public int ID { get; private set; } = 0;
 
-        static TezState()
+        static TezStateTag()
         {
             for (int i = 0; i < Cache.Length; i++)
             {
-                Cache[i] = new TezState(i);
+                Cache[i] = new TezStateTag(i);
             }
         }
 
-        private TezState(int index)
+        private TezStateTag(int index)
         {
             this.ID = 1 << index;
         }
 
-        public static bool operator == (TezState a, TezState b)
+        public static bool operator == (TezStateTag a, TezStateTag b)
         {
             return a.ID == b.ID;
         }
 
-        public static bool operator != (TezState a, TezState b)
+        public static bool operator != (TezStateTag a, TezStateTag b)
         {
             return a.ID != b.ID;
         }
 
-        public static int operator |(TezState a, TezState b)
+        public static int operator |(TezStateTag a, TezStateTag b)
         {
             return a.ID | b.ID;
         }
 
-        public static int operator &(TezState a, TezState b)
+        public static int operator &(TezStateTag a, TezStateTag b)
         {
             return a.ID & b.ID;
         }
 
-        public static int operator ~(TezState state)
+        public static int operator ~(TezStateTag state)
         {
             return ~state.ID;
         }
 
-        public static implicit operator int(TezState state)
+        public static implicit operator int(TezStateTag state)
         {
             return state.ID;
         }
@@ -72,7 +72,7 @@ namespace tezcat.Core
             return base.Equals(obj);
         }
 
-        public static TezState register()
+        public static TezStateTag register()
         {
             if(IDGiver > 33)
             {
@@ -85,8 +85,10 @@ namespace tezcat.Core
 
     public class TezStateController
     {
-        public static TezEvent onStateChanged { get; private set; } = new TezEvent();
+        public static TezAction onStateChanged { get; private set; } = new TezAction();
         static Stack<int> m_PreState = new Stack<int>();
+
+        public 
 
         static int m_States = 0;
         public static int current
@@ -119,7 +121,7 @@ namespace tezcat.Core
             onStateChanged.invoke();
         }
 
-        public static void locking(int state, TezEventBus.Action function)
+        public static void locking(int state, TezEventCenter.Action function)
         {
             if((m_States & state) == state)
             {

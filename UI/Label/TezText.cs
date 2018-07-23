@@ -32,7 +32,7 @@ namespace tezcat.UI
 
         LinkedListNode<TezText> m_Node = null;
 
-        TezEventBus.Function<string> m_Getter = null;
+        TezEventCenter.Function<string> m_Getter = null;
         public Text handler { get; private set; } = null;
 
         public Color color
@@ -87,7 +87,7 @@ namespace tezcat.UI
 
         }
 
-        public void setGetter(TezEventBus.Function<string> getter)
+        public void setGetter(TezEventCenter.Function<string> getter)
         {
             m_Getter = getter;
             this.dirty = true;

@@ -19,7 +19,7 @@ namespace tezcat.DataBase
                 this.name = name;
             }
 
-            public Group create(TezStaticString type_name, int type_id, TezEventBus.Function<TezItem> function)
+            public Group create(TezStaticString type_name, int type_id, TezEventCenter.Function<TezItem> function)
             {
                 Container container = null;
                 if(!m_Dic.TryGetValue(type_name, out container))
@@ -57,9 +57,9 @@ namespace tezcat.DataBase
         public class Container
         {
             public TezStaticString name { get; private set; }
-            TezEventBus.Function<TezItem> m_Function = null;
+            TezEventCenter.Function<TezItem> m_Function = null;
 
-            public void register(TezStaticString name, TezEventBus.Function<TezItem> function)
+            public void register(TezStaticString name, TezEventCenter.Function<TezItem> function)
             {
                 m_Function = function;
                 this.name = name;
