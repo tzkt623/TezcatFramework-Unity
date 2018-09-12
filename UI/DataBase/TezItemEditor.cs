@@ -19,9 +19,9 @@ namespace tezcat.UI
         [SerializeField]
         RectTransform m_Content = null;
 
-        public override TezDatabase.CategoryType[] supportCategory
+        public override int[] supportCategory
         {
-            get { return new TezDatabase.CategoryType[0]; }
+            get { return new int[0]; }
         }
 
         TezItem m_Item = null;
@@ -36,17 +36,16 @@ namespace tezcat.UI
             return m_Item;
         }
 
-        public override void bind(TezDatabase.CategoryType category_type)
+        public override void bind(int category)
         {
-            m_Item = category_type.create();
             this.dirty = true;
         }
 
-        public override void bind(TezItem item)
-        {
-            m_Item = item;
-            this.dirty = true;
-        }
+//         public override void bind(TezItem item)
+//         {
+//             m_Item = item;
+//             this.dirty = true;
+//         }
 
         private TezPropertyView createPV(string name, string value)
         {

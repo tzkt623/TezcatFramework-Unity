@@ -1,6 +1,4 @@
-﻿using tezcat.Core;
-using tezcat.DataBase;
-using tezcat.Wrapper;
+﻿using tezcat.Wrapper;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -62,8 +60,8 @@ namespace tezcat.UI
 
         public override void clear()
         {
-            m_Wrapper?.close();
-            m_Wrapper = null;
+//             m_Wrapper?.close();
+//             m_Wrapper = null;
         }
 
         protected override void onRefresh()
@@ -97,12 +95,12 @@ namespace tezcat.UI
                     if(eventData.clickCount == 2)
                     {
 
-                        TezStateController.add(TezStateSet.PickAnItem);
-                        TezSelectController.select(m_Wrapper.mySlot);
+//                         TezStateController.add(TezStateSet.PickAnItem);
+//                         TezSelectController.select(m_Wrapper.mySlot);
                     }
                     else
                     {
-                        container.onSelectSlot(this, m_Wrapper.getItem());
+//                        container.onSelectSlot(this, m_Wrapper.myItem);
                     }
                     break;
                 case PointerEventData.InputButton.Right:
@@ -116,9 +114,9 @@ namespace tezcat.UI
 
         public void removeItem()
         {
-            TezDatabase.unregisterItem(m_Wrapper.getItem());
-            m_Wrapper.close();
-            m_Wrapper = null;
+//             TezService.DB.unregisterItem(m_Wrapper.myItem);
+//             m_Wrapper.close();
+//             m_Wrapper = null;
             this.dirty = true;
         }
 

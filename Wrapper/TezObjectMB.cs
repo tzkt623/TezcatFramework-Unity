@@ -1,37 +1,26 @@
 ﻿using tezcat.Core;
-using tezcat.DataBase;
 using tezcat.Utility;
 
 namespace tezcat.Wrapper
 {
-    public abstract class TezObjectMB
+    public abstract class TezGameObjectMB
         : TezMonoBehaviour
         , ITezMBWrapper
     {
         public string myName
         {
-            get { return TezTranslator.translateName(this.getObject().NID); }
+            get { return TezTranslator.translateName(null); }
         }
 
         public string myDescription
         {
-            get { return TezTranslator.translateDescription(this.getObject().NID); }
-        }
-
-        public TezDatabase.GroupType group
-        {
-            get { return this.getObject().groupType; }
-        }
-
-        public TezDatabase.CategoryType category
-        {
-            get { return this.getObject().categoryType; }
+            get { return TezTranslator.translateDescription(null); }
         }
 
         public abstract TezObject getObject();
     }
 
-    public abstract class TezObjectMB<T> : TezObjectMB where T : TezObject
+    public abstract class TezGameObjectMB<T> : TezGameObjectMB where T : TezObject
     {
         public T myObject { get; protected set; }
 

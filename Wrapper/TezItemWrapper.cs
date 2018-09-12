@@ -1,34 +1,44 @@
-﻿using tezcat.Core;
-using tezcat.DataBase;
+﻿using tezcat.DataBase;
 using tezcat.Utility;
 
 namespace tezcat.Wrapper
 {
-    public interface ITezItemWrapper : ITezWrapper
-    {
-        TezItem getItem();
-
-        void showTip();
-        void hideTip();
-    }
-
+    /// <summary>
+    /// 
+    /// TezItem类的专用wrapper
+    /// 
+    /// 用于取得Item里的特定数据
+    /// 例如 本地化文本 图片 模型等等
+    /// 
+    /// </summary>
     public abstract class TezItemWrapper : ITezItemWrapper
     {
         public string myName
         {
-            get { return TezTranslator.translateName(this.getItem().NID); }
+            get { return TezTranslator.translateName(this.myItem.NID); }
         }
 
         public string myDescription
         {
-            get { return TezTranslator.translateDescription(this.getItem().NID); }
+            get { return TezTranslator.translateDescription(this.myItem.NID); }
         }
 
-        public abstract void close();
+        public virtual TezItem myItem { get; private set; }
 
-        public abstract TezItem getItem();
-        public abstract void showTip();
-        public abstract void hideTip();
+        public TezItemWrapper(TezItem item)
+        {
+            myItem = item;
+        }
+
+        public virtual void close()
+        {
+            myItem = null;
+        }
+
+        public Item getItem<Item>() where Item : TezItem
+        {
+            return (Item)myItem;
+        }
 
         public static bool operator true(TezItemWrapper wrapper)
         {
@@ -46,64 +56,22 @@ namespace tezcat.Wrapper
         }
     }
 
-    /// <summary>
-    /// 
-    /// TezItem类的专用wrapper
-    /// 
-    /// 用于取得Item里的特定数据
-    /// 例如 本地化文本 图片 模型等等
-    /// 
-    /// </summary>
     public abstract class TezItemWrapper<Item> : TezItemWrapper where Item : TezItem
     {
-        public Item myItem { get; protected set; }
-
-        public TezItemWrapper(int GUID)
+        public TezItemWrapper(int GUID) : base(null)
         {
-            myItem = TezDatabase.getItem<Item>(GUID);
+
         }
 
-        public TezItemWrapper(Item item)
+        public TezItemWrapper(Item item) : base(item)
         {
-            myItem = item;
+
         }
 
-        public sealed override TezItem getItem()
+        public Item getItem()
         {
-            return myItem;
-        }
-
-        public override void close()
-        {
-            myItem = null;
+            return this.getItem<Item>();
         }
     }
 
-    /// <summary>
-    /// 
-    /// TezSlot专用Wrapper
-    /// 
-    /// 用于取得Slot中Item的特定数据
-    /// 例如 本地化文本 图片 模型等等
-    /// 
-    /// </summary>
-    public abstract class TezItemSlotWrapper<Slot> : TezItemWrapper where Slot : TezItemSlot
-    {
-        public Slot mySlot { get; protected set; }
-
-        public TezItemSlotWrapper(Slot slot)
-        {
-            mySlot = slot;
-        }
-
-        public sealed override TezItem getItem()
-        {
-            return mySlot.item;
-        }
-
-        public override void close()
-        {
-            mySlot = null;
-        }
-    }
 }

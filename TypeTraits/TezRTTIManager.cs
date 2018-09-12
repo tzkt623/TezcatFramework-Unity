@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using tezcat.Serialization;
+using tezcat.DataBase;
 using tezcat.Signal;
 
 namespace tezcat.TypeTraits
@@ -20,7 +20,7 @@ namespace tezcat.TypeTraits
 
         static Dictionary<string, Dictionary<string, TezRTTIInfo>> m_NameSpace = new Dictionary<string, Dictionary<string, TezRTTIInfo>>();
 
-        public static void foreachInfo(TezEventCenter.Action<string, TezRTTIInfo> action)
+        public static void foreachInfo(TezEventDispatcher.Action<string, TezRTTIInfo> action)
         {
             foreach (var pair in m_NameSpace)
             {

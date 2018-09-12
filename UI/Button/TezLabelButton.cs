@@ -8,7 +8,7 @@ namespace tezcat.UI
     [RequireComponent(typeof(TezText))]
     public class TezLabelButton : TezButton
     {
-        public event TezEventCenter.Action<PointerEventData.InputButton> onClick;
+        public event TezEventDispatcher.Action<PointerEventData.InputButton> onClick;
         [SerializeField]
         Color m_PressColor;
         Color m_LabelColor;
@@ -83,7 +83,7 @@ namespace tezcat.UI
             m_Label.handler.text = text;
         }
 
-        public void setGetFunction(TezEventCenter.Function<string> function)
+        public void setGetFunction(TezEventDispatcher.Function<string> function)
         {
             m_Label.setGetter(function);
         }

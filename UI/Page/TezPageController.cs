@@ -6,7 +6,7 @@ namespace tezcat.UI
 {
     public class TezPageController : ITezCloseable
     {
-        TezEventCenter.Action<int, int> m_OnPageChanged;
+        TezEventDispatcher.Action<int, int> m_OnPageChanged;
 
         public int currentPage { get; private set; } = 1;
         public int maxPage { get; private set; } = 0;
@@ -14,6 +14,7 @@ namespace tezcat.UI
 
         int m_CurrentPageBegin;
         int m_CurrentPageEnd;
+        int m_TotalCount;
 
         /// <summary>
         /// 页面变化时的通知
@@ -21,14 +22,15 @@ namespace tezcat.UI
         /// end 当前页面Item结束位置的后一位
         /// </summary>
         /// <param name="function"></param>
-        public void setListener(TezEventCenter.Action<int, int> function)
+        public void setListener(TezEventDispatcher.Action<int, int> function)
         {
             m_OnPageChanged = function;
         }
 
         public void calculateMaxPage(int total_count)
         {
-            this.maxPage = Mathf.CeilToInt(total_count / (float)pageCapacity);
+            m_TotalCount = total_count;
+            this.maxPage = Mathf.CeilToInt(m_TotalCount / (float)pageCapacity);
         }
 
         public int isInPage(int index)
@@ -73,11 +75,17 @@ namespace tezcat.UI
 
         public void setPage(int page)
         {
-            if(page <= 1)
+            if(this.maxPage == 0)
+            {
+                this.currentPage = 0;
+                return;
+            }
+
+            if(page < 1)
             {
                 this.currentPage = 1;
             }
-            else if(page >= maxPage)
+            else if(page > maxPage)
             {
                 currentPage = maxPage;
             }
@@ -85,7 +93,6 @@ namespace tezcat.UI
             {
                 this.currentPage = page;
             }
-
 
             if(this.calculateCurrentPage())
             {
@@ -96,7 +103,7 @@ namespace tezcat.UI
         private bool calculateCurrentPage()
         {
             m_CurrentPageBegin = (currentPage - 1) * pageCapacity;
-            m_CurrentPageEnd = m_CurrentPageBegin + pageCapacity;
+            m_CurrentPageEnd = Mathf.Min(m_CurrentPageBegin + pageCapacity, m_TotalCount);
             return m_CurrentPageBegin >= 0 && m_CurrentPageEnd > 0;
         }
 

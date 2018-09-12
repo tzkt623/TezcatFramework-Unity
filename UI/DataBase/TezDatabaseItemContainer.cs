@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using tezcat.DataBase;
-using tezcat.Wrapper;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -44,7 +43,7 @@ namespace tezcat.UI
 
             ///page
             m_PageController.pageCapacity = m_CountPerPage;
-            m_PageController.setListener(this.onPageChanged);
+//            m_PageController.setListener(this.onPageChanged);
             m_PageUp.onClick += onPageUpClick;
             m_PageDown.onClick += onPageDownClick;
             m_Page.contentType = InputField.ContentType.IntegerNumber;
@@ -76,13 +75,13 @@ namespace tezcat.UI
         protected override void linkEvent()
         {
             base.linkEvent();
-            TezDatabase.onRegsiterItem.add(this.onAdd);
+//            TezDatabase.onRegsiterItem.add(this.onAdd);
         }
 
         protected override void unLinkEvent()
         {
             base.unLinkEvent();
-            TezDatabase.onRegsiterItem.remove(this.onAdd);
+//            TezDatabase.onRegsiterItem.remove(this.onAdd);
         }
 
         public void removeItem()
@@ -93,7 +92,8 @@ namespace tezcat.UI
             }
         }
 
-        private void onAdd(TezDatabase.ContainerSlot slot)
+#if false
+        private void onAdd(TezDatabase.CategoryContainerSlot slot)
         {
             var id = m_PageController.isInPage(slot.ID);
             if(id >= 0)
@@ -108,7 +108,7 @@ namespace tezcat.UI
 
                 m_SlotList[id].bind(new TezDatabaseItemWrapper(slot));
 
-                var items = TezDatabase.getItems(m_Group.groupType.ID, m_Group.categoryType.ID);
+                var items = TezService.DB.getItems(m_Group.groupType.ID, m_Group.categoryType.ID);
                 m_PageController.calculateMaxPage(items.Count);
                 m_MaxPage.text = "/" + m_PageController.maxPage.ToString();
                 m_Page.text = m_PageController.currentPage.ToString();
@@ -127,11 +127,6 @@ namespace tezcat.UI
             m_Vernier.gameObject.SetActive(true);
         }
 
-        protected override void onRefresh()
-        {
-            m_PageController.setPage(m_PageController.currentPage);
-        }
-
         private void onPageChanged(int begin, int end)
         {
             if (m_Group.groupType == null || m_Group.categoryType == null)
@@ -141,8 +136,8 @@ namespace tezcat.UI
 
             this.reset();
 
-            var items = TezDatabase.getItems(m_Group.groupType.ID, m_Group.categoryType.ID);
-            if(items.Count > 0)
+            var items = TezService.DB.getItems(m_Group.groupType.ID, m_Group.categoryType.ID);
+            if (items.Count > 0)
             {
                 m_PageController.calculateMaxPage(items.Count);
                 m_MaxPage.text = "/" + m_PageController.maxPage.ToString();
@@ -159,13 +154,21 @@ namespace tezcat.UI
 
                 for (int i = begin; i < end; i++)
                 {
-                    if(items[i].item)
+                    if (items[i].myItem)
                     {
                         m_SlotList[i].bind(new TezDatabaseItemWrapper(items[i]));
                     }
                 }
             }
         }
+#endif
+
+        protected override void onRefresh()
+        {
+            m_PageController.setPage(m_PageController.currentPage);
+        }
+
+
 
         private void onPageSet(string page)
         {

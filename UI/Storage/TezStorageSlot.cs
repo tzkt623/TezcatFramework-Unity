@@ -25,12 +25,12 @@ namespace tezcat.UI
 
         void IPointerEnterHandler.OnPointerEnter(PointerEventData eventData)
         {
-            wrapper?.showTip();
+
         }
 
         void IPointerExitHandler.OnPointerExit(PointerEventData eventData)
         {
-            wrapper?.hideTip();
+
         }
 
         public abstract void OnPointerUp(PointerEventData eventData);

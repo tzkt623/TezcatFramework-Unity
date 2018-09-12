@@ -1,12 +1,28 @@
-﻿namespace tezcat.Random
+﻿using tezcat.Core;
+
+namespace tezcat.Math
 {
+    public interface ITezRandom : ITezService
+    {
+        void setSeed(int seed);
+        int nextInt();
+        int nextInt(float min, float max);
+        float nextFloat();
+        float nextFloat(float min, float max);
+    }
+
+    public interface ITezMath : ITezRandom
+    {
+
+    }
+
     /// <summary>
     /// 
     /// 16807随机数发生器
     /// 分布率为63.xx%
     /// 
     /// </summary>
-    public class TezRandom
+    public class TezRandom : ITezRandom
     {
         private const uint MAX_MASK_UINT = 2147483647u;
         private const float MAX_MASK_FLOAT = 2.14748365E+09f;
@@ -48,6 +64,11 @@
         public float nextFloat(float min, float max)
         {
             return min + (max - min) * this.nextFloat();
+        }
+
+        public void close()
+        {
+
         }
     }
 }

@@ -1,7 +1,4 @@
-﻿using UnityEngine;
-using System.Collections;
-
-namespace tezcat.Game
+﻿namespace tezcat.Game
 {
     public abstract class TezCommand
     {

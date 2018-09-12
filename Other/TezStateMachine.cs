@@ -8,13 +8,13 @@ namespace tezcat.Utility
     public class TezState
     {
         public int state;
-        public TezEventCenter.Action<Camera, EventSystem> function;
+        public TezEventDispatcher.Action<Camera, EventSystem> function;
     }
 
     public static class TezStateMachine
     {
-        public static event TezEventCenter.Action<int> onPop;
-        public static event TezEventCenter.Action<int> onPush;
+        public static event TezEventDispatcher.Action<int> onPop;
+        public static event TezEventDispatcher.Action<int> onPush;
 
         static Camera m_Camera = null;
         static EventSystem m_EventSystem = null;
@@ -34,7 +34,7 @@ namespace tezcat.Utility
             m_Camera = camera;
         }
 
-        public static void register(int state, TezEventCenter.Action<Camera, EventSystem> function)
+        public static void register(int state, TezEventDispatcher.Action<Camera, EventSystem> function)
         {
             while (m_FunctionList.Count <= state)
             {

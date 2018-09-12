@@ -200,7 +200,7 @@ namespace tezcat.Utility
         private void setCapacity(int new_capacity)
         {
             int old = m_Capacity;
-            m_Capacity = Math.Max(new_capacity, m_Count);
+            m_Capacity = System.Math.Max(new_capacity, m_Count);
 
             if (m_Capacity != old)
             {

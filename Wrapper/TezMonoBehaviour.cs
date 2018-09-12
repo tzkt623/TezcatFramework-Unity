@@ -36,8 +36,8 @@ namespace tezcat.Wrapper
             if (!m_Init)
             {
                 m_Init = true;
-                this.linkEvent();
                 this.initObject();
+                this.linkEvent();
                 this.refresh();
             }
         }

@@ -1,5 +1,4 @@
-﻿using tezcat.Core;
-using tezcat.String;
+﻿using tezcat.String;
 using UnityEngine;
 
 namespace tezcat.DataBase

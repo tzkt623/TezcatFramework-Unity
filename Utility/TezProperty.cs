@@ -193,8 +193,8 @@ namespace tezcat.Utility
 
     public class TezPV_IntGS : TezPropertyValue<int>
     {
-        TezEventCenter.Function<int> m_Getter = null;
-        TezEventCenter.Action<int> m_Setter = null;
+        TezEventDispatcher.Function<int> m_Getter = null;
+        TezEventDispatcher.Action<int> m_Setter = null;
 
         public override int value
         {
@@ -381,14 +381,14 @@ namespace tezcat.Utility
     #region 特殊Value
     public abstract class TezGetterSetter<T> : TezPropertyValue
     {
-        TezEventCenter.Function<T> m_Getter = null;
-        public TezEventCenter.Function<T> getter
+        TezEventDispatcher.Function<T> m_Getter = null;
+        public TezEventDispatcher.Function<T> getter
         {
             set { m_Getter = value; }
         }
 
-        TezEventCenter.Action<T> m_Setter = null;
-        public TezEventCenter.Action<T> setter
+        TezEventDispatcher.Action<T> m_Setter = null;
+        public TezEventDispatcher.Action<T> setter
         {
             set { m_Setter = value; }
         }
@@ -406,8 +406,8 @@ namespace tezcat.Utility
 
     public class TezPV_Getter<Return> : TezPropertyValue
     {
-        TezEventCenter.Function<Return> m_Getter = null;
-        public TezEventCenter.Function<Return> getter
+        TezEventDispatcher.Function<Return> m_Getter = null;
+        public TezEventDispatcher.Function<Return> getter
         {
             set { m_Getter = value; }
         }

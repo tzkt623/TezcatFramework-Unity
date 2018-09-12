@@ -8,7 +8,7 @@ namespace tezcat.UI
     [RequireComponent(typeof(ScrollRect))]
     public class TezTree : TezWidget
     {
-        public event TezEventCenter.Action<TezTreeNode> onSelectNode;
+        public event TezEventDispatcher.Action<TezTreeNode> onSelectNode;
 
         [SerializeField]
         TezTreeNode m_Prefab = null;

@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using tezcat.Debug;
+using tezcat.Core;
 using tezcat.Signal;
 
 namespace tezcat.Utility
@@ -19,8 +19,8 @@ namespace tezcat.Utility
         public static TezPropertyName register(string name)
         {
 #if UNITY_EDITOR
-            TezDebug.isFalse(m_PropertyDic.ContainsKey(name), "TezPropertyRegister", string.Format("PropertyKey [{0}] Has Registered", name));
-            TezDebug.info("TezPropertyRegister", string.Format("Register Property [{0}]", name));
+            TezService.get<TezDebug>().isFalse(m_PropertyDic.ContainsKey(name), "TezPropertyRegister", string.Format("PropertyKey [{0}] Has Registered", name));
+            TezService.get<TezDebug>().info("TezPropertyRegister", string.Format("Register Property [{0}]", name));
 #endif
             int id = m_PropertyList.Count;
             TezPropertyName pname = new TezPropertyName(name, id);
@@ -46,7 +46,7 @@ namespace tezcat.Utility
             return m_PropertyDic.ContainsKey(name);
         }
 
-        public static void foreachProperty(TezEventCenter.Action<TezPropertyName> action)
+        public static void foreachProperty(TezEventDispatcher.Action<TezPropertyName> action)
         {
             for (int i = 0; i < m_PropertyList.Count; i++)
             {
@@ -91,13 +91,13 @@ namespace tezcat.Utility
         }
 
         #region Float
-        public void register(TezPV_Float value, TezEventCenter.Action<float> function)
+        public void register(TezPV_Float value, TezEventDispatcher.Action<float> function)
         {
             this.register(value.propertyName, function);
             properties.Add(value);
         }
 
-        public void register(TezPropertyName name, TezEventCenter.Action<float> function)
+        public void register(TezPropertyName name, TezEventDispatcher.Action<float> function)
         {
             TezPF_Float p = new TezPF_Float(name);
             p.setFunction(function);
@@ -107,13 +107,13 @@ namespace tezcat.Utility
         #endregion
 
         #region Int
-        public void register(TezPV_Int value, TezEventCenter.Action<int> function)
+        public void register(TezPV_Int value, TezEventDispatcher.Action<int> function)
         {
             this.register(value.propertyName, function);
             properties.Add(value);
         }
 
-        public void register(TezPropertyName name, TezEventCenter.Action<int> function)
+        public void register(TezPropertyName name, TezEventDispatcher.Action<int> function)
         {
             TezPF_Int p = new TezPF_Int(name);
             p.setFunction(function);
@@ -123,13 +123,13 @@ namespace tezcat.Utility
         #endregion
 
         #region Bool
-        public void register(TezPV_Bool value, TezEventCenter.Action<bool> function)
+        public void register(TezPV_Bool value, TezEventDispatcher.Action<bool> function)
         {
             this.register(value.propertyName, function);
             properties.Add(value);
         }
 
-        public void register(TezPropertyName name, TezEventCenter.Action<bool> function)
+        public void register(TezPropertyName name, TezEventDispatcher.Action<bool> function)
         {
             TezPF_Bool p = new TezPF_Bool(name);
             p.setFunction(function);
@@ -139,13 +139,13 @@ namespace tezcat.Utility
         #endregion
 
         #region String
-        public void register(TezPV_String value, TezEventCenter.Action<string> function)
+        public void register(TezPV_String value, TezEventDispatcher.Action<string> function)
         {
             this.register(value.propertyName, function);
             properties.Add(value);
         }
 
-        public void register(TezPropertyName name, TezEventCenter.Action<string> function)
+        public void register(TezPropertyName name, TezEventDispatcher.Action<string> function)
         {
             TezPF_String p = new TezPF_String(name);
             p.setFunction(function);
@@ -202,7 +202,7 @@ namespace tezcat.Utility
             }
         }
 
-        public void inject<PV>(TezPropertyName name, TezEventCenter.Action<PV> injector) where PV : TezPropertyValue
+        public void inject<PV>(TezPropertyName name, TezEventDispatcher.Action<PV> injector) where PV : TezPropertyValue
         {
             var property = this.getPropertyValue<PV>(name);
             if (property != null)
@@ -211,7 +211,7 @@ namespace tezcat.Utility
             }
         }
 
-        public void inject(TezPropertyName name, TezEventCenter.Action<ITezPropertyOwner> injector)
+        public void inject(TezPropertyName name, TezEventDispatcher.Action<ITezPropertyOwner> injector)
         {
             var property = this.getPropertyValue(name);
             if (property != null)

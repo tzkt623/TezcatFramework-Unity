@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace tezcat.Serialization
+namespace tezcat.DataBase
 {
     public abstract class TezReader
     {

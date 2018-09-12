@@ -1,8 +1,9 @@
-﻿using UnityEngine;
-using UnityEngine.UI;
-using UnityEngine.EventSystems;
-
+﻿using tezcat.Core;
 using tezcat.Utility;
+using UnityEngine;
+using UnityEngine.EventSystems;
+using UnityEngine.UI;
+
 namespace tezcat.UI
 {
     public class TezLocalizationDescriptionItem
@@ -88,7 +89,7 @@ namespace tezcat.UI
             string value = null;
             if (TezTranslator.translateDescription(m_KeyName.text, out value))
             {
-                TezTipManager.instance
+                TezService.get<TezTip>()
                     .setDescription(value)
                     .show();
             }
@@ -96,7 +97,7 @@ namespace tezcat.UI
 
         void IPointerExitHandler.OnPointerExit(PointerEventData eventData)
         {
-            TezTipManager.instance.hide();
+            TezService.get<TezTip>().hide();
         }
 
         void IPointerUpHandler.OnPointerUp(PointerEventData eventData)

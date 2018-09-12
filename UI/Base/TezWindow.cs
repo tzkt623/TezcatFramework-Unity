@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using tezcat.Core;
-using tezcat.Debug;
 using tezcat.Signal;
 using UnityEngine;
 
@@ -141,7 +140,7 @@ namespace tezcat.UI
         public override bool checkForClose()
         {
             bool result = true;
-            List<TezEventCenter.Action> close_function_list = new List<TezEventCenter.Action>(m_AreaList.Count);
+            List<TezEventDispatcher.Action> close_function_list = new List<TezEventDispatcher.Action>(m_AreaList.Count);
 
             foreach (var area in m_AreaList)
             {
@@ -242,7 +241,7 @@ namespace tezcat.UI
         private void registerArea(TezArea area)
         {
 #if UNITY_EDITOR
-            TezDebug.isTrue(area.areaID >= 0, "UIWindow (" + m_WindowName + ")", "Window (" + area.areaName + ") ID Must EqualGreater Than 0");
+            TezService.get<TezDebug>().isTrue(area.areaID >= 0, "UIWindow (" + m_WindowName + ")", "Window (" + area.areaName + ") ID Must EqualGreater Than 0");
 #endif
             this.growArea(area.areaID);
 
@@ -260,7 +259,7 @@ namespace tezcat.UI
             m_AreaDic.Add(area.areaName + area.areaID, area.areaID);
 
 #if UNITY_EDITOR
-            TezDebug.info("UIWindow (" + m_WindowName + ")", "Register Area: " + area.areaName + " ID:" + area.areaID);
+            TezService.get<TezDebug>().info("UIWindow (" + m_WindowName + ")", "Register Area: " + area.areaName + " ID:" + area.areaID);
 #endif
         }
 
@@ -282,7 +281,7 @@ namespace tezcat.UI
                 m_AreaDic.Add(area.areaName + area.areaID, area.areaID);
 
 #if UNITY_EDITOR
-                TezDebug.info("UIWindow (" + m_WindowName + ")", "Add Area: " + area.areaName + " ID:" + area.areaID);
+                TezService.get<TezDebug>().info("UIWindow (" + m_WindowName + ")", "Add Area: " + area.areaName + " ID:" + area.areaID);
 #endif
             }
         }
@@ -331,7 +330,7 @@ namespace tezcat.UI
         public void onAreaNameChanged(TezArea area, string new_name)
         {
 #if UNITY_EDITOR
-            TezDebug.info("UIWindow (" + m_WindowName + ")", "Area Name: " + area.areaName + " Change To: " + new_name);
+            TezService.get<TezDebug>().info("UIWindow (" + m_WindowName + ")", "Area Name: " + area.areaName + " Change To: " + new_name);
 #endif
             m_AreaDic.Remove(area.areaName + area.areaID);
             m_AreaDic.Add(new_name + area.areaID, area.areaID);

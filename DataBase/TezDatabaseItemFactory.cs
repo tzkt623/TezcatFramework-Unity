@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using tezcat.Debug;
+using tezcat.Core;
 using tezcat.Signal;
 using tezcat.String;
 
@@ -19,7 +19,7 @@ namespace tezcat.DataBase
                 this.name = name;
             }
 
-            public Group create(TezStaticString type_name, int type_id, TezEventCenter.Function<TezItem> function)
+            public Group create(TezStaticString type_name, int type_id, TezEventDispatcher.Function<TezItem> function)
             {
                 Container container = null;
                 if(!m_Dic.TryGetValue(type_name, out container))
@@ -57,9 +57,9 @@ namespace tezcat.DataBase
         public class Container
         {
             public TezStaticString name { get; private set; }
-            TezEventCenter.Function<TezItem> m_Function = null;
+            TezEventDispatcher.Function<TezItem> m_Function = null;
 
-            public void register(TezStaticString name, TezEventCenter.Function<TezItem> function)
+            public void register(TezStaticString name, TezEventDispatcher.Function<TezItem> function)
             {
                 m_Function = function;
                 this.name = name;
@@ -68,7 +68,7 @@ namespace tezcat.DataBase
             public TezItem create()
             {
 #if UNITY_EDITOR
-                TezDebug.isTrue(m_Function != null
+                TezService.get<TezDebug>().isTrue(m_Function != null
                     , "TezDatabaseItemFactory"
                     , string.Format("{0}`s Create Function is null", this.name.convertToString()));
 #endif

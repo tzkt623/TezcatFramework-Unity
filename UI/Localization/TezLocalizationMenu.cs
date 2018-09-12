@@ -1,9 +1,8 @@
-﻿using UnityEngine;
-using UnityEngine.EventSystems;
-
+﻿using tezcat.Core;
+using tezcat.DataBase;
 using tezcat.Utility;
-using tezcat.Serialization;
-using tezcat.Core;
+using UnityEngine;
+using UnityEngine.EventSystems;
 
 namespace tezcat.UI
 {
@@ -30,7 +29,7 @@ namespace tezcat.UI
             {
                 TezJsonWriter writer = new TezJsonWriter();
                 TezTranslator.serialization(writer);
-                writer.save(TezcatGameEngine.localizationPath);
+                writer.save(TezcatFramework.localizationPath);
             }
         }
 

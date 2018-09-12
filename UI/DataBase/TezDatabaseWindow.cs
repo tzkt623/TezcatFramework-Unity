@@ -15,7 +15,8 @@ namespace tezcat.UI
         [SerializeField]
         TezDatabaseItemContainer m_Container = null;
 
-        Dictionary<TezDatabase.CategoryType, TezBasicItemEditor> m_EditorDic = new Dictionary<TezDatabase.CategoryType, TezBasicItemEditor>();
+//        Dictionary<TezDatabase.Container, TezBasicItemEditor> m_EditorDic = new Dictionary<TezDatabase.Container, TezBasicItemEditor>();
+        List<TezBasicItemEditor> m_EditorDic = new List<TezBasicItemEditor>();
         TezBasicItemEditor m_CurrentEditor = null;
 
         protected override void preInit()
@@ -40,13 +41,18 @@ namespace tezcat.UI
                 {
                     foreach (var category in editor.supportCategory)
                     {
-                        m_EditorDic.Add(category, editor);
+                        while(m_EditorDic.Count <= category)
+                        {
+                            m_EditorDic.Add(null);
+                        }
+
+                        m_EditorDic[category] = editor;
                     }
                 }
             });
         }
 
-        public void createItemEditor(TezDatabase.CategoryType category)
+        public void createItemEditor(int category)
         {
             if(m_CurrentEditor)
             {
@@ -54,7 +60,7 @@ namespace tezcat.UI
             }
 
             TezBasicItemEditor prefab = null;
-            if(m_EditorDic.TryGetValue(category, out prefab))
+            if(m_EditorDic.Count > category)
             {
                 m_CurrentEditor = TezcatFramework.instance.createWindow(prefab, "TezItemEditor", this.layer) as TezBasicItemEditor;
             }
@@ -62,6 +68,15 @@ namespace tezcat.UI
             {
                 m_CurrentEditor = TezcatFramework.instance.createWindow<TezItemEditor>("TezItemEditor", this.layer);
             }
+
+//             if (m_EditorDic.TryGetValue(category, out prefab))
+//             {
+//                 m_CurrentEditor = TezcatFramework.instance.createWindow(prefab, "TezItemEditor", this.layer) as TezBasicItemEditor;
+//             }
+//             else
+//             {
+//                 m_CurrentEditor = TezcatFramework.instance.createWindow<TezItemEditor>("TezItemEditor", this.layer);
+//             }
 
             m_CurrentEditor.transform.SetAsLastSibling();
             m_CurrentEditor.onClose.add(this.onEditorClose);
@@ -71,25 +86,25 @@ namespace tezcat.UI
 
         public void editItem(TezItem item)
         {
-            if (m_CurrentEditor)
-            {
-                return;
-            }
-
-            TezBasicItemEditor prefab = null;
-            if (m_EditorDic.TryGetValue(item.categoryType, out prefab))
-            {
-                m_CurrentEditor = TezcatFramework.instance.createWindow(prefab, "TezItemEditor", this.layer) as TezBasicItemEditor;
-            }
-            else
-            {
-                m_CurrentEditor = TezcatFramework.instance.createWindow<TezItemEditor>("TezItemEditor", this.layer);
-            }
-
-            m_CurrentEditor.transform.SetAsLastSibling();
-            m_CurrentEditor.onClose.add(this.onEditorClose);
-            m_CurrentEditor.bind(item);
-            m_CurrentEditor.open();
+//             if (m_CurrentEditor)
+//             {
+//                 return;
+//             }
+// 
+//             TezBasicItemEditor prefab = null;
+//             if (m_EditorDic.TryGetValue(item.categoryType, out prefab))
+//             {
+//                 m_CurrentEditor = TezcatFramework.instance.createWindow(prefab, "TezItemEditor", this.layer) as TezBasicItemEditor;
+//             }
+//             else
+//             {
+//                 m_CurrentEditor = TezcatFramework.instance.createWindow<TezItemEditor>("TezItemEditor", this.layer);
+//             }
+// 
+//             m_CurrentEditor.transform.SetAsLastSibling();
+//             m_CurrentEditor.onClose.add(this.onEditorClose);
+//             m_CurrentEditor.bind(item);
+//             m_CurrentEditor.open();
         }
 
         private void onEditorClose()

@@ -1,6 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
-using tezcat.Random;
+using tezcat.Math;
 using tezcat.Signal;
 using UnityEngine;
 
@@ -8,10 +8,10 @@ namespace tezcat.Game
 {
     public class TezDungeonGenerator
     {
-        public event TezEventCenter.Action<int, int> onBlockFilled;
-        public event TezEventCenter.Action<int, int> onCanPassCreated;
-        public event TezEventCenter.Action<int, int> onCanNotPassCreated;
-        public event TezEventCenter.Action<int, int> onCanPassConfirmed;
+        public event TezEventDispatcher.Action<int, int> onBlockFilled;
+        public event TezEventDispatcher.Action<int, int> onCanPassCreated;
+        public event TezEventDispatcher.Action<int, int> onCanNotPassCreated;
+        public event TezEventDispatcher.Action<int, int> onCanPassConfirmed;
 
         List<TezDungeonRoom> m_RoomList = new List<TezDungeonRoom>();
 

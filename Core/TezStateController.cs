@@ -121,7 +121,7 @@ namespace tezcat.Core
             onStateChanged.invoke();
         }
 
-        public static void locking(int state, TezEventCenter.Action function)
+        public static void locking(int state, TezEventDispatcher.Action function)
         {
             if((m_States & state) == state)
             {

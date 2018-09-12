@@ -4,9 +4,9 @@
     {
         public class Database
         {
-            public const string id = "id";
-            public const string asset = "asset";
-            public const string gamedata = "gamedata";
+            public const string ID = "ID";
+            public const string Asset = "Asset";
+            public const string GameData = "GameData";
 
             public const string GID = "GID";
             public const string CID = "CID";

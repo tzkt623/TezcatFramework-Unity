@@ -1,8 +1,4 @@
-﻿using UnityEngine;
-using System.Collections;
-
-
-namespace tezcat.Game
+﻿namespace tezcat.Game
 {
     public class TezDungeonUtility
     {

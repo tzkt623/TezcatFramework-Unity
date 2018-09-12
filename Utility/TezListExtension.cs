@@ -16,7 +16,7 @@ namespace tezcat.Utility
         /// <param name="remove_id">要移除的item的ID</param>
         /// <param name="on_swap">非最后一个Item的删除前处理(remove, last)</param>
         /// <param name="on_not_swap">最后一个Item的删除前处理(remove)</param>
-        public static void Remove<T>(this List<T> list, int remove_id, TezEventCenter.Action<T, T> on_swap, TezEventCenter.Action<T> on_not_swap)
+        public static void Remove<T>(this List<T> list, int remove_id, TezEventDispatcher.Action<T, T> on_swap, TezEventDispatcher.Action<T> on_not_swap)
         {
             int last_id = list.Count - 1;
             if (remove_id != last_id)

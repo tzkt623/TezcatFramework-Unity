@@ -43,7 +43,7 @@ namespace tezcat.DataBase
         static Dictionary<Type, int> m_PrefabDic = new Dictionary<Type, int>();
         static List<Prefab> m_List = new List<Prefab>();
 
-        public static void foreachPrefab(TezEventCenter.Action<Prefab> action)
+        public static void foreachPrefab(TezEventDispatcher.Action<Prefab> action)
         {
             foreach (var prefab in m_List)
             {
@@ -156,7 +156,7 @@ namespace tezcat.DataBase
         List<TezGameWidget> GameWidget = new List<TezGameWidget>();
 
         [SerializeField]
-        List<TezObjectMB> ObjectMB = new List<TezObjectMB>();
+        List<TezGameObjectMB> ObjectMB = new List<TezGameObjectMB>();
         [SerializeField]
         List<TezGameMB> GameMB = new List<TezGameMB>();
 

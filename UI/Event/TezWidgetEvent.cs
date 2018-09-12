@@ -23,9 +23,9 @@ namespace tezcat.UI
         
         public class Dispatcher
         {
-            List<TezEventCenter.Action<object>> m_OnEvent = new List<TezEventCenter.Action<object>>();
+            List<TezEventDispatcher.Action<object>> m_OnEvent = new List<TezEventDispatcher.Action<object>>();
 
-            public void register(int event_id, TezEventCenter.Action<object> action)
+            public void register(int event_id, TezEventDispatcher.Action<object> action)
             {
                 while(m_OnEvent.Count <= event_id)
                 {

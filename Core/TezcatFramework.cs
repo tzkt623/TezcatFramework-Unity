@@ -1,9 +1,11 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using tezcat.DataBase;
-using tezcat.Debug;
+using tezcat.Math;
 using tezcat.Signal;
 using tezcat.UI;
+using tezcat.Utility;
 using tezcat.Wrapper;
 using UnityEngine;
 
@@ -11,37 +13,108 @@ namespace tezcat.Core
 {
     public abstract class TezcatFramework : TezGameWidget
     {
-        public static TezcatFramework instance { get; private set; }
+        #region Static Data
+        public const uint UIDMax = 3000;
 
-        
-
-        #region 创建UI
-        Queue<TezEventCenter.Action> m_CreateQueue = new Queue<TezEventCenter.Action>();
-
-        public void createUI(TezEventCenter.Action action)
+        static string m_RootDir = null;
+        public static string rootPath
         {
-            m_CreateQueue.Enqueue(action);
+            get
+            {
+                if (string.IsNullOrEmpty(m_RootDir))
+                {
+                    m_RootDir = Application.dataPath;
+                    int index = m_RootDir.IndexOf(Application.productName);
+                    m_RootDir = m_RootDir.Substring(0, index + Application.productName.Length) + "/TezSave";
+                }
+
+                return m_RootDir;
+            }
+        }
+        public static string localizationFile { get; private set; } = "/Localization.json";
+        public static string localizationPath
+        {
+            get
+            {
+                return rootPath + localizationFile;
+            }
+        }
+
+        public static string databaseFile { get; private set; } = "/Database.json";
+        public static string databasePath
+        {
+            get
+            {
+                return rootPath + databaseFile;
+            }
+        }
+
+        public static string saveFile { get; private set; } = "/Save.json";
+        public static string savePath
+        {
+            get
+            {
+                return rootPath + saveFile;
+            }
+        }
+
+        public static void checkNeedFile()
+        {
+            if (!TezPath.directoryExist(rootPath))
+            {
+                var info = TezPath.createDirectory(rootPath);
+            }
+
+            checkFile(
+                localizationPath,
+
+                (StreamWriter writer) =>
+                {
+                    writer.Write(
+                        "{" +
+                        "\"name\":{}," +
+                        "\"description\":{}" +
+                        "}");
+                });
+
+            checkFile(
+                databasePath,
+
+                (StreamWriter writer) =>
+                {
+                    writer.Write("[]");
+                });
+
+            checkFile(
+                savePath,
+
+                (StreamWriter writer) =>
+                {
+
+                });
+        }
+
+        private static void checkFile(string path, TezEventDispatcher.Action<StreamWriter> action)
+        {
+            if (!TezPath.fileExist(path))
+            {
+                var writer = TezPath.createTextFile(path);
+                action(writer);
+                writer.Close();
+            }
         }
         #endregion
 
-        #region Window
-        List<TezWindow> m_WindowList = new List<TezWindow>();
-        Dictionary<string, int> m_WindowDic = new Dictionary<string, int>();
-        Queue<int> m_FreeWindowID = new Queue<int>();
-        #endregion
+        #region Engine
+        public static TezcatFramework instance { get; private set; }
+        public static TezVersions versions { get; protected set; }
 
-        #region Layer
-        List<TezLayer> m_LayerList = new List<TezLayer>();
-        Dictionary<string, int> m_LayerDic = new Dictionary<string, int>();
-        #endregion
-
-        #region Object
-        List<TezObjectMB> m_ObjectMBList = new List<TezObjectMB>();
-        #endregion
+        List<TezGameObjectMB> m_ObjectMBList = new List<TezGameObjectMB>();
 
         protected override void preInit()
         {
             instance = this;
+            this.register();
         }
 
         protected override void initWidget()
@@ -54,6 +127,8 @@ namespace tezcat.Core
                     this.addLayer(layer);
                 }
             }
+
+            StartCoroutine(loadResources());
         }
 
         protected override void linkEvent()
@@ -85,8 +160,49 @@ namespace tezcat.Core
         {
 
         }
+        #endregion
+
+        #region Loading
+        protected abstract IEnumerator onLoadResources();
+
+        private IEnumerator loadResources()
+        {
+            yield return this.onLoadResources();
+            yield return this.startMyGame();
+        }
+
+        public abstract IEnumerator startMyGame();
+
+        private void register()
+        {
+            this.registerVersions();
+            this.registerService();
+            this.registerClassFactory(TezService.get<TezClassFactory>());
+        }
+
+        protected virtual void registerService()
+        {
+            TezService.register(new TezDebug());
+            TezService.register(new TezEventDispatcher());
+
+            TezService.register(new TezClassFactory());
+            TezService.register(new TezRandom());
+            TezService.register(new TezDatabase());
+            TezService.register(new TezTip());
+        }
+
+        protected virtual void registerClassFactory(TezClassFactory factory)
+        {
+
+        }
+
+        protected abstract void registerVersions();
+        #endregion
 
         #region Layer
+        List<TezLayer> m_LayerList = new List<TezLayer>();
+        Dictionary<string, int> m_LayerDic = new Dictionary<string, int>();
+
         public void addLayer(TezLayer layer)
         {
             if (!m_LayerDic.ContainsKey(layer.name))
@@ -100,19 +216,23 @@ namespace tezcat.Core
                 m_LayerList[layer.ID] = layer;
 
 #if UNITY_EDITOR
-                TezDebug.info("UIRoot", "Add Layer: " + layer.name + " ID: " + layer.ID);
+                TezService.get<TezDebug>().info("UIRoot", "Add Layer: " + layer.name + " ID: " + layer.ID);
 #endif
             }
 #if UNITY_EDITOR
             else
             {
-                TezDebug.waring("UIRoot", "Repeat to add layer " + layer.name);
+                TezService.get<TezDebug>().waring("UIRoot", "Repeat to add layer " + layer.name);
             }
 #endif
         }
         #endregion
 
         #region Window
+        List<TezWindow> m_WindowList = new List<TezWindow>();
+        Dictionary<string, int> m_WindowDic = new Dictionary<string, int>();
+        Queue<int> m_FreeWindowID = new Queue<int>();
+
         private int giveID()
         {
             int id = -1;
@@ -197,51 +317,8 @@ namespace tezcat.Core
         {
 
         }
-
-        protected virtual void Update()
-        {
-            while(m_CreateQueue.Count > 0)
-            {
-                m_CreateQueue.Dequeue()();
-            }
-        }
         #endregion
-    }
 
-
-    /// <summary>
-    /// 
-    /// </summary>
-    public abstract class TezcatFramework<T> : TezcatFramework where T : TezcatGameEngine, new()
-    {
-        public T engine { get; private set; }
-
-        protected override void preInit()
-        {
-            base.preInit();
-
-            engine = new T();
-            engine.preInit();
-        }
-
-        protected override void initWidget()
-        {
-            base.initWidget();
-            StartCoroutine(loading());
-        }
-
-        private IEnumerator loading()
-        {
-            yield return engine.launch();
-            this.startMyGame();
-        }
-
-        public abstract void startMyGame();
-
-        public override void clear()
-        {
-            engine.close();
-            engine = null;
-        }
+        protected abstract void Update();
     }
 }

@@ -1,4 +1,4 @@
-﻿using tezcat.Debug;
+﻿using tezcat.Core;
 using UnityEditor;
 using UnityEngine;
 
@@ -54,7 +54,7 @@ namespace tezcat.TEditor
             m_Fliter = (InfoType)EditorGUILayout.EnumPopup("过滤", m_Fliter);
             if(GUILayout.Button("清空"))
             {
-                TezDebug.clear();
+                TezService.get<TezDebug>().clear();
             }
             EditorGUILayout.EndHorizontal();
             EditorGUILayout.Space();
@@ -68,7 +68,7 @@ namespace tezcat.TEditor
 
         private void drawLabel()
         {
-            foreach (var content in TezDebug.infoList)
+            foreach (var content in TezService.get<TezDebug>().infoQueue)
             {
                 switch (m_Fliter)
                 {
@@ -93,60 +93,60 @@ namespace tezcat.TEditor
             }
         }
 
-        private void drawAll(TezDebug.Pack content)
+        private void drawAll(TezDebugInfo content)
         {
             switch (content.type)
             {
-                case TezDebug.Type.Info:
+                case TezDebugType.Info:
                     EditorGUILayout.LabelField(content.content, m_Info);
                     break;
-                case TezDebug.Type.Waring:
+                case TezDebugType.Waring:
                     EditorGUILayout.LabelField(content.content, m_Waring);
                     break;
-                case TezDebug.Type.Error:
+                case TezDebugType.Error:
                     EditorGUILayout.LabelField(content.content, m_Error);
                     break;
-                case TezDebug.Type.Assert:
+                case TezDebugType.Assert:
                     EditorGUILayout.LabelField(content.content, m_Assert);
                     break;
             }
         }
 
-        private void drawInfo(TezDebug.Pack content)
+        private void drawInfo(TezDebugInfo content)
         {
             switch (content.type)
             {
-                case TezDebug.Type.Info:
+                case TezDebugType.Info:
                     EditorGUILayout.LabelField(content.content, m_Info);
                     break;
             }
         }
 
-        private void drawWaring(TezDebug.Pack content)
+        private void drawWaring(TezDebugInfo content)
         {
             switch (content.type)
             {
-                case TezDebug.Type.Waring:
+                case TezDebugType.Waring:
                     EditorGUILayout.LabelField(content.content, m_Waring);
                     break;
             }
         }
 
-        private void drawError(TezDebug.Pack content)
+        private void drawError(TezDebugInfo content)
         {
             switch (content.type)
             {
-                case TezDebug.Type.Error:
+                case TezDebugType.Error:
                     EditorGUILayout.LabelField(content.content, m_Error);
                     break;
             }
         }
 
-        private void drawAssert(TezDebug.Pack content)
+        private void drawAssert(TezDebugInfo content)
         {
             switch (content.type)
             {
-                case TezDebug.Type.Assert:
+                case TezDebugType.Assert:
                     EditorGUILayout.LabelField(content.content, m_Assert);
                     break;
             }

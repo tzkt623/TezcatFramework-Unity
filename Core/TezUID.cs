@@ -4,44 +4,105 @@ using System.Collections.Generic;
 namespace tezcat.Core
 {
     public class TezUID
-        : IEquatable<TezUID>
+        : TezObject
+        , IEquatable<TezUID>
         , IComparable<TezUID>
     {
-        static Stack<uint> m_FreeIDList = new Stack<uint>();
-        static uint m_Giver = 0;
-
-        uint m_UID = 0;
-        public TezUID()
+        #region 分组
+        class Group
         {
-            if (m_FreeIDList.Count > 0)
+            static Stack<uint> m_FreeID = new Stack<uint>();
+            static uint m_Giver = 0;
+
+            int m_GID;
+            public Group(int gid)
             {
-                m_UID = m_FreeIDList.Pop();
+                this.m_GID = gid;
             }
-            else
+
+            public bool hasID()
             {
-                m_UID = m_Giver++;
+                return m_FreeID.Count > 0 || m_Giver < TezcatFramework.UIDMax;
+            }
+
+            public bool tryGiveID(ref int gid, ref uint id)
+            {
+                gid = m_GID;
+                if (m_FreeID.Count > 0)
+                {
+                    id = m_FreeID.Pop();
+                    return true;
+                }
+
+                if (m_Giver < TezcatFramework.UIDMax)
+                {
+                    id = m_Giver++;
+                    return true;
+                }
+
+                gid = -1;
+                id = 0;
+                return false;
+            }
+
+            public void recycle(uint id)
+            {
+                m_FreeID.Push(id);
             }
         }
 
-        ~TezUID()
+        static List<Group> m_Group = null;
+        static Group m_Current = null;
+
+        static void giveID(ref int gid, ref uint id)
         {
-            m_FreeIDList.Push(m_UID);
+            if(!m_Current.tryGiveID(ref gid, ref id))
+            {
+                foreach (var group in m_Group)
+                {
+                    if(group.hasID())
+                    {
+                        m_Current = group;
+                        m_Current.tryGiveID(ref gid, ref id);
+                        return;
+                    }
+                }
+
+                m_Current = new Group(m_Group.Count);
+                m_Group.Add(m_Current);
+                m_Current.tryGiveID(ref gid, ref id);
+            }
+        }
+
+        static void recycle(int gid, uint id)
+        {
+            m_Group[gid].recycle(id);
+        }
+        #endregion
+
+        int m_GID = -1;
+        uint m_UID = 0;
+
+        static TezUID()
+        {
+            m_Group = new List<Group>();
+            m_Current = new Group(m_Group.Count);
+            m_Group.Add(m_Current);
+        }
+
+        public TezUID()
+        {
+            TezUID.giveID(ref m_GID, ref m_UID);
         }
 
         public override string ToString()
         {
-            return string.Format("[UID-{0}]", m_UID);
+            return string.Format("{0}{1}", m_GID, m_UID);
         }
 
         public override bool Equals(object obj)
         {
-            var other = obj as TezUID;
-            if (other == null)
-            {
-                return false;
-            }
-
-            return m_UID == other.m_UID;
+            return this.Equals(obj as TezUID);
         }
 
         public override int GetHashCode()
@@ -51,7 +112,7 @@ namespace tezcat.Core
 
         public bool Equals(TezUID other)
         {
-            return m_UID == other.m_UID;
+            return other == null ? false : m_GID == other.m_GID && m_UID == other.m_UID;
         }
 
         public int CompareTo(TezUID other)
@@ -59,24 +120,21 @@ namespace tezcat.Core
             return m_UID.CompareTo(other.m_UID);
         }
 
-        public static bool operator == (TezUID a, TezUID b)
+        public override void close()
         {
-            return a.m_UID == b.m_UID;
+            TezUID.recycle(m_GID, m_UID);
+            m_GID = -1;
+            m_UID = 0;
+        }
+
+        public static bool operator ==(TezUID a, TezUID b)
+        {
+            return a.m_GID == b.m_GID && a.m_UID == b.m_UID;
         }
 
         public static bool operator !=(TezUID a, TezUID b)
         {
-            return a.m_UID != b.m_UID;
-        }
-
-        public static implicit operator uint(TezUID uid)
-        {
-            return uid.m_UID;
-        }
-
-        public static bool operator !(TezUID uid)
-        {
-            return object.ReferenceEquals(uid, null);
+            return a.m_GID != b.m_GID || a.m_UID != b.m_UID;
         }
     }
 }

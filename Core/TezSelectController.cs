@@ -22,8 +22,6 @@ namespace tezcat.Core
     public abstract class TezBasicSelector
     {
         public abstract TezSelectorType selectorType { get; }
-        public abstract TezDatabase.GroupType groupType { get; }
-        public abstract TezDatabase.CategoryType categoryType { get; }
     }
 
     /// <summary>
@@ -34,16 +32,6 @@ namespace tezcat.Core
     public class TezObjectSelector : TezBasicSelector
     {
         TezObject m_Object = null;
-
-        public sealed override TezDatabase.GroupType groupType
-        {
-            get { return m_Object.groupType; }
-        }
-
-        public sealed override TezDatabase.CategoryType categoryType
-        {
-            get { return m_Object.categoryType; }
-        }
 
         public sealed override TezSelectorType selectorType
         {
@@ -73,16 +61,6 @@ namespace tezcat.Core
             get { return TezSelectorType.Item; }
         }
 
-        public sealed override TezDatabase.GroupType groupType
-        {
-            get { return m_Slot.myData.groupType; }
-        }
-
-        public sealed override TezDatabase.CategoryType categoryType
-        {
-            get { return m_Slot.myData.categoryType; }
-        }
-
         public TezItemSelector(TezItemSlot slot)
         {
             m_Slot = slot;
@@ -90,7 +68,7 @@ namespace tezcat.Core
 
         public Item convertItem<Item>() where Item : TezItem
         {
-            return (Item)m_Slot.myData;
+            return (Item)m_Slot.myItem;
         }
 
         public Slot convertSlot<Slot>() where Slot : TezItemSlot
@@ -125,7 +103,7 @@ namespace tezcat.Core
             m_Current = null;
         }
 
-        public static void objectToDo(TezEventCenter.Action<TezObjectSelector> action)
+        public static void objectToDo(TezEventDispatcher.Action<TezObjectSelector> action)
         {
             if (!object.ReferenceEquals(m_Current, null) && m_Current.selectorType == TezSelectorType.Object)
             {
@@ -133,7 +111,7 @@ namespace tezcat.Core
             }
         }
 
-        public static void itemToDo(TezEventCenter.Action<TezItemSelector> action)
+        public static void itemToDo(TezEventDispatcher.Action<TezItemSelector> action)
         {
             if (!object.ReferenceEquals(m_Current, null) && m_Current.selectorType == TezSelectorType.Item)
             {

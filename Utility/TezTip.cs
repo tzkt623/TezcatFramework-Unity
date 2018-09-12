@@ -1,18 +1,17 @@
 ﻿using System.Text;
+using tezcat.Core;
 using UnityEngine;
 
 namespace tezcat.Utility
 {
-    public interface ITezTip
+    public interface ITezTip : ITezService
     {
         void onShow(string content);
         void onHide();
     }
 
-    public class TezTipManager
+    public class TezTip : ITezService
     {
-        public static readonly TezTipManager instance = new TezTipManager();
-
         StringBuilder m_Builder = new StringBuilder();
 
         ITezTip m_Tip = null;
@@ -157,7 +156,7 @@ namespace tezcat.Utility
             return string.Format(m_FormatContentWithFlagAndLink, ColorUtility.ToHtmlStringRGBA(color), size.ToString(), content, flag, link_content);
         }
 
-        public TezTipManager setName(string name)
+        public TezTip setName(string name)
         {
             var content = this.format(name, ref m_NameSize, ref m_NameColor, m_FlagEnd);
             m_NameLength = content.Length;
@@ -165,7 +164,7 @@ namespace tezcat.Utility
             return this;
         }
 
-        public TezTipManager setGroup(string group)
+        public TezTip setGroup(string group)
         {
             var content = this.format(group, ref m_GroupSize, ref m_GroupColor, m_FlagEnd);
             m_GroupLength = content.Length;
@@ -173,7 +172,7 @@ namespace tezcat.Utility
             return this;
         }
 
-        public TezTipManager setType(string type)
+        public TezTip setType(string type)
         {
             var content = this.format(type, ref m_TypeSize, ref m_TypeColor, m_FlagEnd);
             m_TypeLength = content.Length;
@@ -181,7 +180,7 @@ namespace tezcat.Utility
             return this;
         }
 
-        public TezTipManager setDescription(string description)
+        public TezTip setDescription(string description)
         {
             var content = format(description, ref m_DescriptionSize, ref m_DescriptionColor, m_FlagEnd);
             m_DescriptionLength = content.Length;
@@ -189,13 +188,13 @@ namespace tezcat.Utility
             return this;
         }
 
-        public TezTipManager pushAttribute(string title, bool attribute)
+        public TezTip pushAttribute(string title, bool attribute)
         {
             this.pushAttribute(title, attribute.ToString());
             return this;
         }
 
-        public TezTipManager pushAttribute(string title, string attribute)
+        public TezTip pushAttribute(string title, string attribute)
         {
             var content = format(title, ref m_AttributeTitleSize, ref m_AttributeTitleColor,
                 " : ",
@@ -206,19 +205,19 @@ namespace tezcat.Utility
             return this;
         }
 
-        public TezTipManager pushAttribute(string title, float attribute)
+        public TezTip pushAttribute(string title, float attribute)
         {
             this.pushAttribute(title, string.Format("{0:N1}", attribute));
             return this;
         }
 
-        public TezTipManager pushAttribute(string title, int attribute)
+        public TezTip pushAttribute(string title, int attribute)
         {
             this.pushAttribute(title, attribute.ToString());
             return this;
         }
 
-        public TezTipManager pushAttribute(TezPropertyValue property)
+        public TezTip pushAttribute(TezPropertyValue property)
         {
             switch (property.getParameterType())
             {
@@ -265,7 +264,7 @@ namespace tezcat.Utility
             return this;
         }
 
-        public TezTipManager pushAttributeSeparator()
+        public TezTip pushAttributeSeparator()
         {
             return this;
         }
@@ -292,6 +291,14 @@ namespace tezcat.Utility
             m_Builder.Clear();
 
             return result;
+        }
+
+        public void close()
+        {
+            m_Builder.Clear();
+            m_Builder = null;
+
+            m_Tip = null;
         }
     }
 }

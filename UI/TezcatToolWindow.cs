@@ -26,7 +26,7 @@ namespace tezcat.UI
 
         protected override void initWidget()
         {
-            TezcatGameEngine.checkNeedFile();
+            TezcatFramework.checkNeedFile();
         }
 
         protected override void linkEvent() 

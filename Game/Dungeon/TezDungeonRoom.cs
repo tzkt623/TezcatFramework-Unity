@@ -1,7 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using tezcat.Signal;
-using UnityEngine;
+﻿using tezcat.Signal;
 
 namespace tezcat.Game
 {
@@ -37,7 +34,7 @@ namespace tezcat.Game
             return !(maxX < this.ox - 1 || ox > this.maxY + 1 || maxY < this.oy - 1 || oy > this.maxY + 1);
         }
 
-        public void foreachRoom(TezEventCenter.Action<int, int> in_room, TezEventCenter.Action<int, int> in_wall)
+        public void foreachRoom(TezEventDispatcher.Action<int, int> in_room, TezEventDispatcher.Action<int, int> in_wall)
         {
             for (int y = -1; y < height + 1; y++)
             {

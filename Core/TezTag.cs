@@ -116,7 +116,7 @@ namespace tezcat.Core
         }
     }
 
-    public class TezTagSet
+    public class TezTagSet : ITezCloseable
     {
         HashSet<int> m_Set = new HashSet<int>();
 
@@ -166,7 +166,7 @@ namespace tezcat.Core
             m_Set.Remove(tag.ID);
         }
 
-        public void clear()
+        public void close()
         {
             m_Set.Clear();
             m_Set = null;
@@ -188,7 +188,7 @@ namespace tezcat.Core
             return result;
         }
 
-        public void foreachTag(TezEventCenter.Action<TezTag> action)
+        public void foreachTag(TezEventDispatcher.Action<TezTag> action)
         {
             foreach (var tag in m_Set)
             {

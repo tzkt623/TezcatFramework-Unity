@@ -37,7 +37,7 @@ namespace tezcat.UI
         /// <param name="wrapper">DropItem的包装器</param>
         /// <param name="event_data">当前的Pointer数据</param>
         /// <returns>DropItem的方法,如果为null,则表示不能Drop</returns>
-        TezEventCenter.Action<ITezWrapper> checkDrop(ITezWrapper wrapper, PointerEventData event_data);
+        TezEventDispatcher.Action<ITezWrapper> checkDrop(ITezWrapper wrapper, PointerEventData event_data);
     }
 
     /// <summary>

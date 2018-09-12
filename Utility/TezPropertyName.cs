@@ -24,12 +24,7 @@ namespace tezcat.Utility
 
         public bool Equals(TezPropertyName other)
         {
-            if(other == null)
-            {
-                return false;
-            }
-
-            return ID == other.ID;
+            return other == null ? false : ID == other.ID;
         }
 
         public override int GetHashCode()

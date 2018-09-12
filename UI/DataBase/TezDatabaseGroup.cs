@@ -1,6 +1,4 @@
-﻿using tezcat.DataBase;
-using tezcat.Debug;
-using tezcat.TypeTraits;
+﻿using tezcat.TypeTraits;
 using UnityEngine;
 
 namespace tezcat.UI
@@ -14,11 +12,10 @@ namespace tezcat.UI
         [SerializeField]
         RectTransform m_Vernier = null;
 
-        public TezDatabase.GroupType groupType { get; private set; }
-        public TezDatabase.CategoryType categoryType { get; private set; }
-
         TezDatabaseItemContainer m_Container = null;
         TezTreeNode m_SelectNode = null;
+
+        public int categoryType { get; set; }
 
         class NodeData : TezTreeData
         {
@@ -54,33 +51,33 @@ namespace tezcat.UI
 
             TezTreeNode current_group = null;
             TezTreeNode current_type = null;
-            TezDatabase.foreachCategoryType(
-
-                (TezDatabase.GroupType group) =>
-                {
-                    if (group == null)
-                    {
-                        return;
-                    }
-
-                    current_group = m_Tree.addData(new NodeData(group));
-#if UNITY_EDITOR
-                    TezDebug.info("TezDatabaseWindow", "Add Group : " + group.name);
-#endif
-                },
-
-                (TezDatabase.CategoryType type) =>
-                {
-                    if (type == null)
-                    {
-                        return;
-                    }
-
-                    current_type = current_group.addData(new NodeData(type));
-#if UNITY_EDITOR
-                    TezDebug.info("TezDatabaseWindow", "Add Type : " + type.name);
-#endif
-                });
+//             TezService.get<TezDatabase>().foreachData(
+// 
+//                 (TezDatabase.Group group) =>
+//                 {
+//                     if (group == null)
+//                     {
+//                         return;
+//                     }
+// 
+//                     current_group = m_Tree.addData(new NodeData(group));
+// #if UNITY_EDITOR
+//                     TezService.debug.info("TezDatabaseWindow", "Add Group : " + group.name);
+// #endif
+//                 },
+// 
+//                 (TezDatabase.Container type) =>
+//                 {
+//                     if (type == null)
+//                     {
+//                         return;
+//                     }
+// 
+//                     current_type = current_group.addData(new NodeData(type));
+// #if UNITY_EDITOR
+//                     TezService.debug.info("TezDatabaseWindow", "Add Type : " + type.name);
+// #endif
+//                 });
         }
 
         public void setContainer(TezDatabaseItemContainer container)
@@ -100,13 +97,11 @@ namespace tezcat.UI
                 var group = node.parent.data as NodeData;
                 var type = node.data as NodeData;
 
-                this.groupType = group.dataType as TezDatabase.GroupType;
-                this.categoryType = type.dataType as TezDatabase.CategoryType;
+
             }
             else
             {
-                this.groupType = null;
-                this.categoryType = null;
+
             }
 
             m_Container.dirty = true;

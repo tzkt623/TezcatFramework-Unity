@@ -19,7 +19,7 @@ namespace tezcat.Utility
         static VirtualItem m_CurrentVirtualItem = null;
         static ITezWrapper m_DragInfo = null;
 
-        static TezEventCenter.Action<ITezWrapper> m_ItemDropFunction = null;
+        static TezEventDispatcher.Action<ITezWrapper> m_ItemDropFunction = null;
 
         public static void setVirtualItem(VirtualItem item)
         {
@@ -66,7 +66,7 @@ namespace tezcat.Utility
             return false;
         }
 
-        public static void drop(PointerEventData eventData, TezEventCenter.Action<ITezWrapper> drop)
+        public static void drop(PointerEventData eventData, TezEventDispatcher.Action<ITezWrapper> drop)
         {
             if (m_Drag)
             {

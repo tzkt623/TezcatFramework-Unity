@@ -17,10 +17,10 @@ namespace tezcat.UI
 
         public TezAction onClose { get; private set; } = new TezAction();
 
-        public abstract TezDatabase.CategoryType[] supportCategory { get; }
-
-        public abstract void bind(TezDatabase.CategoryType category_type);
-        public abstract void bind(TezItem item);
+        public abstract int[] supportCategory { get; }
+// 
+         public abstract void bind(int category);
+//        public abstract void bind(TezItem item);
 
         protected abstract TezItem getItem();
 
@@ -52,7 +52,7 @@ namespace tezcat.UI
                 {
                     if (this.getItem().GUID == -1)
                     {
-                        TezDatabase.registerItem(this.getItem());
+//                        TezService.DB.registerItem(this.getItem());
                     }
 
                     this.close();
@@ -72,7 +72,7 @@ namespace tezcat.UI
                 {
                     if (this.getItem().GUID == -1)
                     {
-                        TezDatabase.registerItem(this.getItem());
+//                        TezService.DB.registerItem(this.getItem());
                     }
 
                     this.dirty = true;

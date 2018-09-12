@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 
-namespace tezcat.Serialization
+namespace tezcat.DataBase
 {
     public class TezJsonWriter : TezWriter
     {
@@ -19,6 +19,11 @@ namespace tezcat.Serialization
         public override void save(string path)
         {
             File.WriteAllText(path, JsonMapper.ToJson(m_Root), Encoding.ASCII);
+        }
+
+        public TezJsonWriter()
+        {
+
         }
 
         #region Object
@@ -99,7 +104,6 @@ namespace tezcat.Serialization
             m_Root[name] = value;
         }
         #endregion
-
 
         #region Array
         protected override void onBeginArray(int key)

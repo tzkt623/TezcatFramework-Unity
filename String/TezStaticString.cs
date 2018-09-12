@@ -1,12 +1,13 @@
 ﻿using System.Collections.Generic;
+using tezcat.Core;
 
 namespace tezcat.String
 {
-    public class TezStaticString
+    public class TezStaticString : TezObject
     {
         private static List<string> StringList = null;
         private static Dictionary<string, int> StringDic = null;
-        private const string ErrorString = "$Error";
+        private const string ErrorString = "@Error";
 
         static TezStaticString()
         {
@@ -77,15 +78,15 @@ namespace tezcat.String
             {
                 if (m_ID == 0)
                 {
-                    m_ID = StringList.Count;
-                    StringList.Add(content);
-                    StringDic.Add(content, m_ID);
+                    m_ID = TezStaticString.StringList.Count;
+                    TezStaticString.StringList.Add(content);
+                    TezStaticString.StringDic.Add(content, m_ID);
                 }
                 else
                 {
-                    StringDic.Remove(StringList[m_ID]);
-                    StringDic.Add(content, m_ID);
-                    StringList[m_ID] = content;
+                    TezStaticString.StringDic.Remove(StringList[m_ID]);
+                    TezStaticString.StringDic.Add(content, m_ID);
+                    TezStaticString.StringList[m_ID] = content;
                 }
             }
         }
@@ -121,39 +122,9 @@ namespace tezcat.String
             m_ID = 0;
         }
 
-        public static bool operator true(TezStaticString str)
+        public override void close()
         {
-            return !object.ReferenceEquals(str, null);
-        }
-
-        public static bool operator false(TezStaticString str)
-        {
-            return object.ReferenceEquals(str, null);
-        }
-
-        public static implicit operator TezStaticString(string str)
-        {
-            return new TezStaticString(str);
-        }
-
-        public static bool operator ==(TezStaticString x, TezStaticString y)
-        {
-            bool flagX = object.ReferenceEquals(x, null);
-            bool flagY = object.ReferenceEquals(y, null);
-
-            return (flagX && flagY) || (!flagX && !flagY) && (x.m_ID == y.m_ID);
-        }
-
-
-        public static bool operator !=(TezStaticString x, TezStaticString y)
-        {
-            /// (!true || !false) && (x)
-            /// (!false || !false) && (x.m_ID != y.m_ID)
-
-            bool flagX = object.ReferenceEquals(x, null);
-            bool flagY = object.ReferenceEquals(y, null);
-
-            return (!flagX || !flagY) && (flagX || flagY) || (x.m_ID != y.m_ID);
+            m_ID = -1;
         }
 
         public static int getIDFromString(string str)
@@ -173,10 +144,34 @@ namespace tezcat.String
         {
             if (tstring == null)
             {
-                return string.Empty;
+                return TezStaticString.StringList[0];
             }
 
-            return StringList[tstring.m_ID];
+            return TezStaticString.StringList[tstring.m_ID];
+        }
+
+        public static implicit operator TezStaticString(string str)
+        {
+            return new TezStaticString(str);
+        }
+
+        public static bool operator ==(TezStaticString x, TezStaticString y)
+        {
+            bool flagX = object.ReferenceEquals(x, null);
+            bool flagY = object.ReferenceEquals(y, null);
+
+            return (flagX && flagY) || (!flagX && !flagY) && (x.m_ID == y.m_ID);
+        }
+
+        public static bool operator !=(TezStaticString x, TezStaticString y)
+        {
+            /// (!true || !false) && (x)
+            /// (!false || !false) && (x.m_ID != y.m_ID)
+
+            bool flagX = object.ReferenceEquals(x, null);
+            bool flagY = object.ReferenceEquals(y, null);
+
+            return (!flagX || !flagY) && (flagX || flagY) || (x.m_ID != y.m_ID);
         }
     }
 }

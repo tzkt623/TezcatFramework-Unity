@@ -1,41 +1,37 @@
 ﻿using tezcat.DataBase;
-using tezcat.Utility;
 using UnityEngine;
 namespace tezcat.Wrapper
 {
     /// <summary>
     /// 数据库专用Item包装器
     /// </summary>
-    public class TezDatabaseItemWrapper : TezItemSlotWrapper<TezDatabase.ContainerSlot>
+    public class TezDatabaseItemWrapper
     {
-        public TezDatabaseItemWrapper(TezDatabase.ContainerSlot slot) : base(slot)
-        {
-        }
 
         public Sprite getIcon()
         {
             return TezTextureManager.getSprite("Icon_File");
         }
 
-        public override void showTip()
+        public void showTip()
         {
-            var tips = TezTipManager.instance
-                .setName(this.myName)
-                .setDescription(this.myDescription)
-                .pushAttribute(TezReadOnlyString.Database.GUID, this.mySlot.item.GUID)
-                .pushAttribute(TezReadOnlyString.Database.OID, this.mySlot.item.OID);
-
-            foreach (var item in mySlot.item.properties)
-            {
-                tips.pushAttribute(item);
-            }
-
-            tips.show();
+//             var tips = TezService.tip
+//                 .setName(this.myName)
+//                 .setDescription(this.myDescription)
+//                 .pushAttribute(TezReadOnlyString.Database.GUID, this.mySlot.myItem.GUID)
+//                 .pushAttribute(TezReadOnlyString.Database.OID, this.mySlot.myItem.OID);
+// 
+//             foreach (var item in mySlot.myItem.properties)
+//             {
+//                 tips.pushAttribute(item);
+//             }
+// 
+//             tips.show();
         }
 
-        public override void hideTip()
+        public void hideTip()
         {
-            TezTipManager.instance.hide();
+//            TezService.tip.hide();
         }
     }
 }

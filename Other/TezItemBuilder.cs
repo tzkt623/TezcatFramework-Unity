@@ -1,6 +1,4 @@
-﻿using tezcat.DataBase;
-
-namespace tezcat
+﻿namespace tezcat
 {
 
 }

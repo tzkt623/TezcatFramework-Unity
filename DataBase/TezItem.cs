@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using tezcat.Core;
-using tezcat.Serialization;
 using tezcat.String;
 using tezcat.Utility;
 
@@ -11,32 +10,21 @@ namespace tezcat.DataBase
     {
         public static T create<T>(TezReader reader) where T : TezItem
         {
-            reader.beginObject(TezReadOnlyString.Database.id);
+            reader.beginObject(TezReadOnlyString.Database.ID);
             var item = TezDatabaseItemFactory.create<T>(
                 reader.readString(TezReadOnlyString.Database.GID),
                 reader.readString(TezReadOnlyString.Database.CID));
-            reader.endObject(TezReadOnlyString.Database.id);
+            reader.endObject(TezReadOnlyString.Database.ID);
             return item;
         }
     }
 
     public abstract class TezItem
-        : ITezData
-        , ITezSerializable
+        : ITezSerializable
         , ITezPropertyOwner
         , ITezSelectable
         , IEquatable<TezItem>
     {
-        /// <summary>
-        /// 数据库定义的分组信息
-        /// </summary>
-        public abstract TezDatabase.GroupType groupType { get; }
-
-        /// <summary>
-        /// 数据库定义的类型信息
-        /// </summary>
-        public abstract TezDatabase.CategoryType categoryType { get; }
-
         /// <summary>
         /// 可被选择器选中的Item类数据
         /// </summary>
@@ -108,25 +96,23 @@ namespace tezcat.DataBase
             return item == null ? false : this.GUID == item.GUID;
         }
 
-        public virtual void serialization(TezWriter writer)
+        public virtual void serialize(TezWriter writer)
         {
-            writer.beginObject(TezReadOnlyString.Database.id);
+            writer.beginObject(TezReadOnlyString.Database.ID);
             writer.write(TezReadOnlyString.Database.NID, this.NID);
             writer.write(TezReadOnlyString.Database.OID, OID >= 0 ? OID : -1);
             writer.write(TezReadOnlyString.Database.GUID, this.GUID);
-            writer.write(TezReadOnlyString.Database.GID, groupType.name);
-            writer.write(TezReadOnlyString.Database.CID, categoryType.name);
-            writer.endObject(TezReadOnlyString.Database.id);
+            writer.endObject(TezReadOnlyString.Database.ID);
         }
 
-        public virtual void deserialization(TezReader reader)
+        public virtual void deserialize(TezReader reader)
         {
-            reader.beginObject(TezReadOnlyString.Database.id);
+            reader.beginObject(TezReadOnlyString.Database.ID);
             this.NID = reader.readString(TezReadOnlyString.Database.NID);
             this.OID = reader.readInt(TezReadOnlyString.Database.OID);
             this.GUID = reader.readInt(TezReadOnlyString.Database.GUID);
             this.onDeserializationGroupAndCategory(reader);
-            reader.endObject(TezReadOnlyString.Database.id);
+            reader.endObject(TezReadOnlyString.Database.ID);
         }
 
         protected abstract void onDeserializationGroupAndCategory(TezReader reader);

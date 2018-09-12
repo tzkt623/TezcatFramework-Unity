@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using tezcat.Core;
 using UnityEngine;
 
 
@@ -28,10 +29,20 @@ namespace tezcat.DataBase
     }
 
     public class TezSprite
+        : ITezPrototype<TezSprite>
+        , ITezCloseable
     {
         public static TezSprite empty { get; private set; }
 
+        public string prototypeName
+        {
+            get { return sprite.name; }
+        }
+
+
         int m_ID = 0;
+
+        public Sprite sprite { get; private set; }
 
         static TezSprite()
         {
@@ -56,6 +67,26 @@ namespace tezcat.DataBase
         public Sprite convertToSprite()
         {
             return TezTextureManager.getSprite(m_ID);
+        }
+
+        public TezSprite clone()
+        {
+            return this;
+        }
+
+        public void serialize(TezWriter writer)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public void deserialize(TezReader reader)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public void close()
+        {
+            this.sprite = null;
         }
     }
 
