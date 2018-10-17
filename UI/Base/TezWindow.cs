@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using tezcat.Core;
-using tezcat.Signal;
+using tezcat.Extension;
 using UnityEngine;
 
 namespace tezcat.UI
@@ -110,7 +110,7 @@ namespace tezcat.UI
         protected override void initWidget()
         {
             List<TezArea> list = new List<TezArea>();
-            this.GetComponentsInChildren<TezArea>(true, list);
+            this.GetComponentsInChildren(true, list);
             foreach (var area in list)
             {
                 this.registerArea(area);
@@ -140,7 +140,7 @@ namespace tezcat.UI
         public override bool checkForClose()
         {
             bool result = true;
-            List<TezEventDispatcher.Action> close_function_list = new List<TezEventDispatcher.Action>(m_AreaList.Count);
+            List<TezEventExtension.Action> close_function_list = new List<TezEventExtension.Action>(m_AreaList.Count);
 
             foreach (var area in m_AreaList)
             {
@@ -185,7 +185,7 @@ namespace tezcat.UI
             m_AreaDic.Clear();
             m_AreaDic = null;
 
-            TezcatFramework.instance.removeWindow(this);
+            TezService.get<TezcatFramework>().removeWindow(this);
         }
 
         protected override void onRefresh()

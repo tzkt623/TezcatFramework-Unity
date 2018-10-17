@@ -6,16 +6,16 @@ namespace tezcat.UI
     public class TezDatabaseMenu : TezArea
     {
         [SerializeField]
-        TezImageLabelButton m_AddItem = null;
+        TezLabelButtonWithBG m_AddItem = null;
         [SerializeField]
-        TezImageLabelButton m_RemoveItem = null;
+        TezLabelButtonWithBG m_RemoveItem = null;
         [SerializeField]
-        TezImageLabelButton m_EditItem = null;
+        TezLabelButtonWithBG m_EditItem = null;
 
         [SerializeField]
-        TezImageLabelButton m_Save = null;
+        TezLabelButtonWithBG m_Save = null;
         [SerializeField]
-        TezImageLabelButton m_RefreshDataBase = null;
+        TezLabelButtonWithBG m_RefreshDataBase = null;
 
         TezDatabaseGroup m_Group = null;
         new TezDatabaseWindow window
@@ -46,9 +46,9 @@ namespace tezcat.UI
             m_Container = container;
         }
 
-        private void onAddItem(PointerEventData.InputButton button)
+        private void onAddItem(TezButton button, PointerEventData eventData)
         {
-            if(button == PointerEventData.InputButton.Left)
+            if (eventData.button == PointerEventData.InputButton.Left)
             {
                 if (m_Group.categoryType != -1)
                 {
@@ -57,46 +57,46 @@ namespace tezcat.UI
             }
         }
 
-        private void onRemoveItem(PointerEventData.InputButton button)
+        private void onRemoveItem(TezButton button, PointerEventData eventData)
         {
-            if (button == PointerEventData.InputButton.Left)
+            if (eventData.button == PointerEventData.InputButton.Left)
             {
                 m_Container.removeItem();
             }
         }
 
-        private void onEditItem(PointerEventData.InputButton button)
+        private void onEditItem(TezButton button, PointerEventData eventData)
         {
-            if(button == PointerEventData.InputButton.Left)
+            if (eventData.button == PointerEventData.InputButton.Left)
             {
-                if(m_Container.currentItem != null)
+                if (m_Container.currentItem != null)
                 {
                     window.editItem(m_Container.currentItem);
                 }
             }
         }
 
-        private void onSave(PointerEventData.InputButton button)
+        private void onSave(TezButton button, PointerEventData eventData)
         {
             ///TODO:保存数据库
 
-//             TezJsonWriter writer = new TezJsonWriter(true);
-//             TezService.DB.sortItems();
-//             TezService.DB.foreachItemByGUID((TezItem item) =>
-//             {
-//                 if(item)
-//                 {
-//                     writer.beginObject(item.GUID);
-//                     item.serialize(writer);
-//                     writer.endObject(item.GUID);
-//                 }
-//             });
-//             writer.save(TezcatFramework.rootPath + TezcatFramework.databaseFile);
+            //             TezJsonWriter writer = new TezJsonWriter(true);
+            //             TezService.DB.sortItems();
+            //             TezService.DB.foreachItemByGUID((TezItem item) =>
+            //             {
+            //                 if(item)
+            //                 {
+            //                     writer.beginObject(item.GUID);
+            //                     item.serialize(writer);
+            //                     writer.endObject(item.GUID);
+            //                 }
+            //             });
+            //             writer.save(TezcatFramework.rootPath + TezcatFramework.databaseFile);
         }
 
-        private void onRefreshDataBase(PointerEventData.InputButton button)
+        private void onRefreshDataBase(TezButton button, PointerEventData eventData)
         {
-            if (button == PointerEventData.InputButton.Left)
+            if (eventData.button == PointerEventData.InputButton.Left)
             {
                 m_Group.dirty = true;
             }

@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using tezcat.Signal;
+using tezcat.Extension;
 
 namespace tezcat.UI
 {
@@ -23,9 +23,9 @@ namespace tezcat.UI
         
         public class Dispatcher
         {
-            List<TezEventDispatcher.Action<object>> m_OnEvent = new List<TezEventDispatcher.Action<object>>();
+            List<TezEventExtension.Action<object>> m_OnEvent = new List<TezEventExtension.Action<object>>();
 
-            public void register(int event_id, TezEventDispatcher.Action<object> action)
+            public void register(int event_id, TezEventExtension.Action<object> action)
             {
                 while(m_OnEvent.Count <= event_id)
                 {

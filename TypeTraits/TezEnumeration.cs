@@ -1,19 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
-using tezcat.Signal;
+using tezcat.Extension;
 
 namespace tezcat.TypeTraits
 {
     public class TezTypeListManager
     {
-        static Dictionary<System.Type, TezEventDispatcher.Function<List<TezType>>> Registers = new Dictionary<System.Type, TezEventDispatcher.Function<List<TezType>>>();
+        static Dictionary<Type, TezEventExtension.Function<List<TezType>>> Registers = new Dictionary<Type, TezEventExtension.Function<List<TezType>>>();
 
-        public static void add(System.Type type, TezEventDispatcher.Function<List<TezType>> function)
+        public static void add(Type type, TezEventExtension.Function<List<TezType>> function)
         {
             Registers.Add(type, function);
         }
 
-        public static List<TezType> getList(System.Type type)
+        public static List<TezType> getList(Type type)
         {
             return Registers[type]();
         }
@@ -56,11 +56,11 @@ namespace tezcat.TypeTraits
         #region Switcher
         public class Switcher
         {
-            TezEventDispatcher.Action[] m_CallBack = null;
+            TezEventExtension.Action[] m_CallBack = null;
 
             public Switcher()
             {
-                m_CallBack = new TezEventDispatcher.Action[count];
+                m_CallBack = new TezEventExtension.Action[count];
                 for (int i = 0; i < m_CallBack.Length; i++)
                 {
                     m_CallBack[i] = this.defaultCallBack;
@@ -77,7 +77,7 @@ namespace tezcat.TypeTraits
                 m_CallBack[item.ID]();
             }
 
-            public Switcher register(T item, TezEventDispatcher.Action call_back)
+            public Switcher register(T item, TezEventExtension.Action call_back)
             {
                 m_CallBack[item.ID] = call_back;
                 return this;
@@ -86,11 +86,11 @@ namespace tezcat.TypeTraits
 
         public class Switcher<P1>
         {
-            TezEventDispatcher.Action<P1>[] m_CallBack = null;
+            TezEventExtension.Action<P1>[] m_CallBack = null;
 
             public Switcher()
             {
-                m_CallBack = new TezEventDispatcher.Action<P1>[count];
+                m_CallBack = new TezEventExtension.Action<P1>[count];
                 for (int i = 0; i < m_CallBack.Length; i++)
                 {
                     m_CallBack[i] = this.defaultCallBack;
@@ -107,7 +107,7 @@ namespace tezcat.TypeTraits
                 m_CallBack[item.ID](p1);
             }
 
-            public Switcher<P1> register(T item, TezEventDispatcher.Action<P1> call_back)
+            public Switcher<P1> register(T item, TezEventExtension.Action<P1> call_back)
             {
                 m_CallBack[item.ID] = call_back;
                 return this;
@@ -116,11 +116,11 @@ namespace tezcat.TypeTraits
 
         public class Switcher<P1, P2>
         {
-            TezEventDispatcher.Action<P1, P2>[] m_CallBack = null;
+            TezEventExtension.Action<P1, P2>[] m_CallBack = null;
 
             public Switcher()
             {
-                m_CallBack = new TezEventDispatcher.Action<P1, P2>[count];
+                m_CallBack = new TezEventExtension.Action<P1, P2>[count];
                 for (int i = 0; i < m_CallBack.Length; i++)
                 {
                     m_CallBack[i] = this.defaultCallBack;
@@ -137,7 +137,7 @@ namespace tezcat.TypeTraits
                 m_CallBack[type.ID](p1, p2);
             }
 
-            public Switcher<P1, P2> register(T type, TezEventDispatcher.Action<P1, P2> call_back)
+            public Switcher<P1, P2> register(T type, TezEventExtension.Action<P1, P2> call_back)
             {
                 m_CallBack[type.ID] = call_back;
                 return this;
@@ -146,11 +146,11 @@ namespace tezcat.TypeTraits
 
         public class ReturnSwitcher<R>
         {
-            TezEventDispatcher.Function<R>[] m_CallBack = null;
+            TezEventExtension.Function<R>[] m_CallBack = null;
 
             public ReturnSwitcher()
             {
-                m_CallBack = new TezEventDispatcher.Function<R>[count];
+                m_CallBack = new TezEventExtension.Function<R>[count];
                 for (int i = 0; i < m_CallBack.Length; i++)
                 {
                     m_CallBack[i] = this.defaultCallBack;
@@ -167,7 +167,7 @@ namespace tezcat.TypeTraits
                 return m_CallBack[type.ID]();
             }
 
-            public ReturnSwitcher<R> register(T type, TezEventDispatcher.Function<R> call_back)
+            public ReturnSwitcher<R> register(T type, TezEventExtension.Function<R> call_back)
             {
                 m_CallBack[type.ID] = call_back;
                 return this;
@@ -176,11 +176,11 @@ namespace tezcat.TypeTraits
 
         public class ReturnSwitcher<R, P1>
         {
-            TezEventDispatcher.Function<R, P1>[] m_CallBack = null;
+            TezEventExtension.Function<R, P1>[] m_CallBack = null;
 
             public ReturnSwitcher()
             {
-                m_CallBack = new TezEventDispatcher.Function<R, P1>[count];
+                m_CallBack = new TezEventExtension.Function<R, P1>[count];
                 for (int i = 0; i < m_CallBack.Length; i++)
                 {
                     m_CallBack[i] = this.defaultCallBack;
@@ -197,7 +197,7 @@ namespace tezcat.TypeTraits
                 return m_CallBack[type.ID](p1);
             }
 
-            public ReturnSwitcher<R, P1> register(T type, TezEventDispatcher.Function<R, P1> call_back)
+            public ReturnSwitcher<R, P1> register(T type, TezEventExtension.Function<R, P1> call_back)
             {
                 m_CallBack[type.ID] = call_back;
                 return this;
@@ -206,11 +206,11 @@ namespace tezcat.TypeTraits
 
         public class ReturnSwitcher<R, P1, P2>
         {
-            TezEventDispatcher.Function<R, P1, P2>[] m_CallBack = null;
+            TezEventExtension.Function<R, P1, P2>[] m_CallBack = null;
 
             public ReturnSwitcher()
             {
-                m_CallBack = new TezEventDispatcher.Function<R, P1, P2>[count];
+                m_CallBack = new TezEventExtension.Function<R, P1, P2>[count];
                 for (int i = 0; i < m_CallBack.Length; i++)
                 {
                     m_CallBack[i] = this.defaultCallBack;
@@ -227,7 +227,7 @@ namespace tezcat.TypeTraits
                 return m_CallBack[item.ID](p1, p2);
             }
 
-            public ReturnSwitcher<R, P1, P2> register(T item, TezEventDispatcher.Function<R, P1, P2> call_back)
+            public ReturnSwitcher<R, P1, P2> register(T item, TezEventExtension.Function<R, P1, P2> call_back)
             {
                 m_CallBack[item.ID] = call_back;
                 return this;
@@ -318,21 +318,36 @@ namespace tezcat.TypeTraits
         #endregion
     }
 
+
+    public interface ITezEnumeration
+    {
+        string NID { get; }
+        int toID { get; }
+    }
+
     public abstract class TezEnumeration<TEnumeration, TValue>
-        : IComparable<TEnumeration>
+        : ITezEnumeration
+        , IComparable<TEnumeration>
         , IEquatable<TEnumeration>
         where TEnumeration : TezEnumeration<TEnumeration, TValue>
         where TValue : IComparable
     {
-        static Dictionary<string, TEnumeration> m_Dic = new Dictionary<string, TEnumeration>();
-        public static TEnumeration get(string name)
+        static Dictionary<string, TEnumeration> m_EnumWithName = new Dictionary<string, TEnumeration>();
+        protected static TEnumeration getEnum(string name)
         {
-            return m_Dic[name];
+            return m_EnumWithName[name];
         }
 
-        public string name { get; }
+        protected static int enumCount
+        {
+            get { return m_EnumWithName.Count; }
+        }
+
+        public string NID { get; }
         public TValue value { get; }
-        public Type type
+        public abstract int toID { get; }
+
+        public Type systemType
         {
             get { return typeof(TEnumeration); }
         }
@@ -340,9 +355,9 @@ namespace tezcat.TypeTraits
         protected TezEnumeration(TValue value, string name)
         {
             this.value = value;
-            this.name = name;
+            this.NID = name;
 
-            m_Dic[this.name] = (TEnumeration)this;
+            m_EnumWithName[this.NID] = (TEnumeration)this;
         }
 
         public int CompareTo(TEnumeration other)
@@ -356,6 +371,11 @@ namespace tezcat.TypeTraits
         }
 
         #region 重载操作
+        public static implicit operator TValue(TezEnumeration<TEnumeration, TValue> enumeration)
+        {
+            return enumeration.value;
+        }
+
         public override bool Equals(object obj)
         {
             return this.Equals((TEnumeration)obj);

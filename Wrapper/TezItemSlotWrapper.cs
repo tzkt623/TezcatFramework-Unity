@@ -17,7 +17,7 @@ namespace tezcat.Wrapper
     public class TezItemSlotWrapper : TezItemWrapper
     {
         public TezItemSlot mySlot { get; private set; }
-        public override TezItem myItem
+        public override TezDataBaseItem myItem
         {
             get { return mySlot.myItem; }
         }

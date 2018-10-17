@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
 using tezcat.DataBase;
-using tezcat.Signal;
+using tezcat.Extension;
 using UnityEngine;
 
-namespace tezcat.Utility
+namespace tezcat.Core
 {
     public static class TezTranslator
     {
@@ -141,7 +141,7 @@ namespace tezcat.Utility
             return false;
         }
 
-        public static void foreachName(TezEventDispatcher.Action<string, string> action)
+        public static void foreachName(TezEventExtension.Action<string, string> action)
         {
             for (int i = 0; i < m_NameList.Count; i++)
             {
@@ -149,7 +149,7 @@ namespace tezcat.Utility
             }
         }
 
-        public static void foreachName(TezEventDispatcher.Action<string, string> action, int begin, int end)
+        public static void foreachName(TezEventExtension.Action<string, string> action, int begin, int end)
         {
             end = Mathf.Min(end, m_NameList.Count);
             for (int i = begin; i < end; i++)
@@ -233,7 +233,7 @@ namespace tezcat.Utility
         {
             if (string.IsNullOrEmpty(key))
             {
-                return string.Format("#{0}", key);
+                return string.Format("@{0}", key);
             }
 
             Text package = null;
@@ -242,7 +242,7 @@ namespace tezcat.Utility
                 return package.value;
             }
 
-            return string.Format("#{0}", key);
+            return string.Format("@{0}", key);
         }
         #endregion
 
@@ -302,7 +302,7 @@ namespace tezcat.Utility
             }
         }
 
-        public static void foreachDescription(TezEventDispatcher.Action<string, string> action)
+        public static void foreachDescription(TezEventExtension.Action<string, string> action)
         {
             for (int i = 0; i < m_DescriptionList.Count; i++)
             {
@@ -310,7 +310,7 @@ namespace tezcat.Utility
             }
         }
 
-        public static void foreachDescription(TezEventDispatcher.Action<string, string> action, int begin, int end)
+        public static void foreachDescription(TezEventExtension.Action<string, string> action, int begin, int end)
         {
             end = Mathf.Min(end, m_DescriptionList.Count);
             for (int i = begin; i < end; i++)
@@ -394,7 +394,7 @@ namespace tezcat.Utility
         {
             if (string.IsNullOrEmpty(key))
             {
-                return string.Format("#{0}", key);
+                return string.Format("@{0}", key);
             }
 
             Text package = null;
@@ -403,7 +403,7 @@ namespace tezcat.Utility
                 return package.value;
             }
 
-            return string.Format("#{0}", key);
+            return string.Format("@{0}", key);
         }
         #endregion
     }

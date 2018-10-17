@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using tezcat.Core;
 using tezcat.TypeTraits;
 using tezcat.Utility;
 using UnityEngine;
@@ -49,7 +50,7 @@ namespace tezcat.UI
         protected override void onRefresh()
         {
             m_PropertyName.text = TezTranslator.translateName(m_Property.name, m_Property.name);
-            m_Types = TezTypeListManager.getList(m_Property.propertyType);
+            m_Types = TezTypeListManager.getList(m_Property.systemType);
 
             m_DropDown.ClearOptions();
             List<Dropdown.OptionData> options = new List<Dropdown.OptionData>();

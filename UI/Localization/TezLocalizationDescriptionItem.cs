@@ -74,7 +74,7 @@ namespace tezcat.UI
             listArea = null;
         }
 
-        private void onEditClick(PointerEventData.InputButton button)
+        private void onEditClick(TezButton button, PointerEventData eventData)
         {
             listArea.editItem(m_KeyName.text);
         }

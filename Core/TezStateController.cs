@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using tezcat.Event;
-using tezcat.Signal;
+using tezcat.Extension;
 
 namespace tezcat.Core
 {
@@ -121,7 +121,7 @@ namespace tezcat.Core
             onStateChanged.invoke();
         }
 
-        public static void locking(int state, TezEventDispatcher.Action function)
+        public static void locking(int state, TezEventExtension.Action function)
         {
             if((m_States & state) == state)
             {

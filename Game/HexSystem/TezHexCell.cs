@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using tezcat.Math;
 using UnityEngine;
 
 namespace tezcat.Game
@@ -55,26 +56,16 @@ namespace tezcat.Game
 
         public int getCellID()
         {
-            unchecked
-            {
-                int hash = 47;
-                hash = hash * 227 + m_Coorinate.q.GetHashCode();
-                hash = hash * 227 + m_Coorinate.r.GetHashCode();
-
-                return hash;
-            }
+            var hash = TezHash.intHash(m_Coorinate.q);
+            hash = TezHash.intHash(hash + m_Coorinate.r);
+            return hash;
         }
 
-        public static int getCellID(int x, int z)
+        public static int getCellID(int q, int r)
         {
-            unchecked
-            {
-                int hash = 47;
-                hash = hash * 227 + x.GetHashCode();
-                hash = hash * 227 + z.GetHashCode();
-
-                return hash;
-            }
+            var hash = TezHash.intHash(q);
+            hash = TezHash.intHash(hash + r);
+            return hash;
         }
 
         public void init(int x, int z, float depth_offset, TezHexGrid grid)

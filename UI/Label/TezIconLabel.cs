@@ -1,4 +1,4 @@
-﻿using tezcat.Signal;
+﻿using tezcat.Extension;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -34,7 +34,7 @@ namespace tezcat.UI
             m_Label = null;
         }
 
-        public void setGetFunction(TezEventDispatcher.Function<string> function)
+        public void setGetFunction(TezEventExtension.Function<string> function)
         {
             m_Label.setGetter(function);
         }

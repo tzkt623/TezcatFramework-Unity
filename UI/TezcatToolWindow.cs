@@ -8,13 +8,13 @@ namespace tezcat.UI
     {
         [Header("Menu")]
         [SerializeField]
-        TezImageLabelButton m_DatabaseButton;
+        TezLabelButtonWithBG m_DatabaseButton;
         [SerializeField]
-        TezImageLabelButton m_LocalizationButton;
+        TezLabelButtonWithBG m_LocalizationButton;
         [SerializeField]
-        TezImageLabelButton m_OptionButton;
+        TezLabelButtonWithBG m_OptionButton;
         [SerializeField]
-        TezImageLabelButton m_CloseButton;
+        TezLabelButtonWithBG m_CloseButton;
 
         protected override void preInit()
         {
@@ -69,26 +69,26 @@ namespace tezcat.UI
 
         }
 
-        private void onCloseButtonClick(PointerEventData.InputButton button)
+        private void onCloseButtonClick(TezButton button, PointerEventData eventData)
         {
             this.close();
         }
 
-        private void onOptionButtonClick(PointerEventData.InputButton button)
+        private void onOptionButtonClick(TezButton button, PointerEventData eventData)
         {
-            TezcatFramework.instance.createWindow<TezOptionWindow>("TezOptionWindow", TezLayer.last).open();
+            TezService.get<TezcatFramework>().createWindow<TezOptionWindow>("TezOptionWindow", TezLayer.last).open();
             this.close();
         }
 
-        private void onLocalizationButtonClick(PointerEventData.InputButton button)
+        private void onLocalizationButtonClick(TezButton button, PointerEventData eventData)
         {
-            TezcatFramework.instance.createWindow<TezLocalizationWindow>("TezLocalizationWindow", TezLayer.last).open();
+            TezService.get<TezcatFramework>().createWindow<TezLocalizationWindow>("TezLocalizationWindow", TezLayer.last).open();
             this.close();
         }
 
-        private void onDatabaseButtonClick(PointerEventData.InputButton button)
+        private void onDatabaseButtonClick(TezButton button, PointerEventData eventData)
         {
-            TezcatFramework.instance.createWindow<TezDatabaseWindow>("TezDatabaseWindow", TezLayer.last).open();
+            TezService.get<TezcatFramework>().createWindow<TezDatabaseWindow>("TezDatabaseWindow", TezLayer.last).open();
             this.close();
         }
     }

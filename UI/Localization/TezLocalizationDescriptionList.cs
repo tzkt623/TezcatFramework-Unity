@@ -17,21 +17,21 @@ namespace tezcat.UI
 
         [Header("Load Property")]
         [SerializeField]
-        TezImageLabelButton m_LoadProperty = null;
+        TezLabelButtonWithBG m_LoadProperty = null;
         [SerializeField]
-        TezImageLabelButton m_LoadPropertySingal = null;
+        TezLabelButtonWithBG m_LoadPropertySingal = null;
 
         [Header("Add And Remove")]
         [SerializeField]
-        TezImageLabelButton m_Add = null;
+        TezLabelButtonWithBG m_Add = null;
         [SerializeField]
-        TezImageLabelButton m_Remove = null;
+        TezLabelButtonWithBG m_Remove = null;
 
         [Header("Search")]
         [SerializeField]
-        TezImageLabelButton m_Search = null;
+        TezLabelButtonWithBG m_Search = null;
         [SerializeField]
-        TezImageLabelButton m_ClearSearch = null;
+        TezLabelButtonWithBG m_ClearSearch = null;
         [SerializeField]
         InputField m_SearchKey = null;
 
@@ -123,25 +123,25 @@ namespace tezcat.UI
             m_PageController.setPage(current);
         }
 
-        private void onPageDownClick(PointerEventData.InputButton button)
+        private void onPageDownClick(TezButton button, PointerEventData eventData)
         {
             m_PageController.pageDown();
         }
 
-        private void onPageUpClick(PointerEventData.InputButton button)
+        private void onPageUpClick(TezButton button, PointerEventData eventData)
         {
             m_PageController.pageUp();
         }
 
-        private void onAddClick(PointerEventData.InputButton button)
+        private void onAddClick(TezButton button, PointerEventData eventData)
         {
-            var editor = TezcatFramework.instance.createWidget<TezLocalizationDescriptionEditor>("DescriptionEditor", this.window.overlay);
+            var editor = TezService.get<TezcatFramework>().createWidget<TezLocalizationDescriptionEditor>("DescriptionEditor", this.window.overlay);
             editor.listArea = this;
             editor.newItem();
             editor.open();
         }
 
-        private void onRemoveClick(PointerEventData.InputButton button)
+        private void onRemoveClick(TezButton button, PointerEventData eventData)
         {
             TezTranslator.removeDescription(m_SelectItem.key);
             m_Vernier.SetParent(this.transform, false);
@@ -149,7 +149,7 @@ namespace tezcat.UI
             this.dirty = true;
         }
 
-        private void onClearSearchClick(PointerEventData.InputButton button)
+        private void onClearSearchClick(TezButton button, PointerEventData eventData)
         {
             if (m_SearchResult != null)
             {
@@ -162,9 +162,9 @@ namespace tezcat.UI
             m_PageGO.SetActive(true);
         }
 
-        private void onSearchClick(PointerEventData.InputButton button)
+        private void onSearchClick(TezButton button, PointerEventData eventData)
         {
-            if (button == PointerEventData.InputButton.Left)
+            if (eventData.button == PointerEventData.InputButton.Left)
             {
                 this.onSearch(m_SearchKey.text);
             }
@@ -183,7 +183,7 @@ namespace tezcat.UI
                     }
                     else
                     {
-                        m_SearchResult = TezcatFramework.instance.createWidget<TezLocalizationDescriptionItem>("DescriptionItem", m_Content);
+                        m_SearchResult = TezService.get<TezcatFramework>().createWidget<TezLocalizationDescriptionItem>("DescriptionItem", m_Content);
                         m_SearchResult.listArea = this;
                         m_SearchResult.set(key);
                         m_SearchResult.open();
@@ -195,11 +195,11 @@ namespace tezcat.UI
             }
         }
 
-        private void onLoadPropertyClick(PointerEventData.InputButton button)
+        private void onLoadPropertyClick(TezButton button, PointerEventData eventData)
         {
-            if (button == PointerEventData.InputButton.Left)
+            if (eventData.button == PointerEventData.InputButton.Left)
             {
-                TezPropertyManager.foreachProperty((TezPropertyName name) =>
+                TezValueName.foreachName((TezValueName name) =>
                 {
                     TezTranslator.tryAddDescription(name.name, name.name);
                 });
@@ -226,7 +226,7 @@ namespace tezcat.UI
 
         private void createItem(string key, string value)
         {
-            var item = TezcatFramework.instance.createWidget<TezLocalizationDescriptionItem>("DescriptionItem", m_Content);
+            var item = TezService.get<TezcatFramework>().createWidget<TezLocalizationDescriptionItem>("DescriptionItem", m_Content);
             item.set(key);
             item.listArea = this;
             item.open();
@@ -235,7 +235,7 @@ namespace tezcat.UI
 
         public void editItem(string key)
         {
-            var editor = TezcatFramework.instance.createWidget<TezLocalizationDescriptionEditor>("DescriptionEditor", this.window.overlay);
+            var editor = TezService.get<TezcatFramework>().createWidget<TezLocalizationDescriptionEditor>("DescriptionEditor", this.window.overlay);
             editor.listArea = this;
             editor.set(key);
             editor.open();

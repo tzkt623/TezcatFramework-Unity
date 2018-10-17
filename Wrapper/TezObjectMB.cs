@@ -1,5 +1,4 @@
 ﻿using tezcat.Core;
-using tezcat.Utility;
 
 namespace tezcat.Wrapper
 {

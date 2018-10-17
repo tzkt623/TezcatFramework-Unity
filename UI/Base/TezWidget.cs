@@ -1,28 +1,30 @@
-﻿using tezcat.Core;
-using tezcat.DataBase;
+﻿using tezcat.DataBase;
 using UnityEngine.EventSystems;
 
 namespace tezcat.UI
 {
+    /// <summary>
+    /// Widget组件基类
+    /// </summary>
     public abstract class TezWidget
         : UIBehaviour
         , ITezWidget
         , ITezPrefab
     {
-        bool m_Interactable;
+        bool m_Interactable = true;
         public bool interactable
         {
             get { return m_Interactable; }
             set
             {
-                m_Interactable = value;
-                this.onInteractable(m_Interactable);
-            }
-        }
+                if(m_Interactable == value)
+                {
+                    return;
+                }
 
-        protected static TezcatFramework framework
-        {
-            get { return TezcatFramework.instance; }
+                this.onInteractable(value);
+                m_Interactable = value;
+            }
         }
 
         bool m_Init = false;
@@ -178,7 +180,10 @@ namespace tezcat.UI
         #endregion
     }
 
-    public abstract class TezGameWidget : TezWidget
+    /// <summary>
+    /// 游戏UI类组件基类
+    /// </summary>
+    public abstract class TezUIWidget : TezWidget
     {
         public override void clear()
         {
@@ -226,6 +231,60 @@ namespace tezcat.UI
         }
     }
 
+    /// <summary>
+    /// 功能性组件基类
+    /// </summary>
+    public abstract class TezFunctionWidget : TezWidget
+    {
+        public override void clear()
+        {
+
+        }
+
+        public override void reset()
+        {
+
+        }
+
+        protected override void initWidget()
+        {
+
+        }
+
+        protected override void linkEvent()
+        {
+
+        }
+
+        protected override void onHide()
+        {
+
+        }
+
+        protected override void onRefresh()
+        {
+
+        }
+
+        protected override void onShow()
+        {
+
+        }
+
+        protected override void preInit()
+        {
+
+        }
+
+        protected override void unLinkEvent()
+        {
+
+        }
+    }
+
+    /// <summary>
+    /// 工具性组件基类
+    /// </summary>
     public abstract class TezToolWidget : TezWidget
     {
 

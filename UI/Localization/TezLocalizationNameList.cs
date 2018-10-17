@@ -17,21 +17,21 @@ namespace tezcat.UI
 
         [Header("Load Property")]
         [SerializeField]
-        TezImageLabelButton m_LoadProperty = null;
+        TezLabelButtonWithBG m_LoadProperty = null;
         [SerializeField]
-        TezImageLabelButton m_LoadPropertySingal = null;
+        TezLabelButtonWithBG m_LoadPropertySingal = null;
 
         [Header("Add And Remove")]
         [SerializeField]
-        TezImageLabelButton m_Add = null;
+        TezLabelButtonWithBG m_Add = null;
         [SerializeField]
-        TezImageLabelButton m_Remove = null;
+        TezLabelButtonWithBG m_Remove = null;
 
         [Header("Search")]
         [SerializeField]
-        TezImageLabelButton m_Search = null;
+        TezLabelButtonWithBG m_Search = null;
         [SerializeField]
-        TezImageLabelButton m_ClearSearch = null;
+        TezLabelButtonWithBG m_ClearSearch = null;
         [SerializeField]
         InputField m_SearchKey = null;
 
@@ -127,12 +127,12 @@ namespace tezcat.UI
             TezTranslator.foreachName(this.createItem, begin, end);
         }
 
-        private void onPageDownClick(PointerEventData.InputButton button)
+        private void onPageDownClick(TezButton button, PointerEventData eventData)
         {
             m_PageController.pageDown();
         }
 
-        private void onPageUpClick(PointerEventData.InputButton button)
+        private void onPageUpClick(TezButton button, PointerEventData eventData)
         {
             m_PageController.pageUp();
         }
@@ -149,11 +149,11 @@ namespace tezcat.UI
             m_PageController.setPage(current);
         }
 
-        private void onAddClick(PointerEventData.InputButton button)
+        private void onAddClick(TezButton button, PointerEventData eventData)
         {
-            if(button == PointerEventData.InputButton.Left)
+            if (eventData.button == PointerEventData.InputButton.Left)
             {
-                var editor = TezcatFramework.instance.createWidget<TezLocalizationNameEditor>("NameEditor", this.window.overlay);
+                var editor = TezService.get<TezcatFramework>().createWidget<TezLocalizationNameEditor>("NameEditor", this.window.overlay);
                 editor.listArea = this;
                 editor.transform.SetAsLastSibling();
                 editor.newItem();
@@ -161,11 +161,11 @@ namespace tezcat.UI
             }
         }
 
-        private void onRemoveClick(PointerEventData.InputButton button)
+        private void onRemoveClick(TezButton button, PointerEventData eventData)
         {
-            if(button == PointerEventData.InputButton.Left)
+            if (eventData.button == PointerEventData.InputButton.Left)
             {
-                if(TezTranslator.removeName(m_SelectItem.key))
+                if (TezTranslator.removeName(m_SelectItem.key))
                 {
                     m_Vernier.SetParent(this.transform, false);
                     m_Vernier.gameObject.SetActive(false);
@@ -174,7 +174,7 @@ namespace tezcat.UI
             }
         }
 
-        private void onClearSearchClick(PointerEventData.InputButton button)
+        private void onClearSearchClick(TezButton button, PointerEventData eventData)
         {
             if (m_SearchResult != null)
             {
@@ -200,7 +200,7 @@ namespace tezcat.UI
                     }
                     else
                     {
-                        m_SearchResult = TezcatFramework.instance.createWidget<TezLocalizationNameItem>("NameItem", m_Content);
+                        m_SearchResult = TezService.get<TezcatFramework>().createWidget<TezLocalizationNameItem>("NameItem", m_Content);
                         m_SearchResult.listArea = this;
                         m_SearchResult.set(key, value);
                         m_SearchResult.open();
@@ -212,19 +212,19 @@ namespace tezcat.UI
             }
         }
 
-        private void onSearchClick(PointerEventData.InputButton button)
+        private void onSearchClick(TezButton button, PointerEventData eventData)
         {
-            if (button == PointerEventData.InputButton.Left)
+            if (eventData.button == PointerEventData.InputButton.Left)
             {
                 this.onSearch(m_SearchKey.text);
             }
         }
 
-        private void onLoadPropertyClick(PointerEventData.InputButton button)
+        private void onLoadPropertyClick(TezButton button, PointerEventData eventData)
         {
-            if (button == PointerEventData.InputButton.Left)
+            if (eventData.button == PointerEventData.InputButton.Left)
             {
-                TezPropertyManager.foreachProperty((TezPropertyName name) =>
+                TezValueName.foreachName((TezValueName name) =>
                 {
                     TezTranslator.tryAddName(name.name, name.name);
                 });
@@ -259,7 +259,7 @@ namespace tezcat.UI
 
         public void edit(string key)
         {
-            var editor = TezcatFramework.instance.createWidget<TezLocalizationNameEditor>("NameEditor", this.window.overlay);
+            var editor = TezService.get<TezcatFramework>().createWidget<TezLocalizationNameEditor>("NameEditor", this.window.overlay);
             editor.listArea = this;
             editor.transform.SetAsLastSibling();
             editor.set(key);
@@ -268,7 +268,7 @@ namespace tezcat.UI
 
         private void createItem(string key, string value)
         {
-            var item = TezcatFramework.instance.createWidget<TezLocalizationNameItem>("NameItem", m_Content);
+            var item = TezService.get<TezcatFramework>().createWidget<TezLocalizationNameItem>("NameItem", m_Content);
             item.listArea = this;
             item.set(key, value);
             item.open();

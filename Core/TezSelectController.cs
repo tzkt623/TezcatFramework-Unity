@@ -1,6 +1,6 @@
 ﻿using tezcat.DataBase;
 using tezcat.Event;
-using tezcat.Signal;
+using tezcat.Extension;
 
 namespace tezcat.Core
 {
@@ -66,7 +66,7 @@ namespace tezcat.Core
             m_Slot = slot;
         }
 
-        public Item convertItem<Item>() where Item : TezItem
+        public Item convertItem<Item>() where Item : TezDataBaseItem
         {
             return (Item)m_Slot.myItem;
         }
@@ -103,7 +103,7 @@ namespace tezcat.Core
             m_Current = null;
         }
 
-        public static void objectToDo(TezEventDispatcher.Action<TezObjectSelector> action)
+        public static void objectToDo(TezEventExtension.Action<TezObjectSelector> action)
         {
             if (!object.ReferenceEquals(m_Current, null) && m_Current.selectorType == TezSelectorType.Object)
             {
@@ -111,7 +111,7 @@ namespace tezcat.Core
             }
         }
 
-        public static void itemToDo(TezEventDispatcher.Action<TezItemSelector> action)
+        public static void itemToDo(TezEventExtension.Action<TezItemSelector> action)
         {
             if (!object.ReferenceEquals(m_Current, null) && m_Current.selectorType == TezSelectorType.Item)
             {

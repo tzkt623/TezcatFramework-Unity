@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using tezcat.Signal;
+using tezcat.Extension;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -32,7 +32,7 @@ namespace tezcat.UI
 
         LinkedListNode<TezText> m_Node = null;
 
-        TezEventDispatcher.Function<string> m_Getter = null;
+        TezEventExtension.Function<string> m_Getter = null;
         public Text handler { get; private set; } = null;
 
         public Color color
@@ -59,7 +59,7 @@ namespace tezcat.UI
 
         protected override void onInteractable(bool value)
         {
-
+            handler.raycastTarget = value;
         }
 
         protected override void preInit()
@@ -87,7 +87,7 @@ namespace tezcat.UI
 
         }
 
-        public void setGetter(TezEventDispatcher.Function<string> getter)
+        public void setGetter(TezEventExtension.Function<string> getter)
         {
             m_Getter = getter;
             this.dirty = true;

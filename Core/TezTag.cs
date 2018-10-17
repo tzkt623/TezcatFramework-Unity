@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using tezcat.Signal;
+using tezcat.Extension;
 
 namespace tezcat.Core
 {
@@ -188,7 +188,7 @@ namespace tezcat.Core
             return result;
         }
 
-        public void foreachTag(TezEventDispatcher.Action<TezTag> action)
+        public void foreachTag(TezEventExtension.Action<TezTag> action)
         {
             foreach (var tag in m_Set)
             {

@@ -1,5 +1,4 @@
 ﻿using tezcat.Core;
-using tezcat.DataBase;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -76,7 +75,7 @@ namespace tezcat.UI
                 case TezSelectorType.Object:
                     break;
                 case TezSelectorType.Item:
-                    m_Icon.sprite = TezTextureManager.getSprite(((TezItemSelector)selector).convertItem<TezItem>().asset.icon_0);
+                    m_Icon.sprite = null;
                     break;
                 default:
                     break;

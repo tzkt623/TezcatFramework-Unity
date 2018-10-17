@@ -7,7 +7,7 @@ using UnityEngine.UI;
 namespace tezcat.UI
 {
     public class TezTitle
-        : TezGameWidget
+        : TezUIWidget
         , ITezDragableWidget
         , ITezClickable
     {

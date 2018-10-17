@@ -34,7 +34,7 @@ namespace tezcat.UI
         {
             base.initWidget();
 
-            TezPrefabDatabase.foreachPrefab((TezPrefabDatabase.Prefab prefab) =>
+            TezService.get<TezPrefabDatabase>().foreachPrefab((TezPrefabID prefab) =>
             {
                 var editor = prefab.prefab as TezBasicItemEditor;
                 if (editor)
@@ -62,11 +62,11 @@ namespace tezcat.UI
             TezBasicItemEditor prefab = null;
             if(m_EditorDic.Count > category)
             {
-                m_CurrentEditor = TezcatFramework.instance.createWindow(prefab, "TezItemEditor", this.layer) as TezBasicItemEditor;
+                m_CurrentEditor = TezService.get<TezcatFramework>().createWindow(prefab, "TezItemEditor", this.layer) as TezBasicItemEditor;
             }
             else
             {
-                m_CurrentEditor = TezcatFramework.instance.createWindow<TezItemEditor>("TezItemEditor", this.layer);
+                m_CurrentEditor = TezService.get<TezcatFramework>().createWindow<TezItemEditor>("TezItemEditor", this.layer);
             }
 
 //             if (m_EditorDic.TryGetValue(category, out prefab))
@@ -84,7 +84,7 @@ namespace tezcat.UI
             m_CurrentEditor.open();
         }
 
-        public void editItem(TezItem item)
+        public void editItem(TezDataBaseItem item)
         {
 //             if (m_CurrentEditor)
 //             {
@@ -115,7 +115,7 @@ namespace tezcat.UI
         public override void clear()
         {
             base.clear();
-            TezcatFramework.instance.createWindow<TezcatToolWindow>("TezcatToolWindow", TezLayer.last).open();
+            TezService.get<TezcatFramework>().createWindow<TezcatToolWindow>("TezcatToolWindow", TezLayer.last).open();
         }
     }
 }

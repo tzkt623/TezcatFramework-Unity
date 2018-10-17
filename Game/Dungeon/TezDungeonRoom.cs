@@ -1,4 +1,4 @@
-﻿using tezcat.Signal;
+﻿using tezcat.Extension;
 
 namespace tezcat.Game
 {
@@ -34,7 +34,7 @@ namespace tezcat.Game
             return !(maxX < this.ox - 1 || ox > this.maxY + 1 || maxY < this.oy - 1 || oy > this.maxY + 1);
         }
 
-        public void foreachRoom(TezEventDispatcher.Action<int, int> in_room, TezEventDispatcher.Action<int, int> in_wall)
+        public void foreachRoom(TezEventExtension.Action<int, int> in_room, TezEventExtension.Action<int, int> in_wall)
         {
             for (int y = -1; y < height + 1; y++)
             {

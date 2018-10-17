@@ -9,9 +9,9 @@ namespace tezcat.UI
     public class TezLocalizationMenu : TezArea
     {
         [SerializeField]
-        TezImageLabelButton m_Refresh = null;
+        TezLabelButtonWithBG m_Refresh = null;
         [SerializeField]
-        TezImageLabelButton m_Save = null;
+        TezLabelButtonWithBG m_Save = null;
 
         public TezLocalizationNameList nameList { get; set; }
         public TezLocalizationDescriptionList descriptionList { get; set; }
@@ -23,9 +23,9 @@ namespace tezcat.UI
             m_Save.onClick += onSaveClick;
         }
 
-        private void onSaveClick(PointerEventData.InputButton button)
+        private void onSaveClick(TezButton button, PointerEventData eventData)
         {
-            if(button == PointerEventData.InputButton.Left)
+            if (eventData.button == PointerEventData.InputButton.Left)
             {
                 TezJsonWriter writer = new TezJsonWriter();
                 TezTranslator.serialization(writer);
@@ -33,9 +33,9 @@ namespace tezcat.UI
             }
         }
 
-        private void onRefreshClick(PointerEventData.InputButton button)
+        private void onRefreshClick(TezButton button, PointerEventData eventData)
         {
-            if (button == PointerEventData.InputButton.Left)
+            if (eventData.button == PointerEventData.InputButton.Left)
             {
                 this.nameList.dirty = true;
                 this.descriptionList.dirty = true;

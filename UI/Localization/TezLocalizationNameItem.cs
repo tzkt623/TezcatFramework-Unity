@@ -1,4 +1,4 @@
-﻿using tezcat.Utility;
+﻿using tezcat.Core;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -77,9 +77,9 @@ namespace tezcat.UI
             }
         }
 
-        private void onEditClick(PointerEventData.InputButton button)
+        private void onEditClick(TezButton button, PointerEventData eventData)
         {
-            if(button == PointerEventData.InputButton.Left)
+            if (eventData.button == PointerEventData.InputButton.Left)
             {
                 listArea.edit(m_KeyName.text);
             }

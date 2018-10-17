@@ -1,4 +1,4 @@
-﻿using tezcat.Utility;
+﻿using tezcat.Core;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -13,9 +13,9 @@ namespace tezcat.UI
         InputField m_LocalizationInput = null;
 
         [SerializeField]
-        TezImageLabelButton m_Confirm = null;
+        TezLabelButtonWithBG m_Confirm = null;
         [SerializeField]
-        TezImageLabelButton m_Cancel = null;
+        TezLabelButtonWithBG m_Cancel = null;
 
         public TezLocalizationNameList listArea { get; set; }
 
@@ -88,17 +88,17 @@ namespace tezcat.UI
             m_KeyInput.readOnly = false;
         }
 
-        private void onCancelClick(PointerEventData.InputButton button)
+        private void onCancelClick(TezButton button, PointerEventData eventData)
         {
-            if (button == PointerEventData.InputButton.Left)
+            if (eventData.button == PointerEventData.InputButton.Left)
             {
                 this.close();
             }
         }
 
-        private void onConfirmClick(PointerEventData.InputButton button)
+        private void onConfirmClick(TezButton button, PointerEventData eventData)
         {
-            if (button == PointerEventData.InputButton.Left)
+            if (eventData.button == PointerEventData.InputButton.Left)
             {
                 TezTranslator.saveName(m_KeyInput.text, m_LocalizationInput.text);
                 listArea.dirty = true;

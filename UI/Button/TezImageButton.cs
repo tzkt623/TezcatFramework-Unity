@@ -1,6 +1,4 @@
-﻿using DG.Tweening;
-using tezcat.Signal;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
@@ -8,24 +6,17 @@ namespace tezcat.UI
 {
     public class TezImageButton : TezButton
     {
-        public event TezEventDispatcher.Action<PointerEventData.InputButton> onClick;
-
         [SerializeField]
-        Image m_Image;
-        [SerializeField]
-        Color m_PressColor;
-        Color m_OrgColor;
+        public Image imgae { get; private set; }
 
-        protected override void onInteractable(bool value)
+        public override Graphic graphicController
         {
-            if(value)
-            {
-                m_Image.color = m_OrgColor;
-            }
-            else
-            {
-                m_Image.color = Color.gray;
-            }
+            get { return imgae; }
+        }
+
+        protected override void initWidget()
+        {
+            this.imgae = this.GetComponent<Image>();
         }
 
         protected override void onRefresh()
@@ -33,59 +24,26 @@ namespace tezcat.UI
 
         }
 
-        public override void OnPointerEnter(PointerEventData eventData)
+        protected override void onPointerEnter(PointerEventData eventData)
         {
-            m_Image.DOColor(new Color(1, 1, 1, 60 / 255.0f), 1.2f)
-                .SetLoops(-1, LoopType.Yoyo)
-                .SetAutoKill(false);
+//             m_Image.DOColor(new Color(1, 1, 1, 60 / 255.0f), 1.2f)
+//                 .SetLoops(-1, LoopType.Yoyo)
+//                 .SetAutoKill(false);
         }
 
-        public override void OnPointerExit(PointerEventData eventData)
+        protected override void onPointerExit(PointerEventData eventData)
         {
-            m_Image.DORewind(false);
-            m_Image.DOKill();
+//             m_Image.DORewind(false);
+//             m_Image.DOKill();
         }
 
-        public override void OnPointerDown(PointerEventData eventData)
+        protected override void onPointerDown(PointerEventData eventData)
         {
-            m_Image.DORewind(false);
-            m_Image.DOKill();
-
-            m_Image.color = m_PressColor;
+//             m_Image.DORewind(false);
+//             m_Image.DOKill();
         }
 
-        public override void OnPointerUp(PointerEventData eventData)
-        {
-            m_Image.color = m_OrgColor;
-            onClick?.Invoke(eventData.button);
-        }
-
-        protected override void initWidget()
-        {
-            m_OrgColor = m_Image.color;
-        }
-
-        protected override void linkEvent()
-        {
-
-        }
-
-        protected override void unLinkEvent()
-        {
-
-        }
-
-        protected override void onShow()
-        {
-
-        }
-
-        protected override void onHide()
-        {
-
-        }
-
-        public override void reset()
+        protected override void onPointerUp(PointerEventData eventData)
         {
 
         }

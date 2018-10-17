@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using tezcat.Core;
+using tezcat.Extension;
 using tezcat.TypeTraits;
 
 namespace tezcat.Signal
@@ -11,28 +12,6 @@ namespace tezcat.Signal
 
     public sealed class TezEventDispatcher : ITezService
     {
-        #region 内置事件
-        public delegate void Action();
-        public delegate void Action<in T>(T arg);
-        public delegate void Action<T1, T2>(T1 arg1, T2 arg2);
-        public delegate void Action<T1, T2, T3>(T1 arg1, T2 arg2, T3 arg3);
-        public delegate void Action<T1, T2, T3, T4>(T1 arg1, T2 arg2, T3 arg3, T4 arg4);
-        public delegate void Action<T1, T2, T3, T4, T5>(T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5);
-        public delegate void Action<T1, T2, T3, T4, T5, T6>(T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6);
-        public delegate void Action<T1, T2, T3, T4, T5, T6, T7>(T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7);
-        public delegate void Action<T1, T2, T3, T4, T5, T6, T7, T8>(T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7, T8 arg8);
-
-        public delegate R Function<R>();
-        public delegate R Function<R, T>(T arg);
-        public delegate R Function<R, T1, T2>(T1 arg1, T2 arg2);
-        public delegate R Function<R, T1, T2, T3>(T1 arg1, T2 arg2, T3 arg3);
-        public delegate R Function<R, T1, T2, T3, T4>(T1 arg1, T2 arg2, T3 arg3, T4 arg4);
-        public delegate R Function<R, T1, T2, T3, T4, T5>(T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5);
-        public delegate R Function<R, T1, T2, T3, T4, T5, T6>(T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6);
-        public delegate R Function<R, T1, T2, T3, T4, T5, T6, T7>(T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7);
-        public delegate R Function<R, T1, T2, T3, T4, T5, T6, T7, T8>(T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7, T8 arg8);
-        #endregion
-
         public sealed class EventID<EventData>
             : TezTypeInfo<EventData, TezEventDispatcher>
             where EventData : ITezEventData
@@ -61,16 +40,17 @@ namespace tezcat.Signal
             }
         }
 
-        List<Dictionary<object, Action<ITezEventData>>> m_Listeners = new List<Dictionary<object, Action<ITezEventData>>>();
+        List<Dictionary<object, TezEventExtension.Action<ITezEventData>>> m_Listeners = new List<Dictionary<object, TezEventExtension.Action<ITezEventData>>>();
         Queue<QueuePair> m_Queue = new Queue<QueuePair>();
+        Queue<KeyValuePair<int, object>> m_DeleteQueue = new Queue<KeyValuePair<int, object>>();
 
         private void register<EventData>() where EventData : ITezEventData
         {
             EventID<EventData>.setID(m_Listeners.Count);
-            m_Listeners.Add(new Dictionary<object, Action<ITezEventData>>());
+            m_Listeners.Add(new Dictionary<object, TezEventExtension.Action<ITezEventData>>());
         }
 
-        public void subscribe<EventData>(object obj, Action<ITezEventData> function) where EventData : ITezEventData
+        public void subscribe<EventData>(object obj, TezEventExtension.Action<ITezEventData> function) where EventData : ITezEventData
         {
             if (EventID<EventData>.ID == TezTypeInfo.ErrorID)
             {
@@ -82,7 +62,9 @@ namespace tezcat.Signal
 
         public void unsubscribe<EventData>(object obj) where EventData : ITezEventData
         {
-            m_Listeners[EventID<EventData>.ID].Remove(obj);
+            m_DeleteQueue.Enqueue(new KeyValuePair<int, object>(EventID<EventData>.ID, obj));
+
+            /*            m_Listeners[EventID<EventData>.ID].Remove(obj);*/
         }
 
         public void dispatchEvent<EventData>(EventData data) where EventData : ITezEventData
@@ -101,6 +83,8 @@ namespace tezcat.Signal
 
         private void dispatchEvent(int id, ITezEventData data)
         {
+            TezService.get<ITezLog>().info(string.Format("{0}", data.name));
+
             var dic = m_Listeners[id];
             foreach (var pair in dic)
             {
@@ -108,6 +92,12 @@ namespace tezcat.Signal
             }
 
             data.close();
+
+            while (m_DeleteQueue.Count > 0)
+            {
+                var pair = m_DeleteQueue.Dequeue();
+                m_Listeners[pair.Key].Remove(pair.Value);
+            }
         }
 
         public void pushEvent<EventData>(EventData data) where EventData : ITezEventData

@@ -1,25 +1,26 @@
 ﻿using System;
-using tezcat.Signal;
+using tezcat.Core;
+using tezcat.Extension;
 
 namespace tezcat.Utility
 {
     public abstract class TezPropertyFunction
         : IComparable<TezPropertyFunction>
-        , ITezListSortItem
+        , ITezBinarySearchItem
     {
-        public TezPropertyName name
+        public TezValueWrapper name
         {
             get; private set;
         }
 
-        public abstract TezPropertyType parameterType { get; }
+        public abstract TezValueType parameterType { get; }
 
-        int ITezListSortItem.sortID
+        int ITezBinarySearchItem.binaryID
         {
             get { return name.ID; }
         }
 
-        public TezPropertyFunction(TezPropertyName name)
+        public TezPropertyFunction(TezValueWrapper name)
         {
             this.name = name;
         }
@@ -37,14 +38,14 @@ namespace tezcat.Utility
 
     public abstract class TezPropertyFunctionT<T> : TezPropertyFunction
     {
-        TezEventDispatcher.Action<T> m_Function = null;
+        TezEventExtension.Action<T> m_Function = null;
 
-        public TezPropertyFunctionT(TezPropertyName name) : base(name)
+        public TezPropertyFunctionT(TezValueWrapper name) : base(name)
         {
 
         }
 
-        public void setFunction(TezEventDispatcher.Action<T> function)
+        public void setFunction(TezEventExtension.Action<T> function)
         {
             m_Function = function;
         }
@@ -58,54 +59,6 @@ namespace tezcat.Utility
         {
             base.clear();
             m_Function = null;
-        }
-    }
-
-    public class TezPF_Float : TezPropertyFunctionT<float>
-    {
-        public TezPF_Float(TezPropertyName name) : base(name)
-        {
-        }
-
-        public override TezPropertyType parameterType
-        {
-            get { return TezPropertyType.Float; }
-        }
-    }
-
-    public class TezPF_Int : TezPropertyFunctionT<int>
-    {
-        public TezPF_Int(TezPropertyName name) : base(name)
-        {
-        }
-
-        public override TezPropertyType parameterType
-        {
-            get { return TezPropertyType.Int; }
-        }
-    }
-
-    public class TezPF_Bool : TezPropertyFunctionT<bool>
-    {
-        public TezPF_Bool(TezPropertyName name) : base(name)
-        {
-        }
-
-        public override TezPropertyType parameterType
-        {
-            get { return TezPropertyType.Bool; }
-        }
-    }
-
-    public class TezPF_String : TezPropertyFunctionT<string>
-    {
-        public TezPF_String(TezPropertyName name) : base(name)
-        {
-        }
-
-        public override TezPropertyType parameterType
-        {
-            get { return TezPropertyType.String; }
         }
     }
 }

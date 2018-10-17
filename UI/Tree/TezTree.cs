@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using tezcat.Signal;
+using tezcat.Extension;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -8,7 +8,7 @@ namespace tezcat.UI
     [RequireComponent(typeof(ScrollRect))]
     public class TezTree : TezWidget
     {
-        public event TezEventDispatcher.Action<TezTreeNode> onSelectNode;
+        public event TezEventExtension.Action<TezTreeNode> onSelectNode;
 
         [SerializeField]
         TezTreeNode m_Prefab = null;

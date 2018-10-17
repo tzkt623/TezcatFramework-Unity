@@ -1,11 +1,12 @@
-﻿using tezcat.Utility;
+﻿using tezcat.Core;
+
 namespace tezcat.UI
 {
     public abstract class TezPropertyEditor : TezToolWidget
     {
-        protected TezPropertyValue m_Property;
+        protected TezValueWrapper m_Property;
 
-        public void bind(TezPropertyValue value)
+        public void bind(TezValueWrapper value)
         {
             m_Property = value;
             this.dirty = true;

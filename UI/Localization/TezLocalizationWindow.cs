@@ -32,7 +32,7 @@ namespace tezcat.UI
             m_DescriptionList = null;
 
             base.clear();
-            TezcatFramework.instance.createWindow<TezcatToolWindow>("TezcatToolWindow", TezLayer.last).open();
+            TezService.get<TezcatFramework>().createWindow<TezcatToolWindow>("TezcatToolWindow", TezLayer.last).open();
         }
     }
 }

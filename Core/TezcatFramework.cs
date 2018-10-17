@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using tezcat.DataBase;
+using tezcat.Extension;
 using tezcat.Math;
 using tezcat.Signal;
 using tezcat.UI;
@@ -11,11 +12,11 @@ using UnityEngine;
 
 namespace tezcat.Core
 {
-    public abstract class TezcatFramework : TezGameWidget
+    public abstract class TezcatFramework
+        : TezUIWidget
+        , ITezService
     {
         #region Static Data
-        public const uint UIDMax = 3000;
-
         static string m_RootDir = null;
         public static string rootPath
         {
@@ -25,7 +26,7 @@ namespace tezcat.Core
                 {
                     m_RootDir = Application.dataPath;
                     int index = m_RootDir.IndexOf(Application.productName);
-                    m_RootDir = m_RootDir.Substring(0, index + Application.productName.Length) + "/TezSave";
+                    m_RootDir = m_RootDir.Substring(0, index + Application.productName.Length) + "/GameData";
                 }
 
                 return m_RootDir;
@@ -45,7 +46,7 @@ namespace tezcat.Core
         {
             get
             {
-                return rootPath + databaseFile;
+                return rootPath + "/Data";
             }
         }
 
@@ -54,9 +55,26 @@ namespace tezcat.Core
         {
             get
             {
-                return rootPath + saveFile;
+                return rootPath + "/Save";
             }
         }
+
+        //         public static string getPath(string dir, string file_name)
+        //         {
+        //             var dir_path = rootPath + "/" + dir;
+        //             if (!Directory.Exists(dir_path))
+        //             {
+        //                 Directory.CreateDirectory(dir_path);
+        //             }
+        // 
+        //             var file_path = dir_path + "/" + file_name;
+        //             if (!File.Exists(file_path))
+        //             {
+        //                 File.Create(file_path);
+        //             }
+        // 
+        //             File.ReadAllText()
+        //         }
 
         public static void checkNeedFile()
         {
@@ -94,7 +112,7 @@ namespace tezcat.Core
                 });
         }
 
-        private static void checkFile(string path, TezEventDispatcher.Action<StreamWriter> action)
+        private static void checkFile(string path, TezEventExtension.Action<StreamWriter> action)
         {
             if (!TezPath.fileExist(path))
             {
@@ -106,14 +124,11 @@ namespace tezcat.Core
         #endregion
 
         #region Engine
-        public static TezcatFramework instance { get; private set; }
-        public static TezVersions versions { get; protected set; }
-
         List<TezGameObjectMB> m_ObjectMBList = new List<TezGameObjectMB>();
 
         protected override void preInit()
         {
-            instance = this;
+            DontDestroyOnLoad(this);
             this.register();
         }
 
@@ -160,21 +175,17 @@ namespace tezcat.Core
         {
 
         }
+
+        private void OnApplicationQuit()
+        {
+
+        }
         #endregion
 
-        #region Loading
-        protected abstract IEnumerator onLoadResources();
-
-        private IEnumerator loadResources()
-        {
-            yield return this.onLoadResources();
-            yield return this.startMyGame();
-        }
-
-        public abstract IEnumerator startMyGame();
-
+        #region Register
         private void register()
         {
+            TezService.register(this);
             this.registerVersions();
             this.registerService();
             this.registerClassFactory(TezService.get<TezClassFactory>());
@@ -186,9 +197,13 @@ namespace tezcat.Core
             TezService.register(new TezEventDispatcher());
 
             TezService.register(new TezClassFactory());
+            TezService.register(new TezSaveManager());
+
             TezService.register(new TezRandom());
+            TezService.register(new TezPrefabDatabase());
             TezService.register(new TezDatabase());
             TezService.register(new TezTip());
+            TezService.register(new TezDragDropManager());
         }
 
         protected virtual void registerClassFactory(TezClassFactory factory)
@@ -197,6 +212,19 @@ namespace tezcat.Core
         }
 
         protected abstract void registerVersions();
+        #endregion
+
+
+        #region Loading
+        protected abstract IEnumerator onLoadResources();
+
+        private IEnumerator loadResources()
+        {
+            yield return this.onLoadResources();
+            yield return this.startMyGame();
+        }
+
+        public abstract IEnumerator startMyGame();
         #endregion
 
         #region Layer
@@ -258,7 +286,7 @@ namespace tezcat.Core
 
         public Widget createWidget<Widget>(string name, RectTransform parent) where Widget : TezWidget
         {
-            var widget = Instantiate(TezPrefabDatabase.get<Widget>(), parent, false);
+            var widget = Instantiate(TezService.get<TezPrefabDatabase>().get<Widget>(), parent, false);
             widget.transform.localPosition = Vector3.zero;
             widget.name = name;
             return widget;
@@ -266,7 +294,7 @@ namespace tezcat.Core
 
         public Widget createWidget<Widget>(RectTransform parent) where Widget : TezWidget
         {
-            var widget = Instantiate(TezPrefabDatabase.get<Widget>(), parent, false);
+            var widget = Instantiate(TezService.get<TezPrefabDatabase>().get<Widget>(), parent, false);
             widget.transform.localPosition = Vector3.zero;
             return widget;
         }
@@ -303,7 +331,7 @@ namespace tezcat.Core
                 return (Window)m_WindowList[id];
             }
 
-            return this.createWindow(TezPrefabDatabase.get<Window>(), name, this.giveID(), layer);
+            return this.createWindow(TezService.get<TezPrefabDatabase>().get<Window>(), name, this.giveID(), layer);
         }
 
         public void removeWindow(TezWindow window)
@@ -319,6 +347,6 @@ namespace tezcat.Core
         }
         #endregion
 
-        protected abstract void Update();
+        protected virtual void Update() { }
     }
 }

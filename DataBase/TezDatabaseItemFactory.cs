@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using tezcat.Core;
-using tezcat.Signal;
+using tezcat.Extension;
 using tezcat.String;
 
 namespace tezcat.DataBase
@@ -19,7 +19,7 @@ namespace tezcat.DataBase
                 this.name = name;
             }
 
-            public Group create(TezStaticString type_name, int type_id, TezEventDispatcher.Function<TezItem> function)
+            public Group create(TezStaticString type_name, int type_id, TezEventExtension.Function<TezDataBaseItem> function)
             {
                 Container container = null;
                 if(!m_Dic.TryGetValue(type_name, out container))
@@ -57,15 +57,15 @@ namespace tezcat.DataBase
         public class Container
         {
             public TezStaticString name { get; private set; }
-            TezEventDispatcher.Function<TezItem> m_Function = null;
+            TezEventExtension.Function<TezDataBaseItem> m_Function = null;
 
-            public void register(TezStaticString name, TezEventDispatcher.Function<TezItem> function)
+            public void register(TezStaticString name, TezEventExtension.Function<TezDataBaseItem> function)
             {
                 m_Function = function;
                 this.name = name;
             }
 
-            public TezItem create()
+            public TezDataBaseItem create()
             {
 #if UNITY_EDITOR
                 TezService.get<TezDebug>().isTrue(m_Function != null
@@ -112,12 +112,12 @@ namespace tezcat.DataBase
             return m_Dic[group_name];
         }
 
-        public static TezItem create(int group_id, int type_id)
+        public static TezDataBaseItem create(int group_id, int type_id)
         {
             return m_List[group_id][type_id].create();
         }
 
-        public static T create<T>(int group_id, int type_id) where T : TezItem
+        public static T create<T>(int group_id, int type_id) where T : TezDataBaseItem
         {
             var item = m_List[group_id][type_id].create();
 
@@ -129,12 +129,12 @@ namespace tezcat.DataBase
             return (T)item;
         }
 
-        public static TezItem create(TezStaticString group_name, TezStaticString type_name)
+        public static TezDataBaseItem create(TezStaticString group_name, TezStaticString type_name)
         {
             return m_Dic[group_name][type_name].create();
         }
 
-        public static T create<T>(TezStaticString group_name, TezStaticString type_name) where T : TezItem
+        public static T create<T>(TezStaticString group_name, TezStaticString type_name) where T : TezDataBaseItem
         {
             var item = m_Dic[group_name][type_name].create();
 

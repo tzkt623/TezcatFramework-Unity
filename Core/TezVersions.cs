@@ -1,6 +1,6 @@
 ﻿namespace tezcat.Core
 {
-    public abstract class TezVersions
+    public abstract class TezVersions : ITezService
     {
         public abstract string name { get; }
         public abstract int major { get; }
@@ -11,5 +11,7 @@
         {
             return string.Format("{0}.{1}.{2}", major, minor, build);
         }
+
+        public abstract void close();
     }
 }

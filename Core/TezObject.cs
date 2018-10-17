@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using tezcat.DataBase;
 using tezcat.String;
 
@@ -10,6 +11,7 @@ namespace tezcat.Core
     public abstract class TezObject
         : ITezCloseable
     {
+
         /// <summary>
         /// 删除Object时调用
         /// </summary>
@@ -38,17 +40,44 @@ namespace tezcat.Core
     /// 游戏Object
     /// </summary>
     public abstract class TezGameObject
-        : TezObject
-        , ITezSerializable
-        , ITezTagSet
+         : TezObject
+         , ITezSerializable
+         , ITezTagSet
     {
+        static Stack<uint> m_FreeID = new Stack<uint>();
+        static uint m_IDGiver = 1;
+        static uint giveID()
+        {
+            if (m_FreeID.Count > 0)
+            {
+                return m_FreeID.Pop();
+            }
+
+            return m_IDGiver++;
+        }
+
         /// <summary>
         /// 全局唯一ID
         /// </summary>
-        public TezUID UID { get; private set; } = null;
+        public uint GUID { get; private set; }
 
         /// <summary>
-        /// 全局唯一名称ID
+        /// 类型分组
+        /// </summary>
+        public abstract ITezGroup group { get; }
+
+        /// <summary>
+        /// 类型次级分组
+        /// </summary>
+        public abstract ITezSubGroup subgroup { get; }
+
+        /// <summary>
+        /// 物品ID
+        /// </summary>
+        public TezDataBaseGameItem gameItem { get; protected set; } = null;
+
+        /// <summary>
+        /// 唯一名称ID
         /// </summary>
         public TezStaticString NID { get; private set; } = null;
 
@@ -60,14 +89,14 @@ namespace tezcat.Core
         /// <summary>
         /// 初始化Object
         /// </summary>
-        public void initObject()
+        public void init()
         {
-            if (!this.UID)
+            if (GUID == 0)
             {
-                this.UID = new TezUID();
+                this.GUID = giveID();
                 this.NID = new TezStaticString();
                 this.TAG = new TezTagSet();
-                this.onInitObject();
+                this.onInit();
             }
             else
             {
@@ -75,9 +104,30 @@ namespace tezcat.Core
             }
         }
 
-        protected virtual void onInitObject()
+        protected virtual void onInit()
         {
 
+        }
+
+        public virtual void setData(TezDataBaseGameItem item)
+        {
+            this.init();
+            this.gameItem = item;
+            this.NID = item.NID;
+        }
+
+        public bool sameAs(TezGameObject game_object)
+        {
+            return this.gameItem == game_object.gameItem;
+        }
+
+        /// <summary>
+        /// 将当前物品ID更新到一个新的ID
+        /// </summary>
+        public void updateItem()
+        {
+            var temp = TezService.get<TezDatabase>().updateItem(this.gameItem);
+            temp.retain();
         }
 
         /// <summary>
@@ -88,22 +138,28 @@ namespace tezcat.Core
             this.TAG.close();
             this.TAG = null;
 
-            this.UID.close();
-            this.UID = null;
-
             this.NID.close();
             this.NID = null;
+
+            if(this.gameItem != null && this.gameItem.release())
+            {
+                TezService.get<TezDatabase>().recycleItem(this.gameItem);
+            }
+            this.gameItem = null;
+
+            m_FreeID.Push(this.GUID);
+            this.GUID = 0;
         }
 
-        public virtual void serialize(TezWriter writer)
+        public virtual void serialize(TezSaveManager manager)
         {
-            writer.write("TID", this.GetType().Name);
-            writer.write("NID", this.NID);
+            manager.write(TezReadOnlyString.Database.CID, this.GetType().Name);
         }
 
-        public virtual void deserialize(TezReader reader)
+        public virtual void deserialize(TezSaveManager reader)
         {
-
+            this.init();
+            this.NID = reader.readString(TezReadOnlyString.Database.NID);
         }
     }
 

@@ -1,114 +1,232 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using tezcat.Core;
-using tezcat.TypeTraits;
+using tezcat.Extension;
 
 namespace tezcat.DataBase
 {
     public sealed class TezDatabase : ITezService
     {
-        public delegate void TypeChecker(System.Type type, int id);
-        public delegate void ProtoChecker(ITezPrototype prototype);
-
-        interface IContainer : ITezCloseable
+        class SubGroup
         {
-            void foreachData(ProtoChecker checker);
-            System.Type GetType();
-        }
+            public string NID { get; set; }
+            public int SGID { get; set; }
 
-        class Container<T>
-            : IContainer
-            where T : ITezPrototype<T>
-        {
-            Dictionary<string, T> m_NameDic = new Dictionary<string, T>();
+            Dictionary<string, TezDataBaseGameItem> m_Dic = new Dictionary<string, TezDataBaseGameItem>();
+            List<TezDataBaseGameItem> m_List = new List<TezDataBaseGameItem>();
 
-            public void add(string name, T prototype)
+            Stack<int> m_FreeID = new Stack<int>();
+            int m_IDGiver = 0;
+
+            public void add(TezDataBaseGameItem item)
             {
-                m_NameDic[name] = prototype;
+                if (m_Dic.ContainsKey(item.NID))
+                {
+                    throw new Exception(string.Format("Item : {0} is added", item.NID));
+                }
+
+                item.itemID = m_List.Count;
+                item.retain();
+
+                m_List.Add(item);
+                m_Dic.Add(item.NID, item);
+                m_IDGiver = m_List.Count;
             }
 
-            public void remove(string name)
+            public TezDataBaseGameItem get(int item_id)
             {
-                m_NameDic.Remove(name);
+                return m_List[item_id];
             }
 
-            public T get(string name)
+            public TezDataBaseGameItem get(string item_name)
             {
-                return m_NameDic[name];
+                return m_Dic[item_name];
+            }
+
+            public void foreachItem(TezEventExtension.Action<TezDataBaseGameItem> for_item)
+            {
+                for (int i = 0; i < m_List.Count; i++)
+                {
+                    for_item(m_List[i]);
+                }
+            }
+
+            public TezDataBaseGameItem updataItem(TezDataBaseGameItem item)
+            {
+                TezDataBaseGameItem new_temp = item.birth();
+
+                var id = item.itemID;
+                if (item.release())
+                {
+                    m_FreeID.Push(id);
+                }
+
+                new_temp.itemID = m_FreeID.Count > 0 ? m_FreeID.Pop() : m_IDGiver++;
+                return new_temp;
+            }
+
+            public void recycleItem(TezDataBaseGameItem item)
+            {
+                if (item.itemID >= m_List.Count)
+                {
+                    m_FreeID.Push(item.itemID);
+                }
             }
 
             public void close()
             {
-                m_NameDic.Clear();
-                m_NameDic = null;
+
+            }
+        }
+
+        class Group
+        {
+            public string NID { get; set; }
+            public int GID { get; set; }
+
+            Dictionary<string, SubGroup> m_Dic = new Dictionary<string, SubGroup>();
+            List<SubGroup> m_List = new List<SubGroup>();
+
+            public void add(TezDataBaseGameItem item)
+            {
+                var sgid = item.subgroup.toID;
+                SubGroup sub;
+                if (!m_Dic.TryGetValue(item.subgroup.NID, out sub))
+                {
+                    sub = new SubGroup() { NID = item.subgroup.NID, SGID = sgid };
+                    m_Dic.Add(item.subgroup.NID, sub);
+
+                    while (m_List.Count <= sgid)
+                    {
+                        m_List.Add(null);
+                    }
+
+                    m_List[sgid] = sub;
+                }
+
+                sub.add(item);
             }
 
-            public void foreachData(ProtoChecker checker)
+            public void remove(string name)
             {
-                foreach (var pair in m_NameDic)
+
+            }
+
+            public TezDataBaseGameItem get(string sub_name, string item_name)
+            {
+                return m_Dic[sub_name].get(item_name);
+            }
+
+            public TezDataBaseGameItem get(int sub_id, int item_id)
+            {
+                return m_List[sub_id].get(item_id);
+            }
+
+            public void close()
+            {
+                m_Dic.Clear();
+                m_Dic = null;
+            }
+
+            public void foreachSubgroup(TezEventExtension.Action<string, int> for_subgroup, TezEventExtension.Action<TezDataBaseGameItem> for_item)
+            {
+                foreach (var subgroup in m_List)
                 {
-                    checker(pair.Value);
+                    for_subgroup(subgroup.NID, subgroup.SGID);
+                    subgroup.foreachItem(for_item);
                 }
             }
-        }
 
-        sealed class DataID<Type> : TezTypeInfo<Type, TezDatabase>
-        {
-            private DataID() { }
-        }
-
-        Dictionary<string, int> m_DataDic = new Dictionary<string, int>();
-        List<IContainer> m_DataList = new List<IContainer>();
-
-        public void register<T>() where T : ITezPrototype<T>
-        {
-            DataID<T>.setID(m_DataList.Count);
-            while (DataID<T>.ID >= m_DataList.Count)
+            public TezDataBaseGameItem updateItem(TezDataBaseGameItem game_item)
             {
-                m_DataList.Add(null);
+                return m_List[game_item.subgroup.toID].updataItem(game_item);
             }
 
-            m_DataList[DataID<T>.ID] = new Container<T>();
-        }
-
-        public void add<T>(T data) where T : ITezPrototype<T>
-        {
-            var cg = (Container<T>)m_DataList[DataID<T>.ID];
-            cg.add(data.prototypeName, data);
-        }
-
-        public void remove<T>(T data) where T : ITezPrototype<T>
-        {
-            var cg = (Container<T>)m_DataList[DataID<T>.ID];
-            cg.remove(data.prototypeName);
-        }
-
-        public T get<T>(string name) where T : ITezPrototype<T>
-        {
-            return ((Container<T>)m_DataList[DataID<T>.ID]).get(name);
-        }
-
-        public void foreachData(TypeChecker type_checker, ProtoChecker proto_checker)
-        {
-            for (int i = 0; i < m_DataList.Count; i++)
+            public void recycleItem(TezDataBaseGameItem game_item)
             {
-                var container = m_DataList[i];
-                type_checker(container.GetType(), i);
-                container.foreachData(proto_checker);
+                m_List[game_item.subgroup.toID].recycleItem(game_item);
             }
+        }
+
+        Dictionary<string, Group> m_GroupDic = new Dictionary<string, Group>();
+        List<Group> m_GroupList = new List<Group>();
+
+        public void add(TezDataBaseGameItem item)
+        {
+            var gid = item.group.toID;
+
+            Group group = null;
+            if (!m_GroupDic.TryGetValue(item.group.NID, out group))
+            {
+                group = new Group() { NID = item.group.NID, GID = gid };
+                m_GroupDic.Add(item.group.NID, group);
+
+                while (m_GroupList.Count <= gid)
+                {
+                    m_GroupList.Add(null);
+                }
+
+                m_GroupList[gid] = group;
+            }
+
+            group.add(item);
+        }
+
+        public T get<T>(string group_name, string sub_name, string item_name) where T : TezDataBaseGameItem
+        {
+            return (T)this.get(group_name, sub_name, item_name);
+        }
+
+        public T get<T>(int group_id, int sub_id, int item_id) where T : TezDataBaseGameItem
+        {
+            return (T)this.get(group_id, sub_id, item_id);
+        }
+
+        public TezDataBaseGameItem get(int group_id, int sub_id, int item_id)
+        {
+            return m_GroupList[group_id].get(sub_id, item_id);
+        }
+
+        public TezDataBaseGameItem get(string group_name, string sub_name, string item_name)
+        {
+            return m_GroupDic[group_name].get(sub_name, item_name);
+        }
+
+        public void foreachDataBase(
+            TezEventExtension.Action<string, int> for_group,
+            TezEventExtension.Action<string, int> for_subgroup,
+            TezEventExtension.Action<TezDataBaseGameItem> for_item)
+        {
+            for (int i = 0; i < m_GroupList.Count; i++)
+            {
+                var group = m_GroupList[i];
+                for_group(group.NID, group.GID);
+                group.foreachSubgroup(for_subgroup, for_item);
+            }
+        }
+
+        public TezDataBaseGameItem updateItem(TezDataBaseGameItem game_item)
+        {
+            return m_GroupList[game_item.group.toID].updateItem(game_item);
+        }
+
+        public void recycleItem(TezDataBaseGameItem game_item)
+        {
+            m_GroupList[game_item.group.toID].recycleItem(game_item);
         }
 
         public void close()
         {
-            foreach (var container in m_DataList)
+            foreach (var container in m_GroupList)
             {
-                container.close();
+                container?.close();
             }
 
-            m_DataList.Clear();
-            m_DataDic.Clear();
+            m_GroupList.Clear();
+            m_GroupDic.Clear();
 
-            m_DataList = null;
-            m_DataDic = null;
+            m_GroupList = null;
+            m_GroupDic = null;
         }
     }
 }

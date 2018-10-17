@@ -1,12 +1,12 @@
 ﻿using tezcat.Core;
-using tezcat.Signal;
+using tezcat.Extension;
 using UnityEngine;
 
 namespace tezcat.UI
 {
     public class TezPageController : ITezCloseable
     {
-        TezEventDispatcher.Action<int, int> m_OnPageChanged;
+        TezEventExtension.Action<int, int> m_OnPageChanged;
 
         public int currentPage { get; private set; } = 1;
         public int maxPage { get; private set; } = 0;
@@ -22,7 +22,7 @@ namespace tezcat.UI
         /// end 当前页面Item结束位置的后一位
         /// </summary>
         /// <param name="function"></param>
-        public void setListener(TezEventDispatcher.Action<int, int> function)
+        public void setListener(TezEventExtension.Action<int, int> function)
         {
             m_OnPageChanged = function;
         }

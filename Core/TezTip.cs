@@ -1,8 +1,9 @@
 ﻿using System.Text;
 using tezcat.Core;
+using tezcat.String;
 using UnityEngine;
 
-namespace tezcat.Utility
+namespace tezcat.Core
 {
     public interface ITezTip : ITezService
     {
@@ -217,44 +218,43 @@ namespace tezcat.Utility
             return this;
         }
 
-        public TezTip pushAttribute(TezPropertyValue property)
+        public TezTip pushAttribute(TezValueWrapper property)
         {
-            switch (property.getParameterType())
+            switch (property.valueType)
             {
-                case TezPropertyType.Float:
-                    this.pushAttribute(TezTranslator.translateName(property.name), ((TezPV_Float)property).value);
+                case TezValueType.Float:
+                    if(property.valueSubType == TezValueSubType.WithBasic)
+                    {
+                        this.pushAttribute(TezTranslator.translateName(property.name),
+                            string.Format("{0:N1}/{1:N1}", ((TezValueWithBasic<float>)property).value, ((TezValueWithBasic<float>)property).basic));
+                    }
+                    else
+                    {
+                        this.pushAttribute(TezTranslator.translateName(property.name), ((TezValueWrapper<float>)property).value);
+                    }
                     break;
-                case TezPropertyType.Limit_Float:
-                    this.pushAttribute(TezTranslator.translateName(property.name),
-                        string.Format("{0:N1}/{1:N1}", ((TezPV_LimitFloat)property).value, ((TezPV_LimitFloat)property).limit));
+                case TezValueType.Int:
+                    if(property.valueSubType == TezValueSubType.WithBasic)
+                    {
+                        this.pushAttribute(TezTranslator.translateName(property.name),
+                            string.Format("{0}/{1}", ((TezValueWithBasic<int>)property).value, ((TezValueWithBasic<int>)property).basic));
+                    }
+                    else
+                    {
+                        this.pushAttribute(TezTranslator.translateName(property.name), ((TezValueWrapper<int>)property).value);
+                    }
                     break;
-                case TezPropertyType.Int:
-                    this.pushAttribute(TezTranslator.translateName(property.name), ((TezPV_Int)property).value);
+                case TezValueType.Bool:
                     break;
-                case TezPropertyType.Limit_Int:
-                    this.pushAttribute(TezTranslator.translateName(property.name),
-                        string.Format("{0}/{1}", ((TezPV_LimitInt)property).value, ((TezPV_LimitInt)property).limit));
+                case TezValueType.String:
+                    this.pushAttribute(TezTranslator.translateName(property.name), ((TezValueWrapper<string>)property).value);
                     break;
-                case TezPropertyType.Bool:
+                case TezValueType.Class:
                     break;
-                case TezPropertyType.String:
-                    this.pushAttribute(TezTranslator.translateName(property.name), ((TezPV_String)property).value);
+                case TezValueType.StaticString:
+                    this.pushAttribute(TezTranslator.translateName(property.name), ((TezValueWrapper<TezStaticString>)property).value);
                     break;
-                case TezPropertyType.List:
-                    break;
-                case TezPropertyType.HashSet:
-                    break;
-                case TezPropertyType.Dictionary:
-                    break;
-                case TezPropertyType.Class:
-                    break;
-                case TezPropertyType.Getter:
-
-                    break;
-                case TezPropertyType.StaticString:
-                    this.pushAttribute(TezTranslator.translateName(property.name), ((TezPV_StaticString)property).value);
-                    break;
-                case TezPropertyType.Type:
+                case TezValueType.Type:
                     this.pushAttribute(TezTranslator.translateName(property.name), TezTranslator.translateName(((TezPV_Type)property).baseValue.name));
                     break;
                 default:

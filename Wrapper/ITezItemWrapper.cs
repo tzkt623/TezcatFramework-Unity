@@ -4,6 +4,6 @@ namespace tezcat.Wrapper
 {
     public interface ITezItemWrapper : ITezWrapper
     {
-        TezItem myItem { get; }
+        TezDataBaseItem myItem { get; }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using tezcat.Math;
 using UnityEngine;
 
 namespace tezcat.Game
@@ -9,6 +10,47 @@ namespace tezcat.Game
         public static readonly float Sqrt3 = Mathf.Sqrt(3);
         public static readonly float Sqrt3D2 = Mathf.Sqrt(3) / 2;
         public static readonly float Sqrt3D3 = Mathf.Sqrt(3) / 3;
+
+        public interface Node
+        {
+            AxialCoordinate coordinate { get; }
+        }
+
+        public class Container<T> where T : class, Node
+        {
+            class Wrapper
+            {
+                T[] m_Array = new T[4];
+
+                public T get(int q, int r)
+                {
+                    return m_Array[(q < 0 ? 2 : 0) + (r < 0 ? 1 : 0)];
+                }
+
+                public void add(T node)
+                {
+                    var c = node.coordinate;
+                    m_Array[(c.q < 0 ? 2 : 0) + (c.r < 0 ? 1 : 0)] = node;
+                }
+
+                public void close()
+                {
+                    m_Array = null;
+                }
+            }
+
+            Wrapper[,] m_List = new Wrapper[1, 1];
+
+            public void add(T node)
+            {
+                var coordinate = node.coordinate;
+                var q = Mathf.Abs(coordinate.q);
+                var r = Mathf.Abs(coordinate.r);
+
+                var grow_q = m_List.GetLength(0) < q;
+                var grow_r = m_List.GetLength(0) < r;
+            }
+        }
 
         public struct CubeCoordinate
         {
@@ -74,26 +116,28 @@ namespace tezcat.Game
 
             public override int GetHashCode()
             {
-                unchecked
-                {
-                    int hash = 47;
-                    hash = hash * 227 + x.GetHashCode();
-                    hash = hash * 227 + y.GetHashCode();
-                    hash = hash * 227 + z.GetHashCode();
-
-                    return hash;
-                }
+                var hash = TezHash.intHash(x);
+                hash = TezHash.intHash(hash + y);
+                hash = TezHash.intHash(hash + z);
+                return hash;
             }
 
             public int getDistanceFrom(CubeCoordinate other)
             {
                 return (Mathf.Abs(x - other.x) + Mathf.Abs(y - other.y) + Mathf.Abs(z - other.z)) / 2;
             }
+
+            public override string ToString()
+            {
+                return string.Format("{0},{1},{2}", x, y, z);
+            }
         }
         public struct AxialCoordinate : IEquatable<AxialCoordinate>
         {
             public static readonly AxialCoordinate zero = new AxialCoordinate(0, 0);
             public static readonly AxialCoordinate one = new AxialCoordinate(1, 1);
+            public static readonly AxialCoordinate min = new AxialCoordinate(int.MinValue, int.MinValue);
+            public static readonly AxialCoordinate max = new AxialCoordinate(int.MaxValue, int.MaxValue);
 
             public int q;
             public int r;
@@ -141,31 +185,24 @@ namespace tezcat.Game
 
             public override int GetHashCode()
             {
-                unchecked
-                {
-                    int hash = 47;
-                    hash = hash * 227 + q.GetHashCode();
-                    hash = hash * 227 + r.GetHashCode();
-
-                    return hash;
-                }
+                return AxialCoordinate.GetHashCode(q, r);
             }
 
             public static int GetHashCode(int q, int r)
             {
-                unchecked
-                {
-                    int hash = 47;
-                    hash = hash * 227 + q.GetHashCode();
-                    hash = hash * 227 + r.GetHashCode();
-
-                    return hash;
-                }
+                var hash = TezHash.intHash(q);
+                hash = TezHash.intHash(hash + r);
+                return hash;
             }
 
             bool IEquatable<AxialCoordinate>.Equals(AxialCoordinate other)
             {
                 return this.q == other.q && this.r == other.r;
+            }
+
+            public override string ToString()
+            {
+                return string.Format("{0},{1}", q, r);
             }
         }
 
@@ -424,5 +461,4 @@ namespace tezcat.Game
             return mesh;
         }
     }
-
 }

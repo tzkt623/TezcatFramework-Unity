@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using tezcat.Signal;
-using tezcat.UI;
-using tezcat.Wrapper;
+using tezcat.Core;
+using tezcat.Extension;
 using UnityEngine;
 
 namespace tezcat.DataBase
@@ -12,38 +11,42 @@ namespace tezcat.DataBase
         Type GetType();
     }
 
-    public abstract class TezPrefabDatabase : ScriptableObject
+    public sealed class TezPrefabID : ITezCloseable
     {
-        public class Prefab
+        public int ID { get; private set; } = -1;
+        public ITezPrefab prefab { get; private set; } = null;
+
+        /// <summary>
+        /// 不要单独调用此构造函数
+        /// </summary>
+        public TezPrefabID(int ID, ITezPrefab prefab)
         {
-            public int ID { get; private set; } = -1;
-            public ITezPrefab prefab { get; private set; } = null;
-
-            /// <summary>
-            /// 不要单独调用此构造函数
-            /// </summary>
-            public Prefab(int ID, ITezPrefab prefab)
-            {
-                this.ID = ID;
-                this.prefab = prefab;
-            }
-
-            public T convertTo<T>() where T : ITezPrefab
-            {
-                return (T)prefab;
-            }
-
-            public void setPrefab(ITezPrefab prefab)
-            {
-                this.prefab = prefab;
-            }
+            this.ID = ID;
+            this.prefab = prefab;
         }
 
-        #region Manager
-        static Dictionary<Type, int> m_PrefabDic = new Dictionary<Type, int>();
-        static List<Prefab> m_List = new List<Prefab>();
+        public T convertTo<T>() where T : ITezPrefab
+        {
+            return (T)prefab;
+        }
 
-        public static void foreachPrefab(TezEventDispatcher.Action<Prefab> action)
+        public void setPrefab(ITezPrefab prefab)
+        {
+            this.prefab = prefab;
+        }
+
+        public void close()
+        {
+            this.prefab = null;
+        }
+    }
+
+    public class TezPrefabDatabase : ITezService
+    {
+        Dictionary<Type, int> m_Dic = new Dictionary<Type, int>();
+        List<TezPrefabID> m_List = new List<TezPrefabID>();
+
+        public void foreachPrefab(TezEventExtension.Action<TezPrefabID> action)
         {
             foreach (var prefab in m_List)
             {
@@ -51,29 +54,7 @@ namespace tezcat.DataBase
             }
         }
 
-        protected static void load<Prefab>(List<Prefab> list) where Prefab : ITezPrefab
-        {
-            foreach (var widget in list)
-            {
-                if (widget != null)
-                {
-                    TezPrefabDatabase.register(widget);
-                }
-            }
-        }
-
-        protected static void load(List<GameObject> list)
-        {
-            foreach (var go in list)
-            {
-                if (go)
-                {
-                    TezPrefabDatabase.register(go);
-                }
-            }
-        }
-
-        public static void register(GameObject go)
+        public void register(GameObject go)
         {
             var prefab = go.GetComponent<ITezPrefab>();
             if (prefab != null)
@@ -82,56 +63,56 @@ namespace tezcat.DataBase
             }
             else
             {
-                throw new ArgumentNullException(go.name + "`s Prefab Not Found");
+                throw new ArgumentNullException(string.Format("{0}`s Prefab Not Found", go.name));
             }
         }
 
-        private static void register(ITezPrefab prefab)
+        private void register(ITezPrefab prefab)
         {
             int id = -1;
-            if (!m_PrefabDic.TryGetValue(prefab.GetType(), out id))
+            if (!m_Dic.TryGetValue(prefab.GetType(), out id))
             {
                 id = m_List.Count;
-                var p = new Prefab(id, prefab);
+                var p = new TezPrefabID(id, prefab);
                 m_List.Add(p);
-                m_PrefabDic.Add(prefab.GetType(), id);
+                m_Dic.Add(prefab.GetType(), id);
             }
 
             m_List[id].setPrefab(prefab);
         }
 
-        public static Prefab register<T>() where T : ITezPrefab
+        public TezPrefabID register<T>() where T : ITezPrefab
         {
             int id = -1;
-            if (!m_PrefabDic.TryGetValue(typeof(T), out id))
+            if (!m_Dic.TryGetValue(typeof(T), out id))
             {
-                var prefab = new Prefab(m_List.Count, null);
+                var prefab = new TezPrefabID(m_List.Count, null);
                 m_List.Add(prefab);
-                m_PrefabDic.Add(typeof(T), prefab.ID);
+                m_Dic.Add(typeof(T), prefab.ID);
             }
 
             return m_List[id];
         }
 
-        public static T get<T>() where T : class, ITezPrefab
+        public T get<T>() where T : class, ITezPrefab
         {
             int id = -1;
-            if (m_PrefabDic.TryGetValue(typeof(T), out id))
+            if (m_Dic.TryGetValue(typeof(T), out id))
             {
                 return m_List[id].convertTo<T>();
             }
             return null;
         }
 
-        public static ITezPrefab get(int ID)
+        public ITezPrefab get(int ID)
         {
             return m_List[ID].prefab;
         }
 
-        public static ITezPrefab get(Type type)
+        public ITezPrefab get(Type type)
         {
             int id = -1;
-            if (m_PrefabDic.TryGetValue(type, out id))
+            if (m_Dic.TryGetValue(type, out id))
             {
                 return m_List[id].prefab;
             }
@@ -139,35 +120,23 @@ namespace tezcat.DataBase
             return null;
         }
 
-        public static T get<T>(int ID) where T : ITezPrefab
+        public T get<T>(int ID) where T : ITezPrefab
         {
             return m_List[ID].convertTo<T>();
         }
-        #endregion
 
-        [SerializeField]
-        List<TezToolWindow> ToolWindow = new List<TezToolWindow>();
-        [SerializeField]
-        List<TezToolWidget> ToolWidget = new List<TezToolWidget>();
-
-        [SerializeField]
-        List<TezGameWindow> GameWindow = new List<TezGameWindow>();
-        [SerializeField]
-        List<TezGameWidget> GameWidget = new List<TezGameWidget>();
-
-        [SerializeField]
-        List<TezGameObjectMB> ObjectMB = new List<TezGameObjectMB>();
-        [SerializeField]
-        List<TezGameMB> GameMB = new List<TezGameMB>();
-
-        public virtual void init()
+        public void close()
         {
-            load(ToolWindow);
-            load(ToolWidget);
-            load(GameWindow);
-            load(GameWidget);
-            load(ObjectMB);
-            load(GameMB);
+            foreach (var item in m_List)
+            {
+                item.close();
+            }
+
+            m_List.Clear();
+            m_Dic.Clear();
+
+            m_List = null;
+            m_Dic = null;
         }
     }
 }

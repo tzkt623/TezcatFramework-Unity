@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using tezcat.Signal;
+using tezcat.Extension;
 
 namespace tezcat.Core
 {
@@ -124,7 +124,7 @@ namespace tezcat.Core
             return true;
         }
 
-        public void foreachSlot(TezEventDispatcher.Action<T> function)
+        public void foreachSlot(TezEventExtension.Action<T> function)
         {
             int count = this.slots.Count;
             for (int i = 0; i < count; i++)

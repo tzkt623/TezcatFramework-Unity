@@ -1,11 +1,11 @@
 ﻿using System.Collections.Generic;
 using tezcat.Signal;
 
-namespace tezcat.Utility
+namespace tezcat.Extension
 {
-    public interface ITezListSortItem
+    public interface ITezBinarySearchItem
     {
-        int sortID { get; }
+        int binaryID { get; }
     }
 
     public static class TezListExtension
@@ -16,7 +16,7 @@ namespace tezcat.Utility
         /// <param name="remove_id">要移除的item的ID</param>
         /// <param name="on_swap">非最后一个Item的删除前处理(remove, last)</param>
         /// <param name="on_not_swap">最后一个Item的删除前处理(remove)</param>
-        public static void Remove<T>(this List<T> list, int remove_id, TezEventDispatcher.Action<T, T> on_swap, TezEventDispatcher.Action<T> on_not_swap)
+        public static void Remove<T>(this List<T> list, int remove_id, TezEventExtension.Action<T, T> on_swap, TezEventExtension.Action<T> on_not_swap)
         {
             int last_id = list.Count - 1;
             if (remove_id != last_id)
@@ -51,7 +51,7 @@ namespace tezcat.Utility
             list.RemoveAt(last_id);
         }
 
-        public static bool binaryFind<T>(this List<T> list, int target_id, out T result) where T : ITezListSortItem
+        public static bool binaryFind<T>(this List<T> list, int target_id, out T result) where T : ITezBinarySearchItem
         {
             int min = 0;
             int max = list.Count;
@@ -61,11 +61,11 @@ namespace tezcat.Utility
             {
                 mid = min + (max - min) / 2;
                 var item = list[mid];
-                if (item.sortID > target_id)
+                if (item.binaryID > target_id)
                 {
                     max = mid - 1;
                 }
-                else if(item.sortID < target_id)
+                else if(item.binaryID < target_id)
                 {
                     min = mid + 1;
                 }

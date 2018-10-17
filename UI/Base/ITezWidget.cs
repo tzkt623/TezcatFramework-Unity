@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using tezcat.Core;
-using tezcat.Signal;
+using tezcat.Extension;
 using tezcat.Wrapper;
 using UnityEngine.EventSystems;
 
@@ -24,6 +24,20 @@ namespace tezcat.UI
 
     }
 
+    public interface ITezDropableWidgetNew
+        : IDropHandler
+    {
+
+    }
+
+    public interface ITezDragableWidgetNew
+        : IBeginDragHandler
+        , IEndDragHandler
+        , IDragHandler
+    {
+
+    }
+
     /// <summary>
     /// 此控件可以接受Drop操作
     /// </summary>
@@ -37,7 +51,7 @@ namespace tezcat.UI
         /// <param name="wrapper">DropItem的包装器</param>
         /// <param name="event_data">当前的Pointer数据</param>
         /// <returns>DropItem的方法,如果为null,则表示不能Drop</returns>
-        TezEventDispatcher.Action<ITezWrapper> checkDrop(ITezWrapper wrapper, PointerEventData event_data);
+        TezEventExtension.Action<ITezWrapper> checkDrop(ITezWrapper wrapper, PointerEventData event_data);
     }
 
     /// <summary>

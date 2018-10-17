@@ -1,5 +1,5 @@
-﻿using tezcat.DataBase;
-using tezcat.Utility;
+﻿using tezcat.Core;
+using tezcat.DataBase;
 
 namespace tezcat.Wrapper
 {
@@ -23,9 +23,9 @@ namespace tezcat.Wrapper
             get { return TezTranslator.translateDescription(this.myItem.NID); }
         }
 
-        public virtual TezItem myItem { get; private set; }
+        public virtual TezDataBaseItem myItem { get; private set; }
 
-        public TezItemWrapper(TezItem item)
+        public TezItemWrapper(TezDataBaseItem item)
         {
             myItem = item;
         }
@@ -35,7 +35,7 @@ namespace tezcat.Wrapper
             myItem = null;
         }
 
-        public Item getItem<Item>() where Item : TezItem
+        public Item getItem<Item>() where Item : TezDataBaseItem
         {
             return (Item)myItem;
         }
@@ -56,7 +56,7 @@ namespace tezcat.Wrapper
         }
     }
 
-    public abstract class TezItemWrapper<Item> : TezItemWrapper where Item : TezItem
+    public abstract class TezItemWrapper<Item> : TezItemWrapper where Item : TezDataBaseItem
     {
         public TezItemWrapper(int GUID) : base(null)
         {

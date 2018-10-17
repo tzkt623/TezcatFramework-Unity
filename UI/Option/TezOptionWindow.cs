@@ -18,7 +18,7 @@ namespace tezcat.UI
         [SerializeField]
         InputField m_SaveName = null;
         [SerializeField]
-        TezImageLabelButton m_SaveAndClose = null;
+        TezLabelButtonWithBG m_SaveAndClose = null;
 
         protected override void preInit()
         {
@@ -31,7 +31,7 @@ namespace tezcat.UI
             m_SaveAndClose.onClick += onSaveAndCloseClick;
         }
 
-        private void onSaveAndCloseClick(PointerEventData.InputButton button)
+        private void onSaveAndCloseClick(TezButton button, PointerEventData eventData)
         {
             this.hide();
         }

@@ -4,16 +4,16 @@ namespace tezcat.Core
 {
     public abstract class TezItemSlot : TezSlot
     {
-        public TezItem myItem { get; set; } = null;
+        public TezDataBaseItem myItem { get; set; } = null;
 
-        public bool theSameAs(TezItem item)
+        public bool theSameAs(TezDataBaseItem item)
         {
             if (myItem == null)
             {
                 return false;
             }
 
-            return item.GUID == item.GUID;
+            return myItem == item;
         }
 
         public override void close()

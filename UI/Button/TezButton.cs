@@ -1,75 +1,76 @@
-﻿using UnityEngine.EventSystems;
+﻿using tezcat.Extension;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 namespace tezcat.UI
 {
     public abstract class TezButton
-        : TezWidget
+        : TezUIWidget
         , ITezFocusableWidget
         , ITezClickable
     {
-        protected Graphic m_ControlGraphic = null;
+        public event TezEventExtension.Action<TezButton> onInteract;
+        public event TezEventExtension.Action<TezButton> onFocus;
+        public event TezEventExtension.Action<TezButton> onUnFocus;
+        public event TezEventExtension.Action<TezButton, PointerEventData> onClick;
 
-        protected virtual Graphic getGraphic()
-        {
-            return m_ControlGraphic;
-        }
-
-        protected override void preInit()
-        {
-            m_ControlGraphic = this.gameObject.GetComponent<Graphic>();
-        }
-
-        protected override void initWidget()
-        {
-
-        }
-
-        protected override void linkEvent()
-        {
-
-        }
-
-        protected override void onHide()
-        {
-
-        }
-
-        protected override void onRefresh()
-        {
-
-        }
-
-        protected override void onShow()
-        {
-
-        }
-
-        protected override void unLinkEvent()
-        {
-
-        }
-
-        public override void reset()
-        {
-
-        }
+        public abstract Graphic graphicController { get; }
 
         public override void clear()
         {
-            m_ControlGraphic = null;
+            onInteract = null;
+            onFocus = null;
+            onUnFocus = null;
+            onClick = null;
         }
 
         protected override void onInteractable(bool value)
         {
-            m_ControlGraphic.raycastTarget = value;
+            graphicController.raycastTarget = value;
+            this.onInteract?.Invoke(this);
         }
 
+        public void OnPointerEnter(PointerEventData eventData)
+        {
+            if (this.interactable)
+            {
+                this.onFocus?.Invoke(this);
+                this.onPointerEnter(eventData);
+            }
+        }
+        protected abstract void onPointerEnter(PointerEventData eventData);
 
 
-        public abstract void OnPointerEnter(PointerEventData eventData);
-        public abstract void OnPointerExit(PointerEventData eventData);
-        public abstract void OnPointerDown(PointerEventData eventData);
-        public abstract void OnPointerUp(PointerEventData eventData);
+        public void OnPointerExit(PointerEventData eventData)
+        {
+            if (this.interactable)
+            {
+                this.onUnFocus?.Invoke(this);
+                this.onPointerExit(eventData);
+            }
+        }
+        protected abstract void onPointerExit(PointerEventData eventData);
+
+
+        public void OnPointerDown(PointerEventData eventData)
+        {
+            if (this.interactable)
+            {
+                this.onPointerDown(eventData);
+            }
+        }
+        protected abstract void onPointerDown(PointerEventData eventData);
+
+
+        public void OnPointerUp(PointerEventData eventData)
+        {
+            if (this.interactable)
+            {
+                this.onClick?.Invoke(this, eventData);
+                this.onPointerUp(eventData);
+            }
+        }
+        protected abstract void onPointerUp(PointerEventData eventData);
+
     }
 }

@@ -8,6 +8,9 @@ namespace tezcat.Core
 
     }
 
+    /// <summary>
+    /// 服务管理类
+    /// </summary>
     public sealed class TezService
     {
         sealed class ServiceID<T> : TezTypeInfo<T, TezService> where T : ITezService

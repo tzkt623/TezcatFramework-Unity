@@ -1,4 +1,5 @@
-﻿using tezcat.DataBase;
+﻿using tezcat.Core;
+using tezcat.DataBase;
 using tezcat.Utility;
 using UnityEngine;
 
@@ -24,14 +25,14 @@ namespace tezcat.UI
             get { return new int[0]; }
         }
 
-        TezItem m_Item = null;
+        TezDataBaseGameItem m_Item = null;
 
         protected override void preInit()
         {
             base.preInit();
         }
 
-        protected override TezItem getItem()
+        protected override TezDataBaseItem getItem()
         {
             return m_Item;
         }
@@ -54,14 +55,14 @@ namespace tezcat.UI
             return pv;
         }
 
-        private void createPE_IFS(TezPropertyValue property)
+        private void createPE_IFS(TezValueWrapper property)
         {
             var pe = Instantiate(m_PrefabPE_IFS, m_Content, false);
             pe.bind(property);
             pe.open();
         }
 
-        private void createPE_Type(TezPropertyValue property)
+        private void createPE_Type(TezValueWrapper property)
         {
             var pro = Instantiate(m_PrefabPE_Type, m_Content, false);
             pro.bind(property);
@@ -72,19 +73,18 @@ namespace tezcat.UI
         {
             foreach (RectTransform item in m_Content)
             {
-                item.GetComponent<TezGameWidget>().close();
+                item.GetComponent<TezUIWidget>().close();
             }
 
             if (m_Item != null)
             {
                 var view = Instantiate(m_PrefabPE_View, m_Content, false);
-                view.set(() => TezTranslator.translateName(TezReadOnlyString.Database.OID, TezReadOnlyString.Database.OID),
-                    () => m_Item.OID.ToString());
+//                view.set(() => TezTranslator.translateName(TezReadOnlyString.Database.OID, TezReadOnlyString.Database.OID), () => m_Item.OID.ToString());
                 view.open();
 
                 view = Instantiate(m_PrefabPE_View, m_Content, false);
-                view.set(() => TezTranslator.translateName(TezReadOnlyString.Database.GUID, TezReadOnlyString.Database.GUID),
-                    () => m_Item.GUID.ToString());
+                view.set(() => TezTranslator.translateName(TezReadOnlyString.Database.NID, TezReadOnlyString.Database.NID),
+                    () => m_Item.NID.ToString());
                 view.open();
 
                 var editor = Instantiate(m_PrefabPE_StaticString, m_Content, false);
@@ -92,18 +92,19 @@ namespace tezcat.UI
                 editor.open();
 
                 var properties = m_Item.properties;
-                for (int i = 0; i < properties.Count; i++)
+                for (int i = 0; i < properties.count; i++)
                 {
-                    switch (properties[i].getParameterType())
+                    var property = properties.get(i);
+                    switch (property.valueType)
                     {
-                        case TezPropertyType.Type:
-                            this.createPE_Type(properties[i]);
+                        case TezValueType.Type:
+                            this.createPE_Type(property);
                             break;
-                        case TezPropertyType.Int:
-                        case TezPropertyType.Float:
-                        case TezPropertyType.String:
-                        case TezPropertyType.StaticString:
-                            this.createPE_IFS(properties[i]);
+                        case TezValueType.Int:
+                        case TezValueType.Float:
+                        case TezValueType.String:
+                        case TezValueType.StaticString:
+                            this.createPE_IFS(property);
                             break;
                         default:
                             break;

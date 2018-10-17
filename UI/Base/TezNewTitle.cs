@@ -5,17 +5,12 @@ using UnityEngine.EventSystems;
 namespace tezcat.UI
 {
     public class TezNewTitle
-        : TezWidget
+        : TezUIWidget
         , ITezDragableWidget
         , ITezClickable
     {
         TezWindow m_Window = null;
         bool m_Dragging = false;
-
-        protected override void preInit()
-        {
-
-        }
 
         protected override void initWidget()
         {
@@ -24,41 +19,6 @@ namespace tezcat.UI
             {
                 throw new ArgumentNullException("ParenWidget Not Found");
             }
-        }
-
-        protected override void linkEvent()
-        {
-
-        }
-
-        protected override void unLinkEvent()
-        {
-
-        }
-
-        protected override void onHide()
-        {
-
-        }
-
-        protected override void onRefresh()
-        {
-
-        }
-
-        protected override void onShow()
-        {
-
-        }
-
-        public override void clear()
-        {
-
-        }
-
-        public override void reset()
-        {
-
         }
 
         void IBeginDragHandler.OnBeginDrag(PointerEventData eventData)

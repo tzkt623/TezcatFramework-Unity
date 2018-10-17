@@ -1,4 +1,4 @@
-﻿using tezcat.Signal;
+﻿using tezcat.Extension;
 using UnityEngine;
 
 namespace tezcat.UI
@@ -16,7 +16,7 @@ namespace tezcat.UI
             m_PorpertyValue.text = value;
         }
 
-        public void set(TezEventDispatcher.Function<string> name, TezEventDispatcher.Function<string> value)
+        public void set(TezEventExtension.Function<string> name, TezEventExtension.Function<string> value)
         {
             m_PropertyName.setGetter(name);
             m_PorpertyValue.setGetter(value);

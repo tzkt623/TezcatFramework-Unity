@@ -25,7 +25,7 @@ namespace tezcat.Core
             /// </summary>
             private ClassID() { }
         }
-        Dictionary<string, int> m_DicWithName = new Dictionary<string, int>();
+        Dictionary<string, Creator<object>> m_DicWithName = new Dictionary<string, Creator<object>>();
         List<Creator<object>> m_List = new List<Creator<object>>();
 
         public void register<T>(Creator<T> function) where T : class
@@ -35,16 +35,21 @@ namespace tezcat.Core
                 case TezTypeInfo.ErrorID:
                     ClassID<T>.setID(m_List.Count);
                     m_List.Add(function);
-                    m_DicWithName.Add(ClassID<T>.Name, ClassID<T>.ID);
+                    m_DicWithName.Add(ClassID<T>.Name, function);
                     break;
                 default:
                     throw new Exception(string.Format("{0} : this type is registered in TezClassFactory", ClassID<T>.Name));
             }
         }
 
-        public T create<T>(string name) where T : class, new()
+        public T create<T>(string name) where T : class
         {
-            return (T)m_List[m_DicWithName[name]]();
+            return (T)m_DicWithName[name]();
+        }
+
+        public T create<T>() where T : class
+        {
+            return (T)m_List[ClassID<T>.ID]();
         }
 
         public void close()

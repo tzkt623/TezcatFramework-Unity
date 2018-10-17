@@ -32,7 +32,7 @@ namespace tezcat.UI
 
         TezDatabaseGroup m_Group = null;
         TezDatabaseSlot m_CurrentSlot = null;
-        public TezItem currentItem
+        public TezDataBaseItem currentItem
         {
             get; private set;
         }
@@ -182,12 +182,12 @@ namespace tezcat.UI
             m_PageController.setPage(current);
         }
 
-        private void onPageDownClick(PointerEventData.InputButton button)
+        private void onPageDownClick(TezButton button, PointerEventData eventData)
         {
             m_PageController.pageDown();
         }
 
-        private void onPageUpClick(PointerEventData.InputButton button)
+        private void onPageUpClick(TezButton button, PointerEventData eventData)
         {
             m_PageController.pageUp();
         }

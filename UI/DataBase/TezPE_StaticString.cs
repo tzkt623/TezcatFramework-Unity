@@ -1,4 +1,4 @@
-﻿using tezcat.Signal;
+﻿using tezcat.Extension;
 using tezcat.String;
 using UnityEngine;
 using UnityEngine.UI;
@@ -63,7 +63,7 @@ namespace tezcat.UI
             m_String.replace(content);
         }
 
-        public void bind(TezEventDispatcher.Function<string> function, TezStaticString str)
+        public void bind(TezEventExtension.Function<string> function, TezStaticString str)
         {
             m_PropertyName.setGetter(function);
             m_String = str;

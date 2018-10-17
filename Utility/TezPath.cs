@@ -63,14 +63,25 @@ namespace tezcat.Utility
                 throw new ArgumentNullException("directory");
             }
 
+            string[] files = null; 
+
             if(recursively)
             {
                 List<string> list = new List<string>(1);
                 TezPath.getFilesRecursively(directory, ref list);
-                return list.ToArray();
+                files = list.ToArray();
+            }
+            else
+            {
+                files = Directory.GetFiles(directory);
             }
 
-            return Directory.GetFiles(directory);
+            for (int i = 0; i < files.Length; i++)
+            {
+                files[i] = TezPath.cleanPath(files[i]);
+            }
+
+            return files;
         }
 
         private static void getFilesRecursively(string directory, ref List<string> container)
@@ -106,9 +117,9 @@ namespace tezcat.Utility
             return File.CreateText(path);
         }
 
-        public static bool directoryExist(string dir_path)
+        public static bool directoryExist(string path)
         {
-            return Directory.Exists(dir_path);
+            return Directory.Exists(path);
         }
 
         public static DirectoryInfo createDirectory(string path)

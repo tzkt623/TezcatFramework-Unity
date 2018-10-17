@@ -33,4 +33,44 @@
             return object.ReferenceEquals(slot, null);
         }
     }
+
+    public abstract class TezGOSlot
+        : ITezCloseable
+    {
+        public abstract TezGameObject getGameObject();
+
+        public abstract void close();
+
+        public static bool operator true(TezGOSlot slot)
+        {
+            return !object.ReferenceEquals(slot, null);
+        }
+
+        public static bool operator false(TezGOSlot slot)
+        {
+            return object.ReferenceEquals(slot, null);
+        }
+
+        public static bool operator !(TezGOSlot slot)
+        {
+            return object.ReferenceEquals(slot, null);
+        }
+    }
+
+    public abstract class TezGOSlot<T>
+        : TezGOSlot
+        where T : TezGameObject
+    {
+        public T myGO { get; private set; }
+
+        public TezGOSlot(T my_go)
+        {
+            this.myGO = my_go;
+        }
+
+        public override TezGameObject getGameObject()
+        {
+            return this.myGO;
+        }
+    }
 }

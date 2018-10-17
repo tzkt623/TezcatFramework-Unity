@@ -1,4 +1,6 @@
-﻿using tezcat.Utility;
+﻿using tezcat.Core;
+using tezcat.String;
+using tezcat.Utility;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -47,19 +49,19 @@ namespace tezcat.UI
 
         private void onValueSet(string value)
         {
-            switch (m_Property.getParameterType())
+            switch (m_Property.valueType)
             {
-                case TezPropertyType.Float:
-                    (m_Property as TezPV_Float).value = float.Parse(value);
+                case TezValueType.Float:
+                    (m_Property as TezValueWrapper<float>).value = float.Parse(value);
                     break;
-                case TezPropertyType.Int:
-                    (m_Property as TezPV_Int).value = int.Parse(value);
+                case TezValueType.Int:
+                    (m_Property as TezValueWrapper<int>).value = int.Parse(value);
                     break;
-                case TezPropertyType.String:
-                    (m_Property as TezPV_String).value = value;
+                case TezValueType.String:
+                    (m_Property as TezValueWrapper<string>).value = value;
                     break;
-                case TezPropertyType.StaticString:
-                    (m_Property as TezPV_StaticString).value = value;
+                case TezValueType.StaticString:
+                    (m_Property as TezValueWrapper<TezStaticString>).value = value;
                     break;
             }
         }
@@ -67,23 +69,23 @@ namespace tezcat.UI
         protected override void onRefresh()
         {
             m_PropertyName.text = TezTranslator.translateName(m_Property.name, m_Property.name);
-            switch (m_Property.getParameterType())
+            switch (m_Property.valueType)
             {
-                case TezPropertyType.Float:
+                case TezValueType.Float:
                     m_Input.contentType = InputField.ContentType.DecimalNumber;
-                    m_Input.text = (m_Property as TezPV_Float).value.ToString();
+                    m_Input.text = (m_Property as TezValueWrapper<float>).value.ToString();
                     break;
-                case TezPropertyType.Int:
+                case TezValueType.Int:
                     m_Input.contentType = InputField.ContentType.IntegerNumber;
-                    m_Input.text = (m_Property as TezPV_Int).value.ToString();
+                    m_Input.text = (m_Property as TezValueWrapper<int>).value.ToString();
                     break;
-                case TezPropertyType.String:
+                case TezValueType.String:
                     m_Input.contentType = InputField.ContentType.Standard;
-                    m_Input.text = (m_Property as TezPV_String).value;
+                    m_Input.text = (m_Property as TezValueWrapper<string>).value;
                     break;
-                case TezPropertyType.StaticString:
+                case TezValueType.StaticString:
                     m_Input.contentType = InputField.ContentType.Standard;
-                    m_Input.text = (m_Property as TezPV_StaticString).value;
+                    m_Input.text = (m_Property as TezValueWrapper<TezStaticString>).value;
                     break;
             }
         }

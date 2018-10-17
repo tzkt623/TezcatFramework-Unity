@@ -1,5 +1,6 @@
 ﻿using tezcat.DataBase;
 using tezcat.Event;
+using tezcat.Extension;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -9,11 +10,11 @@ namespace tezcat.UI
     {
         [Header("Menu")]
         [SerializeField]
-        TezImageLabelButton m_Confirm = null;
+        TezLabelButtonWithBG m_Confirm = null;
         [SerializeField]
-        TezImageLabelButton m_Save = null;
+        TezLabelButtonWithBG m_Save = null;
         [SerializeField]
-        TezImageLabelButton m_Cancel = null;
+        TezLabelButtonWithBG m_Cancel = null;
 
         public TezAction onClose { get; private set; } = new TezAction();
 
@@ -22,7 +23,7 @@ namespace tezcat.UI
          public abstract void bind(int category);
 //        public abstract void bind(TezItem item);
 
-        protected abstract TezItem getItem();
+        protected abstract TezDataBaseItem getItem();
 
         protected override void initWidget()
         {
@@ -44,16 +45,12 @@ namespace tezcat.UI
             base.clear();
         }
 
-        private void confirm(PointerEventData.InputButton button)
+        private void confirm(TezButton button, PointerEventData eventData)
         {
-            if (button == PointerEventData.InputButton.Left)
+            if (eventData.button == PointerEventData.InputButton.Left)
             {
-                if (!this.getItem().NID.isNullOrEmpty)
+                if (!this.getItem().NID.isNullOrEmpty())
                 {
-                    if (this.getItem().GUID == -1)
-                    {
-//                        TezService.DB.registerItem(this.getItem());
-                    }
 
                     this.close();
                 }
@@ -64,16 +61,12 @@ namespace tezcat.UI
             }
         }
 
-        private void save(PointerEventData.InputButton button)
+        private void save(TezButton button, PointerEventData eventData)
         {
-            if (button == PointerEventData.InputButton.Left)
+            if (eventData.button == PointerEventData.InputButton.Left)
             {
-                if (!this.getItem().NID.isNullOrEmpty)
+                if (!this.getItem().NID.isNullOrEmpty())
                 {
-                    if (this.getItem().GUID == -1)
-                    {
-//                        TezService.DB.registerItem(this.getItem());
-                    }
 
                     this.dirty = true;
                 }
@@ -84,9 +77,9 @@ namespace tezcat.UI
             }
         }
 
-        private void cancel(PointerEventData.InputButton button)
+        private void cancel(TezButton button, PointerEventData eventData)
         {
-            if (button == PointerEventData.InputButton.Left)
+            if (eventData.button == PointerEventData.InputButton.Left)
             {
                 this.close();
             }

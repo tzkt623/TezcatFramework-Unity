@@ -10,7 +10,7 @@ namespace tezcat.Wrapper
 
         public Sprite getIcon()
         {
-            return TezTextureManager.getSprite("Icon_File");
+            return null;
         }
 
         public void showTip()
