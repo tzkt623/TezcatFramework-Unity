@@ -44,7 +44,19 @@ namespace tezcat.Core
 
         public T create<T>(string name) where T : class
         {
+#if UNITY_EDITOR
+            Creator<object> creator = null;
+            if (m_DicWithName.TryGetValue(name, out creator))
+            {
+                return (T)creator();
+            }
+            else
+            {
+                throw new Exception(string.Format("Class [{0}] not registered", name));
+            }
+#else
             return (T)m_DicWithName[name]();
+#endif
         }
 
         public T create<T>() where T : class

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using UnityEngine;
 
 namespace tezcat.UI
 {
@@ -18,6 +19,8 @@ namespace tezcat.UI
         }
 
         public static TezLayer overlay { get; protected set; } = null;
+
+        public static TezLayer tipLayer { get; protected set; } = null;
 
         private static void register(TezLayer layer)
         {
@@ -39,6 +42,11 @@ namespace tezcat.UI
         #endregion
 
         public int ID { get; private set; } = -1;
+
+        public RectTransform rectTransform
+        {
+            get { return (RectTransform)this.transform; }
+        }
 
         protected override void preInit()
         {

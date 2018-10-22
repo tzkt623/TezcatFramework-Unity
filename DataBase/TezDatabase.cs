@@ -1,7 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using tezcat.Core;
 using tezcat.Extension;
+using UnityEngine.Assertions;
 
 namespace tezcat.DataBase
 {
@@ -15,26 +15,18 @@ namespace tezcat.DataBase
             Dictionary<string, TezDataBaseGameItem> m_Dic = new Dictionary<string, TezDataBaseGameItem>();
             List<TezDataBaseGameItem> m_List = new List<TezDataBaseGameItem>();
 
-            Stack<int> m_FreeID = new Stack<int>();
-            int m_IDGiver = 0;
-
             public void add(TezDataBaseGameItem item)
             {
-                if (m_Dic.ContainsKey(item.NID))
-                {
-                    throw new Exception(string.Format("Item : {0} is added", item.NID));
-                }
-
-                item.itemID = m_List.Count;
-                item.retain();
+                Assert.IsFalse(m_Dic.ContainsKey(item.NID), string.Format("DataBase Item : {0} is added", item.NID));
+                item.onAddToDB(m_List.Count);
 
                 m_List.Add(item);
                 m_Dic.Add(item.NID, item);
-                m_IDGiver = m_List.Count;
             }
 
             public TezDataBaseGameItem get(int item_id)
             {
+                Assert.IsFalse(item_id > m_List.Count, string.Format("Database : [M : get(int item_id)] {0} out of index", item_id));
                 return m_List[item_id];
             }
 
@@ -51,31 +43,18 @@ namespace tezcat.DataBase
                 }
             }
 
-            public TezDataBaseGameItem updataItem(TezDataBaseGameItem item)
+            public int getItemCount()
             {
-                TezDataBaseGameItem new_temp = item.birth();
-
-                var id = item.itemID;
-                if (item.release())
-                {
-                    m_FreeID.Push(id);
-                }
-
-                new_temp.itemID = m_FreeID.Count > 0 ? m_FreeID.Pop() : m_IDGiver++;
-                return new_temp;
-            }
-
-            public void recycleItem(TezDataBaseGameItem item)
-            {
-                if (item.itemID >= m_List.Count)
-                {
-                    m_FreeID.Push(item.itemID);
-                }
+                return m_List.Count;
             }
 
             public void close()
             {
+                m_Dic.Clear();
+                m_List.Clear();
 
+                m_Dic = null;
+                m_List = null;
             }
         }
 
@@ -124,8 +103,15 @@ namespace tezcat.DataBase
 
             public void close()
             {
+                foreach (var item in m_List)
+                {
+                    item.close();
+                }
+                m_List.Clear();
                 m_Dic.Clear();
+
                 m_Dic = null;
+                m_List = null;
             }
 
             public void foreachSubgroup(TezEventExtension.Action<string, int> for_subgroup, TezEventExtension.Action<TezDataBaseGameItem> for_item)
@@ -137,14 +123,14 @@ namespace tezcat.DataBase
                 }
             }
 
-            public TezDataBaseGameItem updateItem(TezDataBaseGameItem game_item)
+            public int getItemCount(int sub_id)
             {
-                return m_List[game_item.subgroup.toID].updataItem(game_item);
+                return m_List[sub_id].getItemCount();
             }
 
-            public void recycleItem(TezDataBaseGameItem game_item)
+            public int getSubGroupCount()
             {
-                m_List[game_item.subgroup.toID].recycleItem(game_item);
+                return m_List.Count;
             }
         }
 
@@ -192,6 +178,21 @@ namespace tezcat.DataBase
             return m_GroupDic[group_name].get(sub_name, item_name);
         }
 
+        public int getGroupCount()
+        {
+            return m_GroupList.Count;
+        }
+
+        public int getSubGroupCount(int group_id)
+        {
+            return m_GroupList[group_id].getSubGroupCount();
+        }
+
+        public int getItemCount(int group_id, int sub_id)
+        {
+            return m_GroupList[group_id].getItemCount(sub_id);
+        }
+
         public void foreachDataBase(
             TezEventExtension.Action<string, int> for_group,
             TezEventExtension.Action<string, int> for_subgroup,
@@ -205,21 +206,11 @@ namespace tezcat.DataBase
             }
         }
 
-        public TezDataBaseGameItem updateItem(TezDataBaseGameItem game_item)
-        {
-            return m_GroupList[game_item.group.toID].updateItem(game_item);
-        }
-
-        public void recycleItem(TezDataBaseGameItem game_item)
-        {
-            m_GroupList[game_item.group.toID].recycleItem(game_item);
-        }
-
         public void close()
         {
-            foreach (var container in m_GroupList)
+            foreach (var group in m_GroupList)
             {
-                container?.close();
+                group?.close();
             }
 
             m_GroupList.Clear();

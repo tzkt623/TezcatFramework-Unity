@@ -169,6 +169,11 @@ namespace tezcat.Core
 
         public virtual T value { get; set; }
 
+        public void assign(TezValueWrapper<T> wrapper)
+        {
+            this.value = wrapper.value;
+        }
+
         public override void clear()
         {
             this.value = default(T);

@@ -200,9 +200,10 @@ namespace tezcat.Core
             TezService.register(new TezSaveManager());
 
             TezService.register(new TezRandom());
+            TezService.register(new TezTextureDatabase());
             TezService.register(new TezPrefabDatabase());
             TezService.register(new TezDatabase());
-            TezService.register(new TezTip());
+            TezService.register(new TezTipController());
             TezService.register(new TezDragDropManager());
         }
 

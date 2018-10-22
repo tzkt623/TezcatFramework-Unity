@@ -1,37 +1,39 @@
-﻿using System.Collections.Generic;
-using tezcat.String;
+﻿using System;
+using System.Collections.Generic;
+using tezcat.Core;
 using UnityEngine;
 
 namespace tezcat.DataBase
 {
-    public class TezTextureDatabase : ScriptableObject
+    public class TezTextureDatabase : ITezService
     {
-        [SerializeField]
-        Sprite m_ErrorSprite = null;
-        [SerializeField]
-        List<Sprite> m_Sprites = new List<Sprite>();
+        static List<TezSprite> m_SpriteList = new List<TezSprite>();
+        static Dictionary<string, TezSprite> m_SpriteDic = new Dictionary<string, TezSprite>();
 
-        class Texture
+        public void add(Sprite sprite)
         {
-            public int ID { get; set; }
+            var ts = new TezSprite(sprite);
+            if(m_SpriteDic.ContainsKey(ts.name))
+            {
+                throw new Exception(string.Format("There is the same name[{0}] sprite in DB", ts.name));
+            }
+
+            m_SpriteList.Add(ts);
+            m_SpriteDic.Add(ts.name, ts);
         }
-        
 
-        static List<Sprite> m_SpriteList = new List<Sprite>();
-        static Dictionary<TezStaticString, Sprite> m_SpriteDic = new Dictionary<TezStaticString, Sprite>();
-
-        public void init()
+        public void close()
         {
-            m_SpriteList.Add(m_ErrorSprite);
-            foreach (var s in m_Sprites)
+            foreach (var sprite in m_SpriteList)
             {
-                m_SpriteList.Add(s);
+                sprite.close();
             }
 
-            foreach (var s in m_Sprites)
-            {
-                m_SpriteDic.Add(s.name, s);
-            }
+            m_SpriteList.Clear();
+            m_SpriteDic.Clear();
+
+            m_SpriteList = null;
+            m_SpriteDic = null;
         }
     }
 }

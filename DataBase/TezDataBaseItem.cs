@@ -139,62 +139,43 @@ namespace tezcat.DataBase
 
         public abstract ITezSubGroup subgroup { get; }
 
-        public int itemID { get; set; }
+        public int itemID
+        {
+            get { return this.RID.itemID; }
+        }
 
-        int m_Ref = 0;
-
-        /// <summary>
-        /// 标签
-        /// </summary>
-        public List<string> TAGS { get; private set; } = new List<string>();
+        public TezRID RID { get; private set; } = null;
 
         /// <summary>
         /// 属性
         /// </summary>
         public ITezPropertyCollection properties { get; private set; } = new TezPropertyList();
 
+        public List<string> TAGS { get; private set; } = new List<string>();
+
         public TezDataBaseGameItem()
         {
             this.registerProperty(this.properties);
-        }
-
-        public abstract TezDataBaseGameItem birth();
-
-        public TezDataBaseGameItem retain()
-        {
-            m_Ref += 1;
-            return this;
-        }
-
-        public bool release()
-        {
-            m_Ref -= 1;
-            if (m_Ref == 0)
-            {
-                this.close();
-                return true;
-            }
-
-            return false;
         }
 
         public override void close()
         {
             this.CID = null;
 
-            this.TAGS.Clear();
-            this.TAGS = null;
-
             this.properties.close();
             this.properties = null;
 
-            this.itemID = -1;
+            this.TAGS.Clear();
+            this.TAGS = null;
+
+            this.RID.close();
+            this.RID = null;
         }
 
         public TezGameObject createObject()
         {
             var obj = this.onCreateObject();
-            obj.setData(this);
+            obj.initWithData(this);
             return obj;
         }
 
@@ -202,7 +183,10 @@ namespace tezcat.DataBase
         {
             base.serialize(writer);
             writer.write(TezReadOnlyString.Database.CID, this.CID);
+        }
 
+        protected void serializeTag(TezWriter writer)
+        {
             writer.beginArray(TezReadOnlyString.Database.TAG);
             for (int i = 0; i < TAGS.Count; i++)
             {
@@ -215,7 +199,10 @@ namespace tezcat.DataBase
         {
             base.deserialize(reader);
             this.CID = reader.readString(TezReadOnlyString.Database.CID);
+        }
 
+        protected void deserializeTag(TezReader reader)
+        {
             reader.beginArray(TezReadOnlyString.Database.TAG);
             var count = reader.count;
             for (int i = 0; i < count; i++)
@@ -230,7 +217,6 @@ namespace tezcat.DataBase
             return TezService.get<TezClassFactory>().create<TezGameObject>(this.CID);
         }
 
-
         public override bool Equals(TezDataBaseItem other)
         {
             var go = other as TezDataBaseGameItem;
@@ -238,5 +224,22 @@ namespace tezcat.DataBase
         }
 
         protected abstract void registerProperty(ITezPropertyCollection collection);
+
+        public abstract TezDataBaseGameItem clone();
+
+        /// <summary>
+        /// 数据库回调函数
+        /// 不要手动调用
+        /// </summary>
+        /// <param name="db_id"></param>
+        public void onAddToDB(int db_id)
+        {
+            if(this.RID != null)
+            {
+                throw new ArgumentException("RID");
+            }
+
+            this.RID = new TezRID(group, subgroup, db_id);
+        }
     }
 }

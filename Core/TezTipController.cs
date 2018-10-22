@@ -1,5 +1,4 @@
 ﻿using System.Text;
-using tezcat.Core;
 using tezcat.String;
 using UnityEngine;
 
@@ -7,15 +6,17 @@ namespace tezcat.Core
 {
     public interface ITezTip : ITezService
     {
+        void accept(TezTipController controller);
         void onShow(string content);
         void onHide();
     }
 
-    public class TezTip : ITezService
+    public class TezTipController : ITezService
     {
         StringBuilder m_Builder = new StringBuilder();
 
         ITezTip m_Tip = null;
+        bool m_IsTipShowed = false;
 
         int m_NameSize;
         public int nameSize
@@ -134,12 +135,17 @@ namespace tezcat.Core
                 return;
             }
 
+            m_IsTipShowed = true;
             m_Tip.onShow(tip);
         }
 
         public void hide()
         {
-            m_Tip.onHide();
+            if(m_IsTipShowed)
+            {
+                m_IsTipShowed = false;
+                m_Tip.onHide();
+            }
         }
 
         string format(string content, ref int size, ref Color color)
@@ -157,7 +163,7 @@ namespace tezcat.Core
             return string.Format(m_FormatContentWithFlagAndLink, ColorUtility.ToHtmlStringRGBA(color), size.ToString(), content, flag, link_content);
         }
 
-        public TezTip setName(string name)
+        public TezTipController setName(string name)
         {
             var content = this.format(name, ref m_NameSize, ref m_NameColor, m_FlagEnd);
             m_NameLength = content.Length;
@@ -165,7 +171,7 @@ namespace tezcat.Core
             return this;
         }
 
-        public TezTip setGroup(string group)
+        public TezTipController setGroup(string group)
         {
             var content = this.format(group, ref m_GroupSize, ref m_GroupColor, m_FlagEnd);
             m_GroupLength = content.Length;
@@ -173,7 +179,7 @@ namespace tezcat.Core
             return this;
         }
 
-        public TezTip setType(string type)
+        public TezTipController setType(string type)
         {
             var content = this.format(type, ref m_TypeSize, ref m_TypeColor, m_FlagEnd);
             m_TypeLength = content.Length;
@@ -181,7 +187,7 @@ namespace tezcat.Core
             return this;
         }
 
-        public TezTip setDescription(string description)
+        public TezTipController setDescription(string description)
         {
             var content = format(description, ref m_DescriptionSize, ref m_DescriptionColor, m_FlagEnd);
             m_DescriptionLength = content.Length;
@@ -189,13 +195,13 @@ namespace tezcat.Core
             return this;
         }
 
-        public TezTip pushAttribute(string title, bool attribute)
+        public TezTipController pushAttribute(string title, bool attribute)
         {
             this.pushAttribute(title, attribute.ToString());
             return this;
         }
 
-        public TezTip pushAttribute(string title, string attribute)
+        public TezTipController pushAttribute(string title, string attribute)
         {
             var content = format(title, ref m_AttributeTitleSize, ref m_AttributeTitleColor,
                 " : ",
@@ -206,19 +212,19 @@ namespace tezcat.Core
             return this;
         }
 
-        public TezTip pushAttribute(string title, float attribute)
+        public TezTipController pushAttribute(string title, float attribute)
         {
             this.pushAttribute(title, string.Format("{0:N1}", attribute));
             return this;
         }
 
-        public TezTip pushAttribute(string title, int attribute)
+        public TezTipController pushAttribute(string title, int attribute)
         {
             this.pushAttribute(title, attribute.ToString());
             return this;
         }
 
-        public TezTip pushAttribute(TezValueWrapper property)
+        public TezTipController pushAttribute(TezValueWrapper property)
         {
             switch (property.valueType)
             {
@@ -264,7 +270,7 @@ namespace tezcat.Core
             return this;
         }
 
-        public TezTip pushAttributeSeparator()
+        public TezTipController pushAttributeSeparator()
         {
             return this;
         }

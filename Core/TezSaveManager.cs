@@ -107,7 +107,7 @@ namespace tezcat.Core
                     var obj = factory.create<TezGameObject>(CID);
                     if (obj != null)
                     {
-                        obj.init();
+                        obj.initNew();
 
 //                        m_Dic.Add(obj.GUID, m_List.Count);
                         m_List.Add(obj);

@@ -36,6 +36,11 @@ namespace tezcat.Math
             m_Seed = (uint)DefaultSeed;
         }
 
+        public TezRandom(string seed)
+        {
+            m_Seed = (uint)seed.GetHashCode();
+        }
+
         public void setSeed(int seed)
         {
             m_Seed = (uint)seed;

@@ -22,12 +22,9 @@ namespace tezcat.Core
 
         /// <summary>
         /// 注册一个服务
+        /// <para>使用接口或抽象类型作为类型参数 可以获得替换同类服务的功能</para>
+        /// <para>使用具体实现类型作为类型参数 则无法替换同类型服务</para>
         /// </summary>
-        /// <typeparam name="IService">
-        /// 使用接口或抽象类型 可以获得替换同类服务的功能
-        /// 使用实现类型 则无法替换同类型服务
-        /// </typeparam>
-        /// <param name="service">创建服务</param>
         public static void register<IService>(IService service) where IService : ITezService
         {
             switch (ServiceID<IService>.ID)

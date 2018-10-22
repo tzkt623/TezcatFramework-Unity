@@ -8,6 +8,11 @@ namespace tezcat.DataBase
 
         Sprite m_Sprite = null;
 
+        public string name
+        {
+            get { return m_Sprite.name; }
+        }
+
         public TezSprite(Sprite sprite = null)
         {
             m_Sprite = sprite;

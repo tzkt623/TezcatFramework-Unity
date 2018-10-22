@@ -89,7 +89,7 @@ namespace tezcat.UI
             string value = null;
             if (TezTranslator.translateDescription(m_KeyName.text, out value))
             {
-                TezService.get<TezTip>()
+                TezService.get<TezTipController>()
                     .setDescription(value)
                     .show();
             }
@@ -97,7 +97,7 @@ namespace tezcat.UI
 
         void IPointerExitHandler.OnPointerExit(PointerEventData eventData)
         {
-            TezService.get<TezTip>().hide();
+            TezService.get<TezTipController>().hide();
         }
 
         void IPointerUpHandler.OnPointerUp(PointerEventData eventData)
