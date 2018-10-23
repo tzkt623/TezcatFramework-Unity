@@ -68,7 +68,7 @@ namespace tezcat.UI
                 if (!this.getItem().NID.isNullOrEmpty())
                 {
 
-                    this.dirty = true;
+                    this.refresh = RefreshPhase.Custom1;
                 }
                 else
                 {

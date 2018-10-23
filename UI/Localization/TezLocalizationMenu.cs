@@ -37,17 +37,17 @@ namespace tezcat.UI
         {
             if (eventData.button == PointerEventData.InputButton.Left)
             {
-                this.nameList.dirty = true;
-                this.descriptionList.dirty = true;
+                this.nameList.refresh = RefreshPhase.Custom3;
+                this.descriptionList.refresh = RefreshPhase.Custom3;
             }
         }
 
-        protected override void onRefresh()
+        protected override void refreshAfterInit()
         {
 
         }
 
-        protected override void onShow()
+        protected override void onOpenAndRefresh()
         {
 
         }

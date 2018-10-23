@@ -32,7 +32,7 @@ namespace tezcat.UI
             m_Input.onEndEdit.RemoveListener(this.onValueSet);
         }
 
-        protected override void onShow()
+        protected override void onOpenAndRefresh()
         {
 
         }
@@ -66,7 +66,7 @@ namespace tezcat.UI
             }
         }
 
-        protected override void onRefresh()
+        protected override void refreshAfterInit()
         {
             m_PropertyName.text = TezTranslator.translateName(m_Property.name, m_Property.name);
             switch (m_Property.valueType)

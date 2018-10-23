@@ -44,15 +44,13 @@ namespace tezcat.UI
             }
         }
 
-        protected override void onRefresh()
+        protected override void refreshAfterInit()
         {
-            base.onRefresh();
-
             m_RootPath.text = TezcatFramework.rootPath;
 
-            m_LocalizationName.text = TezcatFramework.localizationFile;
-            m_DatabaseName.text = TezcatFramework.databaseFile;
-            m_SaveName.text = TezcatFramework.saveFile;
+//             m_LocalizationName.text = TezcatFramework.localizationFile;
+//             m_DatabaseName.text = TezcatFramework.databaseFile;
+//             m_SaveName.text = TezcatFramework.saveFile;
         }
     }
 }

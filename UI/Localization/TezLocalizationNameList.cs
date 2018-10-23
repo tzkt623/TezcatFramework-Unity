@@ -97,13 +97,13 @@ namespace tezcat.UI
             base.clear();
         }
 
-        protected override void onRefresh()
+        protected override void refreshAfterInit()
         {
             m_PageController.calculateMaxPage(TezTranslator.nameCount);
             m_PageController.setPage(m_PageController.currentPage);
         }
 
-        protected override void onShow()
+        protected override void onOpenAndRefresh()
         {
 
         }
@@ -169,7 +169,7 @@ namespace tezcat.UI
                 {
                     m_Vernier.SetParent(this.transform, false);
                     m_Vernier.gameObject.SetActive(false);
-                    this.dirty = true;
+                    this.refresh = RefreshPhase.Custom3;
                 }
             }
         }
@@ -229,7 +229,7 @@ namespace tezcat.UI
                     TezTranslator.tryAddName(name.name, name.name);
                 });
 
-                this.dirty = true;
+                this.refresh = RefreshPhase.Custom3;
             }
         }
 

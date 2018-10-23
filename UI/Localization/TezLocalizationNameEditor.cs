@@ -1,11 +1,14 @@
 ﻿using tezcat.Core;
+using tezcat.DataBase;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 namespace tezcat.UI
 {
-    public class TezLocalizationNameEditor : TezToolWidget
+    public class TezLocalizationNameEditor
+        : TezToolWidget
+        , ITezPrefab
     {
         [SerializeField]
         InputField m_KeyInput = null;
@@ -42,7 +45,20 @@ namespace tezcat.UI
 
         }
 
-        protected override void onShow()
+        protected override void refreshAfterInit()
+        {
+            string value;
+            if (TezTranslator.translateName(m_KeyInput.text, out value))
+            {
+                m_LocalizationInput.text = value;
+            }
+            else
+            {
+                m_LocalizationInput.text = m_KeyInput.text;
+            }
+        }
+
+        protected override void onOpenAndRefresh()
         {
 
         }
@@ -80,7 +96,27 @@ namespace tezcat.UI
         {
             m_KeyInput.readOnly = true;
             m_KeyInput.text = key;
-            this.dirty = true;
+            this.refresh = RefreshPhase.Custom1;
+        }
+
+        protected override void onRefresh(RefreshPhase phase)
+        {
+            switch (phase)
+            {
+                case RefreshPhase.Custom1:
+                    this.refreshAfterInit();
+                    break;
+                case RefreshPhase.Custom2:
+                    break;
+                case RefreshPhase.Custom3:
+                    break;
+                case RefreshPhase.Custom4:
+                    break;
+                case RefreshPhase.Custom5:
+                    break;
+                default:
+                    break;
+            }
         }
 
         public void newItem()
@@ -101,21 +137,8 @@ namespace tezcat.UI
             if (eventData.button == PointerEventData.InputButton.Left)
             {
                 TezTranslator.saveName(m_KeyInput.text, m_LocalizationInput.text);
-                listArea.dirty = true;
+                listArea.refresh = RefreshPhase.Custom3;
                 this.close();
-            }
-        }
-
-        protected override void onRefresh()
-        {
-            string value;
-            if (TezTranslator.translateName(m_KeyInput.text, out value))
-            {
-                m_LocalizationInput.text = value;
-            }
-            else
-            {
-                m_LocalizationInput.text = m_KeyInput.text;
             }
         }
     }

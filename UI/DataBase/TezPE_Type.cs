@@ -47,7 +47,7 @@ namespace tezcat.UI
             m_Types = null;
         }
 
-        protected override void onRefresh()
+        protected override void refreshAfterInit()
         {
             m_PropertyName.text = TezTranslator.translateName(m_Property.name, m_Property.name);
             m_Types = TezTypeListManager.getList(m_Property.systemType);
@@ -64,7 +64,7 @@ namespace tezcat.UI
             m_DropDown.captionText.text = ((TezPV_Type)m_Property).baseValue.name;
         }
 
-        protected override void onShow()
+        protected override void onOpenAndRefresh()
         {
 
         }

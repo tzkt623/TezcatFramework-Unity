@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace tezcat.Core
 {
-    public interface ITezTip : ITezService
+    public interface ITezTip
     {
         void accept(TezTipController controller);
         void onShow(string content);
@@ -148,17 +148,17 @@ namespace tezcat.Core
             }
         }
 
-        string format(string content, ref int size, ref Color color)
+        private string format(string content, ref int size, ref Color color)
         {
             return string.Format(m_FormatContent, ColorUtility.ToHtmlStringRGBA(color), size.ToString(), content);
         }
 
-        string format(string content, ref int size, ref Color color, string flag)
+        private string format(string content, ref int size, ref Color color, string flag)
         {
             return string.Format(m_FormatContentWithFlag, ColorUtility.ToHtmlStringRGBA(color), size.ToString(), content, flag);
         }
 
-        string format(string content, ref int size, ref Color color, string flag, string link_content)
+        private string format(string content, ref int size, ref Color color, string flag, string link_content)
         {
             return string.Format(m_FormatContentWithFlagAndLink, ColorUtility.ToHtmlStringRGBA(color), size.ToString(), content, flag, link_content);
         }
@@ -224,12 +224,12 @@ namespace tezcat.Core
             return this;
         }
 
-        public TezTipController pushAttribute(TezValueWrapper property)
+        public TezTipController pushAttribute(TezValueWrapper property, bool display_basic = true)
         {
             switch (property.valueType)
             {
                 case TezValueType.Float:
-                    if(property.valueSubType == TezValueSubType.WithBasic)
+                    if(property.valueSubType == TezValueSubType.WithBasic && display_basic)
                     {
                         this.pushAttribute(TezTranslator.translateName(property.name),
                             string.Format("{0:N1}/{1:N1}", ((TezValueWithBasic<float>)property).value, ((TezValueWithBasic<float>)property).basic));
@@ -240,7 +240,7 @@ namespace tezcat.Core
                     }
                     break;
                 case TezValueType.Int:
-                    if(property.valueSubType == TezValueSubType.WithBasic)
+                    if(property.valueSubType == TezValueSubType.WithBasic && display_basic)
                     {
                         this.pushAttribute(TezTranslator.translateName(property.name),
                             string.Format("{0}/{1}", ((TezValueWithBasic<int>)property).value, ((TezValueWithBasic<int>)property).basic));
@@ -275,7 +275,7 @@ namespace tezcat.Core
             return this;
         }
 
-        string generateResult()
+        private string generateResult()
         {
             string result = m_Builder.ToString();
 
@@ -287,7 +287,7 @@ namespace tezcat.Core
 
             if (result.Length == 0)
             {
-                result = TezTranslator.translateDescription(string.Intern("Info_MissingInfo"));
+                result = TezTranslator.translateDescription(string.Intern("#Error_MissingInfo"));
             }
             else
             {

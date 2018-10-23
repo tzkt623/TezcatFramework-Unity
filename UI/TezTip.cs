@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using tezcat.Core;
+using tezcat.DataBase;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -8,6 +9,7 @@ namespace tezcat.UI
     public class TezTip
         : TezUIWidget
         , ITezTip
+        , ITezPrefab
     {
         [SerializeField]
         Text m_Text = null;

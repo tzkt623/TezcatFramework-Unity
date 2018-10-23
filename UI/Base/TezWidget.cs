@@ -1,5 +1,4 @@
-﻿using tezcat.DataBase;
-using UnityEngine.EventSystems;
+﻿using UnityEngine.EventSystems;
 
 namespace tezcat.UI
 {
@@ -9,7 +8,6 @@ namespace tezcat.UI
     public abstract class TezWidget
         : UIBehaviour
         , ITezWidget
-        , ITezPrefab
     {
         bool m_Interactable = true;
         public bool interactable
@@ -17,7 +15,7 @@ namespace tezcat.UI
             get { return m_Interactable; }
             set
             {
-                if(m_Interactable == value)
+                if (m_Interactable == value)
                 {
                     return;
                 }
@@ -27,16 +25,27 @@ namespace tezcat.UI
             }
         }
 
+        public enum RefreshPhase : byte
+        {
+            System1,
+            System2,
+            Custom1,
+            Custom2,
+            Custom3,
+            Custom4,
+            Custom5
+        }
+
         bool m_Init = false;
         bool m_Clear = false;
 
-        public bool dirty
+        public RefreshPhase refresh
         {
             set
             {
-                if (m_Init && this.gameObject.activeSelf)
+                if(m_Init && this.gameObject.activeSelf)
                 {
-                    this.onRefresh();
+                    this.onRefresh(value);
                 }
             }
         }
@@ -49,29 +58,31 @@ namespace tezcat.UI
 
         protected sealed override void Start()
         {
-            base.Start();
-            this.linkEvent();
-            this.initWidget();
-            m_Init = true;
-            this.dirty = true;
+            if (!m_Init)
+            {
+                m_Init = true;
+                base.Start();
+                this.linkEvent();
+                this.initWidget();
+                this.refreshAfterInit();
+            }
         }
 
         protected sealed override void OnEnable()
         {
-            base.OnEnable();
             if (m_Init)
             {
+                base.OnEnable();
                 this.linkEvent();
-                this.onShow();
-                this.dirty = true;
+                this.onOpenAndRefresh();
             }
         }
 
         protected sealed override void OnDisable()
         {
-            base.OnDisable();
             if (m_Init)
             {
+                base.OnDisable();
                 this.onHide();
                 this.unLinkEvent();
             }
@@ -113,14 +124,19 @@ namespace tezcat.UI
         protected abstract void unLinkEvent();
 
         /// <summary>
-        /// 在这里刷新你的Widget数据
+        /// 初始化完成后刷新数据
         /// </summary>
-        protected abstract void onRefresh();
+        protected abstract void refreshAfterInit();
+
+        /// <summary>
+        /// 自定义刷新数据
+        /// </summary>
+        protected abstract void onRefresh(RefreshPhase phase);
 
         /// <summary>
         /// 
         /// </summary>
-        protected abstract void onShow();
+        protected abstract void onOpenAndRefresh();
 
         /// <summary>
         /// 
@@ -210,12 +226,17 @@ namespace tezcat.UI
 
         }
 
-        protected override void onRefresh()
+        protected override void refreshAfterInit()
         {
 
         }
 
-        protected override void onShow()
+        protected override void onOpenAndRefresh()
+        {
+
+        }
+
+        protected override void onRefresh(RefreshPhase phase)
         {
 
         }
@@ -261,12 +282,17 @@ namespace tezcat.UI
 
         }
 
-        protected override void onRefresh()
+        protected override void refreshAfterInit()
         {
 
         }
 
-        protected override void onShow()
+        protected override void onOpenAndRefresh()
+        {
+
+        }
+
+        protected override void onRefresh(RefreshPhase phase)
         {
 
         }
@@ -287,6 +313,19 @@ namespace tezcat.UI
     /// </summary>
     public abstract class TezToolWidget : TezWidget
     {
+        protected override void refreshAfterInit()
+        {
 
+        }
+
+        protected override void onOpenAndRefresh()
+        {
+
+        }
+
+        protected override void onRefresh(RefreshPhase phase)
+        {
+
+        }
     }
 }

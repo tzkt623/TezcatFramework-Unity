@@ -28,10 +28,10 @@ namespace tezcat.UI
             m_PorpertyValue = null;
         }
 
-        protected override void onRefresh()
+        protected override void refreshAfterInit()
         {
-            m_PropertyName.dirty = true;
-            m_PorpertyValue.dirty = true;
+            m_PropertyName.refresh = RefreshPhase.System1;
+            m_PorpertyValue.refresh = RefreshPhase.System1;
         }
 
         protected override void preInit()
@@ -54,7 +54,7 @@ namespace tezcat.UI
 
         }
 
-        protected override void onShow()
+        protected override void onOpenAndRefresh()
         {
 
         }

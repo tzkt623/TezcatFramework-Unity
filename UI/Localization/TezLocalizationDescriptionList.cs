@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using tezcat.Core;
-using tezcat.Utility;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -78,7 +77,7 @@ namespace tezcat.UI
             m_Page.onEndEdit.AddListener(this.onPageSet);
         }
 
-        protected override void onShow()
+        protected override void onOpenAndRefresh()
         {
 
         }
@@ -88,7 +87,7 @@ namespace tezcat.UI
 
         }
 
-        protected override void onRefresh()
+        protected override void refreshAfterInit()
         {
             m_PageController.calculateMaxPage(TezTranslator.descriptionCount);
             m_PageController.setPage(m_PageController.currentPage);
@@ -146,7 +145,7 @@ namespace tezcat.UI
             TezTranslator.removeDescription(m_SelectItem.key);
             m_Vernier.SetParent(this.transform, false);
             m_Vernier.gameObject.SetActive(false);
-            this.dirty = true;
+            this.refresh = RefreshPhase.Custom3;
         }
 
         private void onClearSearchClick(TezButton button, PointerEventData eventData)
@@ -204,7 +203,7 @@ namespace tezcat.UI
                     TezTranslator.tryAddDescription(name.name, name.name);
                 });
 
-                this.dirty = true;
+                this.refresh = RefreshPhase.Custom3;
             }
         }
 

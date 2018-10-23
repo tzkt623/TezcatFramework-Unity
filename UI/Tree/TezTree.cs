@@ -111,11 +111,6 @@ namespace tezcat.UI
 
         }
 
-        protected override void onRefresh()
-        {
-
-        }
-
         public void addSpace(int index, float length)
         {
             for (int i = index + 1; i < m_Children.Count; i++)
@@ -157,7 +152,17 @@ namespace tezcat.UI
             onSelectNode?.Invoke(node);
         }
 
-        protected override void onShow()
+        protected override void refreshAfterInit()
+        {
+
+        }
+
+        protected override void onOpenAndRefresh()
+        {
+
+        }
+
+        protected override void onRefresh(RefreshPhase phase)
         {
 
         }

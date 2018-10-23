@@ -69,7 +69,7 @@ namespace tezcat.UI
 
         }
 
-        protected override void onRefresh()
+        protected override void refreshAfterInit()
         {
 
         }
@@ -79,7 +79,7 @@ namespace tezcat.UI
 
         }
 
-        protected override void onShow()
+        protected override void onOpenAndRefresh()
         {
 
         }
@@ -94,5 +94,9 @@ namespace tezcat.UI
 
         }
 
+        protected override void onRefresh(RefreshPhase phase)
+        {
+
+        }
     }
 }

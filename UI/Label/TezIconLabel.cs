@@ -23,9 +23,22 @@ namespace tezcat.UI
             set { m_Label.text = value; }
         }
 
-        protected override void onRefresh()
+        protected override void refreshAfterInit()
         {
-            m_Label.dirty = true;
+            m_Label.refresh = RefreshPhase.System1;
+        }
+
+        protected override void onRefresh(RefreshPhase phase)
+        {
+            switch (phase)
+            {
+                case RefreshPhase.System1:
+                    break;
+                case RefreshPhase.System2:
+                    break;
+                default:
+                    break;
+            }
         }
 
         public override void clear()
@@ -59,7 +72,7 @@ namespace tezcat.UI
 
         }
 
-        protected override void onShow()
+        protected override void onOpenAndRefresh()
         {
 
         }

@@ -163,7 +163,7 @@ namespace tezcat.UI
         }
 #endif
 
-        protected override void onRefresh()
+        protected override void refreshAfterInit()
         {
             m_PageController.setPage(m_PageController.currentPage);
         }

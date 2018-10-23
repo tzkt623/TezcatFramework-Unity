@@ -39,7 +39,7 @@ namespace tezcat.UI
 
         }
 
-        protected override void onShow()
+        protected override void onOpenAndRefresh()
         {
 
         }
@@ -64,7 +64,7 @@ namespace tezcat.UI
             base.clear();
         }
 
-        protected override void onRefresh()
+        protected override void refreshAfterInit()
         {
 
         }

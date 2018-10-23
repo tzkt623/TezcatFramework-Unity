@@ -1,11 +1,14 @@
 ﻿using tezcat.Core;
+using tezcat.DataBase;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 namespace tezcat.UI
 {
-    public class TezLocalizationDescriptionEditor : TezToolWidget
+    public class TezLocalizationDescriptionEditor
+        : TezToolWidget
+        , ITezPrefab
     {
         [SerializeField]
         InputField m_KeyInput = null;
@@ -42,7 +45,7 @@ namespace tezcat.UI
 
         }
 
-        protected override void onShow()
+        protected override void onOpenAndRefresh()
         {
 
         }
@@ -77,7 +80,7 @@ namespace tezcat.UI
             else
             {
                 TezTranslator.addDescription(key, value);
-                this.dirty = true;
+                this.refresh = RefreshPhase.Custom3;
             }
         }
 
@@ -85,7 +88,7 @@ namespace tezcat.UI
         {
             m_KeyInput.readOnly = true;
             m_KeyInput.text = key;
-            this.dirty = true;
+            this.refresh = RefreshPhase.Custom3;
         }
 
         public void newItem()
@@ -101,11 +104,11 @@ namespace tezcat.UI
         private void onConfirmClick(TezButton button, PointerEventData eventData)
         {
             TezTranslator.saveDescription(m_KeyInput.text, m_DescriptionInput.text);
-            listArea.dirty = true;
+            listArea.refresh = RefreshPhase.Custom3;
             this.close();
         }
 
-        protected override void onRefresh()
+        protected override void refreshAfterInit()
         {
             string value;
             if (TezTranslator.translateDescription(m_KeyInput.text, out value))

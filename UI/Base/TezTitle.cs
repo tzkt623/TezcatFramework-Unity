@@ -85,7 +85,7 @@ namespace tezcat.UI
 
         }
 
-        protected override void onRefresh()
+        protected override void refreshAfterInit()
         {
 
         }
@@ -115,7 +115,7 @@ namespace tezcat.UI
             m_TitleName.text = name;
         }
 
-        protected override void onShow()
+        protected override void onOpenAndRefresh()
         {
 
         }

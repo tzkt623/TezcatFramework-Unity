@@ -39,7 +39,7 @@ namespace tezcat.UI
             m_Tree.onSelectNode -= onSelectNode;
         }
 
-        protected override void onRefresh()
+        protected override void refreshAfterInit()
         {
             if (m_Vernier.gameObject.activeSelf)
             {
@@ -104,10 +104,10 @@ namespace tezcat.UI
 
             }
 
-            m_Container.dirty = true;
+            m_Container.refresh = RefreshPhase.System1;
         }
 
-        protected override void onShow()
+        protected override void onOpenAndRefresh()
         {
 
         }

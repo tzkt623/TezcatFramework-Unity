@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using tezcat.Core;
+using tezcat.DataBase;
 using tezcat.Extension;
 using UnityEngine;
 
@@ -9,7 +10,9 @@ namespace tezcat.UI
     /// Window本身只包含Area
     /// 用于划分其中的显示区域
     /// </summary>
-    public abstract class TezWindow : TezWidget
+    public abstract class TezWindow
+        : TezWidget
+        , ITezPrefab
     {
         TezLayer m_Layer = null;
         public TezLayer layer
@@ -132,7 +135,7 @@ namespace tezcat.UI
 
         }
 
-        protected override void onShow()
+        protected override void onOpenAndRefresh()
         {
 
         }
@@ -188,11 +191,16 @@ namespace tezcat.UI
             TezService.get<TezcatFramework>().removeWindow(this);
         }
 
-        protected override void onRefresh()
+        protected override void refreshAfterInit()
+        {
+
+        }
+
+        protected override void onRefresh(RefreshPhase phase)
         {
             foreach (var sub in m_AreaList)
             {
-                sub.dirty = true;
+                sub.refresh = phase;
             }
         }
 

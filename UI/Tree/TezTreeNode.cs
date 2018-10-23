@@ -167,7 +167,7 @@ namespace tezcat.UI
             this.data = null;
         }
 
-        protected override void onRefresh()
+        protected override void refreshAfterInit()
         {
 
         }
@@ -202,7 +202,7 @@ namespace tezcat.UI
             }
         }
 
-        protected override void onShow()
+        protected override void onOpenAndRefresh()
         {
 
         }
@@ -210,6 +210,29 @@ namespace tezcat.UI
         protected override void onHide()
         {
  
+        }
+
+        protected override void onRefresh(RefreshPhase phase)
+        {
+            switch (phase)
+            {
+                case RefreshPhase.System1:
+                    break;
+                case RefreshPhase.System2:
+                    break;
+                case RefreshPhase.Custom1:
+                    break;
+                case RefreshPhase.Custom2:
+                    break;
+                case RefreshPhase.Custom3:
+                    break;
+                case RefreshPhase.Custom4:
+                    break;
+                case RefreshPhase.Custom5:
+                    break;
+                default:
+                    break;
+            }
         }
     }
 }

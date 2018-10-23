@@ -32,16 +32,15 @@ namespace tezcat.Core
                 return m_RootDir;
             }
         }
-        public static string localizationFile { get; private set; } = "/Localization.json";
+
         public static string localizationPath
         {
             get
             {
-                return rootPath + localizationFile;
+                return rootPath + "/Localization";
             }
         }
 
-        public static string databaseFile { get; private set; } = "/Database.json";
         public static string databasePath
         {
             get
@@ -50,7 +49,6 @@ namespace tezcat.Core
             }
         }
 
-        public static string saveFile { get; private set; } = "/Save.json";
         public static string savePath
         {
             get
@@ -156,7 +154,7 @@ namespace tezcat.Core
 
         }
 
-        protected override void onRefresh()
+        protected override void refreshAfterInit()
         {
 
         }
@@ -166,7 +164,7 @@ namespace tezcat.Core
 
         }
 
-        protected override void onShow()
+        protected override void onOpenAndRefresh()
         {
 
         }
@@ -285,7 +283,7 @@ namespace tezcat.Core
             return widget;
         }
 
-        public Widget createWidget<Widget>(string name, RectTransform parent) where Widget : TezWidget
+        public Widget createWidget<Widget>(string name, RectTransform parent) where Widget : TezWidget, ITezPrefab
         {
             var widget = Instantiate(TezService.get<TezPrefabDatabase>().get<Widget>(), parent, false);
             widget.transform.localPosition = Vector3.zero;
@@ -293,7 +291,7 @@ namespace tezcat.Core
             return widget;
         }
 
-        public Widget createWidget<Widget>(RectTransform parent) where Widget : TezWidget
+        public Widget createWidget<Widget>(RectTransform parent) where Widget : TezWidget, ITezPrefab
         {
             var widget = Instantiate(TezService.get<TezPrefabDatabase>().get<Widget>(), parent, false);
             widget.transform.localPosition = Vector3.zero;
@@ -313,7 +311,7 @@ namespace tezcat.Core
             return window;
         }
 
-        public TezWindow createWindow(ITezPrefab prefab, string name, TezLayer layer)
+        public TezWindow createWindow(TezWindow prefab, string name, TezLayer layer)
         {
             int id = -1;
             if (m_WindowDic.TryGetValue(name, out id))
@@ -321,7 +319,7 @@ namespace tezcat.Core
                 return m_WindowList[id];
             }
 
-            return this.createWindow(prefab as TezWindow, name, this.giveID(), layer);
+            return this.createWindow(prefab, name, this.giveID(), layer);
         }
 
         public Window createWindow<Window>(string name, TezLayer layer) where Window : TezWindow, ITezPrefab

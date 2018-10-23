@@ -19,7 +19,7 @@ namespace tezcat.UI
             this.imgae = this.GetComponent<Image>();
         }
 
-        protected override void onRefresh()
+        protected override void refreshAfterInit()
         {
 
         }

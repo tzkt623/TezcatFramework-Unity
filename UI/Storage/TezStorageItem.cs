@@ -16,7 +16,7 @@ namespace tezcat.UI
             m_Image = null;
         }
 
-        protected override void onRefresh()
+        protected override void refreshAfterInit()
         {
 
         }
@@ -51,7 +51,7 @@ namespace tezcat.UI
 
         }
 
-        protected override void onShow()
+        protected override void onOpenAndRefresh()
         {
 
         }

@@ -233,7 +233,7 @@ namespace tezcat.Core
         {
             if (string.IsNullOrEmpty(key))
             {
-                return string.Format("@{0}", key);
+                return string.Format("#{0}", key);
             }
 
             Text package = null;
@@ -242,7 +242,7 @@ namespace tezcat.Core
                 return package.value;
             }
 
-            return string.Format("@{0}", key);
+            return string.Format("#{0}", key);
         }
         #endregion
 
@@ -394,7 +394,7 @@ namespace tezcat.Core
         {
             if (string.IsNullOrEmpty(key))
             {
-                return string.Format("@{0}", key);
+                return string.Format("#{0}", key);
             }
 
             Text package = null;
@@ -403,7 +403,7 @@ namespace tezcat.Core
                 return package.value;
             }
 
-            return string.Format("@{0}", key);
+            return string.Format("#{0}", key);
         }
         #endregion
     }

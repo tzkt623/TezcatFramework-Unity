@@ -20,9 +20,9 @@ namespace tezcat.UI
             m_Menu.descriptionList = m_DescriptionList;
         }
 
-        protected override void onRefresh()
+        protected override void refreshAfterInit()
         {
-            base.onRefresh();
+            base.refreshAfterInit();
         }
 
         public override void clear()

@@ -98,11 +98,11 @@ namespace tezcat.UI
         {
             if (eventData.button == PointerEventData.InputButton.Left)
             {
-                m_Group.dirty = true;
+                m_Group.refresh = RefreshPhase.System1;
             }
         }
 
-        protected override void onRefresh()
+        protected override void refreshAfterInit()
         {
 
         }
@@ -116,7 +116,7 @@ namespace tezcat.UI
             base.clear();
         }
 
-        protected override void onShow()
+        protected override void onOpenAndRefresh()
         {
 
         }

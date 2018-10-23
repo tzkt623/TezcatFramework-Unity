@@ -25,7 +25,7 @@ namespace tezcat.UI
         {
             foreach (var item in m_Actived)
             {
-                item.onRefresh();
+                item.refreshAfterInit();
             }
         }
         #endregion
@@ -90,10 +90,33 @@ namespace tezcat.UI
         public void setGetter(TezEventExtension.Function<string> getter)
         {
             m_Getter = getter;
-            this.dirty = true;
+            this.refresh = RefreshPhase.System1;
         }
 
-        protected override void onRefresh()
+        protected override void onRefresh(RefreshPhase phase)
+        {
+            switch (phase)
+            {
+                case RefreshPhase.System1:
+                    break;
+                case RefreshPhase.System2:
+                    break;
+                case RefreshPhase.Custom1:
+                    break;
+                case RefreshPhase.Custom2:
+                    break;
+                case RefreshPhase.Custom3:
+                    break;
+                case RefreshPhase.Custom4:
+                    break;
+                case RefreshPhase.Custom5:
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        protected override void refreshAfterInit()
         {
             handler.text = m_Getter();
         }
@@ -105,7 +128,7 @@ namespace tezcat.UI
             m_Node = null;
         }
 
-        protected override void onShow()
+        protected override void onOpenAndRefresh()
         {
             add(this);
         }

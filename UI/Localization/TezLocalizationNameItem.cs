@@ -1,4 +1,5 @@
 ﻿using tezcat.Core;
+using tezcat.DataBase;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -7,6 +8,7 @@ namespace tezcat.UI
     public class TezLocalizationNameItem
         : TezToolWidget
         , ITezClickable
+        , ITezPrefab
     {
         [SerializeField]
         Text m_KeyName = null;
@@ -41,7 +43,7 @@ namespace tezcat.UI
 
         }
 
-        protected override void onShow()
+        protected override void onOpenAndRefresh()
         {
 
         }
@@ -64,7 +66,7 @@ namespace tezcat.UI
             this.listArea = null;
         }
 
-        protected override void onRefresh()
+        protected override void refreshAfterInit()
         {
             string value = null;
             if (TezTranslator.translateName(m_KeyName.text, out value))
@@ -88,7 +90,7 @@ namespace tezcat.UI
         public void set(string key)
         {
             m_KeyName.text = key;
-            this.dirty = true;
+            this.refresh = RefreshPhase.Custom3;
         }
 
         public void set(string key, string value)

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using tezcat.DataBase;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -11,6 +12,7 @@ namespace tezcat.UI
     public abstract class TezArea
         : TezWidget
         , ITezFocusableWidget
+        , ITezPrefab
     {
         [SerializeField]
         private int m_AreaID = -1;
@@ -75,12 +77,22 @@ namespace tezcat.UI
 
         }
 
-        protected override void onShow()
+        protected override void onOpenAndRefresh()
         {
 
         }
 
         protected override void onHide()
+        {
+
+        }
+
+        protected override void refreshAfterInit()
+        {
+
+        }
+
+        protected override void onRefresh(RefreshPhase phase)
         {
 
         }

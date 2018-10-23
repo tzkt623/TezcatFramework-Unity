@@ -1,5 +1,5 @@
 ﻿using tezcat.Core;
-using tezcat.Utility;
+using tezcat.DataBase;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -11,6 +11,7 @@ namespace tezcat.UI
         , IPointerEnterHandler
         , IPointerExitHandler
         , ITezClickable
+        , ITezPrefab
     {
         [SerializeField]
         TezImageButton m_Edit = null;
@@ -47,7 +48,7 @@ namespace tezcat.UI
 
         }
 
-        protected override void onShow()
+        protected override void onOpenAndRefresh()
         {
 
         }
@@ -79,7 +80,7 @@ namespace tezcat.UI
             listArea.editItem(m_KeyName.text);
         }
 
-        protected override void onRefresh()
+        protected override void refreshAfterInit()
         {
 
         }

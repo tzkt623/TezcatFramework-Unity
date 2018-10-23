@@ -1,4 +1,5 @@
-﻿using tezcat.Core;
+﻿using System;
+using tezcat.Core;
 using tezcat.DataBase;
 using UnityEngine;
 
@@ -14,16 +15,11 @@ namespace tezcat.Wrapper
         , ITezPrefab
     {
         bool m_Init = false;
-        bool m_Dirty = false;
-
-        public void refresh()
+        public enum RefreshState : byte
         {
-            m_Dirty = true;
-            if (m_Dirty && m_Init && this.gameObject.activeSelf)
-            {
-                m_Dirty = false;
-                this.onRefresh();
-            }
+            Init,
+            Enable,
+            Custom
         }
 
         private void Awake()
@@ -38,7 +34,11 @@ namespace tezcat.Wrapper
                 m_Init = true;
                 this.initObject();
                 this.linkEvent();
-                this.refresh();
+                this.refresh(RefreshState.Init);
+            }
+            else
+            {
+                throw new Exception("MB is Init");
             }
         }
 
@@ -47,7 +47,7 @@ namespace tezcat.Wrapper
             if (m_Init)
             {
                 this.linkEvent();
-                this.refresh();
+                this.refresh(RefreshState.Enable);
             }
         }
 
@@ -62,6 +62,27 @@ namespace tezcat.Wrapper
         private void OnDestroy()
         {
             this.clear();
+        }
+
+        public void refresh(RefreshState state = RefreshState.Custom)
+        {
+            if (this.gameObject.activeSelf && m_Init)
+            {
+                switch (state)
+                {
+                    case RefreshState.Init:
+                        this.onRefreshInit();
+                        break;
+                    case RefreshState.Enable:
+                        this.onRefreshEnable();
+                        break;
+                    case RefreshState.Custom:
+                        this.onRefreshCustom();
+                        break;
+                    default:
+                        break;
+                }
+            }
         }
 
         /// <summary>
@@ -85,9 +106,19 @@ namespace tezcat.Wrapper
         protected abstract void unLinkEvent();
 
         /// <summary>
-        /// 在这里刷新你的MB数据
+        /// 初始化时刷新数据
         /// </summary>
-        protected abstract void onRefresh();
+        protected abstract void onRefreshInit();
+
+        /// <summary>
+        /// 每当Enbale时刷新数据
+        /// </summary>
+        protected abstract void onRefreshEnable();
+
+        /// <summary>
+        /// 自定义情况下刷新数据
+        /// </summary>
+        protected abstract void onRefreshCustom();
 
         /// <summary>
         /// 重置你的MB
@@ -140,7 +171,17 @@ namespace tezcat.Wrapper
 
         }
 
-        protected override void onRefresh()
+        protected override void onRefreshInit()
+        {
+
+        }
+
+        protected override void onRefreshEnable()
+        {
+
+        }
+
+        protected override void onRefreshCustom()
         {
 
         }

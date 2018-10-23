@@ -20,7 +20,7 @@ namespace tezcat.UI
         public void bind(TezDatabaseItemWrapper wrapper)
         {
             m_Wrapper = wrapper;
-            this.dirty = true;
+            this.refresh = RefreshPhase.Custom1;
         }
 
         protected override void preInit()
@@ -43,7 +43,7 @@ namespace tezcat.UI
 
         }
 
-        protected override void onShow()
+        protected override void onOpenAndRefresh()
         {
 
         }
@@ -64,7 +64,7 @@ namespace tezcat.UI
 //             m_Wrapper = null;
         }
 
-        protected override void onRefresh()
+        protected override void refreshAfterInit()
         {
             if (m_Wrapper != null)
             {
@@ -117,7 +117,7 @@ namespace tezcat.UI
 //             TezService.DB.unregisterItem(m_Wrapper.myItem);
 //             m_Wrapper.close();
 //             m_Wrapper = null;
-            this.dirty = true;
+            this.refresh = RefreshPhase.Custom1;
         }
 
         void IPointerDownHandler.OnPointerDown(PointerEventData eventData)

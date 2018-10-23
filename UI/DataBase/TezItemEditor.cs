@@ -20,8 +20,7 @@ namespace tezcat.UI
         [SerializeField]
         RectTransform m_Content = null;
 
-        public override int[] supportCategory
-        {
+        public override int[] supportCategory      {
             get { return new int[0]; }
         }
 
@@ -39,7 +38,7 @@ namespace tezcat.UI
 
         public override void bind(int category)
         {
-            this.dirty = true;
+            this.refresh = RefreshPhase.System1;
         }
 
 //         public override void bind(TezItem item)
@@ -69,7 +68,7 @@ namespace tezcat.UI
             pro.open();
         }
 
-        protected override void onRefresh()
+        protected override void refreshAfterInit()
         {
             foreach (RectTransform item in m_Content)
             {
