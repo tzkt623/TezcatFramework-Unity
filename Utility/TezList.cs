@@ -2,7 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 
-namespace tezcat.Utility
+namespace tezcat.Framework.Utility
 {
     public class TezList<T> : IList<T>, ICollection<T>, IEnumerable<T>
     {

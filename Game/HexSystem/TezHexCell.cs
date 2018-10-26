@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
-using tezcat.Math;
+using tezcat.Framework.Math;
 using UnityEngine;
 
-namespace tezcat.Game
+namespace tezcat.Framework.Game
 {
     public class TezHexCell
     {

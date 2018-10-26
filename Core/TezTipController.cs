@@ -1,8 +1,8 @@
 ﻿using System.Text;
-using tezcat.String;
+using tezcat.Framework.String;
 using UnityEngine;
 
-namespace tezcat.Core
+namespace tezcat.Framework.Core
 {
     public interface ITezTip
     {

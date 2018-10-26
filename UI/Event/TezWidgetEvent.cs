@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
-using tezcat.Extension;
+using tezcat.Framework.Extension;
 
-namespace tezcat.UI
+namespace tezcat.Framework.UI
 {
     public class TezWidgetEvent
     {

@@ -1,7 +1,7 @@
-﻿using tezcat.Core;
-using tezcat.DataBase;
+﻿using tezcat.Framework.Core;
+using tezcat.Framework.DataBase;
 
-namespace tezcat.Wrapper
+namespace tezcat.Framework.Wrapper
 {
     /// <summary>
     /// 

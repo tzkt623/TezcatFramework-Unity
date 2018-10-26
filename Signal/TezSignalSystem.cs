@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using tezcat.Core;
+using tezcat.Framework.Core;
 
-namespace tezcat.Signal
+namespace tezcat.Framework.Signal
 {
     public abstract class TezSignal
     {

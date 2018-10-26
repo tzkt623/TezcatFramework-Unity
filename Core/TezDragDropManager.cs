@@ -1,7 +1,7 @@
-﻿using tezcat.Extension;
+﻿using tezcat.Framework.Extension;
 using UnityEngine.EventSystems;
 
-namespace tezcat.Core
+namespace tezcat.Framework.Core
 {
     public class TezDragDropManager : ITezService
     {

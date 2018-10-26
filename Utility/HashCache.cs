@@ -1,19 +1,19 @@
 using System.Collections.Generic;
 
-namespace tezcat
+namespace tezcat.Framework.Utility
 {
-    public class HashCache
+    public class TezHashCache
     {
         private Dictionary<int, string> m_Hashes = new Dictionary<int, string>();
 
-        private static HashCache m_Instance;
-        public static HashCache instance
+        private static TezHashCache m_Instance;
+        public static TezHashCache instance
         {
             get
             {
                 if(m_Instance == null)
                 {
-                    m_Instance = new HashCache();
+                    m_Instance = new TezHashCache();
                 }
                 return m_Instance;
             }

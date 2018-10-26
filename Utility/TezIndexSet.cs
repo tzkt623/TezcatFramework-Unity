@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 
 
-namespace tezcat.Utility
+namespace tezcat.Framework.Utility
 {
     public class TezIndexSet<Key, Value>
     {

@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using tezcat.DataBase;
+using tezcat.Framework.DataBase;
 
-namespace tezcat.Core
+namespace tezcat.Framework.Core
 {
     /// <summary>
     /// 基础Object
@@ -183,9 +183,9 @@ namespace tezcat.Core
             manager.write(TezReadOnlyString.Database.NID, this.NID);
         }
 
-        public virtual void deserialize(TezSaveManager reader)
+        public virtual void deserialize(TezSaveManager manager)
         {
-            this.NID = reader.readString(TezReadOnlyString.Database.NID);
+            this.NID = manager.readString(TezReadOnlyString.Database.NID);
         }
     }
 

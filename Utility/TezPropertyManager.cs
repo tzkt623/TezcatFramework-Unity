@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
-using tezcat.Core;
-using tezcat.Signal;
+using tezcat.Framework.Core;
+using tezcat.Framework.Signal;
 
-namespace tezcat.Utility
+namespace tezcat.Framework.Utility
 {
     public interface ITezPropertyOwner
     {

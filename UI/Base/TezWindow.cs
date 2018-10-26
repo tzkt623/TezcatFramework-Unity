@@ -1,10 +1,10 @@
 ﻿using System.Collections.Generic;
-using tezcat.Core;
-using tezcat.DataBase;
-using tezcat.Extension;
+using tezcat.Framework.Core;
+using tezcat.Framework.DataBase;
+using tezcat.Framework.Extension;
 using UnityEngine;
 
-namespace tezcat.UI
+namespace tezcat.Framework.UI
 {
     /// <summary>
     /// Window本身只包含Area

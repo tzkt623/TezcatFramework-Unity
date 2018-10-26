@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
-using tezcat.Wrapper;
+using tezcat.Framework.Wrapper;
 
-namespace tezcat.Core
+namespace tezcat.Framework.Core
 {
-    public abstract class BaseSlot<T>
+    public abstract class TezBasicSlot<T>
         : TezGameObjectWrapper<T>
         where T : TezGameObject
     {
@@ -15,7 +15,7 @@ namespace tezcat.Core
         }
     }
 
-    public abstract class BaseSlotCollection : ITezCloseable
+    public abstract class TezBasicSlotCollection : ITezCloseable
     {
         /// <summary>
         /// 容量
@@ -42,9 +42,9 @@ namespace tezcat.Core
         public abstract void close();
     }
 
-    public abstract class ListSlotCollection<T, Slot>
-        : BaseSlotCollection
-        where Slot : BaseSlot<T>, new()
+    public abstract class TezListSlotCollection<T, Slot>
+        : TezBasicSlotCollection
+        where Slot : TezBasicSlot<T>, new()
         where T : TezGameObject
     {
         protected List<Slot> m_Slots = new List<Slot>();

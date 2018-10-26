@@ -1,7 +1,7 @@
-﻿using tezcat.Wrapper;
+﻿using tezcat.Framework.Wrapper;
 using UnityEngine.EventSystems;
 
-namespace tezcat.UI
+namespace tezcat.Framework.UI
 {
     public abstract class TezStorageSlot<T>
         : TezUIWidget

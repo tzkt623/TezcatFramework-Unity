@@ -1,7 +1,7 @@
 ﻿using System;
 
 
-namespace tezcat.Utility
+namespace tezcat.Framework.Utility
 {
     public interface ITezBinaryHeapItem<T> : IComparable<T>
     {

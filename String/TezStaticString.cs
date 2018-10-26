@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
-using tezcat.Core;
+using tezcat.Framework.Core;
 
-namespace tezcat.String
+namespace tezcat.Framework.String
 {
     public class TezStaticString : TezObject
     {

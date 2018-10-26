@@ -1,4 +1,4 @@
-﻿namespace tezcat.AI
+﻿namespace tezcat.Framework.AI
 {
 
     /// <summary>

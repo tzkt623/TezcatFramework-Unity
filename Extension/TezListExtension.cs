@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
-using tezcat.Signal;
+using tezcat.Framework.Signal;
 
-namespace tezcat.Extension
+namespace tezcat.Framework.Extension
 {
     public interface ITezBinarySearchItem
     {

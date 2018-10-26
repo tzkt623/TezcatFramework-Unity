@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
-using tezcat.Core;
+using tezcat.Framework.Core;
 
-namespace tezcat.DataBase
+namespace tezcat.Framework.DataBase
 {
     public abstract class TezResource<T>
         : ITezService

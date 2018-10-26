@@ -1,4 +1,4 @@
-﻿namespace tezcat.Core
+﻿namespace tezcat.Framework.Core
 {
     public abstract class TezBaseDataSlot : ITezCloseable
     {

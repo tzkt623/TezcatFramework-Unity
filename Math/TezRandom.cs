@@ -1,6 +1,6 @@
-﻿using tezcat.Core;
+﻿using tezcat.Framework.Core;
 
-namespace tezcat.Math
+namespace tezcat.Framework.Math
 {
     public interface ITezRandom : ITezService
     {

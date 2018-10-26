@@ -1,6 +1,6 @@
 ﻿using UnityEngine.EventSystems;
 
-namespace tezcat.UI
+namespace tezcat.Framework.UI
 {
     /// <summary>
     /// Widget组件基类

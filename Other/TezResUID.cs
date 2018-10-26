@@ -1,4 +1,4 @@
-﻿using tezcat.String;
+﻿using tezcat.Framework.String;
 
 namespace tezcat
 {

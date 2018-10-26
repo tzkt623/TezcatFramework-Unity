@@ -1,6 +1,6 @@
-﻿using tezcat.DataBase;
+﻿using tezcat.Framework.DataBase;
 
-namespace tezcat.Wrapper
+namespace tezcat.Framework.Wrapper
 {
     public interface ITezItemWrapper : ITezWrapper
     {

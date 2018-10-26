@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using tezcat.Extension;
-using tezcat.Signal;
-using tezcat.String;
-using tezcat.TypeTraits;
+using tezcat.Framework.Extension;
+using tezcat.Framework.Signal;
+using tezcat.Framework.String;
+using tezcat.Framework.TypeTraits;
 
-namespace tezcat.Core
+namespace tezcat.Framework.Core
 {
     public enum TezValueType
     {

@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
-using tezcat.Core;
-using tezcat.Extension;
-using tezcat.TypeTraits;
+using tezcat.Framework.Core;
+using tezcat.Framework.Extension;
+using tezcat.Framework.TypeTraits;
 
-namespace tezcat.Signal
+namespace tezcat.Framework.Signal
 {
     public interface ITezEventData : ITezCloseable
     {

@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace tezcat.Game
+namespace tezcat.Framework.Game
 {
     public abstract class TezCommandSequence
     {

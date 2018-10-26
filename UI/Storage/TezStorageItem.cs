@@ -1,8 +1,8 @@
-﻿using tezcat.Wrapper;
+﻿using tezcat.Framework.Wrapper;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace tezcat.UI
+namespace tezcat.Framework.UI
 {
     [RequireComponent(typeof(Image))]
     public class TezStorageItem

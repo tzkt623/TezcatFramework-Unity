@@ -1,11 +1,11 @@
 ﻿using System.Collections.Generic;
-using tezcat.Core;
-using tezcat.TypeTraits;
-using tezcat.Utility;
+using tezcat.Framework.Core;
+using tezcat.Framework.TypeTraits;
+using tezcat.Framework.Utility;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace tezcat.UI
+namespace tezcat.Framework.UI
 {
     public class TezPE_Type : TezPropertyEditor
     {

@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
-using tezcat.DataBase;
-using tezcat.Extension;
+using tezcat.Framework.DataBase;
+using tezcat.Framework.Extension;
 using UnityEngine;
 
-namespace tezcat.Core
+namespace tezcat.Framework.Core
 {
     public static class TezTranslator
     {

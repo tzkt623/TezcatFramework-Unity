@@ -1,8 +1,8 @@
 ﻿using System;
-using tezcat.Core;
+using tezcat.Framework.Core;
 
 
-namespace tezcat.AI
+namespace tezcat.Framework.AI
 {
     public class TezAICondition
         : ITezCloseable

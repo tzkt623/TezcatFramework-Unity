@@ -1,9 +1,9 @@
-﻿using tezcat.Wrapper;
+﻿using tezcat.Framework.Wrapper;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-namespace tezcat.UI
+namespace tezcat.Framework.UI
 {
     public class TezDatabaseSlot
         : TezToolWidget

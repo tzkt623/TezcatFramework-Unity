@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
-using tezcat.Extension;
+using tezcat.Framework.Extension;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-namespace tezcat.Utility
+namespace tezcat.Framework.Utility
 {
     public class TezState
     {

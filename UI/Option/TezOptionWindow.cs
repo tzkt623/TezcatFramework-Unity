@@ -1,10 +1,10 @@
-﻿using tezcat.Core;
-using tezcat.Utility;
+﻿using tezcat.Framework.Core;
+using tezcat.Framework.Utility;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-namespace tezcat.UI
+namespace tezcat.Framework.UI
 {
     public class TezOptionWindow : TezToolWindow
     {
@@ -46,7 +46,7 @@ namespace tezcat.UI
 
         protected override void refreshAfterInit()
         {
-            m_RootPath.text = TezcatFramework.rootPath;
+            m_RootPath.text = TezcatFramework.dataPath;
 
 //             m_LocalizationName.text = TezcatFramework.localizationFile;
 //             m_DatabaseName.text = TezcatFramework.databaseFile;

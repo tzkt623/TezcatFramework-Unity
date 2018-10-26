@@ -1,8 +1,8 @@
-﻿using tezcat.Core;
+﻿using tezcat.Framework.Core;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-namespace tezcat.UI
+namespace tezcat.Framework.UI
 {
     public class TezcatToolWindow : TezToolWindow
     {

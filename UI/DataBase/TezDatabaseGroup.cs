@@ -1,7 +1,7 @@
-﻿using tezcat.TypeTraits;
+﻿using tezcat.Framework.TypeTraits;
 using UnityEngine;
 
-namespace tezcat.UI
+namespace tezcat.Framework.UI
 {
     public class TezDatabaseGroup
         : TezArea

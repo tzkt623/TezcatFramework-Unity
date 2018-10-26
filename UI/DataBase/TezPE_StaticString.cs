@@ -1,9 +1,9 @@
-﻿using tezcat.Extension;
-using tezcat.String;
+﻿using tezcat.Framework.Extension;
+using tezcat.Framework.String;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace tezcat.UI
+namespace tezcat.Framework.UI
 {
     public class TezPE_StaticString : TezToolWidget
     {

@@ -1,4 +1,4 @@
-﻿namespace tezcat.Utility
+﻿namespace tezcat.Framework.Utility
 {
     public struct TezBit
     {

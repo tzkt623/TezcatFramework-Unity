@@ -1,8 +1,8 @@
 ﻿using System;
-using tezcat.Core;
-using tezcat.Extension;
+using tezcat.Framework.Core;
+using tezcat.Framework.Extension;
 
-namespace tezcat.Utility
+namespace tezcat.Framework.Utility
 {
     public abstract class TezPropertyFunction
         : IComparable<TezPropertyFunction>

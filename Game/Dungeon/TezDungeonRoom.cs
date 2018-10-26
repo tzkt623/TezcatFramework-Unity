@@ -1,6 +1,6 @@
-﻿using tezcat.Extension;
+﻿using tezcat.Framework.Extension;
 
-namespace tezcat.Game
+namespace tezcat.Framework.Game
 {
     public class TezDungeonRoom
     {

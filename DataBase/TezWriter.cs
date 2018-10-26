@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace tezcat.DataBase
+namespace tezcat.Framework.DataBase
 {
     public abstract class TezWriter
     {

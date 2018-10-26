@@ -1,6 +1,6 @@
-﻿using tezcat.Core;
+﻿using tezcat.Framework.Core;
 
-namespace tezcat.Wrapper
+namespace tezcat.Framework.Wrapper
 {
     public interface ITezGameObjectWrapper : ITezWrapper
     {

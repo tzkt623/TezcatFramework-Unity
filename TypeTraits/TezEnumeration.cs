@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using tezcat.Extension;
+using tezcat.Framework.Extension;
 
-namespace tezcat.TypeTraits
+namespace tezcat.Framework.TypeTraits
 {
     public class TezTypeListManager
     {

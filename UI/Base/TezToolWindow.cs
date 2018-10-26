@@ -1,4 +1,4 @@
-﻿namespace tezcat.UI
+﻿namespace tezcat.Framework.UI
 {
     /// <summary>
     /// 工具窗口的父类

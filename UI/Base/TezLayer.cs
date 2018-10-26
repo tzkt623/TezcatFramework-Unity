@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
-namespace tezcat.UI
+namespace tezcat.Framework.UI
 {
     public class TezLayer : TezWidget
     {

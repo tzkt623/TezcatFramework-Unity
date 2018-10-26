@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace tezcat.Math
+namespace tezcat.Framework.Math
 {
     public static class TezHash
     {

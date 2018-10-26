@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
-using tezcat.TypeTraits;
+using tezcat.Framework.TypeTraits;
 
-namespace tezcat.Core
+namespace tezcat.Framework.Core
 {
     public interface ITezService : ITezCloseable
     {

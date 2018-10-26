@@ -1,6 +1,6 @@
-﻿using tezcat.Core;
+﻿using tezcat.Framework.Core;
 
-namespace tezcat.Wrapper
+namespace tezcat.Framework.Wrapper
 {
     public abstract class TezGameObjectMB
         : TezMonoBehaviour
@@ -32,7 +32,7 @@ namespace tezcat.Wrapper
         {
             this.myObject = my_object;
             this.onBind();
-            this.refresh();
+            this.refresh(RefreshPhase.System1);
         }
 
         protected abstract void onBind();

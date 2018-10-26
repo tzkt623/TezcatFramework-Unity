@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
-using tezcat.DataBase;
+using tezcat.Framework.DataBase;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-namespace tezcat.UI
+namespace tezcat.Framework.UI
 {
     /// <summary>
     /// Are才是实际包含Widget的容器

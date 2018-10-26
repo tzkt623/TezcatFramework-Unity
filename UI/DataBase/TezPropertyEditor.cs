@@ -1,6 +1,6 @@
-﻿using tezcat.Core;
+﻿using tezcat.Framework.Core;
 
-namespace tezcat.UI
+namespace tezcat.Framework.UI
 {
     public abstract class TezPropertyEditor : TezToolWidget
     {

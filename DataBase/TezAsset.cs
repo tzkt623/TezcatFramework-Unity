@@ -1,7 +1,7 @@
-﻿using tezcat.String;
+﻿using tezcat.Framework.String;
 using UnityEngine;
 
-namespace tezcat.DataBase
+namespace tezcat.Framework.DataBase
 {
     public class TezAsset
     {

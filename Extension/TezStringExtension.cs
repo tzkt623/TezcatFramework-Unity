@@ -1,4 +1,4 @@
-﻿namespace tezcat.Extension
+﻿namespace tezcat.Framework.Extension
 {
     public static class TezStringExtension
     {

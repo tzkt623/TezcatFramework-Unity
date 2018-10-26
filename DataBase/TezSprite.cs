@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace tezcat.DataBase
+namespace tezcat.Framework.DataBase
 {
     public class TezSprite : TezDataBaseAssetItem
     {

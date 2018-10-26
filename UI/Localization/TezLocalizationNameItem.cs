@@ -1,9 +1,9 @@
-﻿using tezcat.Core;
-using tezcat.DataBase;
+﻿using tezcat.Framework.Core;
+using tezcat.Framework.DataBase;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
-namespace tezcat.UI
+namespace tezcat.Framework.UI
 {
     public class TezLocalizationNameItem
         : TezToolWidget

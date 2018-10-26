@@ -1,10 +1,10 @@
-﻿using tezcat.Core;
-using tezcat.String;
-using tezcat.Utility;
+﻿using tezcat.Framework.Core;
+using tezcat.Framework.String;
+using tezcat.Framework.Utility;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace tezcat.UI
+namespace tezcat.Framework.UI
 {
     public class TezPE_IFS : TezPropertyEditor
     {

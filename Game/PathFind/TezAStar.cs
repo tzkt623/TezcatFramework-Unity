@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
-using tezcat.Utility;
+using tezcat.Framework.Utility;
 
-namespace tezcat.Game
+namespace tezcat.Framework.Game
 {
     public class TezAStar
     {

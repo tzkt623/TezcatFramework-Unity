@@ -1,6 +1,6 @@
-﻿using tezcat.DataBase;
+﻿using tezcat.Framework.DataBase;
 
-namespace tezcat.Core
+namespace tezcat.Framework.Core
 {
     public abstract class TezItemSlot : TezSlot
     {

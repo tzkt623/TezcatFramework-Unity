@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace tezcat.TypeTraits
+namespace tezcat.Framework.TypeTraits
 {
     public class TezRTTIInfo
     {

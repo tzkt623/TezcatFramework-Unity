@@ -1,10 +1,10 @@
 ﻿using System.Collections.Generic;
-using tezcat.Core;
+using tezcat.Framework.Core;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-namespace tezcat.UI
+namespace tezcat.Framework.UI
 {
     public class TezLocalizationDescriptionList : TezArea
     {

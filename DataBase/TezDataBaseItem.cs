@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using tezcat.Core;
+using tezcat.Framework.Core;
 
-namespace tezcat.DataBase
+namespace tezcat.Framework.DataBase
 {
     public abstract class TezDataBaseItem
         : IEquatable<TezDataBaseItem>
@@ -139,7 +139,7 @@ namespace tezcat.DataBase
 
         public abstract ITezSubGroup subgroup { get; }
 
-        public int itemID
+        public ulong itemID
         {
             get { return this.RID.itemID; }
         }
@@ -224,8 +224,6 @@ namespace tezcat.DataBase
         }
 
         protected abstract void registerProperty(ITezPropertyCollection collection);
-
-        public abstract TezDataBaseGameItem clone();
 
         /// <summary>
         /// 数据库回调函数

@@ -1,84 +1,56 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using System.IO;
-using tezcat.DataBase;
-using tezcat.Extension;
-using tezcat.Math;
-using tezcat.Signal;
-using tezcat.UI;
-using tezcat.Utility;
-using tezcat.Wrapper;
+using tezcat.Framework.DataBase;
+using tezcat.Framework.Extension;
+using tezcat.Framework.Math;
+using tezcat.Framework.Signal;
+using tezcat.Framework.UI;
+using tezcat.Framework.Utility;
+using tezcat.Framework.Wrapper;
 using UnityEngine;
 
-namespace tezcat.Core
+namespace tezcat.Framework.Core
 {
     public abstract class TezcatFramework
         : TezUIWidget
         , ITezService
     {
         #region Static Data
-        static string m_RootDir = null;
-        public static string rootPath
+        static string m_DataPath = null;
+        public static string dataPath
         {
             get
             {
-                if (string.IsNullOrEmpty(m_RootDir))
+                if (string.IsNullOrEmpty(m_DataPath))
                 {
-                    m_RootDir = Application.dataPath;
-                    int index = m_RootDir.IndexOf(Application.productName);
-                    m_RootDir = m_RootDir.Substring(0, index + Application.productName.Length) + "/GameData";
+                    m_DataPath = TezPath.rootPath + "/GameData";
                 }
 
-                return m_RootDir;
+                return m_DataPath;
             }
         }
 
         public static string localizationPath
         {
-            get
-            {
-                return rootPath + "/Localization";
-            }
+            get { return dataPath + "/Localization"; }
         }
 
         public static string databasePath
         {
-            get
-            {
-                return rootPath + "/Data";
-            }
+            get { return dataPath + "/DataBase"; }
         }
 
         public static string savePath
         {
-            get
-            {
-                return rootPath + "/Save";
-            }
+            get { return dataPath + "/Save"; }
         }
-
-        //         public static string getPath(string dir, string file_name)
-        //         {
-        //             var dir_path = rootPath + "/" + dir;
-        //             if (!Directory.Exists(dir_path))
-        //             {
-        //                 Directory.CreateDirectory(dir_path);
-        //             }
-        // 
-        //             var file_path = dir_path + "/" + file_name;
-        //             if (!File.Exists(file_path))
-        //             {
-        //                 File.Create(file_path);
-        //             }
-        // 
-        //             File.ReadAllText()
-        //         }
 
         public static void checkNeedFile()
         {
-            if (!TezPath.directoryExist(rootPath))
+            if (!TezPath.directoryExist(dataPath))
             {
-                var info = TezPath.createDirectory(rootPath);
+                var info = TezPath.createDirectory(dataPath);
             }
 
             checkFile(
@@ -295,6 +267,7 @@ namespace tezcat.Core
         {
             var widget = Instantiate(TezService.get<TezPrefabDatabase>().get<Widget>(), parent, false);
             widget.transform.localPosition = Vector3.zero;
+            widget.name = typeof(Widget).Name;
             return widget;
         }
 

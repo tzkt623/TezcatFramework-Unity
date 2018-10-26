@@ -1,10 +1,10 @@
-﻿using tezcat.Core;
-using tezcat.DataBase;
-using tezcat.Utility;
+﻿using tezcat.Framework.Core;
+using tezcat.Framework.DataBase;
+using tezcat.Framework.Utility;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-namespace tezcat.UI
+namespace tezcat.Framework.UI
 {
     public class TezLocalizationMenu : TezArea
     {

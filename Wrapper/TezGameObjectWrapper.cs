@@ -1,7 +1,7 @@
-﻿using tezcat.Core;
-using tezcat.Utility;
+﻿using tezcat.Framework.Core;
+using tezcat.Framework.Utility;
 
-namespace tezcat.Wrapper
+namespace tezcat.Framework.Wrapper
 {
     /// <summary>
     /// GameObject包装器

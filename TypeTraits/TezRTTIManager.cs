@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
-using tezcat.DataBase;
-using tezcat.Extension;
+using tezcat.Framework.DataBase;
+using tezcat.Framework.Extension;
 
-namespace tezcat.TypeTraits
+namespace tezcat.Framework.TypeTraits
 {
     public static class TezRTTIManager
     {

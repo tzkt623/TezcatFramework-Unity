@@ -1,4 +1,4 @@
-﻿namespace tezcat.Core
+﻿namespace tezcat.Framework.Core
 {
     /// <summary>
     /// Item管理器的槽位

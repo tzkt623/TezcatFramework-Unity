@@ -1,9 +1,9 @@
 ﻿using System;
-using tezcat.Core;
-using tezcat.DataBase;
+using tezcat.Framework.Core;
+using tezcat.Framework.DataBase;
 using UnityEngine;
 
-namespace tezcat.Wrapper
+namespace tezcat.Framework.Wrapper
 {
     public interface ITezMBWrapper : ITezWrapper
     {
@@ -15,11 +15,15 @@ namespace tezcat.Wrapper
         , ITezPrefab
     {
         bool m_Init = false;
-        public enum RefreshState : byte
+        public enum RefreshPhase : byte
         {
-            Init,
-            Enable,
-            Custom
+            System1,
+            System2,
+            Custom1,
+            Custom2,
+            Custom3,
+            Custom4,
+            Custom5
         }
 
         private void Awake()
@@ -34,7 +38,7 @@ namespace tezcat.Wrapper
                 m_Init = true;
                 this.initObject();
                 this.linkEvent();
-                this.refresh(RefreshState.Init);
+                this.refreshAfterInit();
             }
             else
             {
@@ -47,7 +51,7 @@ namespace tezcat.Wrapper
             if (m_Init)
             {
                 this.linkEvent();
-                this.refresh(RefreshState.Enable);
+                this.refreshOnEnable();
             }
         }
 
@@ -64,24 +68,11 @@ namespace tezcat.Wrapper
             this.clear();
         }
 
-        public void refresh(RefreshState state = RefreshState.Custom)
+        public void refresh(RefreshPhase phase)
         {
             if (this.gameObject.activeSelf && m_Init)
             {
-                switch (state)
-                {
-                    case RefreshState.Init:
-                        this.onRefreshInit();
-                        break;
-                    case RefreshState.Enable:
-                        this.onRefreshEnable();
-                        break;
-                    case RefreshState.Custom:
-                        this.onRefreshCustom();
-                        break;
-                    default:
-                        break;
-                }
+                this.onRefresh(phase);
             }
         }
 
@@ -108,17 +99,17 @@ namespace tezcat.Wrapper
         /// <summary>
         /// 初始化时刷新数据
         /// </summary>
-        protected abstract void onRefreshInit();
+        protected abstract void refreshAfterInit();
 
         /// <summary>
         /// 每当Enbale时刷新数据
         /// </summary>
-        protected abstract void onRefreshEnable();
+        protected abstract void refreshOnEnable();
 
         /// <summary>
         /// 自定义情况下刷新数据
         /// </summary>
-        protected abstract void onRefreshCustom();
+        protected abstract void onRefresh(RefreshPhase state);
 
         /// <summary>
         /// 重置你的MB
@@ -171,17 +162,17 @@ namespace tezcat.Wrapper
 
         }
 
-        protected override void onRefreshInit()
+        protected override void refreshAfterInit()
         {
 
         }
 
-        protected override void onRefreshEnable()
+        protected override void refreshOnEnable()
         {
 
         }
 
-        protected override void onRefreshCustom()
+        protected override void onRefresh(RefreshPhase state)
         {
 
         }

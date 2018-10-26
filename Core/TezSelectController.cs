@@ -1,8 +1,8 @@
-﻿using tezcat.DataBase;
+﻿using tezcat.Framework.DataBase;
 using tezcat.Event;
-using tezcat.Extension;
+using tezcat.Framework.Extension;
 
-namespace tezcat.Core
+namespace tezcat.Framework.Core
 {
     public enum TezSelectorType
     {

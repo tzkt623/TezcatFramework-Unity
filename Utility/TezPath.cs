@@ -4,22 +4,22 @@ using System.IO;
 using System.Text.RegularExpressions;
 using UnityEngine;
 
-namespace tezcat.Utility
+namespace tezcat.Framework.Utility
 {
     public class TezPath
     {
         private static Regex m_RelativePathCleaner = new Regex("\\/[^\\/]*[^:]\\/\\.\\.");
 
-        static string m_FullPath = null;
-        public static string fullPath
+        static string m_RootPath = null;
+        public static string rootPath
         {
             get
             {
-                if (string.IsNullOrEmpty(m_FullPath))
+                if (string.IsNullOrEmpty(m_RootPath))
                 {
-                    m_FullPath = TezPath.cleanPath(Application.dataPath + "/..");
+                    m_RootPath = TezPath.cleanPath(Application.dataPath + "/..");
                 }
-                return m_FullPath;
+                return m_RootPath;
             }
         }
 
@@ -53,7 +53,7 @@ namespace tezcat.Utility
             {
                 return path;
             }
-            return TezPath.fullPath + "/" + path;
+            return TezPath.rootPath + "/" + path;
         }
 
         public static string[] getFiles(string directory, bool recursively = false)

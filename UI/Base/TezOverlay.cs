@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace tezcat.UI
+namespace tezcat.Framework.UI
 {
     [RequireComponent(typeof(Canvas))]
     public class TezOverlay : TezLayer

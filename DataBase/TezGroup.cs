@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using tezcat.Extension;
-using tezcat.TypeTraits;
+using tezcat.Framework.Extension;
+using tezcat.Framework.TypeTraits;
 
-namespace tezcat.DataBase
+namespace tezcat.Framework.DataBase
 {
     public interface ITezGroup
         : ITezEnumeration

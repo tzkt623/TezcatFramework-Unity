@@ -1,7 +1,7 @@
-﻿using tezcat.Extension;
+﻿using tezcat.Framework.Extension;
 using UnityEngine;
 
-namespace tezcat.UI
+namespace tezcat.Framework.UI
 {
     public class TezPropertyView : TezToolWidget
     {

@@ -3,9 +3,8 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-namespace tezcat.UI
+namespace tezcat.Framework.UI
 {
-
     public class TezTreeNode
         : TezWidget
         , IPointerDownHandler

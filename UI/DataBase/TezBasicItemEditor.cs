@@ -1,10 +1,10 @@
-﻿using tezcat.DataBase;
+﻿using tezcat.Framework.DataBase;
 using tezcat.Event;
-using tezcat.Extension;
+using tezcat.Framework.Extension;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-namespace tezcat.UI
+namespace tezcat.Framework.UI
 {
     public abstract class TezBasicItemEditor : TezToolWindow
     {

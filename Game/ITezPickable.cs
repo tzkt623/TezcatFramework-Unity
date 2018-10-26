@@ -1,4 +1,4 @@
-﻿namespace tezcat.Game
+﻿namespace tezcat.Framework.Game
 {
     public enum PickState
     {

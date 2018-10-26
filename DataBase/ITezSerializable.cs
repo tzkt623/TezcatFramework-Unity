@@ -1,6 +1,6 @@
-﻿using tezcat.Core;
+﻿using tezcat.Framework.Core;
 
-namespace tezcat.DataBase
+namespace tezcat.Framework.DataBase
 {
     public interface ITezSerializable
     {

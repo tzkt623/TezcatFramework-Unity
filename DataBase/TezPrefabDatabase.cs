@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using tezcat.Core;
-using tezcat.Extension;
+using tezcat.Framework.Core;
+using tezcat.Framework.Extension;
 using UnityEngine;
 
-namespace tezcat.DataBase
+namespace tezcat.Framework.DataBase
 {
     public interface ITezPrefab
     {

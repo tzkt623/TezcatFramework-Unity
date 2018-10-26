@@ -1,8 +1,8 @@
 ﻿using System;
-using tezcat.Extension;
+using tezcat.Framework.Extension;
 using UnityEngine.EventSystems;
 
-namespace tezcat.UI
+namespace tezcat.Framework.UI
 {
     public class TezNewTitle
         : TezUIWidget

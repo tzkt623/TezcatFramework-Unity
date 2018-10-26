@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 
-namespace tezcat.DataBase
+namespace tezcat.Framework.DataBase
 {
     public class TezJsonWriter : TezWriter
     {

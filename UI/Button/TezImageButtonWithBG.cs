@@ -2,12 +2,19 @@
 using UnityEngine.UI;
 
 
-namespace tezcat.UI
+namespace tezcat.Framework.UI
 {
     public class TezImageButtonWithBG : TezImageButton
     {
         [SerializeField]
-        public Image background { get; private set; } = null;
+        Image m_Background = null;
+        public Image background
+        {
+            get
+            {
+                return m_Background;
+            }
+        }
 
         protected override void initWidget()
         {

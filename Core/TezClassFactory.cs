@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using tezcat.TypeTraits;
+using tezcat.Framework.TypeTraits;
 
-namespace tezcat.Core
+namespace tezcat.Framework.Core
 {
     /// <summary>
     /// 类型生成器

@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
-using tezcat.Core;
-using tezcat.DataBase;
+using tezcat.Framework.Core;
+using tezcat.Framework.DataBase;
 using UnityEngine;
 
-namespace tezcat.UI
+namespace tezcat.Framework.UI
 {
     public class TezDatabaseWindow : TezToolWindow
     {

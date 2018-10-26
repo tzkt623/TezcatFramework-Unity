@@ -1,7 +1,7 @@
-﻿using tezcat.Core;
-using tezcat.DataBase;
+﻿using tezcat.Framework.Core;
+using tezcat.Framework.DataBase;
 
-namespace tezcat.Extension
+namespace tezcat.Framework.Extension
 {
     public static class TezValueWrapperExtension
     {

@@ -1,10 +1,10 @@
 ﻿using System.Collections.Generic;
-using tezcat.Core;
-using tezcat.Extension;
-using tezcat.Wrapper;
+using tezcat.Framework.Core;
+using tezcat.Framework.Extension;
+using tezcat.Framework.Wrapper;
 using UnityEngine.EventSystems;
 
-namespace tezcat.UI
+namespace tezcat.Framework.UI
 {
     /// <summary>
     /// 基础控件

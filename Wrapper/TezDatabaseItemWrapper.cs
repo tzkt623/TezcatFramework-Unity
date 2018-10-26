@@ -1,6 +1,6 @@
-﻿using tezcat.DataBase;
+﻿using tezcat.Framework.DataBase;
 using UnityEngine;
-namespace tezcat.Wrapper
+namespace tezcat.Framework.Wrapper
 {
     /// <summary>
     /// 数据库专用Item包装器

@@ -1,8 +1,8 @@
-﻿using tezcat.Core;
+﻿using tezcat.Framework.Core;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace tezcat.UI
+namespace tezcat.Framework.UI
 {
     [RequireComponent(typeof(Image))]
     public class TezVisualSelector : TezWidget

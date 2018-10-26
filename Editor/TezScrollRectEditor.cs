@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using UnityEditor.UI;
 using UnityEditor;
-using tezcat.UI;
+using tezcat.Framework.UI;
 
 namespace tezcat
 {

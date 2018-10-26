@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using tezcat.Core;
+using tezcat.Framework.Core;
 using UnityEngine;
 
-namespace tezcat.DataBase
+namespace tezcat.Framework.DataBase
 {
     public class TezTextureDatabase : ITezService
     {

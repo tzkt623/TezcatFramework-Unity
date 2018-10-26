@@ -1,4 +1,4 @@
-﻿namespace tezcat.Core
+﻿namespace tezcat.Framework.Core
 {
     public class TezReadOnlyString
     {

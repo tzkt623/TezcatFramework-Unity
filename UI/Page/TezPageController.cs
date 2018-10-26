@@ -1,8 +1,8 @@
-﻿using tezcat.Core;
-using tezcat.Extension;
+﻿using tezcat.Framework.Core;
+using tezcat.Framework.Extension;
 using UnityEngine;
 
-namespace tezcat.UI
+namespace tezcat.Framework.UI
 {
     public class TezPageController : ITezCloseable
     {

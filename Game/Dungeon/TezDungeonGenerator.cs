@@ -1,10 +1,10 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
-using tezcat.Extension;
-using tezcat.Math;
+using tezcat.Framework.Extension;
+using tezcat.Framework.Math;
 using UnityEngine;
 
-namespace tezcat.Game
+namespace tezcat.Framework.Game
 {
     public class TezDungeonGenerator
     {

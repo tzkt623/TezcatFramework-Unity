@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace tezcat.TypeTraits
+namespace tezcat.Framework.TypeTraits
 {
     /// <summary>
     /// 此类只是用来包装ErrorID

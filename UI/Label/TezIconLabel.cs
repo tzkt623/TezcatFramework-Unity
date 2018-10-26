@@ -1,8 +1,8 @@
-﻿using tezcat.Extension;
+﻿using tezcat.Framework.Extension;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace tezcat.UI
+namespace tezcat.Framework.UI
 {
     public class TezIconLabel : TezWidget
     {

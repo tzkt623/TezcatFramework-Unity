@@ -1,7 +1,7 @@
 ﻿using LitJson;
 using System.IO;
 
-namespace tezcat.Utility
+namespace tezcat.Framework.Utility
 {
     public static class LoadJson
     {

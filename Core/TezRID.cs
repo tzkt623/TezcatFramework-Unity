@@ -1,21 +1,22 @@
 ﻿using System;
 using System.Collections.Generic;
-using tezcat.DataBase;
+using tezcat.Framework.DataBase;
 
-namespace tezcat.Core
+namespace tezcat.Framework.Core
 {
     public class TezRID
         : IEquatable<TezRID>
         , IComparable<TezRID>
     {
+        #region IDManager
         class IDManager
         {
             class SubGroup
             {
-                int m_IDGiver = 0;
-                Queue<int> m_Free = new Queue<int>();
+                private ulong m_IDGiver = 1;
+                private Queue<ulong> m_Free = new Queue<ulong>();
 
-                public int giveID()
+                public ulong giveID()
                 {
                     if (m_Free.Count > 0)
                     {
@@ -25,7 +26,7 @@ namespace tezcat.Core
                     return m_IDGiver++;
                 }
 
-                public void recycleID(ref int id)
+                public void recycleID(ref ulong id)
                 {
                     m_Free.Enqueue(id);
                 }
@@ -35,7 +36,7 @@ namespace tezcat.Core
             {
                 List<SubGroup> m_SubGroups = new List<SubGroup>();
 
-                public int giveID(ref int sub_gid)
+                public ulong giveID(ref int sub_gid)
                 {
                     while (sub_gid >= m_SubGroups.Count)
                     {
@@ -45,7 +46,7 @@ namespace tezcat.Core
                     return m_SubGroups[sub_gid].giveID();
                 }
 
-                public void recycleID(ref int sub_gid, ref int id)
+                public void recycleID(ref int sub_gid, ref ulong id)
                 {
                     m_SubGroups[sub_gid].recycleID(ref id);
                 }
@@ -53,30 +54,32 @@ namespace tezcat.Core
 
             List<Group> m_Groups = new List<Group>();
 
-            public int giveID(int gid, int sub_gid)
+            public ulong giveID(int gid, int sub_gid)
             {
                 while (gid >= m_Groups.Count)
                 {
                     m_Groups.Add(new Group());
                 }
 
-                return m_Groups[gid].giveID(ref sub_gid);
+                return (ulong)gid << 48 | (ulong)sub_gid << 32 | m_Groups[gid].giveID(ref sub_gid);
             }
 
-            public void recycleID(int gid, int sub_gid, int id)
+            public void recycleID(int gid, int sub_gid, ulong id)
             {
                 m_Groups[gid].recycleID(ref sub_gid, ref id);
             }
         }
-
         static IDManager Manager = new IDManager();
+        #endregion
 
         class Ref
         {
-            public ITezGroup group { get; private set; } = null;
-            public ITezSubGroup subGroup { get; private set; } = null;
-            public int itemID { get; set; } = -1;
-            public int dbID { get; set; } = -1;
+            public const ulong EmptyID = 0;
+
+            public ITezGroup group = null;
+            public ITezSubGroup subGroup = null;
+            public ulong itemID = EmptyID;
+            public int dbID = -1;
 
             public int refrence { get; private set; } = 0;
 
@@ -101,32 +104,36 @@ namespace tezcat.Core
             {
                 this.group = null;
                 this.subGroup = null;
-                this.itemID = -1;
+                this.itemID = EmptyID;
                 this.dbID = -1;
                 this.refrence = -1;
             }
 
             public bool sameAs(Ref other)
             {
+                return this.itemID == other.itemID;
+#if Not_Use_BitID
                 return this.itemID == other.itemID
                     && this.subGroup == other.subGroup
-                    && this.group == other.group
-                    && this.dbID == other.dbID;
+                    && this.group == other.group;
+#endif
             }
 
             public bool differentWith(Ref other)
             {
+                return this.itemID != other.itemID;
+#if Not_Use_BitID
                 return this.itemID != other.itemID
-                    || this.dbID != other.dbID
                     || this.subGroup != other.subGroup
                     || this.group != other.group;
+#endif
             }
         }
-        Ref m_Ref = null;
 
+        Ref m_Ref = null;
         public ITezGroup group { get { return m_Ref.group; } }
         public ITezSubGroup subGroup { get { return m_Ref.subGroup; } }
-        public int itemID
+        public ulong itemID
         {
             get { return m_Ref.itemID; }
         }
@@ -189,9 +196,9 @@ namespace tezcat.Core
                 throw new ArgumentException("m_Ref must null");
             }
 
-            if (other.m_Ref == null)
+            if (other == null || other.m_Ref == null)
             {
-                throw new ArgumentException("other.m_Ref must not null");
+                throw new ArgumentException("other or other.m_Ref must not null");
             }
 
             m_Ref = other.m_Ref;
@@ -233,7 +240,11 @@ namespace tezcat.Core
 
         public override int GetHashCode()
         {
+            return m_Ref.itemID.GetHashCode();
+
+#if Not_Use_BitID
             return (m_Ref.group.toID & m_Ref.subGroup.toID & m_Ref.itemID).GetHashCode();
+#endif
         }
 
         public bool sameAs(TezRID other)
@@ -255,167 +266,5 @@ namespace tezcat.Core
         {
             return m_Ref == other.m_Ref;
         }
-    }
-
-    /// <summary>
-    /// 资源ID
-    /// </summary>
-    public class TezRUID
-        : ITezCloseable
-        , IEquatable<TezRUID>
-        , IComparable<TezRUID>
-    {
-        #region 分组
-        static List<Group> m_Group = new List<Group>();
-        class Group
-        {
-            List<TezRUID> m_Cache = new List<TezRUID>();
-            Stack<int> m_FreeID = new Stack<int>();
-            int m_Giver = -1;
-
-            public int GID { get; }
-            public Group(int gid)
-            {
-                this.GID = gid;
-            }
-
-            public bool hasFreeID()
-            {
-                return m_FreeID.Count > 0;
-            }
-
-            public void recycle(int id)
-            {
-                m_FreeID.Push(id);
-            }
-
-            public TezRUID give()
-            {
-                int free = -1;
-                if (m_FreeID.Count > 0)
-                {
-                    free = m_FreeID.Pop();
-                    return m_Cache[free].clone();
-                }
-                else
-                {
-                    var RUID = new TezRUID();
-                    RUID.GID = GID;
-                    RUID.IID = m_Cache.Count;
-                    m_Cache.Add(RUID);
-                    return RUID.clone();
-                }
-            }
-
-            public TezRUID create(int iid)
-            {
-                while (iid >= m_Cache.Count)
-                {
-                    var RUID = new TezRUID();
-                    RUID.GID = GID;
-                    RUID.IID = m_Cache.Count;
-                    m_Cache.Add(RUID);
-                }
-
-                return m_Cache[iid].clone();
-            }
-        }
-
-        public static TezRUID create(int gid, int iid)
-        {
-            while (m_Group.Count <= gid)
-            {
-                m_Group.Add(new Group(m_Group.Count));
-            }
-
-            return m_Group[gid].create(iid);
-        }
-
-        public static TezRUID update(int gid)
-        {
-            return m_Group[gid].give();
-        }
-        #endregion
-
-        public int GID { get; private set; } = -1;
-        public int IID { get; private set; } = -1;
-        int m_Ref = 0;
-
-        private TezRUID()
-        {
-            m_Ref = 0;
-        }
-
-        public TezRUID clone()
-        {
-            m_Ref += 1;
-            return this;
-        }
-
-        public void close()
-        {
-            m_Ref -= 1;
-            if (m_Ref == 0)
-            {
-                m_Group[GID].recycle(IID);
-            }
-            else if (m_Ref < 0)
-            {
-                throw new ArgumentOutOfRangeException("Ref >> Where Call [=] To Clone RUID??");
-            }
-        }
-
-        public override string ToString()
-        {
-            return string.Format("{0}{1}-R:{2}", GID, IID, m_Ref);
-        }
-
-        public override bool Equals(object obj)
-        {
-            return this.Equals(obj as TezRUID);
-        }
-
-        public override int GetHashCode()
-        {
-            return (GID & IID).GetHashCode();
-        }
-
-        public bool Equals(TezRUID other)
-        {
-            return GID == other.GID && IID == other.IID;
-        }
-
-        public int CompareTo(TezRUID other)
-        {
-            return IID.CompareTo(other.IID);
-        }
-
-        public static bool operator ==(TezRUID a, TezRUID b)
-        {
-            return a.GID == b.GID && a.IID == b.IID;
-        }
-
-        public static bool operator !=(TezRUID a, TezRUID b)
-        {
-            return a.GID != b.GID || a.IID != b.IID;
-        }
-
-
-        #region 重载操作
-        public static bool operator true(TezRUID obj)
-        {
-            return !object.ReferenceEquals(obj, null);
-        }
-
-        public static bool operator false(TezRUID obj)
-        {
-            return object.ReferenceEquals(obj, null);
-        }
-
-        public static bool operator !(TezRUID obj)
-        {
-            return object.ReferenceEquals(obj, null);
-        }
-        #endregion
     }
 }

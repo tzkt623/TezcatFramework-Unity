@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 
 
-namespace tezcat.AI
+namespace tezcat.Framework.AI
 {
 
     /// <summary>
