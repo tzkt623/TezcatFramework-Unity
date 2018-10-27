@@ -5,7 +5,12 @@ namespace tezcat.Framework.EntitySystem
 {
     public struct TezEntity
     {
-        private int m_ID;
-        private string m_Name;
+        public static readonly TezEntity Error = new TezEntity(-1);
+
+        public readonly int ID;
+        public TezEntity(int id)
+        {
+            this.ID = id;
+        }
     }
 }

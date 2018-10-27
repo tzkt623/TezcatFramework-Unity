@@ -67,9 +67,9 @@ namespace tezcat.Framework.DataBase
         : TezEnumeration<TEnum, TValue>
         , ITezGroup
         where TEnum : TezGroup<TEnum, TValue>
-        where TValue : IComparable
+        where TValue : struct, IComparable
     {
-        protected TezGroup(TValue value, string name) : base(value, name)
+        protected TezGroup(TValue value) : base(value)
         {
             TezGroupManager.registerGroup(this);
         }
@@ -84,11 +84,11 @@ namespace tezcat.Framework.DataBase
         : TezEnumeration<TEnum, TValue>
         , ITezSubGroup
         where TEnum : TezSubGroup<TEnum, TValue>
-        where TValue : IComparable
+        where TValue : struct, IComparable
     {
         TezEventExtension.Function<TezDataBaseGameItem> m_Creator = null;
 
-        protected TezSubGroup(ITezGroup group, TValue value, string name, TezEventExtension.Function<TezDataBaseGameItem> creator) : base(value, name)
+        protected TezSubGroup(ITezGroup group, TValue value, TezEventExtension.Function<TezDataBaseGameItem> creator) : base(value)
         {
             m_Creator = creator;
             TezGroupManager.registerSubGroup(group, this);

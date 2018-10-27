@@ -325,39 +325,71 @@ namespace tezcat.Framework.TypeTraits
         int toID { get; }
     }
 
-    public abstract class TezEnumeration<TEnumeration, TValue>
+    public abstract class TezEnumeration<TEnumeration, TEnumValue>
         : ITezEnumeration
         , IComparable<TEnumeration>
         , IEquatable<TEnumeration>
-        where TEnumeration : TezEnumeration<TEnumeration, TValue>
-        where TValue : IComparable
+        where TEnumeration : TezEnumeration<TEnumeration, TEnumValue>
+        where TEnumValue : struct, IComparable
     {
-        static Dictionary<string, TEnumeration> m_EnumWithName = new Dictionary<string, TEnumeration>();
+        #region Static
+        static string[] Names = null;
+        static TEnumeration[] Values = null;
+        static Dictionary<string, TEnumeration> EnumWithName = null;
+
         protected static TEnumeration getEnum(string name)
         {
-            return m_EnumWithName[name];
+            return EnumWithName[name];
         }
 
-        protected static int enumCount
+        public static readonly int enumCount = -1;
+
+        //         public static TEnumeration get(TEnumValue enum_value)
+        //         {
+        //             return Values[Convert.ToInt32(enum_value)];
+        //         }
+
+        //         public static TEnumeration get(string enum_name)
+        //         {
+        //             return EnumWithName[enum_name];
+        //         }
+
+        static TezEnumeration()
         {
-            get { return m_EnumWithName.Count; }
+            var temp = (TEnumValue[])Enum.GetValues(typeof(TEnumValue));
+            enumCount = temp.Length;
+            EnumWithName = new Dictionary<string, TEnumeration>(enumCount);
+            Names = Enum.GetNames(typeof(TEnumValue));
+            //            Values = new TEnumeration[temp.Length];
+            //             for (int i = 0; i < temp.Length; i++)
+            //             {
+            //                 var e = new TEnumeration();
+            //                 e.value = temp[i];
+            //                 Values[i] = e;
+            //                 EnumWithName.Add(Names[i], e);
+            //             }
         }
+        #endregion
 
-        public string NID { get; }
-        public TValue value { get; }
-        public abstract int toID { get; }
 
         public Type systemType
         {
             get { return typeof(TEnumeration); }
         }
 
-        protected TezEnumeration(TValue value, string name)
+        public string NID
+        {
+            get { return Names[toID]; }
+        }
+
+        public abstract int toID { get; }
+
+        public TEnumValue value { get; private set; }
+
+        protected TezEnumeration(TEnumValue value)
         {
             this.value = value;
-            this.NID = name;
-
-            m_EnumWithName[this.NID] = (TEnumeration)this;
+            EnumWithName[this.NID] = (TEnumeration)this;
         }
 
         public int CompareTo(TEnumeration other)
@@ -371,7 +403,7 @@ namespace tezcat.Framework.TypeTraits
         }
 
         #region 重载操作
-        public static implicit operator TValue(TezEnumeration<TEnumeration, TValue> enumeration)
+        public static implicit operator TEnumValue(TezEnumeration<TEnumeration, TEnumValue> enumeration)
         {
             return enumeration.value;
         }
@@ -386,7 +418,7 @@ namespace tezcat.Framework.TypeTraits
             return value.GetHashCode();
         }
 
-        public static bool operator !=(TezEnumeration<TEnumeration, TValue> x, TezEnumeration<TEnumeration, TValue> y)
+        public static bool operator !=(TezEnumeration<TEnumeration, TEnumValue> x, TezEnumeration<TEnumeration, TEnumValue> y)
         {
             /// (!true || !false) && (true || false) || (x)
             /// (!false || !false) && (false || false) || (x.ID != y.ID || x.name != y.name)
@@ -397,7 +429,7 @@ namespace tezcat.Framework.TypeTraits
             return (!flagx || !flagy) && (flagx || flagy) || (x.value.CompareTo(y.value) != 0);
         }
 
-        public static bool operator ==(TezEnumeration<TEnumeration, TValue> x, TezEnumeration<TEnumeration, TValue> y)
+        public static bool operator ==(TezEnumeration<TEnumeration, TEnumValue> x, TezEnumeration<TEnumeration, TEnumValue> y)
         {
             ///(false && false) || (x.ID == y.ID && x.name == y.name)
             ///(true && true) || (x)
@@ -409,17 +441,17 @@ namespace tezcat.Framework.TypeTraits
             return (flagx && flagy) || (!flagx && !flagy) && (x.value.CompareTo(y.value) == 0);
         }
 
-        public static bool operator true(TezEnumeration<TEnumeration, TValue> obj)
+        public static bool operator true(TezEnumeration<TEnumeration, TEnumValue> obj)
         {
             return !object.ReferenceEquals(obj, null);
         }
 
-        public static bool operator false(TezEnumeration<TEnumeration, TValue> obj)
+        public static bool operator false(TezEnumeration<TEnumeration, TEnumValue> obj)
         {
             return object.ReferenceEquals(obj, null);
         }
 
-        public static bool operator !(TezEnumeration<TEnumeration, TValue> obj)
+        public static bool operator !(TezEnumeration<TEnumeration, TEnumValue> obj)
         {
             return object.ReferenceEquals(obj, null);
         }

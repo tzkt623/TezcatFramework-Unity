@@ -1,34 +1,34 @@
-﻿namespace tezcat
+﻿namespace tezcat.Framework.Utility
 {
-    public struct Position2I
+    public struct TezPosition2I
     {
-        public readonly static Position2I zero = new Position2I(0, 0);
+        public readonly static TezPosition2I zero = new TezPosition2I(0, 0);
 
         public int x;
         public int y;
 
-        public Position2I(int x, int y)
+        public TezPosition2I(int x, int y)
         {
             this.x = x;
             this.y = y;
         }
 
-        public static Position2I operator +(Position2I v1, Position2I v2)
+        public static TezPosition2I operator +(TezPosition2I v1, TezPosition2I v2)
         {
-            return new Position2I(v1.x + v2.x, v1.y + v2.y);
+            return new TezPosition2I(v1.x + v2.x, v1.y + v2.y);
         }
 
-        public static Position2I operator -(Position2I v1, Position2I v2)
+        public static TezPosition2I operator -(TezPosition2I v1, TezPosition2I v2)
         {
-            return new Position2I(v1.x - v2.x, v1.y - v2.y);
+            return new TezPosition2I(v1.x - v2.x, v1.y - v2.y);
         }
 
-        public static bool operator !=(Position2I v1, Position2I v2)
+        public static bool operator !=(TezPosition2I v1, TezPosition2I v2)
         {
             return v1.x != v2.x || v1.y != v2.y;
         }
 
-        public static bool operator ==(Position2I v1, Position2I v2)
+        public static bool operator ==(TezPosition2I v1, TezPosition2I v2)
         {
             return v1.x == v2.x && v1.y == v2.y;
         }
@@ -57,37 +57,37 @@
         }
     }
 
-    public struct Position3I
+    public struct TezPosition3I
     {
-        public readonly static Position3I zero = new Position3I(0, 0, 0);
+        public readonly static TezPosition3I zero = new TezPosition3I(0, 0, 0);
 
         public int x;
         public int y;
         public int z;
 
-        public Position3I(int x, int y, int z)
+        public TezPosition3I(int x, int y, int z)
         {
             this.x = x;
             this.y = y;
             this.z = z;
         }
 
-        public static Position3I operator +(Position3I v1, Position3I v2)
+        public static TezPosition3I operator +(TezPosition3I v1, TezPosition3I v2)
         {
-            return new Position3I(v1.x + v2.x, v1.y + v2.y, v1.z + v2.z);
+            return new TezPosition3I(v1.x + v2.x, v1.y + v2.y, v1.z + v2.z);
         }
 
-        public static Position3I operator -(Position3I v1, Position3I v2)
+        public static TezPosition3I operator -(TezPosition3I v1, TezPosition3I v2)
         {
-            return new Position3I(v1.x - v2.x, v1.y - v2.y, v1.z - v2.z);
+            return new TezPosition3I(v1.x - v2.x, v1.y - v2.y, v1.z - v2.z);
         }
 
-        public static bool operator !=(Position3I v1, Position3I v2)
+        public static bool operator !=(TezPosition3I v1, TezPosition3I v2)
         {
             return v1.x != v2.x || v1.y != v2.y || v1.z != v2.z;
         }
 
-        public static bool operator ==(Position3I v1, Position3I v2)
+        public static bool operator ==(TezPosition3I v1, TezPosition3I v2)
         {
             return v1.x == v2.x && v1.y == v2.y && v1.z == v2.z;
         }

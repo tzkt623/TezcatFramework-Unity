@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using tezcat.Framework.Extension;
-using tezcat.Framework.Signal;
+using tezcat.Framework.Event;
 using tezcat.Framework.String;
 using tezcat.Framework.TypeTraits;
 

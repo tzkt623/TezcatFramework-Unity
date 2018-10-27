@@ -7,10 +7,9 @@ namespace tezcat.Framework.Utility
         : ITezCloseable
     {
         ulong masks { get; }
-
         void set(params int[] indices);
-
         bool this[int index] { get; set; }
+        int length { get; }
     }
 
     public struct TezMask32
@@ -23,6 +22,11 @@ namespace tezcat.Framework.Utility
         public ulong masks
         {
             get { return this.m_Data; }
+        }
+
+        public int length
+        {
+            get { return BitCount; }
         }
 
         public bool this[int index]
@@ -135,14 +139,14 @@ namespace tezcat.Framework.Utility
         private const int BitCount = 64;
         private ulong m_Data;
 
-        public TezMask64(ulong mask)
-        {
-            m_Data = mask;
-        }
-
         public ulong masks
         {
             get { return this.m_Data; }
+        }
+
+        public int length
+        {
+            get { return BitCount; }
         }
 
         public bool this[int index]
@@ -175,6 +179,11 @@ namespace tezcat.Framework.Utility
                     this.m_Data &= ~num;
                 }
             }
+        }
+
+        public TezMask64(ulong mask)
+        {
+            m_Data = mask;
         }
 
         public void set(params int[] indices)

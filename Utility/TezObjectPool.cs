@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
-namespace tezcat
+namespace tezcat.Framework.Utility
 {
     /// <summary>
     /// Begin End

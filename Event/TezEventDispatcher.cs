@@ -3,12 +3,8 @@ using tezcat.Framework.Core;
 using tezcat.Framework.Extension;
 using tezcat.Framework.TypeTraits;
 
-namespace tezcat.Framework.Signal
+namespace tezcat.Framework.Event
 {
-    public interface ITezEventData : ITezCloseable
-    {
-        string name { get; }
-    }
 
     public sealed class TezEventDispatcher : ITezService
     {

@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using tezcat.Framework.Signal;
+using tezcat.Framework.Event;
 
 namespace tezcat.Framework.Extension
 {
