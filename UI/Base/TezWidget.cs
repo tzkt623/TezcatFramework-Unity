@@ -1,4 +1,5 @@
-﻿using UnityEngine.EventSystems;
+﻿using System;
+using UnityEngine.EventSystems;
 
 namespace tezcat.Framework.UI
 {
@@ -27,6 +28,8 @@ namespace tezcat.Framework.UI
 
         public enum RefreshPhase : byte
         {
+            OnInit,
+            OnEnable,
             System1,
             System2,
             Custom1,
@@ -64,7 +67,7 @@ namespace tezcat.Framework.UI
                 base.Start();
                 this.linkEvent();
                 this.initWidget();
-                this.refreshAfterInit();
+                this.refresh = RefreshPhase.OnInit;
             }
         }
 
@@ -74,7 +77,7 @@ namespace tezcat.Framework.UI
             {
                 base.OnEnable();
                 this.linkEvent();
-                this.onOpenAndRefresh();
+                this.refresh = RefreshPhase.OnEnable;
             }
         }
 
@@ -124,19 +127,9 @@ namespace tezcat.Framework.UI
         protected abstract void unLinkEvent();
 
         /// <summary>
-        /// 初始化完成后刷新数据
-        /// </summary>
-        protected abstract void refreshAfterInit();
-
-        /// <summary>
         /// 自定义刷新数据
         /// </summary>
         protected abstract void onRefresh(RefreshPhase phase);
-
-        /// <summary>
-        /// 
-        /// </summary>
-        protected abstract void onOpenAndRefresh();
 
         /// <summary>
         /// 
@@ -226,21 +219,6 @@ namespace tezcat.Framework.UI
 
         }
 
-        protected override void refreshAfterInit()
-        {
-
-        }
-
-        protected override void onOpenAndRefresh()
-        {
-
-        }
-
-        protected override void onRefresh(RefreshPhase phase)
-        {
-
-        }
-
         protected override void preInit()
         {
 
@@ -282,21 +260,6 @@ namespace tezcat.Framework.UI
 
         }
 
-        protected override void refreshAfterInit()
-        {
-
-        }
-
-        protected override void onOpenAndRefresh()
-        {
-
-        }
-
-        protected override void onRefresh(RefreshPhase phase)
-        {
-
-        }
-
         protected override void preInit()
         {
 
@@ -313,19 +276,6 @@ namespace tezcat.Framework.UI
     /// </summary>
     public abstract class TezToolWidget : TezWidget
     {
-        protected override void refreshAfterInit()
-        {
 
-        }
-
-        protected override void onOpenAndRefresh()
-        {
-
-        }
-
-        protected override void onRefresh(RefreshPhase phase)
-        {
-
-        }
     }
 }

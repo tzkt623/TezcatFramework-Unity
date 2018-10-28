@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using tezcat.Framework.Core;
-using tezcat.Framework.Utility;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -97,15 +96,10 @@ namespace tezcat.Framework.UI
             base.clear();
         }
 
-        protected override void refreshAfterInit()
+        private void refreshData()
         {
             m_PageController.calculateMaxPage(TezTranslator.nameCount);
             m_PageController.setPage(m_PageController.currentPage);
-        }
-
-        protected override void onOpenAndRefresh()
-        {
-
         }
 
         protected override void onHide()

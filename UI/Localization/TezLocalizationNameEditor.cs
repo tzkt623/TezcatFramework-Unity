@@ -45,7 +45,7 @@ namespace tezcat.Framework.UI
 
         }
 
-        protected override void refreshAfterInit()
+        private void refreshData()
         {
             string value;
             if (TezTranslator.translateName(m_KeyInput.text, out value))
@@ -56,11 +56,6 @@ namespace tezcat.Framework.UI
             {
                 m_LocalizationInput.text = m_KeyInput.text;
             }
-        }
-
-        protected override void onOpenAndRefresh()
-        {
-
         }
 
         protected override void onHide()
@@ -104,7 +99,7 @@ namespace tezcat.Framework.UI
             switch (phase)
             {
                 case RefreshPhase.Custom1:
-                    this.refreshAfterInit();
+                    this.refreshData();
                     break;
                 case RefreshPhase.Custom2:
                     break;

@@ -44,7 +44,7 @@ namespace tezcat.Framework.UI
             }
         }
 
-        protected override void refreshAfterInit()
+        private void refreshData()
         {
             m_RootPath.text = TezcatFramework.dataPath;
 

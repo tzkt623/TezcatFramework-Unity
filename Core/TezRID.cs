@@ -69,7 +69,7 @@ namespace tezcat.Framework.Core
                 m_Groups[gid].recycleID(ref sub_gid, ref id);
             }
         }
-        static IDManager Manager = new IDManager();
+        static readonly IDManager Manager = new IDManager();
         #endregion
 
         class Ref

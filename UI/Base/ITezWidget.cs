@@ -89,21 +89,21 @@ namespace tezcat.Framework.UI
 
     }
 
-    /// <summary>
-    /// 此控件可以接受事件
-    /// </summary>
-    public interface ITezEventHandler
-    {
-        TezWidgetEvent.Dispatcher m_EventSwitcher { get; }
-        void onEvent(int event_id, object data);
-    }
-
-    /// <summary>
-    /// 此控件可以发送事件
-    /// </summary>
-    public interface ITezEventDispather
-    {
-        List<ITezEventHandler> handlers { get; }
-        void dispathEvent(int event_id, object data);
-    }
+//     /// <summary>
+//     /// 此控件可以接受事件
+//     /// </summary>
+//     public interface ITezEventHandler
+//     {
+//         TezWidgetEvent.Dispatcher m_EventSwitcher { get; }
+//         void onEvent(int event_id, object data);
+//     }
+// 
+//     /// <summary>
+//     /// 此控件可以发送事件
+//     /// </summary>
+//     public interface ITezEventDispather
+//     {
+//         List<ITezEventHandler> handlers { get; }
+//         void dispathEvent(int event_id, object data);
+//     }
 }

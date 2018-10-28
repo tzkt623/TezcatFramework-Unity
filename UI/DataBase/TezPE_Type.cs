@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using tezcat.Framework.Core;
 using tezcat.Framework.TypeTraits;
-using tezcat.Framework.Utility;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -47,7 +46,35 @@ namespace tezcat.Framework.UI
             m_Types = null;
         }
 
-        protected override void refreshAfterInit()
+        protected override void onRefresh(RefreshPhase phase)
+        {
+            switch (phase)
+            {
+                case RefreshPhase.OnInit:
+                    this.refreshData();
+                    break;
+                case RefreshPhase.OnEnable:
+                    break;
+                case RefreshPhase.System1:
+                    break;
+                case RefreshPhase.System2:
+                    break;
+                case RefreshPhase.Custom1:
+                    break;
+                case RefreshPhase.Custom2:
+                    break;
+                case RefreshPhase.Custom3:
+                    break;
+                case RefreshPhase.Custom4:
+                    break;
+                case RefreshPhase.Custom5:
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        private void refreshData()
         {
             m_PropertyName.text = TezTranslator.translateName(m_Property.name, m_Property.name);
             m_Types = TezTypeListManager.getList(m_Property.systemType);
@@ -62,11 +89,6 @@ namespace tezcat.Framework.UI
 
             m_DropDown.value = ((TezPV_Type)m_Property).baseValue.ID;
             m_DropDown.captionText.text = ((TezPV_Type)m_Property).baseValue.name;
-        }
-
-        protected override void onOpenAndRefresh()
-        {
-
         }
 
         protected override void onHide()

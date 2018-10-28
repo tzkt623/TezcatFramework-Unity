@@ -43,11 +43,6 @@ namespace tezcat.Framework.UI
 
         }
 
-        protected override void onOpenAndRefresh()
-        {
-
-        }
-
         protected override void onHide()
         {
 
@@ -64,7 +59,21 @@ namespace tezcat.Framework.UI
 //             m_Wrapper = null;
         }
 
-        protected override void refreshAfterInit()
+        protected override void onRefresh(RefreshPhase phase)
+        {
+            switch (phase)
+            {
+                case RefreshPhase.OnInit:
+                    this.refreshData();
+                    break;
+                case RefreshPhase.OnEnable:
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        private void refreshData()
         {
             if (m_Wrapper != null)
             {

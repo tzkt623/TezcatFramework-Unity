@@ -102,11 +102,6 @@ namespace tezcat.Framework.UI
             }
         }
 
-        protected override void refreshAfterInit()
-        {
-
-        }
-
         public override void clear()
         {
             m_Save.onClick -= onSave;
@@ -114,11 +109,6 @@ namespace tezcat.Framework.UI
             m_RefreshDataBase.onClick -= onRefreshDataBase;
 
             base.clear();
-        }
-
-        protected override void onOpenAndRefresh()
-        {
-
         }
 
         protected override void onHide()

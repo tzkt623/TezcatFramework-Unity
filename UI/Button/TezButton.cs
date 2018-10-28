@@ -60,6 +60,11 @@ namespace tezcat.Framework.UI
             }
         }
 
+        protected override void onRefresh(RefreshPhase phase)
+        {
+
+        }
+
         public override void clear()
         {
             listener = null;

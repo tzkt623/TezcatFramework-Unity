@@ -20,11 +20,6 @@ namespace tezcat.Framework.UI
             m_Menu.descriptionList = m_DescriptionList;
         }
 
-        protected override void refreshAfterInit()
-        {
-            base.refreshAfterInit();
-        }
-
         public override void clear()
         {
             m_Menu = null;

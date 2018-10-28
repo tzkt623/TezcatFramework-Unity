@@ -152,16 +152,6 @@ namespace tezcat.Framework.UI
             onSelectNode?.Invoke(node);
         }
 
-        protected override void refreshAfterInit()
-        {
-
-        }
-
-        protected override void onOpenAndRefresh()
-        {
-
-        }
-
         protected override void onRefresh(RefreshPhase phase)
         {
 

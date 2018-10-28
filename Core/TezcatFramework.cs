@@ -126,17 +126,7 @@ namespace tezcat.Framework.Core
 
         }
 
-        protected override void refreshAfterInit()
-        {
-
-        }
-
         protected override void onHide()
-        {
-
-        }
-
-        protected override void onOpenAndRefresh()
         {
 
         }
@@ -317,6 +307,10 @@ namespace tezcat.Framework.Core
         {
 
         }
+        #endregion
+
+        #region Object
+
         #endregion
 
         protected virtual void Update() { }

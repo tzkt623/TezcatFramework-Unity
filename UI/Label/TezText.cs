@@ -25,7 +25,7 @@ namespace tezcat.Framework.UI
         {
             foreach (var item in m_Actived)
             {
-                item.refreshAfterInit();
+                item.refreshData();
             }
         }
         #endregion
@@ -97,26 +97,19 @@ namespace tezcat.Framework.UI
         {
             switch (phase)
             {
-                case RefreshPhase.System1:
+                case RefreshPhase.OnInit:
+                    this.refreshData();
                     break;
-                case RefreshPhase.System2:
-                    break;
-                case RefreshPhase.Custom1:
-                    break;
-                case RefreshPhase.Custom2:
-                    break;
-                case RefreshPhase.Custom3:
-                    break;
-                case RefreshPhase.Custom4:
-                    break;
-                case RefreshPhase.Custom5:
+                case RefreshPhase.OnEnable:
+                    TezText.add(this);
+                    this.refreshData();
                     break;
                 default:
                     break;
             }
         }
 
-        protected override void refreshAfterInit()
+        private void refreshData()
         {
             handler.text = m_Getter();
         }
@@ -128,14 +121,9 @@ namespace tezcat.Framework.UI
             m_Node = null;
         }
 
-        protected override void onOpenAndRefresh()
-        {
-            add(this);
-        }
-
         protected override void onHide()
         {
-            remove(this);
+            TezText.remove(this);
         }
 
         public override void reset()

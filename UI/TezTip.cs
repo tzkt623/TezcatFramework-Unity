@@ -74,6 +74,11 @@ namespace tezcat.Framework.UI
             this.gameObject.SetActive(false);
         }
 
+        protected override void onRefresh(RefreshPhase phase)
+        {
+
+        }
+
         public void accept(TezTipController controller)
         {
             controller.nameSize = m_NameSize;

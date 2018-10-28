@@ -135,11 +135,6 @@ namespace tezcat.Framework.UI
 
         }
 
-        protected override void onOpenAndRefresh()
-        {
-
-        }
-
         public override bool checkForClose()
         {
             bool result = true;
@@ -189,11 +184,6 @@ namespace tezcat.Framework.UI
             m_AreaDic = null;
 
             TezService.get<TezcatFramework>().removeWindow(this);
-        }
-
-        protected override void refreshAfterInit()
-        {
-
         }
 
         protected override void onRefresh(RefreshPhase phase)

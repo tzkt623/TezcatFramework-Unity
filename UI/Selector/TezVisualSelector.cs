@@ -34,11 +34,6 @@ namespace tezcat.Framework.UI
 
         }
 
-        protected override void onOpenAndRefresh()
-        {
-
-        }
-
         protected override void onHide()
         {
 
@@ -59,11 +54,6 @@ namespace tezcat.Framework.UI
         {
             TezSelectController.onSelect.remove(onSelect);
             TezSelectController.onCancelSelect.remove(onCancelSelect);
-        }
-
-        protected override void refreshAfterInit()
-        {
-
         }
 
         private void onSelect(TezBasicSelector selector)

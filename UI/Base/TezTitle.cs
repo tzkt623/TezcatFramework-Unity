@@ -80,12 +80,12 @@ namespace tezcat.Framework.UI
             }
         }
 
-        public override void reset()
+        protected override void onRefresh(RefreshPhase phase)
         {
 
         }
 
-        protected override void refreshAfterInit()
+        public override void reset()
         {
 
         }
@@ -113,11 +113,6 @@ namespace tezcat.Framework.UI
         public void setName(string name)
         {
             m_TitleName.text = name;
-        }
-
-        protected override void onOpenAndRefresh()
-        {
-
         }
 
         protected override void onHide()

@@ -333,41 +333,19 @@ namespace tezcat.Framework.TypeTraits
         where TEnumValue : struct, IComparable
     {
         #region Static
-        static string[] Names = null;
-        static TEnumeration[] Values = null;
-        static Dictionary<string, TEnumeration> EnumWithName = null;
-
-        protected static TEnumeration getEnum(string name)
-        {
-            return EnumWithName[name];
-        }
+        protected static readonly string[] EnumNameArray = null;
+        protected static readonly TEnumeration[] EnumArray = null;
+        protected static readonly Dictionary<string, TEnumeration> EnumWithName = null;
 
         public static readonly int enumCount = -1;
-
-        //         public static TEnumeration get(TEnumValue enum_value)
-        //         {
-        //             return Values[Convert.ToInt32(enum_value)];
-        //         }
-
-        //         public static TEnumeration get(string enum_name)
-        //         {
-        //             return EnumWithName[enum_name];
-        //         }
 
         static TezEnumeration()
         {
             var temp = (TEnumValue[])Enum.GetValues(typeof(TEnumValue));
             enumCount = temp.Length;
             EnumWithName = new Dictionary<string, TEnumeration>(enumCount);
-            Names = Enum.GetNames(typeof(TEnumValue));
-            //            Values = new TEnumeration[temp.Length];
-            //             for (int i = 0; i < temp.Length; i++)
-            //             {
-            //                 var e = new TEnumeration();
-            //                 e.value = temp[i];
-            //                 Values[i] = e;
-            //                 EnumWithName.Add(Names[i], e);
-            //             }
+            EnumNameArray = Enum.GetNames(typeof(TEnumValue));
+            EnumArray = new TEnumeration[enumCount];
         }
         #endregion
 
@@ -379,7 +357,7 @@ namespace tezcat.Framework.TypeTraits
 
         public string NID
         {
-            get { return Names[toID]; }
+            get { return EnumNameArray[toID]; }
         }
 
         public abstract int toID { get; }
@@ -390,6 +368,7 @@ namespace tezcat.Framework.TypeTraits
         {
             this.value = value;
             EnumWithName[this.NID] = (TEnumeration)this;
+            EnumArray[this.toID] = (TEnumeration)this;
         }
 
         public int CompareTo(TEnumeration other)

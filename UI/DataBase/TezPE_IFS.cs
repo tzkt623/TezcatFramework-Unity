@@ -1,6 +1,5 @@
 ﻿using tezcat.Framework.Core;
 using tezcat.Framework.String;
-using tezcat.Framework.Utility;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -32,11 +31,6 @@ namespace tezcat.Framework.UI
             m_Input.onEndEdit.RemoveListener(this.onValueSet);
         }
 
-        protected override void onOpenAndRefresh()
-        {
-
-        }
-
         protected override void onHide()
         {
 
@@ -66,7 +60,21 @@ namespace tezcat.Framework.UI
             }
         }
 
-        protected override void refreshAfterInit()
+        protected override void onRefresh(RefreshPhase phase)
+        {
+            switch (phase)
+            {
+                case RefreshPhase.OnInit:
+                    this.refreshData();
+                    break;
+                case RefreshPhase.OnEnable:
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        private void refreshData()
         {
             m_PropertyName.text = TezTranslator.translateName(m_Property.name, m_Property.name);
             switch (m_Property.valueType)

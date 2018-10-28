@@ -77,17 +77,28 @@ namespace tezcat.Framework.UI
             m_Page.onEndEdit.AddListener(this.onPageSet);
         }
 
-        protected override void onOpenAndRefresh()
-        {
-
-        }
-
         protected override void onHide()
         {
 
         }
 
-        protected override void refreshAfterInit()
+        protected override void onRefresh(RefreshPhase phase)
+        {
+            base.onRefresh(phase);
+
+            switch (phase)
+            {
+                case RefreshPhase.OnInit:
+                    this.refreshData();
+                    break;
+                case RefreshPhase.OnEnable:
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        private void refreshData()
         {
             m_PageController.calculateMaxPage(TezTranslator.descriptionCount);
             m_PageController.setPage(m_PageController.currentPage);

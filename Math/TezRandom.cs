@@ -6,7 +6,7 @@ namespace tezcat.Framework.Math
     {
         void setSeed(int seed);
         int nextInt();
-        int nextInt(float min, float max);
+        int nextInt(int min, int max);
         float nextFloat();
         float nextFloat(float min, float max);
     }
@@ -29,7 +29,7 @@ namespace tezcat.Framework.Math
         private const int factor = 16807;
 
         private uint m_Seed;
-        private static int DefaultSeed = "Tezcat".GetHashCode();
+        private static int DefaultSeed = "DefaultSeed".GetHashCode();
 
         public TezRandom()
         {
@@ -56,9 +56,9 @@ namespace tezcat.Framework.Math
             return (int)this.gen();
         }
 
-        public int nextInt(float min, float max)
+        public int nextInt(int min, int max)
         {
-            return (int)(min + (max - min) * this.nextFloat() + 0.5f);
+            return (int)(min + (max - min) * this.nextFloat());
         }
 
         public float nextFloat()

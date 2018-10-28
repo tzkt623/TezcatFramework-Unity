@@ -33,17 +33,20 @@ namespace tezcat.Framework.UI
             m_Input.onEndEdit.RemoveListener(this.set);
         }
 
-        protected override void refreshAfterInit()
+        protected override void onRefresh(RefreshPhase phase)
         {
-            m_PropertyName.refresh = RefreshPhase.System1;
+            switch (phase)
+            {
+                case RefreshPhase.OnInit:
+                    break;
+                case RefreshPhase.OnEnable:
+                    break;
+                default:
+                    break;
+            }
         }
 
         protected override void onHide()
-        {
-
-        }
-
-        protected override void onOpenAndRefresh()
         {
 
         }

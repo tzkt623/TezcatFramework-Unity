@@ -23,11 +23,6 @@ namespace tezcat.Framework.UI
             set { m_Label.text = value; }
         }
 
-        protected override void refreshAfterInit()
-        {
-            m_Label.refresh = RefreshPhase.System1;
-        }
-
         protected override void onRefresh(RefreshPhase phase)
         {
             switch (phase)
@@ -68,11 +63,6 @@ namespace tezcat.Framework.UI
         }
 
         protected override void unLinkEvent()
-        {
-
-        }
-
-        protected override void onOpenAndRefresh()
         {
 
         }

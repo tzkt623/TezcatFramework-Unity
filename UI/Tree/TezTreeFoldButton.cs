@@ -42,16 +42,6 @@ namespace tezcat.Framework.UI
 
         }
 
-        protected override void refreshAfterInit()
-        {
-
-        }
-
-        protected override void onOpenAndRefresh()
-        {
-
-        }
-
         public override void clear()
         {
             m_Node = null;

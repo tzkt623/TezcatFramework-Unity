@@ -77,17 +77,7 @@ namespace tezcat.Framework.UI
 
         }
 
-        protected override void onOpenAndRefresh()
-        {
-
-        }
-
         protected override void onHide()
-        {
-
-        }
-
-        protected override void refreshAfterInit()
         {
 
         }

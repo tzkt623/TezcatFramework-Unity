@@ -108,10 +108,10 @@ namespace tezcat.Framework.Core
                     this.GUID = giveID();
                 }
 
+                this.onInitNew();
                 this.m_RID = new TezRID(group, subgroup);
                 this.NID = string.Empty;
                 this.TAG = new TezTagSet();
-                this.onInitNew();
             }
             else
             {

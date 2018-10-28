@@ -166,11 +166,6 @@ namespace tezcat.Framework.UI
             this.data = null;
         }
 
-        protected override void refreshAfterInit()
-        {
-
-        }
-
         public void foldOrUnfold()
         {
             this.isOn = !this.isOn;
@@ -199,11 +194,6 @@ namespace tezcat.Framework.UI
             {
                 tree.selectNode(this);
             }
-        }
-
-        protected override void onOpenAndRefresh()
-        {
-
         }
 
         protected override void onHide()

@@ -16,11 +16,6 @@ namespace tezcat.Framework.UI
             m_Image = null;
         }
 
-        protected override void refreshAfterInit()
-        {
-
-        }
-
         public void bind(ITezItemWrapper wrapper)
         {
 
@@ -51,12 +46,12 @@ namespace tezcat.Framework.UI
 
         }
 
-        protected override void onOpenAndRefresh()
+        protected override void onHide()
         {
 
         }
 
-        protected override void onHide()
+        protected override void onRefresh(RefreshPhase phase)
         {
 
         }

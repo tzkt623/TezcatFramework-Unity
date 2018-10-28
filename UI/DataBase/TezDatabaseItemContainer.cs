@@ -163,11 +163,20 @@ namespace tezcat.Framework.UI
         }
 #endif
 
-        protected override void refreshAfterInit()
+        protected override void onRefresh(RefreshPhase phase)
         {
-            m_PageController.setPage(m_PageController.currentPage);
+            base.onRefresh(phase);
+            switch (phase)
+            {
+                case RefreshPhase.OnInit:
+                    m_PageController.setPage(m_PageController.currentPage);
+                    break;
+                case RefreshPhase.OnEnable:
+                    break;
+                default:
+                    break;
+            }
         }
-
 
 
         private void onPageSet(string page)

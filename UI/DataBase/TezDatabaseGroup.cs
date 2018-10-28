@@ -39,7 +39,22 @@ namespace tezcat.Framework.UI
             m_Tree.onSelectNode -= onSelectNode;
         }
 
-        protected override void refreshAfterInit()
+        protected override void onRefresh(RefreshPhase phase)
+        {
+            base.onRefresh(phase);
+            switch (phase)
+            {
+                case RefreshPhase.OnInit:
+                    this.refreshData();
+                    break;
+                case RefreshPhase.OnEnable:
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        private void refreshData()
         {
             if (m_Vernier.gameObject.activeSelf)
             {
@@ -105,11 +120,6 @@ namespace tezcat.Framework.UI
             }
 
             m_Container.refresh = RefreshPhase.System1;
-        }
-
-        protected override void onOpenAndRefresh()
-        {
-
         }
 
         protected override void onHide()

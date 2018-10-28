@@ -39,11 +39,6 @@ namespace tezcat.Framework.UI
 
         }
 
-        protected override void onOpenAndRefresh()
-        {
-
-        }
-
         protected override void onHide()
         {
 
@@ -62,11 +57,6 @@ namespace tezcat.Framework.UI
             m_CloseButton.onClick -= onCloseButtonClick;
 
             base.clear();
-        }
-
-        protected override void refreshAfterInit()
-        {
-
         }
 
         private void onCloseButtonClick(TezButton button, PointerEventData eventData)

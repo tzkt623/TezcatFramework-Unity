@@ -20,8 +20,6 @@ namespace tezcat.Framework.UI
 
         public static TezLayer overlay { get; protected set; } = null;
 
-        public static TezLayer tipLayer { get; protected set; } = null;
-
         private static void register(TezLayer layer)
         {
             if (layer.ID == -1)
@@ -69,17 +67,7 @@ namespace tezcat.Framework.UI
 
         }
 
-        protected override void refreshAfterInit()
-        {
-
-        }
-
         public override void clear()
-        {
-
-        }
-
-        protected override void onOpenAndRefresh()
         {
 
         }

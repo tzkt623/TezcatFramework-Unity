@@ -28,10 +28,9 @@ namespace tezcat.Framework.UI
             m_PorpertyValue = null;
         }
 
-        protected override void refreshAfterInit()
+        protected override void onRefresh(RefreshPhase phase)
         {
-            m_PropertyName.refresh = RefreshPhase.System1;
-            m_PorpertyValue.refresh = RefreshPhase.System1;
+
         }
 
         protected override void preInit()
@@ -50,11 +49,6 @@ namespace tezcat.Framework.UI
         }
 
         protected override void unLinkEvent()
-        {
-
-        }
-
-        protected override void onOpenAndRefresh()
         {
 
         }

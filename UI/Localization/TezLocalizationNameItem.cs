@@ -43,11 +43,6 @@ namespace tezcat.Framework.UI
 
         }
 
-        protected override void onOpenAndRefresh()
-        {
-
-        }
-
         protected override void onHide()
         {
 
@@ -66,7 +61,7 @@ namespace tezcat.Framework.UI
             this.listArea = null;
         }
 
-        protected override void refreshAfterInit()
+        private void refreshData()
         {
             string value = null;
             if (TezTranslator.translateName(m_KeyName.text, out value))
@@ -77,6 +72,11 @@ namespace tezcat.Framework.UI
             {
                 m_LocalizationName.text = m_KeyName.text;
             }
+        }
+
+        protected override void onRefresh(RefreshPhase phase)
+        {
+
         }
 
         private void onEditClick(TezButton button, PointerEventData eventData)

@@ -48,17 +48,17 @@ namespace tezcat.Framework.UI
 
         }
 
-        protected override void onOpenAndRefresh()
-        {
-
-        }
-
         protected override void onHide()
         {
 
         }
 
         public override void reset()
+        {
+
+        }
+
+        protected override void onRefresh(RefreshPhase phase)
         {
 
         }
@@ -78,11 +78,6 @@ namespace tezcat.Framework.UI
         private void onEditClick(TezButton button, PointerEventData eventData)
         {
             listArea.editItem(m_KeyName.text);
-        }
-
-        protected override void refreshAfterInit()
-        {
-
         }
 
         void IPointerEnterHandler.OnPointerEnter(PointerEventData eventData)

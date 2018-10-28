@@ -45,11 +45,6 @@ namespace tezcat.Framework.UI
 
         }
 
-        protected override void onOpenAndRefresh()
-        {
-
-        }
-
         protected override void onHide()
         {
 
@@ -108,7 +103,7 @@ namespace tezcat.Framework.UI
             this.close();
         }
 
-        protected override void refreshAfterInit()
+        private void refreshData()
         {
             string value;
             if (TezTranslator.translateDescription(m_KeyInput.text, out value))
@@ -118,6 +113,20 @@ namespace tezcat.Framework.UI
             else
             {
                 m_DescriptionInput.text = m_KeyInput.text;
+            }
+        }
+
+        protected override void onRefresh(RefreshPhase phase)
+        {
+            switch (phase)
+            {
+                case RefreshPhase.OnInit:
+                    this.refreshData();
+                    break;
+                case RefreshPhase.OnEnable:
+                    break;
+                default:
+                    break;
             }
         }
     }
