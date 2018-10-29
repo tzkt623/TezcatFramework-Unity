@@ -3,7 +3,7 @@ using UnityEngine.UI;
 
 namespace tezcat.Framework.UI
 {
-    public class TezUILineRender : Graphic
+    public class TezUILineRender : UnityEngine.UI.Graphic
     {
         [SerializeField]
         Vector2[] m_Positions;
