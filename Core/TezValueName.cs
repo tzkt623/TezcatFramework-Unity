@@ -46,13 +46,15 @@ namespace tezcat.Framework.Core
 
         #region 注册
         static Dictionary<string, TezValueName> m_NameDic = new Dictionary<string, TezValueName>();
+        static List<TezValueName> m_NameList = new List<TezValueName>();
         public static TezValueName register(string name)
         {
             TezValueName property;
             if (!m_NameDic.TryGetValue(name, out property))
             {
-                property = new TezValueName(m_NameDic.Count, name);
+                property = new TezValueName(m_NameList.Count, name);
                 m_NameDic.Add(name, property);
+                m_NameList.Add(property);
             }
 
             return property;
@@ -63,6 +65,11 @@ namespace tezcat.Framework.Core
             TezValueName pn;
             m_NameDic.TryGetValue(name, out pn);
             return pn;
+        }
+
+        public static TezValueName get(int id)
+        {
+            return m_NameList[id];
         }
 
         public static void foreachName(TezEventExtension.Action<TezValueName> action)

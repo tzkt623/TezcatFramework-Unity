@@ -34,6 +34,7 @@ namespace tezcat.Framework.Core
     {
         List<TezValueWrapper> m_List = new List<TezValueWrapper>();
 
+
         int ITezPropertyCollection.count
         {
             get { return m_List.Count; }

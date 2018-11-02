@@ -28,8 +28,16 @@ namespace tezcat.Framework.Core
         GetterSetter,
     }
 
+    public interface ITezValueWrapper
+    {
+        ITezValueName valueName { get; }
+        string name { get; }
+        int ID { get; }
+    }
+
     public abstract class TezValueWrapper
-        : IComparable<TezValueWrapper>
+        : ITezValueWrapper
+        , IComparable<TezValueWrapper>
         , IEquatable<TezValueWrapper>
         , ITezBinarySearchItem
     {
@@ -281,11 +289,27 @@ namespace tezcat.Framework.Core
     #endregion
 
     #region Modifier
-    public abstract class TezModifiableValue<TValue> : TezValueWrapper<TValue>
+    public interface ITezModifiableValue : ITezValueWrapper
     {
+        void addModifier(ITezValueModifier modifier);
+        bool removeModifier(ITezValueModifier modifier);
+        bool removeAllModifierFrom(object source);
+    }
+
+    public abstract class TezModifiableValue<TValue>
+        : TezValueWrapper<TValue>
+        , ITezModifiableValue
+    {
+        public enum RecordMode
+        {
+            Normal,
+            Combine
+        }
+
+        RecordMode m_RecordMode = RecordMode.Normal;
         bool m_Dirty = false;
         TValue m_CurrentValue;
-        protected List<TezValueModifier> m_Modifiers = new List<TezValueModifier>();
+        protected List<ITezValueModifier> m_Modifiers = new List<ITezValueModifier>();
 
         public sealed override TezValueSubType valueSubType => TezValueSubType.WithModifier;
 
@@ -303,9 +327,9 @@ namespace tezcat.Framework.Core
             }
         }
 
-        public TezModifiableValue(ITezValueName name) : base(name)
+        public TezModifiableValue(ITezValueName name, RecordMode record_mode = RecordMode.Normal) : base(name)
         {
-
+            m_RecordMode = record_mode;
         }
 
         public override void clear()
@@ -315,18 +339,65 @@ namespace tezcat.Framework.Core
             m_Modifiers = null;
         }
 
-        public void addModifier(TezValueModifier modifier)
+        public void addModifier(ITezValueModifier modifier)
         {
-            m_Modifiers.Add(modifier);
+            switch (m_RecordMode)
+            {
+                case RecordMode.Normal:
+                    m_Modifiers.Add(modifier);
+                    break;
+                case RecordMode.Combine:
+                    var result = (ITezValueModifierCombiner)m_Modifiers.Find((ITezValueModifier combine_modifier) =>
+                    {
+                        return combine_modifier.sourceObject == null
+                            && combine_modifier.modifiedType == modifier.modifiedType
+                            && combine_modifier.modifiedOrder == modifier.modifiedOrder;
+                    });
+
+                    if (result == null)
+                    {
+                        result = modifier.createCombiner();
+                        m_Modifiers.Add(result);
+                    }
+
+                    result.combine(modifier);
+                    break;
+            }
+
             m_Dirty = true;
         }
 
-        public bool removeModifier(TezValueModifier modifier)
+        public bool removeModifier(ITezValueModifier modifier)
         {
-            if (m_Modifiers.Remove(modifier))
+            switch (m_RecordMode)
             {
-                m_Dirty = true;
-                return true;
+                case RecordMode.Normal:
+                    if (m_Modifiers.Remove(modifier))
+                    {
+                        m_Dirty = true;
+                        return true;
+                    }
+
+                    return false;
+                case RecordMode.Combine:
+                    var combiner = (ITezValueModifierCombiner)m_Modifiers.Find((ITezValueModifier modifier_combiner) =>
+                    {
+                        return modifier_combiner.sourceObject == null
+                            && modifier_combiner.modifiedType == modifier.modifiedType
+                            && modifier_combiner.modifiedOrder == modifier.modifiedOrder;
+                    });
+
+                    if (combiner != null && combiner.separate(modifier))
+                    {
+                        if(combiner.empty)
+                        {
+                            m_Modifiers.Remove(combiner);
+                        }
+                        m_Dirty = true;
+                        return true;
+                    }
+
+                    return false;
             }
 
             return false;
@@ -335,13 +406,33 @@ namespace tezcat.Framework.Core
         public bool removeAllModifierFrom(object source)
         {
             bool removed = false;
-            for (int i = m_Modifiers.Count - 1; i >= 0; i--)
+
+            switch (m_RecordMode)
             {
-                if (m_Modifiers[i].sourceObject == source)
-                {
-                    removed = true;
-                    m_Modifiers.RemoveAt(i);
-                }
+                case RecordMode.Normal:
+                    for (int i = m_Modifiers.Count - 1; i >= 0; i--)
+                    {
+                        if (m_Modifiers[i].sourceObject == source)
+                        {
+                            removed = true;
+                            m_Modifiers.RemoveAt(i);
+                        }
+                    }
+                    break;
+                case RecordMode.Combine:
+                    for (int i = m_Modifiers.Count - 1; i >= 0; i--)
+                    {
+                        var combiner = (ITezValueModifierCombiner)m_Modifiers[i];
+                        if (combiner.separate(source))
+                        {
+                            removed = true;
+                            if(combiner.empty)
+                            {
+                                m_Modifiers.RemoveAt(i);
+                            }
+                        }
+                    }
+                    break;
             }
 
             m_Dirty = removed;
@@ -353,7 +444,7 @@ namespace tezcat.Framework.Core
             m_Modifiers.Sort(this.sortModifiers);
         }
 
-        protected virtual int sortModifiers(TezValueModifier a, TezValueModifier b)
+        protected virtual int sortModifiers(ITezValueModifier a, ITezValueModifier b)
         {
             if (a.order < b.order)
             {
