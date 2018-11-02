@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using tezcat.Framework.Core;
 using tezcat.Framework.Extension;
 using UnityEngine.Assertions;
@@ -101,6 +102,11 @@ namespace tezcat.Framework.DataBase
                 return m_List[sub_id].get(item_id);
             }
 
+            public TezDataBaseGameItem get(int sub_id, string item_name)
+            {
+                return m_List[sub_id].get(item_name);
+            }
+
             public void close()
             {
                 foreach (var item in m_List)
@@ -132,6 +138,8 @@ namespace tezcat.Framework.DataBase
             {
                 return m_List.Count;
             }
+
+
         }
 
         Dictionary<string, Group> m_GroupDic = new Dictionary<string, Group>();
@@ -166,6 +174,11 @@ namespace tezcat.Framework.DataBase
         public T get<T>(int group_id, int sub_id, int item_id) where T : TezDataBaseGameItem
         {
             return (T)this.get(group_id, sub_id, item_id);
+        }
+
+        public T get<T>(int group_id, int sub_id, string item_name) where T : TezDataBaseGameItem
+        {
+            return (T)m_GroupList[group_id].get(sub_id, item_name);
         }
 
         public TezDataBaseGameItem get(int group_id, int sub_id, int item_id)

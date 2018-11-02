@@ -7,8 +7,16 @@ namespace tezcat.Framework.DataBase
 {
     public class TezTextureDatabase : ITezService
     {
-        static List<TezSprite> m_SpriteList = new List<TezSprite>();
-        static Dictionary<string, TezSprite> m_SpriteDic = new Dictionary<string, TezSprite>();
+        List<TezSprite> m_SpriteList = new List<TezSprite>();
+        Dictionary<string, TezSprite> m_SpriteDic = new Dictionary<string, TezSprite>();
+
+        public void add(Sprite[] array)
+        {
+            for (int i = 0; i < array.Length; i++)
+            {
+                this.add(array[i]);
+            }
+        }
 
         public void add(Sprite sprite)
         {

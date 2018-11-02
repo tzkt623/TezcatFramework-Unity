@@ -287,6 +287,17 @@ namespace tezcat.Framework.Core
             return this.createWindow(prefab, name, this.giveID(), layer);
         }
 
+        public Window createWindow<Window>(TezLayer layer) where Window : TezWindow, ITezPrefab
+        {
+            int id = -1;
+            if (m_WindowDic.TryGetValue(name, out id))
+            {
+                return (Window)m_WindowList[id];
+            }
+
+            return this.createWindow(TezService.get<TezPrefabDatabase>().get<Window>(), typeof(Window).Name, this.giveID(), layer);
+        }
+
         public Window createWindow<Window>(string name, TezLayer layer) where Window : TezWindow, ITezPrefab
         {
             int id = -1;

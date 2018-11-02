@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using tezcat.Framework.Extension;
-using tezcat.Framework.Event;
 using tezcat.Framework.String;
 using tezcat.Framework.TypeTraits;
 
@@ -25,7 +24,8 @@ namespace tezcat.Framework.Core
         Normal,
         WithMinMax,
         WithBasic,
-        GetterSetter
+        WithModifier,
+        GetterSetter,
     }
 
     public abstract class TezValueWrapper
@@ -81,7 +81,7 @@ namespace tezcat.Framework.Core
             get { return TezValueSubType.Normal; }
         }
 
-        public ITezValueName valueName { get; } = null;
+        public virtual ITezValueName valueName { get; } = null;
 
         public string name
         {
@@ -149,7 +149,6 @@ namespace tezcat.Framework.Core
         }
     }
 
-
     public class TezValueWrapper<T> : TezValueWrapper
     {
         public TezValueWrapper(ITezValueName name) : base(name)
@@ -162,7 +161,7 @@ namespace tezcat.Framework.Core
             get { return typeof(T); }
         }
 
-        public sealed override TezValueType valueType
+        public override TezValueType valueType
         {
             get { return WrapperID<T>.valueType; }
         }
@@ -278,6 +277,106 @@ namespace tezcat.Framework.Core
         {
 
         }
+    }
+    #endregion
+
+    #region Modifier
+    public abstract class TezModifiableValue<TValue> : TezValueWrapper<TValue>
+    {
+        bool m_Dirty = false;
+        TValue m_CurrentValue;
+        protected List<TezValueModifier> m_Modifiers = new List<TezValueModifier>();
+
+        public sealed override TezValueSubType valueSubType => TezValueSubType.WithModifier;
+
+        public TValue modifiedValue
+        {
+            get
+            {
+                this.refresh();
+                return m_CurrentValue;
+            }
+            set
+            {
+                m_Dirty = true;
+                this.value = value;
+            }
+        }
+
+        public TezModifiableValue(ITezValueName name) : base(name)
+        {
+
+        }
+
+        public override void clear()
+        {
+            base.clear();
+            m_Modifiers.Clear();
+            m_Modifiers = null;
+        }
+
+        public void addModifier(TezValueModifier modifier)
+        {
+            m_Modifiers.Add(modifier);
+            m_Dirty = true;
+        }
+
+        public bool removeModifier(TezValueModifier modifier)
+        {
+            if (m_Modifiers.Remove(modifier))
+            {
+                m_Dirty = true;
+                return true;
+            }
+
+            return false;
+        }
+
+        public bool removeAllModifierFrom(object source)
+        {
+            bool removed = false;
+            for (int i = m_Modifiers.Count - 1; i >= 0; i--)
+            {
+                if (m_Modifiers[i].sourceObject == source)
+                {
+                    removed = true;
+                    m_Modifiers.RemoveAt(i);
+                }
+            }
+
+            m_Dirty = removed;
+            return removed;
+        }
+
+        public void sort()
+        {
+            m_Modifiers.Sort(this.sortModifiers);
+        }
+
+        protected virtual int sortModifiers(TezValueModifier a, TezValueModifier b)
+        {
+            if (a.order < b.order)
+            {
+                return -1;
+            }
+            else if (a.order > b.order)
+            {
+                return 1;
+            }
+
+            return 0;
+        }
+
+        public void refresh()
+        {
+            if (m_Dirty)
+            {
+                m_Dirty = false;
+                m_CurrentValue = this.recalculate();
+            }
+        }
+
+        protected abstract TValue recalculate();
     }
     #endregion
 }

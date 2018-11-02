@@ -37,6 +37,31 @@ namespace tezcat.Framework.GraphicSystem
             m_Pool[object_id] = null;
         }
 
+        private void add(TezRenderCommand cmd)
+        {
+            while (cmd.objectID >= m_Pool.Count)
+            {
+                m_Pool.Add(null);
+            }
+
+            m_Pool[cmd.objectID] = cmd;
+        }
+
+        public void close()
+        {
+            foreach (var item in m_Pool)
+            {
+                item?.close();
+            }
+
+            m_Pool.Clear();
+            m_Pool = null;
+
+            Object.Destroy(m_Root.gameObject);
+        }
+
+
+        #region Draw Function
         public void drawCircle(Vector3 center, float radius, int fragment, Color color, Transform parent, Material material)
         {
             float per = 360.0f / fragment;
@@ -104,29 +129,7 @@ namespace tezcat.Framework.GraphicSystem
         {
             this.drawLine(from, to, color, m_Root, new Material(Shader.Find("Particles/Additive")));
         }
-
-        private void add(TezRenderCommand cmd)
-        {
-            while (cmd.objectID >= m_Pool.Count)
-            {
-                m_Pool.Add(null);
-            }
-
-            m_Pool[cmd.objectID] = cmd;
-        }
-
-        public void close()
-        {
-            foreach (var item in m_Pool)
-            {
-                item?.close();
-            }
-
-            m_Pool.Clear();
-            m_Pool = null;
-
-            Object.Destroy(m_Root.gameObject);
-        }
+        #endregion
     }
 }
 
