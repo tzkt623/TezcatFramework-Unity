@@ -28,7 +28,7 @@ namespace tezcat.Framework.Core
         GetterSetter,
     }
 
-    public interface ITezValueWrapper
+    public interface ITezValueWrapper : ITezCloseable
     {
         ITezValueName valueName { get; }
         string name { get; }
@@ -126,7 +126,7 @@ namespace tezcat.Framework.Core
             return this.valueName.GetHashCode();
         }
 
-        public virtual void clear()
+        public virtual void close()
         {
 
         }
@@ -181,10 +181,10 @@ namespace tezcat.Framework.Core
             this.value = wrapper.value;
         }
 
-        public override void clear()
+        public override void close()
         {
             this.value = default(T);
-            base.clear();
+            base.close();
         }
 
         public static implicit operator T(TezValueWrapper<T> property)
@@ -291,183 +291,122 @@ namespace tezcat.Framework.Core
     #region Modifier
     public interface ITezModifiableValue : ITezValueWrapper
     {
-        void addModifier(ITezValueModifier modifier);
-        bool removeModifier(ITezValueModifier modifier);
-        bool removeAllModifierFrom(object source);
+        ITezRealValueModifierCollection collection { get; }
+        void refresh();
     }
 
-    public abstract class TezModifiableValue<TValue>
-        : TezValueWrapper<TValue>
+    public class TezModifiableIntValue
+        : TezValueWrapper<int>
         , ITezModifiableValue
     {
-        public enum RecordMode
-        {
-            Normal,
-            Combine
-        }
-
-        RecordMode m_RecordMode = RecordMode.Normal;
-        bool m_Dirty = false;
-        TValue m_CurrentValue;
-        protected List<ITezValueModifier> m_Modifiers = new List<ITezValueModifier>();
-
         public sealed override TezValueSubType valueSubType => TezValueSubType.WithModifier;
 
-        public TValue modifiedValue
+        public ITezRealValueModifierCollection collection { get; private set; } = null;
+        int m_CurrentValue;
+
+        public int modifiedValue
         {
             get
             {
                 this.refresh();
                 return m_CurrentValue;
             }
+        }
+
+        public override int value
+        {
+            get
+            {
+                return base.value;
+            }
+
             set
             {
-                m_Dirty = true;
-                this.value = value;
+                collection?.setDirty();
+                base.value = value;
             }
         }
 
-        public TezModifiableValue(ITezValueName name, RecordMode record_mode = RecordMode.Normal) : base(name)
+        public TezModifiableIntValue(ITezValueName name, ITezRealValueModifierCollection collection) : base(name)
         {
-            m_RecordMode = record_mode;
+            this.collection = collection;
         }
 
-        public override void clear()
+        public override void close()
         {
-            base.clear();
-            m_Modifiers.Clear();
-            m_Modifiers = null;
-        }
-
-        public void addModifier(ITezValueModifier modifier)
-        {
-            switch (m_RecordMode)
-            {
-                case RecordMode.Normal:
-                    m_Modifiers.Add(modifier);
-                    break;
-                case RecordMode.Combine:
-                    var result = (ITezValueModifierCombiner)m_Modifiers.Find((ITezValueModifier combine_modifier) =>
-                    {
-                        return combine_modifier.sourceObject == null
-                            && combine_modifier.modifiedType == modifier.modifiedType
-                            && combine_modifier.modifiedOrder == modifier.modifiedOrder;
-                    });
-
-                    if (result == null)
-                    {
-                        result = modifier.createCombiner();
-                        m_Modifiers.Add(result);
-                    }
-
-                    result.combine(modifier);
-                    break;
-            }
-
-            m_Dirty = true;
-        }
-
-        public bool removeModifier(ITezValueModifier modifier)
-        {
-            switch (m_RecordMode)
-            {
-                case RecordMode.Normal:
-                    if (m_Modifiers.Remove(modifier))
-                    {
-                        m_Dirty = true;
-                        return true;
-                    }
-
-                    return false;
-                case RecordMode.Combine:
-                    var combiner = (ITezValueModifierCombiner)m_Modifiers.Find((ITezValueModifier modifier_combiner) =>
-                    {
-                        return modifier_combiner.sourceObject == null
-                            && modifier_combiner.modifiedType == modifier.modifiedType
-                            && modifier_combiner.modifiedOrder == modifier.modifiedOrder;
-                    });
-
-                    if (combiner != null && combiner.separate(modifier))
-                    {
-                        if(combiner.empty)
-                        {
-                            m_Modifiers.Remove(combiner);
-                        }
-                        m_Dirty = true;
-                        return true;
-                    }
-
-                    return false;
-            }
-
-            return false;
-        }
-
-        public bool removeAllModifierFrom(object source)
-        {
-            bool removed = false;
-
-            switch (m_RecordMode)
-            {
-                case RecordMode.Normal:
-                    for (int i = m_Modifiers.Count - 1; i >= 0; i--)
-                    {
-                        if (m_Modifiers[i].sourceObject == source)
-                        {
-                            removed = true;
-                            m_Modifiers.RemoveAt(i);
-                        }
-                    }
-                    break;
-                case RecordMode.Combine:
-                    for (int i = m_Modifiers.Count - 1; i >= 0; i--)
-                    {
-                        var combiner = (ITezValueModifierCombiner)m_Modifiers[i];
-                        if (combiner.separate(source))
-                        {
-                            removed = true;
-                            if(combiner.empty)
-                            {
-                                m_Modifiers.RemoveAt(i);
-                            }
-                        }
-                    }
-                    break;
-            }
-
-            m_Dirty = removed;
-            return removed;
-        }
-
-        public void sort()
-        {
-            m_Modifiers.Sort(this.sortModifiers);
-        }
-
-        protected virtual int sortModifiers(ITezValueModifier a, ITezValueModifier b)
-        {
-            if (a.order < b.order)
-            {
-                return -1;
-            }
-            else if (a.order > b.order)
-            {
-                return 1;
-            }
-
-            return 0;
+            base.close();
+            collection.close();
+            collection = null;
         }
 
         public void refresh()
         {
-            if (m_Dirty)
+            if(this.collection != null)
             {
-                m_Dirty = false;
-                m_CurrentValue = this.recalculate();
+                m_CurrentValue = (int)this.collection.refresh(this.value);
+            }
+            else
+            {
+                m_CurrentValue = this.value;
+            }
+        }
+    }
+
+    public class TezModifiableFloatValue
+        : TezValueWrapper<float>
+        , ITezModifiableValue
+    {
+        public sealed override TezValueSubType valueSubType => TezValueSubType.WithModifier;
+
+        public ITezRealValueModifierCollection collection { get; private set; } = null;
+        float m_CurrentValue;
+
+        public float modifiedValue
+        {
+            get
+            {
+                this.refresh();
+                return m_CurrentValue;
             }
         }
 
-        protected abstract TValue recalculate();
+        public override float value
+        {
+            get
+            {
+                return base.value;
+            }
+
+            set
+            {
+                collection?.setDirty();
+                base.value = value;
+            }
+        }
+
+        public TezModifiableFloatValue(ITezValueName name, ITezRealValueModifierCollection collection) : base(name)
+        {
+            this.collection = collection;
+        }
+
+        public override void close()
+        {
+            base.close();
+            collection.close();
+            collection = null;
+        }
+
+        public void refresh()
+        {
+            if (this.collection != null)
+            {
+                m_CurrentValue = this.collection.refresh(this.value);
+            }
+            else
+            {
+                m_CurrentValue = this.value;
+            }
+        }
     }
     #endregion
 }
