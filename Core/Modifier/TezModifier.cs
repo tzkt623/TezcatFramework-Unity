@@ -38,7 +38,7 @@ namespace tezcat.Framework.Core
             this.modifierOrder = modifier_order;
             this.sourceObject = source_object;
             this.modifierType = modifier_type;
-            this.valueName = valueName;
+            this.valueName = value_name;
         }
 
         public abstract void close();

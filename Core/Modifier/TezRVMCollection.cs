@@ -1,30 +1,20 @@
 using System.Collections.Generic;
+using tezcat.Framework.Extension;
 
 namespace tezcat.Framework.Core
 {
-    public interface ITezRealValueModifierCollection : ITezCloseable
-    {
-        float refresh(float basic_value);
-        void setDirty();
-        void addModifier(ITezRealValueModifier modifier);
-        bool removeModifier(ITezRealValueModifier modifier);
-        bool removeAllModifierFrom(object source);
-    }
-
-    public abstract class TezRealValueModifierCollection : ITezRealValueModifierCollection
+    public class TezRVMList
     {
         public enum RecordMode
         {
             Normal,
             Combine
         }
-
-        bool m_Dirty = false;
-        float m_CurrentValue = 0;
         RecordMode m_RecordMode = RecordMode.Normal;
-        protected List<ITezRealValueModifier> m_Modifiers = new List<ITezRealValueModifier>();
+        List<ITezRealValueModifier> m_Modifiers = new List<ITezRealValueModifier>();
+        public bool dirty { get; private set; } = false;
 
-        public TezRealValueModifierCollection(RecordMode record_mode = RecordMode.Combine)
+        public TezRVMList(RecordMode record_mode)
         {
             m_RecordMode = record_mode;
         }
@@ -35,12 +25,21 @@ namespace tezcat.Framework.Core
             m_Modifiers = null;
         }
 
-        public void setDirty()
+        public void foreachModifier(TezEventExtension.Action<int, ITezRealValueModifier> function)
         {
-            m_Dirty = true;
+            if (this.dirty)
+            {
+                this.dirty = false;
+                m_Modifiers.Sort();
+            }
+
+            for (int i = 0; i < m_Modifiers.Count; i++)
+            {
+                function(i, m_Modifiers[i]);
+            }
         }
 
-        public void addModifier(ITezRealValueModifier modifier)
+        public void add(ITezRealValueModifier modifier)
         {
             switch (m_RecordMode)
             {
@@ -65,19 +64,18 @@ namespace tezcat.Framework.Core
                     break;
             }
 
-            m_Dirty = true;
+            this.dirty = true;
         }
 
-        public bool removeModifier(ITezRealValueModifier modifier)
+        public bool remove(ITezRealValueModifier modifier)
         {
-            bool result = false;
+            bool removed = false;
             switch (m_RecordMode)
             {
                 case RecordMode.Normal:
                     if (m_Modifiers.Remove(modifier))
                     {
-                        m_Dirty = true;
-                        result = true;
+                        removed = true;
                     }
                     break;
                 case RecordMode.Combine:
@@ -93,8 +91,8 @@ namespace tezcat.Framework.Core
                         var combiner = (ITezRealValueModifierCombiner)m_Modifiers[index];
                         if (combiner.separate(modifier))
                         {
-                            m_Dirty = true;
-                            result = true;
+                            removed = true;
+
                             if (combiner.empty)
                             {
                                 m_Modifiers.RemoveAt(index);
@@ -104,10 +102,11 @@ namespace tezcat.Framework.Core
                     break;
             }
 
-            return result;
+            this.dirty = removed;
+            return removed;
         }
 
-        public bool removeAllModifierFrom(object source)
+        public bool removeAll(object source)
         {
             bool removed = false;
 
@@ -139,21 +138,78 @@ namespace tezcat.Framework.Core
                     break;
             }
 
-            m_Dirty = removed;
+            this.dirty = removed;
             return removed;
         }
 
         public void sort()
         {
-            m_Modifiers.Sort();
+            if(this.dirty)
+            {
+                this.dirty = false;
+                m_Modifiers.Sort();
+            }
+        }
+
+        public void clear()
+        {
+            m_Modifiers.Clear();
+        }
+    }
+
+    public interface ITezRVMCollection : ITezCloseable
+    {
+        bool dirty { get; set; }
+        float refresh(float basic_value);
+
+        void addModifier(ITezRealValueModifier modifier);
+        bool removeModifier(ITezRealValueModifier modifier);
+        bool removeAllModifierFrom(object source);
+    }
+
+    public abstract class TezRVMCollection : ITezRVMCollection
+    {
+        bool m_Dirty = false;
+        float m_CurrentValue = float.MinValue;
+        protected TezRVMList m_Modifiers = null;
+
+        public virtual bool dirty
+        {
+            get
+            {
+                return m_Dirty || m_Modifiers.dirty;
+            }
+            set
+            {
+                m_Dirty = value;
+            }
+        }
+
+        public TezRVMCollection(TezRVMList.RecordMode record_mode = TezRVMList.RecordMode.Normal)
+        {
+            m_Modifiers = new TezRVMList(record_mode);
+        }
+
+        public void addModifier(ITezRealValueModifier modifier)
+        {
+            m_Modifiers.add(modifier);
+        }
+
+        public bool removeModifier(ITezRealValueModifier modifier)
+        {
+            return m_Modifiers.remove(modifier);
+        }
+
+        public bool removeAllModifierFrom(object source)
+        {
+            return m_Modifiers.removeAll(source);
         }
 
         public float refresh(float basic_value)
         {
-            if (m_Dirty)
+            if (this.dirty)
             {
-                m_Dirty = false;
-                m_Modifiers.Sort(this.sortModifiers);
+                this.dirty = false;
                 m_CurrentValue = this.recalculate(basic_value);
             }
 
@@ -172,6 +228,12 @@ namespace tezcat.Framework.Core
             }
 
             return 0;
+        }
+
+        public virtual void close()
+        {
+            m_Modifiers.close();
+            m_Modifiers = null;
         }
 
         protected abstract float recalculate(float basic_value);

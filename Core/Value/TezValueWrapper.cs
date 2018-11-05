@@ -291,8 +291,7 @@ namespace tezcat.Framework.Core
     #region Modifier
     public interface ITezModifiableValue : ITezValueWrapper
     {
-        ITezRealValueModifierCollection collection { get; }
-        void refresh();
+        ITezRVMCollection collection { get; }
     }
 
     public class TezModifiableIntValue
@@ -301,15 +300,13 @@ namespace tezcat.Framework.Core
     {
         public sealed override TezValueSubType valueSubType => TezValueSubType.WithModifier;
 
-        public ITezRealValueModifierCollection collection { get; private set; } = null;
-        int m_CurrentValue;
+        public ITezRVMCollection collection { get; protected set; } = null;
 
         public int modifiedValue
         {
             get
             {
-                this.refresh();
-                return m_CurrentValue;
+                return (int)this.collection.refresh(this.value);
             }
         }
 
@@ -322,33 +319,21 @@ namespace tezcat.Framework.Core
 
             set
             {
-                collection?.setDirty();
                 base.value = value;
+                this.collection.dirty = true;
             }
         }
 
-        public TezModifiableIntValue(ITezValueName name, ITezRealValueModifierCollection collection) : base(name)
+        public TezModifiableIntValue(ITezValueName name) : base(name)
         {
-            this.collection = collection;
+
         }
 
         public override void close()
         {
             base.close();
-            collection.close();
-            collection = null;
-        }
-
-        public void refresh()
-        {
-            if(this.collection != null)
-            {
-                m_CurrentValue = (int)this.collection.refresh(this.value);
-            }
-            else
-            {
-                m_CurrentValue = this.value;
-            }
+            this.collection.close();
+            this.collection = null;
         }
     }
 
@@ -358,15 +343,13 @@ namespace tezcat.Framework.Core
     {
         public sealed override TezValueSubType valueSubType => TezValueSubType.WithModifier;
 
-        public ITezRealValueModifierCollection collection { get; private set; } = null;
-        float m_CurrentValue;
+        public ITezRVMCollection collection { get; protected set; } = null;
 
         public float modifiedValue
         {
             get
             {
-                this.refresh();
-                return m_CurrentValue;
+                return this.collection.refresh(this.value);
             }
         }
 
@@ -379,33 +362,21 @@ namespace tezcat.Framework.Core
 
             set
             {
-                collection?.setDirty();
                 base.value = value;
+                this.collection.dirty = true;
             }
         }
 
-        public TezModifiableFloatValue(ITezValueName name, ITezRealValueModifierCollection collection) : base(name)
+        public TezModifiableFloatValue(ITezValueName name) : base(name)
         {
-            this.collection = collection;
+
         }
 
         public override void close()
         {
             base.close();
-            collection.close();
-            collection = null;
-        }
-
-        public void refresh()
-        {
-            if (this.collection != null)
-            {
-                m_CurrentValue = this.collection.refresh(this.value);
-            }
-            else
-            {
-                m_CurrentValue = this.value;
-            }
+            this.collection.close();
+            this.collection = null;
         }
     }
     #endregion

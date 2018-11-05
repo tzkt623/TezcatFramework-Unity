@@ -11,7 +11,7 @@
         : TezModifier
         , ITezRealValueModifier
     {
-        public float value { get; protected set; }
+        public virtual float value { get; protected set; }
 
         public TezRealValueModifier(float value, ITezValueName value_name, ITezModifierOrder modifier_order, object source_object)
             : base(value_name, modifier_order, TezModifierType.Value, source_object)
