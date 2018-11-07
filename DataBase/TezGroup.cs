@@ -12,9 +12,9 @@ namespace tezcat.Framework.DataBase
 
     }
 
-    public interface ITezSubGroup
+    public interface ITezSubgroup
         : ITezEnumeration
-        , IEquatable<ITezSubGroup>
+        , IEquatable<ITezSubgroup>
     {
         TezDataBaseGameItem create();
     }
@@ -24,7 +24,7 @@ namespace tezcat.Framework.DataBase
         public class Pair
         {
             public ITezGroup group;
-            public List<ITezSubGroup> subgroupList = new List<ITezSubGroup>();
+            public List<ITezSubgroup> subgroupList = new List<ITezSubgroup>();
         }
 
         static Dictionary<string, int> m_GroupDic = new Dictionary<string, int>();
@@ -38,10 +38,10 @@ namespace tezcat.Framework.DataBase
             }
 
             m_GroupList[group.toID].group = group;
-            m_GroupDic[group.NID] = group.toID;
+            m_GroupDic[group.toName] = group.toID;
         }
 
-        public static void registerSubGroup(ITezGroup group, ITezSubGroup subgroup)
+        public static void registerSubGroup(ITezGroup group, ITezSubgroup subgroup)
         {
             var list = m_GroupList[group.toID].subgroupList;
             while (list.Count <= subgroup.toID)
@@ -80,15 +80,15 @@ namespace tezcat.Framework.DataBase
         }
     }
 
-    public abstract class TezSubGroup<TEnum, TValue>
+    public abstract class TezSubgroup<TEnum, TValue>
         : TezEnumeration<TEnum, TValue>
-        , ITezSubGroup
-        where TEnum : TezSubGroup<TEnum, TValue>
+        , ITezSubgroup
+        where TEnum : TezSubgroup<TEnum, TValue>
         where TValue : struct, IComparable
     {
         TezEventExtension.Function<TezDataBaseGameItem> m_Creator = null;
 
-        protected TezSubGroup(ITezGroup group, TValue value, TezEventExtension.Function<TezDataBaseGameItem> creator) : base(value)
+        protected TezSubgroup(ITezGroup group, TValue value, TezEventExtension.Function<TezDataBaseGameItem> creator) : base(value)
         {
             m_Creator = creator;
             TezGroupManager.registerSubGroup(group, this);
@@ -99,7 +99,7 @@ namespace tezcat.Framework.DataBase
             return m_Creator();
         }
 
-        public bool Equals(ITezSubGroup other)
+        public bool Equals(ITezSubgroup other)
         {
             return this.toID == other.toID;
         }

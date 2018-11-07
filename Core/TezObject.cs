@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using tezcat.Framework.DataBase;
+using UnityEngine;
 
 namespace tezcat.Framework.Core
 {
@@ -84,7 +85,7 @@ namespace tezcat.Framework.Core
         /// <summary>
         /// 类型次级分组
         /// </summary>
-        public abstract ITezSubGroup subgroup { get; }
+        public abstract ITezSubgroup subgroup { get; }
 
         /// <summary>
         /// 唯一名称ID
@@ -154,10 +155,24 @@ namespace tezcat.Framework.Core
         /// </summary>
         public void updateRID()
         {
-            this.m_RID?.close();
+            if(m_RID != null)
+            {
+                var g = m_RID.group;
+                var sg = m_RID.subgroup;
+                m_RID.close();
+                m_RID = new TezRID(g, sg);
+            }
+            else
+            {
+                m_RID = new TezRID(group, subgroup);
+            }
 
-            this.m_RID = new TezRID(group, subgroup);
             this.m_RID.updateID();
+        }
+
+        public void debugRID()
+        {
+            Debug.Log(m_RID.ToString());
         }
 
         /// <summary>

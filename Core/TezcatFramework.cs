@@ -99,7 +99,6 @@ namespace tezcat.Framework.Core
 
         protected override void preInit()
         {
-            DontDestroyOnLoad(this);
             this.register();
         }
 

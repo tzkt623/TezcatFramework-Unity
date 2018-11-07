@@ -8,7 +8,7 @@ namespace tezcat.Framework.DataBase
 {
     public sealed class TezDatabase : ITezService
     {
-        class SubGroup
+        class Subgroup
         {
             public string NID { get; set; }
             public int SGID { get; set; }
@@ -33,7 +33,15 @@ namespace tezcat.Framework.DataBase
 
             public TezDataBaseGameItem get(string item_name)
             {
-                return m_Dic[item_name];
+                TezDataBaseGameItem item = null;
+                if(m_Dic.TryGetValue(item_name, out item))
+                {
+                    return item;
+                }
+                else
+                {
+                    throw new Exception(string.Format("This item[{0}/{1}] is not in DB!", this.NID, item_name));
+                }
             }
 
             public void foreachItem(TezEventExtension.Action<TezDataBaseGameItem> for_item)
@@ -64,17 +72,17 @@ namespace tezcat.Framework.DataBase
             public string NID { get; set; }
             public int GID { get; set; }
 
-            Dictionary<string, SubGroup> m_Dic = new Dictionary<string, SubGroup>();
-            List<SubGroup> m_List = new List<SubGroup>();
+            Dictionary<string, Subgroup> m_Dic = new Dictionary<string, Subgroup>();
+            List<Subgroup> m_List = new List<Subgroup>();
 
             public void add(TezDataBaseGameItem item)
             {
                 var sgid = item.subgroup.toID;
-                SubGroup sub;
-                if (!m_Dic.TryGetValue(item.subgroup.NID, out sub))
+                Subgroup sub;
+                if (!m_Dic.TryGetValue(item.subgroup.toName, out sub))
                 {
-                    sub = new SubGroup() { NID = item.subgroup.NID, SGID = sgid };
-                    m_Dic.Add(item.subgroup.NID, sub);
+                    sub = new Subgroup() { NID = item.subgroup.toName, SGID = sgid };
+                    m_Dic.Add(item.subgroup.toName, sub);
 
                     while (m_List.Count <= sgid)
                     {
@@ -94,7 +102,15 @@ namespace tezcat.Framework.DataBase
 
             public TezDataBaseGameItem get(string sub_name, string item_name)
             {
-                return m_Dic[sub_name].get(item_name);
+                Subgroup subgroup = null;
+                if(m_Dic.TryGetValue(sub_name, out subgroup))
+                {
+                    return subgroup.get(item_name);
+                }
+                else
+                {
+                    throw new Exception(string.Format("This subgroup[{0}/{1}] is not in DB!", this.NID, sub_name));
+                }
             }
 
             public TezDataBaseGameItem get(int sub_id, int item_id)
@@ -150,10 +166,10 @@ namespace tezcat.Framework.DataBase
             var gid = item.group.toID;
 
             Group group = null;
-            if (!m_GroupDic.TryGetValue(item.group.NID, out group))
+            if (!m_GroupDic.TryGetValue(item.group.toName, out group))
             {
-                group = new Group() { NID = item.group.NID, GID = gid };
-                m_GroupDic.Add(item.group.NID, group);
+                group = new Group() { NID = item.group.toName, GID = gid };
+                m_GroupDic.Add(item.group.toName, group);
 
                 while (m_GroupList.Count <= gid)
                 {
@@ -179,6 +195,11 @@ namespace tezcat.Framework.DataBase
         public T get<T>(int group_id, int sub_id, string item_name) where T : TezDataBaseGameItem
         {
             return (T)m_GroupList[group_id].get(sub_id, item_name);
+        }
+
+        public T get<T>(int group_id, string sub_name, string item_name) where T : TezDataBaseGameItem
+        {
+            return (T)m_GroupList[group_id].get(sub_name, item_name);
         }
 
         public TezDataBaseGameItem get(int group_id, int sub_id, int item_id)

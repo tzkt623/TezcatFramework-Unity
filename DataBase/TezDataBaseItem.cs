@@ -137,7 +137,7 @@ namespace tezcat.Framework.DataBase
 
         public abstract ITezGroup group { get; }
 
-        public abstract ITezSubGroup subgroup { get; }
+        public abstract ITezSubgroup subgroup { get; }
 
         public ulong itemID
         {

@@ -321,7 +321,7 @@ namespace tezcat.Framework.TypeTraits
 
     public interface ITezEnumeration
     {
-        string NID { get; }
+        string toName { get; }
         int toID { get; }
     }
 
@@ -355,7 +355,7 @@ namespace tezcat.Framework.TypeTraits
             get { return typeof(TEnumeration); }
         }
 
-        public string NID
+        public string toName
         {
             get { return EnumNameArray[toID]; }
         }
@@ -367,7 +367,7 @@ namespace tezcat.Framework.TypeTraits
         protected TezEnumeration(TEnumValue value)
         {
             this.value = value;
-            EnumWithName[this.NID] = (TEnumeration)this;
+            EnumWithName[this.toName] = (TEnumeration)this;
             EnumArray[this.toID] = (TEnumeration)this;
         }
 

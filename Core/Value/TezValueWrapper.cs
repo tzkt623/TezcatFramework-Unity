@@ -291,7 +291,7 @@ namespace tezcat.Framework.Core
     #region Modifier
     public interface ITezModifiableValue : ITezValueWrapper
     {
-        ITezRVMCollection collection { get; }
+        ITezRVMContainer container { get; }
     }
 
     public class TezModifiableIntValue
@@ -300,13 +300,13 @@ namespace tezcat.Framework.Core
     {
         public sealed override TezValueSubType valueSubType => TezValueSubType.WithModifier;
 
-        public ITezRVMCollection collection { get; protected set; } = null;
+        public ITezRVMContainer container { get; protected set; } = null;
 
         public int modifiedValue
         {
             get
             {
-                return (int)this.collection.refresh(this.value);
+                return (int)this.container.refresh(this.value);
             }
         }
 
@@ -320,7 +320,7 @@ namespace tezcat.Framework.Core
             set
             {
                 base.value = value;
-                this.collection.dirty = true;
+                this.container.dirty = true;
             }
         }
 
@@ -332,8 +332,8 @@ namespace tezcat.Framework.Core
         public override void close()
         {
             base.close();
-            this.collection.close();
-            this.collection = null;
+            this.container.close();
+            this.container = null;
         }
     }
 
@@ -343,13 +343,13 @@ namespace tezcat.Framework.Core
     {
         public sealed override TezValueSubType valueSubType => TezValueSubType.WithModifier;
 
-        public ITezRVMCollection collection { get; protected set; } = null;
+        public ITezRVMContainer container { get; protected set; } = null;
 
         public float modifiedValue
         {
             get
             {
-                return this.collection.refresh(this.value);
+                return this.container.refresh(this.value);
             }
         }
 
@@ -363,7 +363,7 @@ namespace tezcat.Framework.Core
             set
             {
                 base.value = value;
-                this.collection.dirty = true;
+                this.container.dirty = true;
             }
         }
 
@@ -375,8 +375,8 @@ namespace tezcat.Framework.Core
         public override void close()
         {
             base.close();
-            this.collection.close();
-            this.collection = null;
+            this.container.close();
+            this.container = null;
         }
     }
     #endregion

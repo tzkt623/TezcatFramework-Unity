@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace tezcat.Framework.Core
+﻿namespace tezcat.Framework.Core
 {
     public enum TezModifierType
     {
@@ -11,8 +8,6 @@ namespace tezcat.Framework.Core
 
     public interface ITezModifier
         : ITezCloseable
-        , IComparable
-        , IComparable<ITezModifier>
     {
         int order { get; }
         object sourceObject { get; }
@@ -42,24 +37,5 @@ namespace tezcat.Framework.Core
         }
 
         public abstract void close();
-
-        public virtual int CompareTo(object other)
-        {
-            return this.CompareTo((ITezModifier)other);
-        }
-
-        public virtual int CompareTo(ITezModifier other)
-        {
-            if(this.order < other.order)
-            {
-                return -1;
-            }
-            else if(this.order > other.order)
-            {
-                return 1;
-            }
-
-            return 0;
-        }
     }
 }

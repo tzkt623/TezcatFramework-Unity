@@ -38,7 +38,7 @@ namespace tezcat.Framework.Core
                     m_DicWithName.Add(ClassID<T>.Name, function);
                     break;
                 default:
-                    throw new Exception(string.Format("{0} : this type is registered in TezClassFactory", ClassID<T>.Name));
+                    throw new Exception(string.Format("{0} : this type is registered", ClassID<T>.Name));
             }
         }
 
@@ -52,7 +52,7 @@ namespace tezcat.Framework.Core
             }
             else
             {
-                throw new Exception(string.Format("Class [{0}] not registered", name));
+                throw new Exception(string.Format("{0} : this type is not registered", name));
             }
 #else
             return (T)m_DicWithName[name]();
@@ -61,7 +61,14 @@ namespace tezcat.Framework.Core
 
         public T create<T>() where T : class
         {
-            return (T)m_List[ClassID<T>.ID]();
+            var id = ClassID<T>.ID;
+            switch (id)
+            {
+                case TezTypeInfo.ErrorID:
+                    throw new Exception(string.Format("{0} : this type is not registered", ClassID<T>.Name));
+                default:
+                    return (T)m_List[id]();
+            }
         }
 
         public void close()
