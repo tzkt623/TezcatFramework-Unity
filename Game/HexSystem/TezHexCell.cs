@@ -126,7 +126,7 @@ namespace tezcat.Framework.Game
                 this.createCorner(5)
             };
 
-            mesh.triangles = new List<int>()
+            mesh.indices = new List<int>()
             {
                 0, 6, 5,
                 0, 5, 4,
@@ -151,7 +151,7 @@ namespace tezcat.Framework.Game
                 new Vector3(m_Corner.x - m_Grid.cellWidth / 2, m_Corner.y, m_Corner.z - m_Grid.cellHeight / 2),
             };
 
-            mesh.triangles = new List<int>()
+            mesh.indices = new List<int>()
             {
                 0, 2, 1,
                 0, 3, 2

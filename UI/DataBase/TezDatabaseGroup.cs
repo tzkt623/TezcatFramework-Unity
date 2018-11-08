@@ -119,7 +119,7 @@ namespace tezcat.Framework.UI
 
             }
 
-            m_Container.refresh = RefreshPhase.System1;
+            m_Container.refresh = RefreshPhase.Custom1;
         }
 
         protected override void onHide()

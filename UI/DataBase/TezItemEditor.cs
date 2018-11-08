@@ -38,7 +38,7 @@ namespace tezcat.Framework.UI
 
         public override void bind(int category)
         {
-            this.refresh = RefreshPhase.System1;
+            this.refresh = RefreshPhase.Custom1;
         }
 
 //         public override void bind(TezItem item)
@@ -77,10 +77,6 @@ namespace tezcat.Framework.UI
                     this.refreshInit();
                     break;
                 case RefreshPhase.OnEnable:
-                    break;
-                case RefreshPhase.System1:
-                    break;
-                case RefreshPhase.System2:
                     break;
                 case RefreshPhase.Custom1:
                     break;

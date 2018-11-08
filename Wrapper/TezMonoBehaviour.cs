@@ -17,8 +17,8 @@ namespace tezcat.Framework.Wrapper
         bool m_Init = false;
         public enum RefreshPhase : byte
         {
-            System1,
-            System2,
+            OnInit,
+            OnEnable,
             Custom1,
             Custom2,
             Custom3,
@@ -38,7 +38,7 @@ namespace tezcat.Framework.Wrapper
                 m_Init = true;
                 this.initObject();
                 this.linkEvent();
-                this.refreshAfterInit();
+                this.refresh(RefreshPhase.OnInit);
             }
             else
             {
@@ -51,7 +51,7 @@ namespace tezcat.Framework.Wrapper
             if (m_Init)
             {
                 this.linkEvent();
-                this.refreshOnEnable();
+                this.refresh(RefreshPhase.OnEnable);
             }
         }
 
@@ -95,16 +95,6 @@ namespace tezcat.Framework.Wrapper
         /// 在这里断开你的所有事件通知
         /// </summary>
         protected abstract void unLinkEvent();
-
-        /// <summary>
-        /// 初始化时刷新数据
-        /// </summary>
-        protected abstract void refreshAfterInit();
-
-        /// <summary>
-        /// 每当Enbale时刷新数据
-        /// </summary>
-        protected abstract void refreshOnEnable();
 
         /// <summary>
         /// 自定义情况下刷新数据
@@ -158,16 +148,6 @@ namespace tezcat.Framework.Wrapper
         }
 
         protected override void linkEvent()
-        {
-
-        }
-
-        protected override void refreshAfterInit()
-        {
-
-        }
-
-        protected override void refreshOnEnable()
         {
 
         }

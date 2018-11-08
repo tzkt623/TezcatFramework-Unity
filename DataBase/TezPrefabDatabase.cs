@@ -63,7 +63,8 @@ namespace tezcat.Framework.DataBase
             }
             else
             {
-                throw new ArgumentNullException(string.Format("{0}`s Prefab Not Found", go.name));
+                Debug.LogWarning(string.Format("{0}`s Prefab Not Found", go.name));
+//                throw new ArgumentNullException(string.Format("{0}`s Prefab Not Found", go.name));
             }
         }
 

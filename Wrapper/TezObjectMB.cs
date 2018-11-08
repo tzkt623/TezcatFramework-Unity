@@ -32,7 +32,6 @@ namespace tezcat.Framework.Wrapper
         {
             this.myObject = my_object;
             this.onBind();
-            this.refresh(RefreshPhase.System1);
         }
 
         protected abstract void onBind();

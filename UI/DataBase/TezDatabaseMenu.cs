@@ -98,7 +98,7 @@ namespace tezcat.Framework.UI
         {
             if (eventData.button == PointerEventData.InputButton.Left)
             {
-                m_Group.refresh = RefreshPhase.System1;
+                m_Group.refresh = RefreshPhase.Custom1;
             }
         }
 

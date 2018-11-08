@@ -11,6 +11,43 @@ namespace tezcat.Framework.Game
         public static readonly float Sqrt3D2 = Mathf.Sqrt(3) / 2;
         public static readonly float Sqrt3D3 = Mathf.Sqrt(3) / 3;
 
+        public static readonly CubeCoordinate[] CubeDirections = new CubeCoordinate[6]
+        {
+            new CubeCoordinate(1, -1, 0),
+            new CubeCoordinate(1, 0, -1),
+            new CubeCoordinate(0, 1, -1),
+            new CubeCoordinate(-1, 1, 0),
+            new CubeCoordinate(-1, 0, 1),
+            new CubeCoordinate(0, -1, 1)
+        };
+
+        public static readonly int[] HexTriangleIndices = new int[]
+        {
+            0, 6, 5,
+            0, 5, 4,
+            0, 4, 3,
+            0, 3, 2,
+            0, 2, 1,
+            0, 1, 6
+        };
+
+        public static readonly int[] BorderTriangleIndices = new int[]
+        {
+            0,  5,  11,
+            5,  4,  10,
+            4,  3,  9,
+            3,  2,  8,
+            2,  1,  7,
+            1,  0,  6,
+
+            6,  0,  11,
+            11, 5,  10,
+            10, 4,  9,
+            9,  3,  8,
+            8,  2,  7,
+            7,  1,  6
+        };
+
         public interface Node
         {
             AxialCoordinate coordinate { get; }
@@ -209,7 +246,7 @@ namespace tezcat.Framework.Game
         public class HexMesh
         {
             public List<Vector3> vertices = new List<Vector3>();
-            public List<int> triangles = new List<int>();
+            public List<int> indices = new List<int>();
             public List<Vector2> uv = new List<Vector2>();
 
             public void combine(HexMesh data)
@@ -222,9 +259,9 @@ namespace tezcat.Framework.Game
                 }
 
                 int add = rate * data.vertices.Count;
-                for (int i = 0; i < data.triangles.Count; i++)
+                for (int i = 0; i < data.indices.Count; i++)
                 {
-                    triangles.Add(data.triangles[i] + add);
+                    indices.Add(data.indices[i] + add);
                 }
 
                 for (int i = 0; i < data.uv.Count; i++)
@@ -233,16 +270,6 @@ namespace tezcat.Framework.Game
                 }
             }
         }
-
-        public static readonly CubeCoordinate[] CubeDirections = new CubeCoordinate[6]
-        {
-            new CubeCoordinate(1, -1, 0),
-            new CubeCoordinate(1, 0, -1),
-            new CubeCoordinate(0, 1, -1),
-            new CubeCoordinate(-1, 1, 0),
-            new CubeCoordinate(-1, 0, 1),
-            new CubeCoordinate(0, -1, 1)
-        };
 
         public enum Layout
         {
@@ -404,7 +431,7 @@ namespace tezcat.Framework.Game
             return this.round(new Vector2(q, r)).toAxial();
         }
 
-        Vector3 createCorner(int index, Vector3 corner)
+        private Vector3 createCorner(int index, Vector3 corner, float scale = 1.0f)
         {
             float angle_deg = 0;
 
@@ -423,38 +450,73 @@ namespace tezcat.Framework.Game
             return new Vector3(
                 corner.x + size * Mathf.Cos(angle_rad),
                 corner.y,
-                corner.z + size * Mathf.Sin(angle_rad));
+                corner.z + size * Mathf.Sin(angle_rad)) * scale;
         }
 
-        public HexMesh createMesh(List<Vector3> corner_list)
+        public HexMesh createHexMesh(Vector3 center)
         {
-            var triangles_index = new List<int>()
-            {
-                0, 6, 5,
-                0, 5, 4,
-                0, 4, 3,
-                0, 3, 2,
-                0, 2, 1,
-                0, 1, 6
-            };
-
             HexMesh mesh = new HexMesh();
+            mesh.vertices.Capacity = 7;
 
-            for (int i = 0; i < corner_list.Count; i++)
+            mesh.vertices.Add(center);
+            mesh.vertices.Add(this.createCorner(0, center));
+            mesh.vertices.Add(this.createCorner(1, center));
+            mesh.vertices.Add(this.createCorner(2, center));
+            mesh.vertices.Add(this.createCorner(3, center));
+            mesh.vertices.Add(this.createCorner(4, center));
+            mesh.vertices.Add(this.createCorner(5, center));
+
+            for (int i = 0; i < HexTriangleIndices.Length; i++)
             {
-                var corner = corner_list[i];
-                mesh.vertices.Add(corner);
-                mesh.vertices.Add(this.createCorner(0, corner));
-                mesh.vertices.Add(this.createCorner(1, corner));
-                mesh.vertices.Add(this.createCorner(2, corner));
-                mesh.vertices.Add(this.createCorner(3, corner));
-                mesh.vertices.Add(this.createCorner(4, corner));
-                mesh.vertices.Add(this.createCorner(5, corner));
+                mesh.indices.Add(HexTriangleIndices[i]);
+            }
+
+            return mesh;
+        }
+
+        public HexMesh createBorderMesh(Vector3 center, float border_scale = 0.8f)
+        {
+            HexMesh mesh = new HexMesh();
+            mesh.vertices.Capacity = 12;
+
+            for (int i = 0; i < 6; i++)
+            {
+                mesh.vertices.Add(this.createCorner(i, center));
+            }
+
+            for (int i = 0; i < 6; i++)
+            {
+                mesh.vertices.Add(this.createCorner(i, center, border_scale));
+            }
+
+            for (int i = 0; i < BorderTriangleIndices.Length; i++)
+            {
+                mesh.indices.Add(BorderTriangleIndices[i]);
+            }
+
+            return mesh;
+        }
+
+        public HexMesh createMesh(List<Vector3> center_list)
+        {
+            HexMesh mesh = new HexMesh();
+            mesh.vertices.Capacity = 7 * center_list.Count;
+
+            for (int i = 0; i < center_list.Count; i++)
+            {
+                var center = center_list[i];
+                mesh.vertices.Add(center);
+                mesh.vertices.Add(this.createCorner(0, center));
+                mesh.vertices.Add(this.createCorner(1, center));
+                mesh.vertices.Add(this.createCorner(2, center));
+                mesh.vertices.Add(this.createCorner(3, center));
+                mesh.vertices.Add(this.createCorner(4, center));
+                mesh.vertices.Add(this.createCorner(5, center));
 
                 var offset = 7 * i;
-                for (int j = 0; j < triangles_index.Count; j++)
+                for (int j = 0; j < HexTriangleIndices.Length; j++)
                 {
-                    mesh.triangles.Add(triangles_index[j] + offset);
+                    mesh.indices.Add(HexTriangleIndices[j] + offset);
                 }
             }
 

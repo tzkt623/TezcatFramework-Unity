@@ -55,10 +55,6 @@ namespace tezcat.Framework.UI
                     break;
                 case RefreshPhase.OnEnable:
                     break;
-                case RefreshPhase.System1:
-                    break;
-                case RefreshPhase.System2:
-                    break;
                 case RefreshPhase.Custom1:
                     break;
                 case RefreshPhase.Custom2:

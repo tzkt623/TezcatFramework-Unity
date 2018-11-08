@@ -30,8 +30,6 @@ namespace tezcat.Framework.UI
         {
             OnInit,
             OnEnable,
-            System1,
-            System2,
             Custom1,
             Custom2,
             Custom3,

@@ -90,7 +90,7 @@ namespace tezcat.Framework.UI
         public void setGetter(TezEventExtension.Function<string> getter)
         {
             m_Getter = getter;
-            this.refresh = RefreshPhase.System1;
+            this.refresh = RefreshPhase.Custom1;
         }
 
         protected override void onRefresh(RefreshPhase phase)

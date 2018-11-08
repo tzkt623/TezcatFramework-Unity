@@ -81,10 +81,6 @@ namespace tezcat.Framework.UI
         {
             switch (phase)
             {
-                case RefreshPhase.System1:
-                    break;
-                case RefreshPhase.System2:
-                    break;
                 case RefreshPhase.Custom1:
                     break;
                 case RefreshPhase.Custom2:

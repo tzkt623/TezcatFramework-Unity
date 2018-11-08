@@ -25,15 +25,7 @@ namespace tezcat.Framework.UI
 
         protected override void onRefresh(RefreshPhase phase)
         {
-            switch (phase)
-            {
-                case RefreshPhase.System1:
-                    break;
-                case RefreshPhase.System2:
-                    break;
-                default:
-                    break;
-            }
+
         }
 
         public override void clear()
