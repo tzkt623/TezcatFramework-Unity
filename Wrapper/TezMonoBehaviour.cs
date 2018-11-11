@@ -1,15 +1,9 @@
 ﻿using System;
-using tezcat.Framework.Core;
 using tezcat.Framework.DataBase;
 using UnityEngine;
 
 namespace tezcat.Framework.Wrapper
 {
-    public interface ITezMBWrapper : ITezWrapper
-    {
-        TezObject getObject();
-    }
-
     public abstract class TezMonoBehaviour
         : MonoBehaviour
         , ITezPrefab

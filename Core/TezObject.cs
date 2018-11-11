@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using tezcat.Framework.DataBase;
+using tezcat.Framework.Wrapper;
 using UnityEngine;
 
 namespace tezcat.Framework.Core
@@ -98,6 +99,11 @@ namespace tezcat.Framework.Core
         public TezTagSet TAG { get; private set; } = null;
 
         /// <summary>
+        /// Unity包装层
+        /// </summary>
+        public TezGameObjectMB gameObject { get; set; } = null;
+
+        /// <summary>
         /// 初始化Object
         /// </summary>
         public void initNew()
@@ -180,6 +186,9 @@ namespace tezcat.Framework.Core
         /// </summary>
         public override void close()
         {
+            this.gameObject?.close();
+            this.gameObject = null;
+
             this.TAG.close();
             this.TAG = null;
 

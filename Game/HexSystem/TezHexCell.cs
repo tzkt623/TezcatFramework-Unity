@@ -6,16 +6,7 @@ namespace tezcat.Framework.Game
 {
     public class TezHexCell
     {
-        TezHexGrid.AxialCoordinate m_Coorinate = new TezHexGrid.AxialCoordinate();
-        public TezHexGrid.CubeCoordinate cubeCoordinate
-        {
-            get { return m_Coorinate.toCube(); }
-        }
-
-        public TezHexGrid.AxialCoordinate axialCoordinate
-        {
-            get { return m_Coorinate; }
-        }
+        TezHexGrid.Coordinate m_Coorinate = new TezHexGrid.Coordinate();
 
         Vector3 m_Corner = Vector3.zero;
         public Vector3 corner
