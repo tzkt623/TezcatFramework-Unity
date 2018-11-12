@@ -103,7 +103,7 @@ namespace tezcat.Framework.UI
 
             GameObject go = new GameObject();
             overlay = go.AddComponent<RectTransform>();
-            overlay.parent = this.transform;
+            overlay.SetParent(this.transform);
             overlay.localPosition = Vector3.zero;
             overlay.name = "WindowOverlay";
             overlay.setLayoutZeroRect();

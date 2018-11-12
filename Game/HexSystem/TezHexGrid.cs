@@ -1,9 +1,108 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using tezcat.Framework.Math;
 using UnityEngine;
 
 namespace tezcat.Framework.Game
 {
+    public class Container<T> where T : class, ITezHexBlock
+    {
+        class Wrapper
+        {
+            /// <summary>
+            /// 1,1
+            /// 1,-1
+            /// -1,1
+            /// -1,-1
+            /// </summary>
+            T[] m_Array = new T[4];
+
+            public T get(int q, int r)
+            {
+                return m_Array[(q < 0 ? 2 : 0) + (r < 0 ? 1 : 0)];
+            }
+
+            public void add(T node)
+            {
+                var c = node.coordinate;
+                m_Array[(c.q < 0 ? 2 : 0) + (c.r < 0 ? 1 : 0)] = node;
+            }
+
+            public void close()
+            {
+                m_Array = null;
+            }
+        }
+
+        Wrapper[,] m_List = new Wrapper[1, 1];
+
+        public void add(T node)
+        {
+            var coordinate = node.coordinate;
+            var q = Mathf.Abs(coordinate.q);
+            var r = Mathf.Abs(coordinate.r);
+
+            var grow_q = m_List.GetLength(0) < q;
+            var grow_r = m_List.GetLength(0) < r;
+
+        }
+
+        public T get(int q, int r)
+        {
+            return m_List[Mathf.Abs(q), Mathf.Abs(r)].get(q, r);
+        }
+    }
+
+    public struct TezHexOffsetCoordinate
+    {
+        public int q;
+        public int r;
+
+        public TezHexOffsetCoordinate(int q, int r)
+        {
+            this.q = q;
+            this.r = r;
+        }
+
+        public override bool Equals(object obj)
+        {
+            return obj.GetHashCode() == this.GetHashCode();
+        }
+
+        public override int GetHashCode()
+        {
+            var hash = TezHash.intHash(q);
+            hash = TezHash.intHash(hash + r);
+            return hash;
+        }
+
+        public TezHexCubeCoordinate toCube(TezHexGrid.Layout layout)
+        {
+            switch (layout)
+            {
+                case TezHexGrid.Layout.Pointy:
+                    {
+                        var x = q - (r + (r & 1) >> 1);
+                        var z = r;
+                        return new TezHexCubeCoordinate(x, z);
+                    }
+                case TezHexGrid.Layout.Flat:
+                    {
+                        var x = q;
+                        var z = r - (q + (q & 1) >> 1);
+                        return new TezHexCubeCoordinate(x, z);
+                    }
+            }
+
+            throw new Exception("TezHexOffsetCoordinate toCoordinate");
+        }
+
+        public override string ToString()
+        {
+            return string.Format("{0},{1}", q, r);
+        }
+    }
+
     public class TezHexGrid
     {
         public static readonly float Sqrt3 = Mathf.Sqrt(3);
@@ -20,14 +119,14 @@ namespace tezcat.Framework.Game
             Z_N_P
         }
 
-        public static readonly Coordinate[] CubeDirections = new Coordinate[6]
+        public static readonly TezHexCubeCoordinate[] CubeDirections = new TezHexCubeCoordinate[6]
         {
-            new Coordinate(1, -1, 0),
-            new Coordinate(1, 0, -1),
-            new Coordinate(0, 1, -1),
-            new Coordinate(-1, 1, 0),
-            new Coordinate(-1, 0, 1),
-            new Coordinate(0, -1, 1)
+            new TezHexCubeCoordinate(1, -1, 0),
+            new TezHexCubeCoordinate(1, 0, -1),
+            new TezHexCubeCoordinate(0, 1, -1),
+            new TezHexCubeCoordinate(-1, 1, 0),
+            new TezHexCubeCoordinate(-1, 0, 1),
+            new TezHexCubeCoordinate(0, -1, 1)
         };
 
         public static readonly int[] HexTriangleIndices = new int[]
@@ -57,24 +156,24 @@ namespace tezcat.Framework.Game
             7,  1,  6
         };
 
-        public static Coordinate calculateCoordinate(Coordinate center, Coordinate dir)
+        public static TezHexCubeCoordinate calculateCoordinate(TezHexCubeCoordinate center, TezHexCubeCoordinate dir)
         {
-            return new Coordinate(center.x + dir.x, center.z + dir.z);
+            return new TezHexCubeCoordinate(center.x + dir.x, center.z + dir.z);
         }
 
-        public static Coordinate neighbor(Coordinate center, Coordinate dir)
+        public static TezHexCubeCoordinate neighbor(TezHexCubeCoordinate center, TezHexCubeCoordinate dir)
         {
-            return new Coordinate(center.x + dir.x, center.z + dir.z);
+            return new TezHexCubeCoordinate(center.x + dir.x, center.z + dir.z);
         }
 
-        public static Coordinate direction(Direction direction)
+        public static TezHexCubeCoordinate direction(Direction direction)
         {
             return CubeDirections[(int)direction];
         }
 
-        public static List<Coordinate> range(Coordinate center, int range)
+        public static List<TezHexCubeCoordinate> range(TezHexCubeCoordinate center, int range)
         {
-            List<Coordinate> list = new List<Coordinate>();
+            List<TezHexCubeCoordinate> list = new List<TezHexCubeCoordinate>();
             list.Capacity = (1 + range) * range / 2 * 6 + 1;
 
             for (int z = -range; z <= range; z++)
@@ -83,12 +182,12 @@ namespace tezcat.Framework.Game
                 {
                     for (int x = -range; x <= range; x++)
                     {
-                        if(x + y + z != 0)
+                        if (x + y + z != 0)
                         {
                             continue;
                         }
 
-                        list.Add(new Coordinate(center.x + x, center.z + z));
+                        list.Add(new TezHexCubeCoordinate(center.x + x, center.z + z));
                     }
                 }
             }
@@ -96,9 +195,9 @@ namespace tezcat.Framework.Game
             return list;
         }
 
-        public static List<Coordinate> ring(Coordinate center, int radius)
+        public static List<TezHexCubeCoordinate> ring(TezHexCubeCoordinate center, int radius)
         {
-            List<Coordinate> list = new List<Coordinate>();
+            List<TezHexCubeCoordinate> list = new List<TezHexCubeCoordinate>();
             list.Capacity = 6 * radius;
 
             var begin = CubeDirections[4];
@@ -116,233 +215,6 @@ namespace tezcat.Framework.Game
 
             return list;
         }
-
-        public interface Node
-        {
-            Coordinate coordinate { get; }
-        }
-
-        public class Container<T> where T : class, Node
-        {
-            class Wrapper
-            {
-                /// <summary>
-                /// 1,1
-                /// 1,-1
-                /// -1,1
-                /// -1,-1
-                /// </summary>
-                T[] m_Array = new T[4];
-
-                public T get(int q, int r)
-                {
-                    return m_Array[(q < 0 ? 2 : 0) + (r < 0 ? 1 : 0)];
-                }
-
-                public void add(T node)
-                {
-                    var c = node.coordinate;
-                    m_Array[(c.q < 0 ? 2 : 0) + (c.r < 0 ? 1 : 0)] = node;
-                }
-
-                public void close()
-                {
-                    m_Array = null;
-                }
-            }
-
-            Wrapper[,] m_List = new Wrapper[1, 1];
-
-            public void add(T node)
-            {
-                var coordinate = node.coordinate;
-                var q = Mathf.Abs(coordinate.q);
-                var r = Mathf.Abs(coordinate.r);
-
-                var grow_q = m_List.GetLength(0) < q;
-                var grow_r = m_List.GetLength(0) < r;
-
-            }
-
-            public T get(int q, int r)
-            {
-                return m_List[Mathf.Abs(q), Mathf.Abs(r)].get(q, r);
-            }
-        }
-
-        public struct Coordinate
-        {
-            public static readonly Coordinate zero = new Coordinate(0, 0, 0);
-            public static readonly Coordinate one = new Coordinate(1, 1, 1);
-            public static readonly Coordinate max = new Coordinate(int.MaxValue, int.MaxValue, int.MaxValue);
-            public static readonly Coordinate min = new Coordinate(int.MinValue, int.MinValue, int.MinValue);
-
-            public int x;
-            public int y
-            {
-                get { return -x - z; }
-            }
-            public int z;
-
-            public int q
-            {
-                get { return x; }
-                set { x = value; }
-            }
-            public int r
-            {
-                get { return z; }
-                set { z = value; }
-            }
-
-            public Coordinate(int x, int y, int z)
-            {
-                this.x = x;
-                this.z = z;
-            }
-
-            public Coordinate(int q, int r)
-            {
-                this.x = q;
-                this.z = r;
-            }
-
-            public static Coordinate operator +(Coordinate v1, Coordinate v2)
-            {
-                return new Coordinate(v1.x + v2.x, v1.z + v2.z);
-            }
-
-            public static Coordinate operator -(Coordinate v1, Coordinate v2)
-            {
-                return new Coordinate(v1.x - v2.x, v1.z - v2.z);
-            }
-
-            public static bool operator !=(Coordinate v1, Coordinate v2)
-            {
-                return v1.x != v2.x || v1.z != v2.z;
-            }
-
-            public static bool operator ==(Coordinate v1, Coordinate v2)
-            {
-                return v1.x == v2.x && v1.z == v2.z;
-            }
-
-            public void set(int x, int y, int z)
-            {
-                this.x = x;
-                this.z = z;
-            }
-
-            public override bool Equals(object obj)
-            {
-                return obj.GetHashCode() == this.GetHashCode();
-            }
-
-            public override int GetHashCode()
-            {
-                var hash = TezHash.intHash(x);
-                hash = TezHash.intHash(hash + z);
-                return hash;
-            }
-
-            public int getDistanceFrom(Coordinate other)
-            {
-                return (Mathf.Abs(x - other.x) + Mathf.Abs(y - other.y) + Mathf.Abs(z - other.z)) / 2;
-            }
-
-            public override string ToString()
-            {
-                return string.Format("{0},{1},{2}", x, y, z);
-            }
-
-            public void scale(int radius)
-            {
-                this.x *= radius;
-                this.z *= radius;
-            }
-
-            public void add(int x, int z)
-            {
-                this.x += x;
-                this.z += z;
-            }
-        }
-
-#if false
-        public struct AxialCoordinate : IEquatable<AxialCoordinate>
-        {
-            public static readonly AxialCoordinate zero = new AxialCoordinate(0, 0);
-            public static readonly AxialCoordinate one = new AxialCoordinate(1, 1);
-            public static readonly AxialCoordinate min = new AxialCoordinate(int.MinValue, int.MinValue);
-            public static readonly AxialCoordinate max = new AxialCoordinate(int.MaxValue, int.MaxValue);
-
-            public int q;
-            public int r;
-
-            public AxialCoordinate(int q, int r)
-            {
-                this.q = q;
-                this.r = r;
-            }
-
-            public static AxialCoordinate operator +(AxialCoordinate v1, AxialCoordinate v2)
-            {
-                return new AxialCoordinate(v1.q + v2.q, v1.r + v2.r);
-            }
-
-            public static AxialCoordinate operator -(AxialCoordinate v1, AxialCoordinate v2)
-            {
-                return new AxialCoordinate(v1.q - v2.q, v1.r - v2.r);
-            }
-
-            public static bool operator !=(AxialCoordinate v1, AxialCoordinate v2)
-            {
-                return v1.q != v2.q || v1.r != v2.r;
-            }
-
-            public static bool operator ==(AxialCoordinate v1, AxialCoordinate v2)
-            {
-                return v1.q == v2.q && v1.r == v2.r;
-            }
-
-            public Coordinate toCube()
-            {
-                return new Coordinate(q, -q - r, r);
-            }
-
-            public int getDistanceFrom(AxialCoordinate other)
-            {
-                return (Mathf.Abs(q - other.q) + Mathf.Abs((-q - r) - (-other.q - other.r)) + Mathf.Abs(r - other.r)) / 2;
-            }
-
-            public override bool Equals(object obj)
-            {
-                return obj.GetHashCode() == this.GetHashCode();
-            }
-
-            public override int GetHashCode()
-            {
-                return AxialCoordinate.GetHashCode(q, r);
-            }
-
-            public static int GetHashCode(int q, int r)
-            {
-                var hash = TezHash.intHash(q);
-                hash = TezHash.intHash(hash + r);
-                return hash;
-            }
-
-            bool IEquatable<AxialCoordinate>.Equals(AxialCoordinate other)
-            {
-                return this.q == other.q && this.r == other.r;
-            }
-
-            public override string ToString()
-            {
-                return string.Format("{0},{1}", q, r);
-            }
-        }
-#endif
 
         public class HexMesh
         {
@@ -416,7 +288,7 @@ namespace tezcat.Framework.Game
             }
         }
 
-        Coordinate round(Vector3 position)
+        TezHexCubeCoordinate round(Vector3 position)
         {
             var rx = Mathf.RoundToInt(position.x);
             var ry = Mathf.RoundToInt(position.y);
@@ -439,20 +311,20 @@ namespace tezcat.Framework.Game
                 rz = -rx - ry;
             }
 
-            return new Coordinate(rx, ry, rz);
+            return new TezHexCubeCoordinate(rx, ry, rz);
         }
 
-        Coordinate round(Vector2 position)
+        TezHexCubeCoordinate round(Vector2 position)
         {
             return this.round(new Vector3(position.x, -position.x - position.y, position.y));
         }
 
-        Coordinate cubeToaxial(Coordinate cube)
+        TezHexCubeCoordinate cubeToaxial(TezHexCubeCoordinate cube)
         {
-            return new Coordinate(cube.x, cube.z);
+            return new TezHexCubeCoordinate(cube.x, cube.z);
         }
 
-        public Vector3 calculatePosition(Coordinate coordinate)
+        public Vector3 calculatePosition(TezHexCubeCoordinate coordinate)
         {
             return this.calculatePosition(coordinate.x, coordinate.z);
         }
@@ -490,7 +362,7 @@ namespace tezcat.Framework.Game
             return new Vector3(x, 0, y);
         }
 
-        public Coordinate calculateAxialCoordinate(Vector2 position)
+        public TezHexCubeCoordinate calculateAxialCoordinate(Vector2 position)
         {
             float q = 0;
             float r = 0;
