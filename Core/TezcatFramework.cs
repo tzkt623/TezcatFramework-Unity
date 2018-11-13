@@ -10,6 +10,7 @@ using tezcat.Framework.Utility;
 using tezcat.Framework.Wrapper;
 using tezcat.Framework.GraphicSystem;
 using UnityEngine;
+using tezcat.Framework.Threading;
 
 namespace tezcat.Framework.Core
 {
@@ -153,6 +154,8 @@ namespace tezcat.Framework.Core
 
         protected virtual void registerService()
         {
+            TezService.register(new TezThread());
+
             TezService.register(new TezDebug());
             TezService.register(new TezGraphicSystem());
             TezService.register(new TezEventDispatcher());

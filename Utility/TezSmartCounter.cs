@@ -1,7 +1,4 @@
-﻿using UnityEngine;
-using System.Collections;
-
-namespace tezcat.MyRPG
+﻿namespace tezcat.MyRPG
 {
     public class TezRefManager<T> where T : class
     {

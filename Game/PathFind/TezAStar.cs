@@ -61,7 +61,7 @@ namespace tezcat.Framework.Game
 
             while (open_set.count > 0)
             {
-                var currentNode = open_set.popFirst();
+                var currentNode = open_set.pop();
                 if (currentNode == end)
                 {
                     //                     stopwatch.Stop();
