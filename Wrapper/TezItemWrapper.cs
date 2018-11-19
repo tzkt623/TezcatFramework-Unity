@@ -15,12 +15,12 @@ namespace tezcat.Framework.Wrapper
     {
         public string myName
         {
-            get { return TezTranslator.translateName(this.myItem.NID); }
+            get { return TezService.get<TezTranslator>().translateName(this.myItem.NID); }
         }
 
         public string myDescription
         {
-            get { return TezTranslator.translateDescription(this.myItem.NID); }
+            get { return TezService.get<TezTranslator>().translateDescription(this.myItem.NID); }
         }
 
         public virtual TezDataBaseItem myItem { get; private set; }

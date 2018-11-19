@@ -13,9 +13,6 @@ namespace tezcat.Framework.UI
         {
             m_Icon = this.GetComponent<Image>();
 
-            TezSelectController.onSelect.add(onSelect);
-            TezSelectController.onCancelSelect.add(onCancelSelect);
-
             this.gameObject.SetActive(false);
         }
 
@@ -52,8 +49,7 @@ namespace tezcat.Framework.UI
 
         public override void clear()
         {
-            TezSelectController.onSelect.remove(onSelect);
-            TezSelectController.onCancelSelect.remove(onCancelSelect);
+
         }
 
         private void onSelect(TezBasicSelector selector)

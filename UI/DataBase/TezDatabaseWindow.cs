@@ -79,7 +79,7 @@ namespace tezcat.Framework.UI
 //             }
 
             m_CurrentEditor.transform.SetAsLastSibling();
-            m_CurrentEditor.onClose.add(this.onEditorClose);
+            m_CurrentEditor.onClose += this.onEditorClose;
             m_CurrentEditor.bind(category);
             m_CurrentEditor.open();
         }

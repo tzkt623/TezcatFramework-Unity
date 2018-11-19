@@ -7,12 +7,12 @@ namespace tezcat.Framework.Wrapper
     {
         public string myName
         {
-            get { return TezTranslator.translateName(this.getObject().NID); }
+            get { return TezService.get<TezTranslator>().translateName(this.getObject().NID); }
         }
 
         public string myDescription
         {
-            get { return TezTranslator.translateDescription(this.getObject().NID); }
+            get { return TezService.get<TezTranslator>().translateDescription(this.getObject().NID); }
         }
 
         public abstract TezGameObject getObject();

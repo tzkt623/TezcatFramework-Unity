@@ -1,7 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.Reflection;
 using tezcat.Framework.Core;
 using tezcat.Framework.Extension;
+using tezcat.Framework.TypeTraits;
 using UnityEngine;
 
 namespace tezcat.Framework.DataBase
@@ -43,15 +44,20 @@ namespace tezcat.Framework.DataBase
 
     public class TezPrefabDatabase : ITezService
     {
-        Dictionary<Type, TezPrefabID> m_Dic = new Dictionary<Type, TezPrefabID>();
-        List<TezPrefabID> m_List = new List<TezPrefabID>();
+        int m_IDGiver = 0;
+        class StaticContainer<Prefab> where Prefab : class, ITezPrefab
+        {
+            public static ITezPrefab prefab = null;
+            public static int ID { get; private set; }
+            public static void setID(int id)
+            {
+                ID = id;
+            }
+        }
 
         public void foreachPrefab(TezEventExtension.Action<TezPrefabID> action)
         {
-            foreach (var prefab in m_List)
-            {
-                action(prefab);
-            }
+
         }
 
         public void register(GameObject go)
@@ -64,110 +70,51 @@ namespace tezcat.Framework.DataBase
             else
             {
                 Debug.LogWarning(string.Format("{0}`s Prefab Not Found", go.name));
-//                throw new ArgumentNullException(string.Format("{0}`s Prefab Not Found", go.name));
             }
         }
 
         private void register(ITezPrefab prefab)
         {
-            TezPrefabID temp = null;
-            if (!m_Dic.TryGetValue(prefab.GetType(), out temp))
-            {
-                temp = new TezPrefabID(m_List.Count, prefab);
-                m_List.Add(temp);
-                m_Dic.Add(prefab.GetType(), temp);
-            }
+            Type type = typeof(StaticContainer<>);
+            type = type.MakeGenericType(prefab.GetType());
+            type.InvokeMember("prefab"
+                , BindingFlags.Public | BindingFlags.Static | BindingFlags.SetField
+                , null
+                , null
+                , new object[] { prefab });
 
-            temp.setPrefab(prefab);
+            type.InvokeMember("setID"
+                , BindingFlags.Public | BindingFlags.Static | BindingFlags.InvokeMethod
+                , null
+                , null
+                , new object[] { m_IDGiver++ });
         }
 
-        public TezPrefabID register<T>(ITezPrefab prefab) where T : ITezPrefab
+        public void register<T>(ITezPrefab prefab) where T : class, ITezPrefab
         {
-            TezPrefabID temp = null;
-            if (!m_Dic.TryGetValue(typeof(T), out temp))
+            switch (StaticContainer<T>.ID)
             {
-                temp = new TezPrefabID(m_List.Count, prefab);
-                m_List.Add(temp);
-                m_Dic.Add(typeof(T), temp);
+                case TezTypeInfo.ErrorID:
+                    StaticContainer<T>.setID(m_IDGiver++);
+                    break;
             }
 
-            return temp;
+            StaticContainer<T>.prefab = prefab;
         }
 
-        public int getID<T>() where T : ITezPrefab
+        public int getID<T>() where T : class, ITezPrefab
         {
-            TezPrefabID temp = null;
-            if (m_Dic.TryGetValue(typeof(T), out temp))
-            {
-                return temp.ID;
-            }
-            else
-            {
-                throw new ArgumentNullException(string.Format("{0} is not registered!!", typeof(T).Name));
-            }
-        }
-
-        public int getID(Type type)
-        {
-            TezPrefabID temp = null;
-            if (m_Dic.TryGetValue(type, out temp))
-            {
-                return temp.ID;
-            }
-            else
-            {
-                throw new ArgumentNullException(string.Format("{0} is not registered!!", type.Name));
-            }
+            return StaticContainer<T>.ID;
         }
 
         public T get<T>() where T : class, ITezPrefab
         {
-            TezPrefabID temp = null;
-            if (m_Dic.TryGetValue(typeof(T), out temp))
-            {
-                return temp.convertTo<T>();
-            }
-            else
-            {
-                throw new ArgumentNullException(string.Format("{0} is not registered!!", typeof(T).Name));
-            }
-        }
-
-        public ITezPrefab get(int ID)
-        {
-            return m_List[ID].prefab;
-        }
-
-        public ITezPrefab get(Type type)
-        {
-            TezPrefabID temp = null;
-            if (m_Dic.TryGetValue(type, out temp))
-            {
-                return temp.prefab;
-            }
-            else
-            {
-                throw new ArgumentNullException(string.Format("{0} is not registered!!", type.Name));
-            }
-        }
-
-        public T get<T>(int ID) where T : ITezPrefab
-        {
-            return m_List[ID].convertTo<T>();
+            return (T)StaticContainer<T>.prefab;
         }
 
         public void close()
         {
-            foreach (var item in m_List)
-            {
-                item.close();
-            }
 
-            m_List.Clear();
-            m_Dic.Clear();
-
-            m_List = null;
-            m_Dic = null;
         }
     }
 }

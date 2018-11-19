@@ -7,8 +7,8 @@ namespace tezcat.Framework.DataBase
 {
     public class TezTextureDatabase : ITezService
     {
-        List<TezSprite> m_SpriteList = new List<TezSprite>();
         Dictionary<string, TezSprite> m_SpriteDic = new Dictionary<string, TezSprite>();
+        TezSprite m_Missing = null;
 
         public void add(Sprite[] array)
         {
@@ -26,21 +26,35 @@ namespace tezcat.Framework.DataBase
                 throw new Exception(string.Format("There is the same name[{0}] sprite in DB", ts.name));
             }
 
-            m_SpriteList.Add(ts);
-            m_SpriteDic.Add(ts.name, ts);
+            if(m_Missing == null && sprite.name == "MissingIcon")
+            {
+                m_Missing = new TezSprite(sprite);
+            }
+            else
+            {
+                m_SpriteDic.Add(ts.name, ts);
+            }
+        }
+
+        public TezSprite get(string name)
+        {
+            TezSprite sprite;
+            if(m_SpriteDic.TryGetValue(name, out sprite))
+            {
+                return sprite;
+            }
+
+            return m_Missing;
         }
 
         public void close()
         {
-            foreach (var sprite in m_SpriteList)
+            foreach (var pair in m_SpriteDic)
             {
-                sprite.close();
+                pair.Value.close();
             }
 
-            m_SpriteList.Clear();
             m_SpriteDic.Clear();
-
-            m_SpriteList = null;
             m_SpriteDic = null;
         }
     }

@@ -64,7 +64,7 @@ namespace tezcat.Framework.UI
         private void refreshData()
         {
             string value = null;
-            if (TezTranslator.translateName(m_KeyName.text, out value))
+            if (TezService.get<TezTranslator>().translateName(m_KeyName.text, out value))
             {
                 m_LocalizationName.text = value;
             }

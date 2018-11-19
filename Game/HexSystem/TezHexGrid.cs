@@ -166,6 +166,17 @@ namespace tezcat.Framework.Game
             return new TezHexCubeCoordinate(center.x + dir.x, center.z + dir.z);
         }
 
+        public static List<TezHexCubeCoordinate> neighbors(TezHexCubeCoordinate center)
+        {
+            List<TezHexCubeCoordinate> coordinates = new List<TezHexCubeCoordinate>(6);
+            for (int i = 0; i < CubeDirections.Length; i++)
+            {
+                coordinates.Add(center + CubeDirections[i]);
+            }
+
+            return coordinates;
+        }
+
         public static TezHexCubeCoordinate direction(Direction direction)
         {
             return CubeDirections[(int)direction];
@@ -362,7 +373,7 @@ namespace tezcat.Framework.Game
             return new Vector3(x, 0, y);
         }
 
-        public TezHexCubeCoordinate calculateAxialCoordinate(Vector2 position)
+        public TezHexCubeCoordinate calculateCoordinate(Vector2 position)
         {
             float q = 0;
             float r = 0;
@@ -387,7 +398,7 @@ namespace tezcat.Framework.Game
                  */
                 case Layout.Flat:
                     q = position.x * 2 / 3 / size;
-                    r = (-position.x / 3 + position.y * Sqrt3D3) / size;
+                    r = (-position.x / 3 + Sqrt3D3 * position.y) / size;
                     break;
             }
 

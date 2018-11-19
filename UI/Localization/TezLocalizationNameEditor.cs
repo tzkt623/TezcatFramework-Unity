@@ -48,7 +48,7 @@ namespace tezcat.Framework.UI
         private void refreshData()
         {
             string value;
-            if (TezTranslator.translateName(m_KeyInput.text, out value))
+            if (TezService.get<TezTranslator>().translateName(m_KeyInput.text, out value))
             {
                 m_LocalizationInput.text = value;
             }
@@ -81,7 +81,7 @@ namespace tezcat.Framework.UI
         private void checkKey(string key)
         {
             string value;
-            if (TezTranslator.translateName(key, out value))
+            if (TezService.get<TezTranslator>().translateName(key, out value))
             {
                 m_LocalizationInput.text = value;
             }
@@ -131,7 +131,7 @@ namespace tezcat.Framework.UI
         {
             if (eventData.button == PointerEventData.InputButton.Left)
             {
-                TezTranslator.saveName(m_KeyInput.text, m_LocalizationInput.text);
+                TezService.get<TezTranslator>().saveName(m_KeyInput.text, m_LocalizationInput.text);
                 listArea.refresh = RefreshPhase.Custom3;
                 this.close();
             }

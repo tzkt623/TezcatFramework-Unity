@@ -11,7 +11,7 @@ namespace tezcat.Framework.Core
 
         public bool theSameAs(T obj)
         {
-            return this.myObject.sameAs(obj);
+            return this.myGameObject.sameAs(obj);
         }
     }
 
@@ -92,12 +92,12 @@ namespace tezcat.Framework.Core
 
             for (int i = 0; i < m_Slots.Count; i++)
             {
-                if (result == -1 && m_Slots[i].myObject == null)
+                if (result == -1 && m_Slots[i].myGameObject == null)
                 {
                     result = i;
                 }
 
-                if (m_Slots[i].myObject != null && m_Slots[i].myObject.sameAs(item))
+                if (m_Slots[i].myGameObject != null && m_Slots[i].myGameObject.sameAs(item))
                 {
                     return i;
                 }

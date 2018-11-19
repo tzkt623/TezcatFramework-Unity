@@ -76,7 +76,7 @@ namespace tezcat.Framework.UI
 
         private void refreshData()
         {
-            m_PropertyName.text = TezTranslator.translateName(m_Property.name, m_Property.name);
+            m_PropertyName.text = TezService.get<TezTranslator>().translateName(m_Property.name, m_Property.name);
             switch (m_Property.valueType)
             {
                 case TezValueType.Float:

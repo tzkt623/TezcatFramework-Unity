@@ -1,5 +1,4 @@
 ﻿using tezcat.Framework.Core;
-using tezcat.Framework.Utility;
 
 namespace tezcat.Framework.Wrapper
 {
@@ -11,15 +10,15 @@ namespace tezcat.Framework.Wrapper
     {
         public string myName
         {
-            get { return TezTranslator.translateName(this.getObject().NID); }
+            get { return TezService.get<TezTranslator>().translateName(this.getGameObject().NID); }
         }
 
         public string myDescription
         {
-            get { return TezTranslator.translateDescription(this.getObject().NID); }
+            get { return TezService.get<TezTranslator>().translateDescription(this.getGameObject().NID); }
         }
 
-        public abstract TezGameObject getObject();
+        public abstract TezGameObject getGameObject();
 
         public abstract void close();
 
@@ -53,16 +52,58 @@ namespace tezcat.Framework.Wrapper
         : TezGameObjectWrapper
         where T : TezGameObject
     {
-        public T myObject { get; set; } = null;
+        public T myGameObject { get; set; } = null;
 
-        public sealed override TezGameObject getObject()
+        public sealed override TezGameObject getGameObject()
         {
-            return this.myObject;
+            return this.myGameObject;
         }
 
         public override void close()
         {
-            this.myObject = null;
+            this.myGameObject = null;
+        }
+    }
+
+
+    public abstract class TezToolObjectWrapper : ITezToolObjectWrapper
+    {
+        public abstract TezToolObject getToolObject();
+
+        public abstract void close();
+
+        #region 重载操作
+        public static bool operator true(TezToolObjectWrapper obj)
+        {
+            return !object.ReferenceEquals(obj, null);
+        }
+
+        public static bool operator false(TezToolObjectWrapper obj)
+        {
+            return object.ReferenceEquals(obj, null);
+        }
+
+        public static bool operator !(TezToolObjectWrapper obj)
+        {
+            return object.ReferenceEquals(obj, null);
+        }
+        #endregion
+    }
+
+    public abstract class TezToolObjectWrapper<T>
+        : TezToolObjectWrapper
+        where T : TezToolObject
+    {
+        public T myToolObject { get; set; } = null;
+
+        public sealed override TezToolObject getToolObject()
+        {
+            return this.myToolObject;
+        }
+
+        public override void close()
+        {
+            this.myToolObject = null;
         }
     }
 }

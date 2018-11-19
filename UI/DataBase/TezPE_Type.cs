@@ -72,7 +72,7 @@ namespace tezcat.Framework.UI
 
         private void refreshData()
         {
-            m_PropertyName.text = TezTranslator.translateName(m_Property.name, m_Property.name);
+            m_PropertyName.text = TezService.get<TezTranslator>().translateName(m_Property.name, m_Property.name);
             m_Types = TezTypeListManager.getList(m_Property.systemType);
 
             m_DropDown.ClearOptions();

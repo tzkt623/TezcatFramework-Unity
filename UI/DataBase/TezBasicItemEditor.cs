@@ -1,5 +1,4 @@
 ﻿using tezcat.Framework.DataBase;
-using tezcat.Event;
 using tezcat.Framework.Extension;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -16,7 +15,7 @@ namespace tezcat.Framework.UI
         [SerializeField]
         TezLabelButtonWithBG m_Cancel = null;
 
-        public TezAction onClose { get; private set; } = new TezAction();
+        public event TezEventExtension.Action onClose;
 
         public abstract int[] supportCategory { get; }
 // 
@@ -39,8 +38,6 @@ namespace tezcat.Framework.UI
             m_Save.onClick -= save;
             m_Cancel.onClick -= cancel;
 
-            onClose.invoke();
-            onClose.clear();
             onClose = null;
             base.clear();
         }

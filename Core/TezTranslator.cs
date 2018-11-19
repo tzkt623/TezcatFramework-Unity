@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace tezcat.Framework.Core
 {
-    public static class TezTranslator
+    public sealed class TezTranslator : ITezService
     {
         public class Text
         {
@@ -25,21 +25,21 @@ namespace tezcat.Framework.Core
             }
         }
 
-        static Dictionary<string, Text> m_NameDic = new Dictionary<string, Text>();
-        static List<Text> m_NameList = new List<Text>();
-        public static int nameCount
+        Dictionary<string, Text> m_NameDic = new Dictionary<string, Text>();
+        List<Text> m_NameList = new List<Text>();
+        public int nameCount
         {
             get { return m_NameList.Count; }
         }
 
-        static Dictionary<string, Text> m_DescriptionDic = new Dictionary<string, Text>();
-        static List<Text> m_DescriptionList = new List<Text>();
-        public static int descriptionCount
+        Dictionary<string, Text> m_DescriptionDic = new Dictionary<string, Text>();
+        List<Text> m_DescriptionList = new List<Text>();
+        public int descriptionCount
         {
             get { return m_DescriptionList.Count; }
         }
 
-        public static void deserialization(TezReader reader)
+        public void deserialization(TezReader reader)
         {
             reader.beginObject("name");
             foreach (var key in reader.getKeys())
@@ -65,7 +65,7 @@ namespace tezcat.Framework.Core
             sortDescription();
         }
 
-        public static void serialization(TezWriter writer)
+        public void serialization(TezWriter writer)
         {
             writer.beginObject("name");
             for (int i = 0; i < m_NameList.Count; i++)
@@ -83,7 +83,7 @@ namespace tezcat.Framework.Core
         }
 
         #region Name
-        public static void sortName()
+        public void sortName()
         {
             m_NameList.Sort((Text p1, Text p2) =>
             {
@@ -96,7 +96,7 @@ namespace tezcat.Framework.Core
             }
         }
 
-        public static bool tryAddName(string key, string value)
+        public bool tryAddName(string key, string value)
         {
             Text package = null;
             if (!m_NameDic.TryGetValue(key, out package))
@@ -108,7 +108,7 @@ namespace tezcat.Framework.Core
             return false;
         }
 
-        public static void addName(string key, string value)
+        public void addName(string key, string value)
         {
             var package = new Text(key, value);
             package.ID = m_NameList.Count;
@@ -118,7 +118,7 @@ namespace tezcat.Framework.Core
             sortName();
         }
 
-        public static bool removeName(string key)
+        public bool removeName(string key)
         {
             Text package = null;
             if (m_NameDic.TryGetValue(key, out package))
@@ -141,7 +141,7 @@ namespace tezcat.Framework.Core
             return false;
         }
 
-        public static void foreachName(TezEventExtension.Action<string, string> action)
+        public void foreachName(TezEventExtension.Action<string, string> action)
         {
             for (int i = 0; i < m_NameList.Count; i++)
             {
@@ -149,7 +149,7 @@ namespace tezcat.Framework.Core
             }
         }
 
-        public static void foreachName(TezEventExtension.Action<string, string> action, int begin, int end)
+        public void foreachName(TezEventExtension.Action<string, string> action, int begin, int end)
         {
             end = Mathf.Min(end, m_NameList.Count);
             for (int i = begin; i < end; i++)
@@ -158,7 +158,7 @@ namespace tezcat.Framework.Core
             }
         }
 
-        public static void saveName(int key, string value)
+        public void saveName(int key, string value)
         {
             if (key >= m_NameList.Count || key < 0)
             {
@@ -168,7 +168,7 @@ namespace tezcat.Framework.Core
             m_NameList[key].value = value;
         }
 
-        public static void saveName(string key, string value)
+        public void saveName(string key, string value)
         {
             Text package = null;
             if (m_NameDic.TryGetValue(key, out package))
@@ -181,7 +181,7 @@ namespace tezcat.Framework.Core
             }
         }
 
-        public static bool translateName(int index, out string key, out string value)
+        public bool translateName(int index, out string key, out string value)
         {
             if (index >= m_NameList.Count || index < 0)
             {
@@ -195,7 +195,7 @@ namespace tezcat.Framework.Core
             return true;
         }
 
-        public static bool translateName(string key, out string value)
+        public bool translateName(string key, out string value)
         {
             value = null;
             if (string.IsNullOrEmpty(key))
@@ -213,7 +213,7 @@ namespace tezcat.Framework.Core
             return false;
         }
 
-        public static string translateName(string key, string value)
+        public string translateName(string key, string value)
         {
             if (string.IsNullOrEmpty(key))
             {
@@ -229,7 +229,7 @@ namespace tezcat.Framework.Core
             return value;
         }
 
-        public static string translateName(string key)
+        public string translateName(string key)
         {
             if (string.IsNullOrEmpty(key))
             {
@@ -247,7 +247,7 @@ namespace tezcat.Framework.Core
         #endregion
 
         #region Description
-        public static void sortDescription()
+        public void sortDescription()
         {
             m_DescriptionList.Sort((Text p1, Text p2) =>
             {
@@ -260,7 +260,7 @@ namespace tezcat.Framework.Core
             }
         }
 
-        public static bool tryAddDescription(string key, string value)
+        public bool tryAddDescription(string key, string value)
         {
             Text package = null;
             if (!m_DescriptionDic.TryGetValue(key, out package))
@@ -272,7 +272,7 @@ namespace tezcat.Framework.Core
             return false;
         }
 
-        public static void addDescription(string key, string value)
+        public void addDescription(string key, string value)
         {
             Text package = new Text(key, value);
             package.ID = m_NameList.Count;
@@ -282,7 +282,7 @@ namespace tezcat.Framework.Core
             sortDescription();
         }
 
-        public static void removeDescription(string key)
+        public void removeDescription(string key)
         {
             Text package = null;
             if (m_DescriptionDic.TryGetValue(key, out package))
@@ -302,7 +302,7 @@ namespace tezcat.Framework.Core
             }
         }
 
-        public static void foreachDescription(TezEventExtension.Action<string, string> action)
+        public void foreachDescription(TezEventExtension.Action<string, string> action)
         {
             for (int i = 0; i < m_DescriptionList.Count; i++)
             {
@@ -310,7 +310,7 @@ namespace tezcat.Framework.Core
             }
         }
 
-        public static void foreachDescription(TezEventExtension.Action<string, string> action, int begin, int end)
+        public void foreachDescription(TezEventExtension.Action<string, string> action, int begin, int end)
         {
             end = Mathf.Min(end, m_DescriptionList.Count);
             for (int i = begin; i < end; i++)
@@ -319,7 +319,7 @@ namespace tezcat.Framework.Core
             }
         }
 
-        public static void saveDescription(int key, string value)
+        public void saveDescription(int key, string value)
         {
             if (key >= m_DescriptionList.Count || key < 0)
             {
@@ -329,7 +329,7 @@ namespace tezcat.Framework.Core
             m_DescriptionList[key].value = value;
         }
 
-        public static void saveDescription(string key, string value)
+        public void saveDescription(string key, string value)
         {
             Text package = null;
             if (m_DescriptionDic.TryGetValue(key, out package))
@@ -342,7 +342,7 @@ namespace tezcat.Framework.Core
             }
         }
 
-        public static bool translateDescription(int index, out string key, out string value)
+        public bool translateDescription(int index, out string key, out string value)
         {
             if (index >= m_DescriptionList.Count || index < 0)
             {
@@ -356,7 +356,7 @@ namespace tezcat.Framework.Core
             return true;
         }
 
-        public static bool translateDescription(string key, out string value)
+        public bool translateDescription(string key, out string value)
         {
             value = null;
             if (string.IsNullOrEmpty(key))
@@ -374,7 +374,7 @@ namespace tezcat.Framework.Core
             return false;
         }
 
-        public static string translateDescription(string key, string value = "$error_description")
+        public string translateDescription(string key, string value = "$error_description")
         {
             if (string.IsNullOrEmpty(key))
             {
@@ -390,7 +390,7 @@ namespace tezcat.Framework.Core
             return value;
         }
 
-        public static string translateDescription(string key)
+        public string translateDescription(string key)
         {
             if (string.IsNullOrEmpty(key))
             {
@@ -404,6 +404,21 @@ namespace tezcat.Framework.Core
             }
 
             return string.Format("#{0}", key);
+        }
+
+        public void close()
+        {
+            m_DescriptionDic.Clear();
+            m_DescriptionList.Clear();
+
+            m_NameDic.Clear();
+            m_NameList.Clear();
+
+            m_DescriptionList = null;
+            m_DescriptionDic = null;
+
+            m_NameList = null;
+            m_NameDic = null;
         }
         #endregion
     }

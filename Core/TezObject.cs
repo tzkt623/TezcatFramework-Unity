@@ -91,7 +91,7 @@ namespace tezcat.Framework.Core
         /// <summary>
         /// 唯一名称ID
         /// </summary>
-        public string NID { get; private set; } = null;
+        public string NID { get; set; } = null;
 
         /// <summary>
         /// 标签
@@ -117,7 +117,7 @@ namespace tezcat.Framework.Core
 
                 this.onInitNew();
                 this.m_RID = new TezRID(group, subgroup);
-                this.NID = string.Empty;
+                this.NID = this.NID ?? string.Empty;
                 this.TAG = new TezTagSet();
             }
             else

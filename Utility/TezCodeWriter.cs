@@ -3,7 +3,6 @@ using System.IO;
 
 namespace tezcat.Framework.Utility
 {
-
     public class TezCodeWriter
     {
         private List<string> m_Lines = new List<string>();

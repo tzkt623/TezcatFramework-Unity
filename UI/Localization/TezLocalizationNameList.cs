@@ -98,7 +98,7 @@ namespace tezcat.Framework.UI
 
         private void refreshData()
         {
-            m_PageController.calculateMaxPage(TezTranslator.nameCount);
+            m_PageController.calculateMaxPage(TezService.get<TezTranslator>().nameCount);
             m_PageController.setPage(m_PageController.currentPage);
         }
 
@@ -118,7 +118,7 @@ namespace tezcat.Framework.UI
             }
             m_ItemList.Clear();
 
-            TezTranslator.foreachName(this.createItem, begin, end);
+            TezService.get<TezTranslator>().foreachName(this.createItem, begin, end);
         }
 
         private void onPageDownClick(TezButton button, PointerEventData eventData)
@@ -159,7 +159,7 @@ namespace tezcat.Framework.UI
         {
             if (eventData.button == PointerEventData.InputButton.Left)
             {
-                if (TezTranslator.removeName(m_SelectItem.key))
+                if (TezService.get<TezTranslator>().removeName(m_SelectItem.key))
                 {
                     m_Vernier.SetParent(this.transform, false);
                     m_Vernier.gameObject.SetActive(false);
@@ -186,7 +186,7 @@ namespace tezcat.Framework.UI
             if (!string.IsNullOrEmpty(key))
             {
                 string value = null;
-                if (TezTranslator.translateName(key, out value))
+                if (TezService.get<TezTranslator>().translateName(key, out value))
                 {
                     if (m_SearchResult != null)
                     {
@@ -220,7 +220,7 @@ namespace tezcat.Framework.UI
             {
                 TezValueName.foreachName((TezValueName name) =>
                 {
-                    TezTranslator.tryAddName(name.name, name.name);
+                    TezService.get<TezTranslator>().tryAddName(name.name, name.name);
                 });
 
                 this.refresh = RefreshPhase.Custom3;

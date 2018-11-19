@@ -16,6 +16,7 @@ namespace tezcat.Framework.Core
         sealed class ServiceID<T> : TezTypeInfo<T, TezService> where T : ITezService
         {
             private ServiceID() { }
+            public static ITezService service;
         }
 
         static List<ITezService> m_List = new List<ITezService>();
@@ -31,17 +32,19 @@ namespace tezcat.Framework.Core
             {
                 case TezTypeInfo.ErrorID:
                     ServiceID<IService>.setID(m_List.Count);
+                    ServiceID<IService>.service = service;
                     m_List.Add(service);
                     break;
                 default:
+                    ServiceID<IService>.service = service;
                     m_List[ServiceID<IService>.ID] = service;
                     break;
             }
         }
 
-        public static T get<T>() where T : ITezService
+        public static IService get<IService>() where IService : ITezService
         {
-            return (T)m_List[ServiceID<T>.ID];
+            return (IService)ServiceID<IService>.service;
         }
 
         public static void close()

@@ -83,7 +83,7 @@ namespace tezcat.Framework.UI
         void IPointerEnterHandler.OnPointerEnter(PointerEventData eventData)
         {
             string value = null;
-            if (TezTranslator.translateDescription(m_KeyName.text, out value))
+            if (TezService.get<TezTranslator>().translateDescription(m_KeyName.text, out value))
             {
                 TezService.get<TezTipController>()
                     .setDescription(value)

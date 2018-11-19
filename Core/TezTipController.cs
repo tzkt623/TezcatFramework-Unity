@@ -231,37 +231,37 @@ namespace tezcat.Framework.Core
                 case TezValueType.Float:
                     if(property.valueSubType == TezValueSubType.WithBasic && display_basic)
                     {
-                        this.pushAttribute(TezTranslator.translateName(property.name),
+                        this.pushAttribute(TezService.get<TezTranslator>().translateName(property.name),
                             string.Format("{0:N1}/{1:N1}", ((TezValueWithBasic<float>)property).value, ((TezValueWithBasic<float>)property).basic));
                     }
                     else
                     {
-                        this.pushAttribute(TezTranslator.translateName(property.name), ((TezValueWrapper<float>)property).value);
+                        this.pushAttribute(TezService.get<TezTranslator>().translateName(property.name), ((TezValueWrapper<float>)property).value);
                     }
                     break;
                 case TezValueType.Int:
                     if(property.valueSubType == TezValueSubType.WithBasic && display_basic)
                     {
-                        this.pushAttribute(TezTranslator.translateName(property.name),
+                        this.pushAttribute(TezService.get<TezTranslator>().translateName(property.name),
                             string.Format("{0}/{1}", ((TezValueWithBasic<int>)property).value, ((TezValueWithBasic<int>)property).basic));
                     }
                     else
                     {
-                        this.pushAttribute(TezTranslator.translateName(property.name), ((TezValueWrapper<int>)property).value);
+                        this.pushAttribute(TezService.get<TezTranslator>().translateName(property.name), ((TezValueWrapper<int>)property).value);
                     }
                     break;
                 case TezValueType.Bool:
                     break;
                 case TezValueType.String:
-                    this.pushAttribute(TezTranslator.translateName(property.name), ((TezValueWrapper<string>)property).value);
+                    this.pushAttribute(TezService.get<TezTranslator>().translateName(property.name), ((TezValueWrapper<string>)property).value);
                     break;
                 case TezValueType.Class:
                     break;
                 case TezValueType.StaticString:
-                    this.pushAttribute(TezTranslator.translateName(property.name), ((TezValueWrapper<TezStaticString>)property).value);
+                    this.pushAttribute(TezService.get<TezTranslator>().translateName(property.name), ((TezValueWrapper<TezStaticString>)property).value);
                     break;
                 case TezValueType.Type:
-                    this.pushAttribute(TezTranslator.translateName(property.name), TezTranslator.translateName(((TezPV_Type)property).baseValue.name));
+                    this.pushAttribute(TezService.get<TezTranslator>().translateName(property.name), TezService.get<TezTranslator>().translateName(((TezPV_Type)property).baseValue.name));
                     break;
                 default:
                     break;
@@ -287,7 +287,7 @@ namespace tezcat.Framework.Core
 
             if (result.Length == 0)
             {
-                result = TezTranslator.translateDescription(string.Intern("#Error_MissingInfo"));
+                result = TezService.get<TezTranslator>().translateDescription(string.Intern("#Error_MissingInfo"));
             }
             else
             {

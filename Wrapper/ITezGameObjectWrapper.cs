@@ -4,6 +4,11 @@ namespace tezcat.Framework.Wrapper
 {
     public interface ITezGameObjectWrapper : ITezWrapper
     {
-        TezGameObject getObject();
+        TezGameObject getGameObject();
+    }
+
+    public interface ITezToolObjectWrapper
+    {
+        TezToolObject getToolObject();
     }
 }

@@ -100,7 +100,7 @@ namespace tezcat.Framework.UI
 
         private void refreshData()
         {
-            m_PageController.calculateMaxPage(TezTranslator.descriptionCount);
+            m_PageController.calculateMaxPage(TezService.get<TezTranslator>().descriptionCount);
             m_PageController.setPage(m_PageController.currentPage);
         }
 
@@ -115,7 +115,7 @@ namespace tezcat.Framework.UI
             }
             m_ItemList.Clear();
 
-            TezTranslator.foreachDescription(
+            TezService.get<TezTranslator>().foreachDescription(
                 this.createItem,
                 begin,
                 end);
@@ -153,7 +153,7 @@ namespace tezcat.Framework.UI
 
         private void onRemoveClick(TezButton button, PointerEventData eventData)
         {
-            TezTranslator.removeDescription(m_SelectItem.key);
+            TezService.get<TezTranslator>().removeDescription(m_SelectItem.key);
             m_Vernier.SetParent(this.transform, false);
             m_Vernier.gameObject.SetActive(false);
             this.refresh = RefreshPhase.Custom3;
@@ -185,7 +185,7 @@ namespace tezcat.Framework.UI
             if (!string.IsNullOrEmpty(key))
             {
                 string value = null;
-                if (TezTranslator.translateDescription(key, out value))
+                if (TezService.get<TezTranslator>().translateDescription(key, out value))
                 {
                     if (m_SearchResult != null)
                     {
@@ -211,7 +211,7 @@ namespace tezcat.Framework.UI
             {
                 TezValueName.foreachName((TezValueName name) =>
                 {
-                    TezTranslator.tryAddDescription(name.name, name.name);
+                    TezService.get<TezTranslator>().tryAddDescription(name.name, name.name);
                 });
 
                 this.refresh = RefreshPhase.Custom3;

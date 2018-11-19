@@ -155,6 +155,7 @@ namespace tezcat.Framework.Core
         protected virtual void registerService()
         {
             TezService.register(new TezThread());
+            TezService.register(new TezTranslator());
 
             TezService.register(new TezDebug());
             TezService.register(new TezGraphicSystem());

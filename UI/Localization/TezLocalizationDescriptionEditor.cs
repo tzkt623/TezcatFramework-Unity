@@ -68,13 +68,13 @@ namespace tezcat.Framework.UI
         private void checkKey(string key)
         {
             string value;
-            if (TezTranslator.translateDescription(key, out value))
+            if (TezService.get<TezTranslator>().translateDescription(key, out value))
             {
                 m_DescriptionInput.text = value;
             }
             else
             {
-                TezTranslator.addDescription(key, value);
+                TezService.get<TezTranslator>().addDescription(key, value);
                 this.refresh = RefreshPhase.Custom3;
             }
         }
@@ -98,7 +98,7 @@ namespace tezcat.Framework.UI
 
         private void onConfirmClick(TezButton button, PointerEventData eventData)
         {
-            TezTranslator.saveDescription(m_KeyInput.text, m_DescriptionInput.text);
+            TezService.get<TezTranslator>().saveDescription(m_KeyInput.text, m_DescriptionInput.text);
             listArea.refresh = RefreshPhase.Custom3;
             this.close();
         }
@@ -106,7 +106,7 @@ namespace tezcat.Framework.UI
         private void refreshData()
         {
             string value;
-            if (TezTranslator.translateDescription(m_KeyInput.text, out value))
+            if (TezService.get<TezTranslator>().translateDescription(m_KeyInput.text, out value))
             {
                 m_DescriptionInput.text = value;
             }
