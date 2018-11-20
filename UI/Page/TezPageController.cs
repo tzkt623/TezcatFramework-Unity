@@ -18,10 +18,9 @@ namespace tezcat.Framework.UI
 
         /// <summary>
         /// 页面变化时的通知
-        /// begin 当前页面Item开始位置
-        /// end 当前页面Item结束位置的后一位
+        /// <para>begin 当前页面Item开始位置</para> 
+        /// <para>end 当前页面Item结束位置的后一位</para>
         /// </summary>
-        /// <param name="function"></param>
         public void setListener(TezEventExtension.Action<int, int> function)
         {
             m_OnPageChanged = function;
