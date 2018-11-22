@@ -7,7 +7,7 @@ namespace tezcat.Framework.UI
     {
         [SerializeField]
         Image m_Image = null;
-        public Image imgae
+        public Image image
         {
             get { return m_Image; }
         }

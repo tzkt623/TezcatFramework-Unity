@@ -7,9 +7,14 @@ namespace tezcat.Framework.UI
     public class TezPageController : ITezCloseable
     {
         TezEventExtension.Action<int, int> m_OnPageChanged;
+        TezEventExtension.Action m_OnEmptyPage;
 
         public int currentPage { get; private set; } = 1;
         public int maxPage { get; private set; } = 0;
+
+        /// <summary>
+        /// 每一页的容量
+        /// </summary>
         public int pageCapacity { get; set; } = 10;
 
         int m_CurrentPageBegin;
@@ -21,9 +26,10 @@ namespace tezcat.Framework.UI
         /// <para>begin 当前页面Item开始位置</para> 
         /// <para>end 当前页面Item结束位置的后一位</para>
         /// </summary>
-        public void setListener(TezEventExtension.Action<int, int> function)
+        public void setListener(TezEventExtension.Action<int, int> on_page_changed, TezEventExtension.Action on_empty_page)
         {
-            m_OnPageChanged = function;
+            m_OnPageChanged = on_page_changed;
+            m_OnEmptyPage = on_empty_page;
         }
 
         public void calculateMaxPage(int total_count)
@@ -55,6 +61,10 @@ namespace tezcat.Framework.UI
             {
                 m_OnPageChanged(this.m_CurrentPageBegin, this.m_CurrentPageEnd);
             }
+            else
+            {
+                m_OnEmptyPage();
+            }
         }
 
         public void pageDown()
@@ -70,6 +80,10 @@ namespace tezcat.Framework.UI
             {
                 m_OnPageChanged(this.m_CurrentPageBegin, this.m_CurrentPageEnd);
             }
+            else
+            {
+                m_OnEmptyPage();
+            }
         }
 
         public void setPage(int page)
@@ -77,6 +91,7 @@ namespace tezcat.Framework.UI
             if(this.maxPage == 0)
             {
                 this.currentPage = 0;
+                m_OnEmptyPage();
                 return;
             }
 
@@ -96,6 +111,10 @@ namespace tezcat.Framework.UI
             if(this.calculateCurrentPage())
             {
                 m_OnPageChanged(this.m_CurrentPageBegin, this.m_CurrentPageEnd);
+            }
+            else
+            {
+                m_OnEmptyPage();
             }
         }
 

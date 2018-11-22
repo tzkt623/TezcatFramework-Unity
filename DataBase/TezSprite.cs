@@ -1,21 +1,27 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 namespace tezcat.Framework.DataBase
 {
     public class TezSprite : TezDataBaseAssetItem
     {
-        public static TezSprite missing { get; } = new TezSprite();
+        public enum Size
+        {
+            Normal = 0,
+            Samll,
+            Large
+        }
 
-        Sprite m_Sprite = null;
+        Sprite[] m_Sprite = new Sprite[Enum.GetValues(typeof(Size)).Length];
 
         public string name
         {
-            get { return m_Sprite.name; }
+            get;
         }
 
-        public TezSprite(Sprite sprite = null)
+        public TezSprite(string name)
         {
-            m_Sprite = sprite;
+            this.name = name;
         }
 
         public override void close()
@@ -23,9 +29,14 @@ namespace tezcat.Framework.DataBase
             m_Sprite = null;
         }
 
-        public static implicit operator Sprite(TezSprite sprite)
+        public void set(Sprite sprite, Size size)
         {
-            return sprite.m_Sprite;
+            m_Sprite[(int)size] = sprite;
+        }
+
+        public Sprite get(Size size)
+        {
+            return m_Sprite[(int)size];
         }
     }
 }

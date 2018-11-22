@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using tezcat.Framework.Core;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -70,11 +71,16 @@ namespace tezcat.Framework.UI
 
             ///page
             m_PageController.pageCapacity = m_CountPerPage;
-            m_PageController.setListener(this.onPageChanged);
+            m_PageController.setListener(this.onPageChanged, onEmptyPage);
             m_PageUp.onClick += onPageUpClick;
             m_PageDown.onClick += onPageDownClick;
             m_Page.contentType = InputField.ContentType.IntegerNumber;
             m_Page.onEndEdit.AddListener(this.onPageSet);
+        }
+
+        private void onEmptyPage()
+        {
+            throw new NotImplementedException();
         }
 
         protected override void onHide()

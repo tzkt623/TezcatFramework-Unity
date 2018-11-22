@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using tezcat.Framework.Core;
 using UnityEngine;
 
@@ -8,7 +7,8 @@ namespace tezcat.Framework.DataBase
     public class TezTextureDatabase : ITezService
     {
         Dictionary<string, TezSprite> m_SpriteDic = new Dictionary<string, TezSprite>();
-        TezSprite m_Missing = null;
+
+        TezSprite m_Missing = new TezSprite("MissingIcon");
 
         public void add(Sprite[] array)
         {
@@ -20,26 +20,60 @@ namespace tezcat.Framework.DataBase
 
         public void add(Sprite sprite)
         {
-            var ts = new TezSprite(sprite);
-            if(m_SpriteDic.ContainsKey(ts.name))
+            string name = sprite.name.Substring(0, sprite.name.IndexOf('('));
+
+            var ext_index = name.LastIndexOf('_');
+            var ext = 'N';
+            if (ext_index >= 0)
             {
-                throw new Exception(string.Format("There is the same name[{0}] sprite in DB", ts.name));
+                ext = name[name.Length - 1];
+                name = name.Remove(name.Length - 2);
             }
 
-            if(m_Missing == null && sprite.name == "MissingIcon")
+            if (name == "MissingIcon")
             {
-                m_Missing = new TezSprite(sprite);
+                switch (ext)
+                {
+                    case 'S':
+                        m_Missing.set(sprite, TezSprite.Size.Samll);
+                        Debug.Log(name);
+                        break;
+                    case 'L':
+                        m_Missing.set(sprite, TezSprite.Size.Large);
+                        break;
+                    default:
+                        m_Missing.set(sprite, TezSprite.Size.Normal);
+                        break;
+                }
             }
             else
             {
-                m_SpriteDic.Add(ts.name, ts);
+                TezSprite container = null;
+                if (!m_SpriteDic.TryGetValue(name, out container))
+                {
+                    container = new TezSprite(name);
+                    m_SpriteDic.Add(name, container);
+                }
+
+                switch (ext)
+                {
+                    case 'S':
+                        container.set(sprite, TezSprite.Size.Samll);
+                        break;
+                    case 'L':
+                        container.set(sprite, TezSprite.Size.Large);
+                        break;
+                    default:
+                        container.set(sprite, TezSprite.Size.Normal);
+                        break;
+                }
             }
         }
 
         public TezSprite get(string name)
         {
             TezSprite sprite;
-            if(m_SpriteDic.TryGetValue(name, out sprite))
+            if (m_SpriteDic.TryGetValue(name, out sprite))
             {
                 return sprite;
             }
