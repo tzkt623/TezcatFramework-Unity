@@ -6,7 +6,8 @@ namespace tezcat.Framework.Wrapper
     /// GameObject包装器
     /// 用来获得基础资源信息
     /// </summary>
-    public abstract class TezGameObjectWrapper : ITezGameObjectWrapper
+    public abstract class TezGameObjectWrapper
+        : ITezGameObjectWrapper
     {
         public string myName
         {
