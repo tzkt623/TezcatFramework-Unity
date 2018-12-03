@@ -11,17 +11,17 @@ namespace tezcat.Framework.Core
         int count { get; }
 
         void register(TezValueWrapper vw);
-        bool unregister(ITezValueName name);
+        bool unregister(ITezValueDescriptor name);
 
-        TezValueWrapper get(ITezValueName name);
-        TezValueWrapper<T> get<T>(ITezValueName name);
+        TezValueWrapper get(ITezValueDescriptor name);
+        TezValueWrapper<T> get<T>(ITezValueDescriptor name);
 
         TezValueWrapper get(int index);
         TezValueWrapper<T> get<T>(int index);
 
-        void set<T>(ITezValueName name, TezEventExtension.Action<TezValueWrapper<T>> action);
+        void set<T>(ITezValueDescriptor name, TezEventExtension.Action<TezValueWrapper<T>> action);
 
-        bool has(ITezValueName name);
+        bool has(ITezValueDescriptor name);
 
         void sort();
 
@@ -45,11 +45,11 @@ namespace tezcat.Framework.Core
             m_List.Add(vw);
         }
 
-        bool ITezPropertyCollection.unregister(ITezValueName name)
+        bool ITezPropertyCollection.unregister(ITezValueDescriptor name)
         {
             var index = m_List.FindIndex((TezValueWrapper vw) =>
             {
-                return (vw.valueName == name);
+                return (vw.descriptor == name);
             });
 
             if (index > -1)
@@ -61,11 +61,11 @@ namespace tezcat.Framework.Core
             return false;
         }
 
-        void ITezPropertyCollection.set<T>(ITezValueName name, TezEventExtension.Action<TezValueWrapper<T>> action)
+        void ITezPropertyCollection.set<T>(ITezValueDescriptor name, TezEventExtension.Action<TezValueWrapper<T>> action)
         {
             var result = m_List.Find((TezValueWrapper vw) =>
             {
-                return (vw.valueName == name);
+                return (vw.descriptor == name);
             });
 
             if (result)
@@ -78,14 +78,14 @@ namespace tezcat.Framework.Core
             }
         }
 
-        TezValueWrapper ITezPropertyCollection.get(ITezValueName name)
+        TezValueWrapper ITezPropertyCollection.get(ITezValueDescriptor name)
         {
             TezValueWrapper result;
             m_List.binaryFind(name.ID, out result);
             return result;
         }
 
-        TezValueWrapper<T> ITezPropertyCollection.get<T>(ITezValueName name)
+        TezValueWrapper<T> ITezPropertyCollection.get<T>(ITezValueDescriptor name)
         {
             TezValueWrapper result;
             m_List.binaryFind(name.ID, out result);
@@ -102,7 +102,7 @@ namespace tezcat.Framework.Core
             return (TezValueWrapper<T>)m_List[index];
         }
 
-        bool ITezPropertyCollection.has(ITezValueName name)
+        bool ITezPropertyCollection.has(ITezValueDescriptor name)
         {
             TezValueWrapper result;
             return m_List.binaryFind(name.ID, out result);
@@ -145,7 +145,7 @@ namespace tezcat.Framework.Core
 
     public class TezPropertyDic : ITezPropertyCollection
     {
-        Dictionary<ITezValueName, TezValueWrapper> m_PropertyDic = new Dictionary<ITezValueName, TezValueWrapper>();
+        Dictionary<ITezValueDescriptor, TezValueWrapper> m_PropertyDic = new Dictionary<ITezValueDescriptor, TezValueWrapper>();
 
         int ITezPropertyCollection.count
         {
@@ -154,20 +154,20 @@ namespace tezcat.Framework.Core
 
         void ITezPropertyCollection.register(TezValueWrapper vw)
         {
-            m_PropertyDic.Add(vw.valueName, vw);
+            m_PropertyDic.Add(vw.descriptor, vw);
         }
 
-        bool ITezPropertyCollection.unregister(ITezValueName name)
+        bool ITezPropertyCollection.unregister(ITezValueDescriptor name)
         {
             return m_PropertyDic.Remove(name);
         }
 
-        TezValueWrapper ITezPropertyCollection.get(ITezValueName name)
+        TezValueWrapper ITezPropertyCollection.get(ITezValueDescriptor name)
         {
             return m_PropertyDic[name];
         }
 
-        TezValueWrapper<T> ITezPropertyCollection.get<T>(ITezValueName name)
+        TezValueWrapper<T> ITezPropertyCollection.get<T>(ITezValueDescriptor name)
         {
             return (TezValueWrapper<T>)m_PropertyDic[name];
         }
@@ -204,7 +204,7 @@ namespace tezcat.Framework.Core
             return null;
         }
 
-        void ITezPropertyCollection.set<T>(ITezValueName name, TezEventExtension.Action<TezValueWrapper<T>> action)
+        void ITezPropertyCollection.set<T>(ITezValueDescriptor name, TezEventExtension.Action<TezValueWrapper<T>> action)
         {
             TezValueWrapper vw = null;
             if (m_PropertyDic.TryGetValue(name, out vw))
@@ -217,7 +217,7 @@ namespace tezcat.Framework.Core
             }
         }
 
-        bool ITezPropertyCollection.has(ITezValueName name)
+        bool ITezPropertyCollection.has(ITezValueDescriptor name)
         {
             return m_PropertyDic.ContainsKey(name);
         }
@@ -238,7 +238,7 @@ namespace tezcat.Framework.Core
             if (dic != null)
             {
                 m_PropertyDic.Clear();
-                m_PropertyDic = new Dictionary<ITezValueName, TezValueWrapper>(dic.m_PropertyDic);
+                m_PropertyDic = new Dictionary<ITezValueDescriptor, TezValueWrapper>(dic.m_PropertyDic);
             }
         }
 
@@ -256,7 +256,7 @@ namespace tezcat.Framework.Core
             if (dic != null)
             {
                 m_PropertyDic.Clear();
-                m_PropertyDic = new Dictionary<ITezValueName, TezValueWrapper>(dic.m_PropertyDic);
+                m_PropertyDic = new Dictionary<ITezValueDescriptor, TezValueWrapper>(dic.m_PropertyDic);
             }
         }
 

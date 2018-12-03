@@ -4,32 +4,32 @@ using tezcat.Framework.Extension;
 
 namespace tezcat.Framework.Core
 {
-    public interface ITezValueName
-        : IEquatable<ITezValueName>
-        , IComparable<ITezValueName>
+    public interface ITezValueDescriptor
+        : IEquatable<ITezValueDescriptor>
+        , IComparable<ITezValueDescriptor>
     {
         int ID { get; }
         string name { get; }
     }
 
-    public class TezValueName
-        : ITezValueName
+    public class TezValueDescriptor
+        : ITezValueDescriptor
     {
         public int ID { get; }
         public string name { get; }
 
-        protected TezValueName(int id, string name)
+        protected TezValueDescriptor(int id, string name)
         {
             this.name = name;
             this.ID = id;
         }
 
-        public bool Equals(ITezValueName other)
+        public bool Equals(ITezValueDescriptor other)
         {
             return this.ID == other.ID;
         }
 
-        public int CompareTo(ITezValueName other)
+        public int CompareTo(ITezValueDescriptor other)
         {
             return this.ID.CompareTo(other.ID);
         }
@@ -39,20 +39,20 @@ namespace tezcat.Framework.Core
             return this.ID.GetHashCode();
         }
 
-        public static implicit operator int(TezValueName vn)
+        public static implicit operator int(TezValueDescriptor vn)
         {
             return vn.ID;
         }
 
         #region 注册
-        static Dictionary<string, TezValueName> m_NameDic = new Dictionary<string, TezValueName>();
-        static List<TezValueName> m_NameList = new List<TezValueName>();
-        public static TezValueName register(string name)
+        static Dictionary<string, TezValueDescriptor> m_NameDic = new Dictionary<string, TezValueDescriptor>();
+        static List<TezValueDescriptor> m_NameList = new List<TezValueDescriptor>();
+        public static TezValueDescriptor register(string name)
         {
-            TezValueName property;
+            TezValueDescriptor property;
             if (!m_NameDic.TryGetValue(name, out property))
             {
-                property = new TezValueName(m_NameList.Count, name);
+                property = new TezValueDescriptor(m_NameList.Count, name);
                 m_NameDic.Add(name, property);
                 m_NameList.Add(property);
             }
@@ -60,19 +60,19 @@ namespace tezcat.Framework.Core
             return property;
         }
 
-        public static TezValueName get(string name)
+        public static TezValueDescriptor get(string name)
         {
-            TezValueName pn;
+            TezValueDescriptor pn;
             m_NameDic.TryGetValue(name, out pn);
             return pn;
         }
 
-        public static TezValueName get(int id)
+        public static TezValueDescriptor get(int id)
         {
             return m_NameList[id];
         }
 
-        public static void foreachName(TezEventExtension.Action<TezValueName> action)
+        public static void foreachName(TezEventExtension.Action<TezValueDescriptor> action)
         {
             foreach (var pair in m_NameDic)
             {

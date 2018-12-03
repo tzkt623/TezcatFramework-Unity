@@ -224,7 +224,7 @@ namespace tezcat.Framework.UI
         {
             if (eventData.button == PointerEventData.InputButton.Left)
             {
-                TezValueName.foreachName((TezValueName name) =>
+                TezValueDescriptor.foreachName((TezValueDescriptor name) =>
                 {
                     TezService.get<TezTranslator>().tryAddName(name.name, name.name);
                 });

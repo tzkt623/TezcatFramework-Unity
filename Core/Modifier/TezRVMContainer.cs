@@ -5,8 +5,8 @@ namespace tezcat.Framework.Core
         bool dirty { get; set; }
         float refresh(float basic_value);
 
-        void addModifier(ITezRealValueModifier modifier);
-        bool removeModifier(ITezRealValueModifier modifier);
+        void addModifier(ITezRealModifier modifier);
+        bool removeModifier(ITezRealModifier modifier);
         bool removeAllModifierFrom(object source);
     }
 
@@ -14,7 +14,7 @@ namespace tezcat.Framework.Core
     {
         bool m_Dirty = false;
         float m_CurrentValue = float.MinValue;
-        protected TezRVMList m_Modifiers = null;
+        protected TezRealModifierList m_Modifiers = null;
 
         public virtual bool dirty
         {
@@ -28,17 +28,17 @@ namespace tezcat.Framework.Core
             }
         }
 
-        public TezRVMContainer(TezRVMList.RecordMode record_mode = TezRVMList.RecordMode.Normal)
+        public TezRVMContainer(TezRealModifierList.RecordMode record_mode = TezRealModifierList.RecordMode.Normal)
         {
-            m_Modifiers = new TezRVMList(record_mode);
+            m_Modifiers = new TezRealModifierList(record_mode);
         }
 
-        public void addModifier(ITezRealValueModifier modifier)
+        public void addModifier(ITezRealModifier modifier)
         {
             m_Modifiers.add(modifier);
         }
 
-        public bool removeModifier(ITezRealValueModifier modifier)
+        public bool removeModifier(ITezRealModifier modifier)
         {
             return m_Modifiers.remove(modifier);
         }
@@ -61,11 +61,11 @@ namespace tezcat.Framework.Core
 
         protected virtual int sortModifiers(ITezModifier a, ITezModifier b)
         {
-            if (a.order < b.order)
+            if (a.operationID < b.operationID)
             {
                 return -1;
             }
-            else if (a.order > b.order)
+            else if (a.operationID > b.operationID)
             {
                 return 1;
             }

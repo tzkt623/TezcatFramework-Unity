@@ -29,7 +29,7 @@ namespace tezcat.Framework.Extension
             var keys = reader.getKeys();
             foreach (var key in keys)
             {
-                collection.register(new TezValueWrapper<int>(TezValueName.get(key))
+                collection.register(new TezValueWrapper<int>(TezValueDescriptor.get(key))
                 {
                     value = reader.readInt(key)
                 });

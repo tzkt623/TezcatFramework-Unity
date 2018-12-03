@@ -30,7 +30,7 @@ namespace tezcat.Framework.Core
 
     public interface ITezValueWrapper : ITezCloseable
     {
-        ITezValueName valueName { get; }
+        ITezValueDescriptor descriptor { get; }
         string name { get; }
         int ID { get; }
     }
@@ -72,9 +72,9 @@ namespace tezcat.Framework.Core
         }
 
 
-        public TezValueWrapper(ITezValueName name)
+        public TezValueWrapper(ITezValueDescriptor name)
         {
-            this.valueName = name;
+            this.descriptor = name;
         }
 
         public TezValueWrapper()
@@ -89,16 +89,16 @@ namespace tezcat.Framework.Core
             get { return TezValueSubType.Normal; }
         }
 
-        public virtual ITezValueName valueName { get; } = null;
+        public virtual ITezValueDescriptor descriptor { get; } = null;
 
         public string name
         {
-            get { return valueName.name; }
+            get { return descriptor.name; }
         }
 
         public int ID
         {
-            get { return valueName.ID; }
+            get { return descriptor.ID; }
         }
 
         int ITezBinarySearchItem.binaryID
@@ -108,7 +108,7 @@ namespace tezcat.Framework.Core
 
         public bool Equals(TezValueWrapper other)
         {
-            return this.valueName.Equals(other.valueName);
+            return this.descriptor.Equals(other.descriptor);
         }
 
         public override bool Equals(object obj)
@@ -118,12 +118,12 @@ namespace tezcat.Framework.Core
 
         public int CompareTo(TezValueWrapper other)
         {
-            return this.valueName.CompareTo(other.valueName);
+            return this.descriptor.CompareTo(other.descriptor);
         }
 
         public override int GetHashCode()
         {
-            return this.valueName.GetHashCode();
+            return this.descriptor.GetHashCode();
         }
 
         public virtual void close()
@@ -159,7 +159,7 @@ namespace tezcat.Framework.Core
 
     public class TezValueWrapper<T> : TezValueWrapper
     {
-        public TezValueWrapper(ITezValueName name) : base(name)
+        public TezValueWrapper(ITezValueDescriptor name) : base(name)
         {
 
         }
@@ -203,7 +203,7 @@ namespace tezcat.Framework.Core
             get { return TezValueType.Type; }
         }
 
-        public TezPV_Type(TezValueName name) : base(name)
+        public TezPV_Type(TezValueDescriptor name) : base(name)
         {
 
         }
@@ -224,7 +224,7 @@ namespace tezcat.Framework.Core
             get { return typeof(T); }
         }
 
-        public TezPV_Type(TezValueName name) : base(name)
+        public TezPV_Type(TezValueDescriptor name) : base(name)
         {
 
         }
@@ -246,7 +246,7 @@ namespace tezcat.Framework.Core
             get { return TezValueSubType.GetterSetter; }
         }
 
-        public TezValueGetterSetter(TezValueName name) : base(name)
+        public TezValueGetterSetter(TezValueDescriptor name) : base(name)
         {
 
         }
@@ -264,7 +264,7 @@ namespace tezcat.Framework.Core
             get { return TezValueSubType.WithMinMax; }
         }
 
-        public TezValueWithMinMax(TezValueName name) : base(name)
+        public TezValueWithMinMax(TezValueDescriptor name) : base(name)
         {
 
         }
@@ -281,27 +281,48 @@ namespace tezcat.Framework.Core
             get { return TezValueSubType.WithBasic; }
         }
 
-        public TezValueWithBasic(TezValueName name) : base(name)
+        public TezValueWithBasic(TezValueDescriptor name) : base(name)
         {
 
         }
     }
     #endregion
 
-    #region Modifier
+    #region Modified Value
     public interface ITezModifiableValue : ITezValueWrapper
     {
-        ITezRVMContainer container { get; }
+        bool dirty { get; }
+        TezRealModifierContainer container { get; }
     }
 
-    public class TezModifiableIntValue
-        : TezValueWrapper<int>
+    public class TezModifiableValue<T>
+        : TezValueWrapper<T>
         , ITezModifiableValue
     {
         public sealed override TezValueSubType valueSubType => TezValueSubType.WithModifier;
+        public TezRealModifierContainer container { get; protected set; } = null;
 
-        public ITezRVMContainer container { get; protected set; } = null;
+        public bool dirty
+        {
+            get { return container.dirty; }
+        }
 
+        public TezModifiableValue(ITezValueDescriptor name) : base(name)
+        {
+
+        }
+
+        public override void close()
+        {
+            base.close();
+            this.container.close();
+            this.container = null;
+        }
+    }
+
+    public class TezModifiableIntValue
+        : TezModifiableValue<int>
+    {
         public int modifiedValue
         {
             get
@@ -324,27 +345,15 @@ namespace tezcat.Framework.Core
             }
         }
 
-        public TezModifiableIntValue(ITezValueName name) : base(name)
+        public TezModifiableIntValue(ITezValueDescriptor name) : base(name)
         {
 
-        }
-
-        public override void close()
-        {
-            base.close();
-            this.container.close();
-            this.container = null;
         }
     }
 
     public class TezModifiableFloatValue
-        : TezValueWrapper<float>
-        , ITezModifiableValue
+        : TezModifiableValue<float>
     {
-        public sealed override TezValueSubType valueSubType => TezValueSubType.WithModifier;
-
-        public ITezRVMContainer container { get; protected set; } = null;
-
         public float modifiedValue
         {
             get
@@ -367,16 +376,9 @@ namespace tezcat.Framework.Core
             }
         }
 
-        public TezModifiableFloatValue(ITezValueName name) : base(name)
+        public TezModifiableFloatValue(ITezValueDescriptor name) : base(name)
         {
 
-        }
-
-        public override void close()
-        {
-            base.close();
-            this.container.close();
-            this.container = null;
         }
     }
     #endregion

@@ -1,29 +1,28 @@
-using System;
 using System.Collections.Generic;
 
 namespace tezcat.Framework.Core
 {
-    public interface ITezRealValueModifierCombiner : ITezRealValueModifier
+    public interface ITezRealModifierCombiner : ITezRealModifier
     {
         bool empty { get; }
-        void combine(ITezRealValueModifier modifier);
-        bool separate(ITezRealValueModifier modifier);
+        void combine(ITezRealModifier modifier);
+        bool separate(ITezRealModifier modifier);
         bool separate(object source);
     }
 
     public class TezRealValueModifierCombiner
-        : TezRealValueModifier
-        , ITezRealValueModifierCombiner
+        : TezRealModifier
+        , ITezRealModifierCombiner
     {
-        List<ITezRealValueModifier> m_CombineOwner = new List<ITezRealValueModifier>();
+        List<ITezRealModifier> m_CombineOwner = new List<ITezRealModifier>();
 
         public bool empty
         {
             get { return m_CombineOwner.Count == 0; }
         }
 
-        public TezRealValueModifierCombiner(ITezValueName value_name, ITezModifierOrder modifier_order)
-            : base(0, value_name, modifier_order, null)
+        public TezRealValueModifierCombiner(ITezValueDescriptor value_name, ITezModifierOperation modifier_order)
+            : base(0, value_name, modifier_order)
         {
 
         }
@@ -35,20 +34,20 @@ namespace tezcat.Framework.Core
             m_CombineOwner = null;
         }
 
-        public void combine(ITezRealValueModifier modifier)
+        public void combine(ITezRealModifier modifier)
         {
             m_CombineOwner.Add(modifier);
             this.onCombine(modifier);
         }
 
-        protected virtual void onCombine(ITezRealValueModifier modifier)
+        protected virtual void onCombine(ITezRealModifier modifier)
         {
             this.value += modifier.value;
         }
 
-        public bool separate(ITezRealValueModifier modifier)
+        public bool separate(ITezRealModifier modifier)
         {
-            var index = m_CombineOwner.FindIndex((ITezRealValueModifier inner_modifier) =>
+            var index = m_CombineOwner.FindIndex((ITezRealModifier inner_modifier) =>
             {
                 return inner_modifier == modifier;
             });
@@ -63,16 +62,16 @@ namespace tezcat.Framework.Core
             return false;
         }
 
-        protected virtual void onSeparate(ITezRealValueModifier modifier)
+        protected virtual void onSeparate(ITezRealModifier modifier)
         {
             this.value -= modifier.value;
         }
 
         public bool separate(object source)
         {
-            var index = m_CombineOwner.FindIndex((ITezRealValueModifier inner_modifier) =>
+            var index = m_CombineOwner.FindIndex((ITezRealModifier inner_modifier) =>
             {
-                return inner_modifier.sourceObject == source;
+                return inner_modifier.source == source;
             });
 
             if (index >= 0)
@@ -84,11 +83,6 @@ namespace tezcat.Framework.Core
             }
 
             return false;
-        }
-
-        public override ITezRealValueModifierCombiner createCombiner()
-        {
-            throw new Exception("ModifierCombiner Can not invoke this method!!");
         }
     }
 
