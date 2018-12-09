@@ -5,7 +5,7 @@ using UnityEngine.UI;
 namespace tezcat.Framework.UI
 {
     [RequireComponent(typeof(Image))]
-    public class TezVisualSelector : TezWidget
+    public class TezVisualSelector : TezUIWidget
     {
         Image m_Icon = null;
 

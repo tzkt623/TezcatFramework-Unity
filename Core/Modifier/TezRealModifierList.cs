@@ -81,7 +81,7 @@ namespace tezcat.Framework.Core
         float m_Current = 0;
         protected List<TezRealModifierCombiner> m_Combiners = new List<TezRealModifierCombiner>();
 
-        public bool dirty { get; set; }
+        public bool dirty { get; set; } = true;
 
         private void onDirty()
         {
