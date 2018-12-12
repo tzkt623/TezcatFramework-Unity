@@ -6,6 +6,7 @@ namespace tezcat.Framework.Utility
     public interface ITezBinaryHeapItem<T> : IComparable<T>
     {
         int index { get; set; }
+        bool sameAs(T other);
     }
 
     public class TezTestBHItem : ITezBinaryHeapItem<TezTestBHItem>
@@ -20,6 +21,11 @@ namespace tezcat.Framework.Utility
         int IComparable<TezTestBHItem>.CompareTo(TezTestBHItem other)
         {
             return id.CompareTo(other.id);
+        }
+
+        bool ITezBinaryHeapItem<TezTestBHItem>.sameAs(TezTestBHItem other)
+        {
+            throw new NotImplementedException();
         }
     }
 
@@ -53,7 +59,7 @@ namespace tezcat.Framework.Utility
             }
         }
 
-        public int count { get; private set; }
+        public int count { get; private set; } = 0;
 
         public TezBinaryHeap()
         {
@@ -75,10 +81,10 @@ namespace tezcat.Framework.Utility
         {
             if (count + 1 >= m_Capacity)
             {
-                var new_capacity = m_Capacity + m_GrowCount;
+                m_Capacity += m_GrowCount;
                 m_GrowCount = m_GrowCount + (m_GrowCount >> 1) + 1;
 
-                T[] temp = new T[new_capacity];
+                T[] temp = new T[m_Capacity];
                 Array.Copy(m_Items, temp, this.count);
                 m_Items = temp;
             }
@@ -104,19 +110,44 @@ namespace tezcat.Framework.Utility
             m_Items[0].index = 0;
 
             this.sortDown(m_Items[0]);
+            m_Items[count] = default(T);
+
             return first;
         }
 
         public bool contains(T item)
         {
-            return Equals(m_Items[item.index], item);
+            var index = item.index;
+            if(index >= 0 && index < this.count)
+            {
+                var select = m_Items[index];
+                if (select != null)
+                {
+                    return select.sameAs(item);
+                }
+            }
+
+            return false;
         }
 
-        public void clear()
+        /// <summary>
+        /// 重置Heap为初始状态
+        /// </summary>
+        public void reset()
         {
             count = 0;
             m_GrowCount = 3;
             m_Capacity = 8;
+            m_Items = new T[m_Capacity];
+        }
+
+        /// <summary>
+        /// 清空Heap中的Item
+        /// </summary>
+        public void clear()
+        {
+            Array.Clear(m_Items, 0, m_Items.Length);
+            count = 0;
         }
 
         public void debug(TezEventExtension.Action<int, T> action)
@@ -211,7 +242,5 @@ namespace tezcat.Framework.Utility
             item1.index = item2.index;
             item2.index = temp;
         }
-
-
     }
 }

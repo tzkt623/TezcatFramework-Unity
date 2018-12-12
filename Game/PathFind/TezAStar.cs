@@ -1,62 +1,61 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics;
+using tezcat.Framework.Extension;
 using tezcat.Framework.Utility;
 
 namespace tezcat.Framework.Game
 {
-    public class TezAStar
+    public abstract class TezAStarNode : ITezBinaryHeapItem<TezAStarNode>
     {
-        public abstract class Node : ITezBinaryHeapItem<Node>
+        public TezAStarNode parent { get; set; }
+        public int index { get; set; } = -1;
+
+        /// <summary>
+        /// 距离起点的Cost
+        /// </summary>
+        /// <returns></returns>
+        public virtual int gCost { get; set; }
+
+        /// <summary>
+        /// 距离终点的Cost
+        /// </summary>
+        /// <returns></returns>
+        public virtual int hCost { get; set; }
+
+        /// <summary>
+        /// 所有Cost
+        /// </summary>
+        public virtual int fCost
         {
-            public Node parent { get; set; }
-            public int index { get; set; }
-
-            /// <summary>
-            /// 距离起点的Cost
-            /// </summary>
-            /// <returns></returns>
-            public abstract int getGCost();
-            public abstract void setGCost(int cost);
-
-            /// <summary>
-            /// 距离终点的Cost
-            /// </summary>
-            /// <returns></returns>
-            public abstract int getHCost();
-            public abstract void setHCost(int cost);
-
-            /// <summary>
-            /// 所有Cost
-            /// </summary>
-            /// <returns></returns>
-            public virtual int getFCost()
-            {
-                return getGCost() + getHCost();
-            }
-
-            public abstract bool blocked();
-
-            public abstract int weight();
-
-            public abstract List<Node> getNeighbours();
-
-            public abstract int getDistanceFrom(Node other);
-
-            public abstract int CompareTo(Node other);
+            get { return this.gCost + this.hCost; }
         }
 
-        public event System.Action<List<Node>> onPathFinded;
+        public abstract bool blocked();
 
-        public void findPath(Node start, Node end, TezBinaryHeap<Node> open_set)
+        public abstract List<TezAStarNode> getNeighbours();
+
+        public abstract int getCostFrom(TezAStarNode other);
+
+        public abstract int CompareTo(TezAStarNode other);
+
+        public abstract bool sameAs(TezAStarNode other);
+    }
+
+    public class TezAStar
+    {
+        public event TezEventExtension.Action<List<TezAStarNode>> onPathFound;
+        public event TezEventExtension.Action onPathNotFound;
+
+        public void findPath(TezAStarNode start, TezAStarNode end, TezBinaryHeap<TezAStarNode> open_set)
         {
-            //             Stopwatch stopwatch = new Stopwatch();
-            //             stopwatch.Start();
-
-            if(end.blocked())
+//             Stopwatch stopwatch = new Stopwatch();
+//             stopwatch.Start(
+            if (end.blocked())
             {
                 return;
             }
 
-            HashSet<Node> closeSet = new HashSet<Node>();
+            HashSet<TezAStarNode> closeSet = new HashSet<TezAStarNode>();
             open_set.push(start);
 
             while (open_set.count > 0)
@@ -64,10 +63,10 @@ namespace tezcat.Framework.Game
                 var currentNode = open_set.pop();
                 if (currentNode == end)
                 {
-                    //                     stopwatch.Stop();
-                    //                     UnityEngine.Debug.Log(stopwatch.ElapsedMilliseconds);
+//                     stopwatch.Stop();
+//                     UnityEngine.Debug.Log(stopwatch.ElapsedMilliseconds + "ms");
                     this.retracePath(start, end);
-                    break;
+                    return;
                 }
 
                 closeSet.Add(currentNode);
@@ -81,11 +80,11 @@ namespace tezcat.Framework.Game
                     }
 
                     var inOpen = open_set.contains(neighbour);
-                    int newCost = currentNode.getGCost() + currentNode.getDistanceFrom(neighbour);
-                    if (newCost < neighbour.getGCost() || !inOpen)
+                    int newCost = currentNode.gCost + currentNode.getCostFrom(neighbour);
+                    if (newCost < neighbour.gCost || !inOpen)
                     {
-                        neighbour.setGCost(newCost);
-                        neighbour.setHCost(neighbour.getDistanceFrom(end));
+                        neighbour.gCost = newCost;
+                        neighbour.hCost = neighbour.getCostFrom(end);
 
                         neighbour.parent = currentNode;
 
@@ -96,46 +95,59 @@ namespace tezcat.Framework.Game
                     }
                 }
             }
+
+            onPathNotFound?.Invoke();
         }
 
-        public void findPath(Node start, Node end)
+        public void findPath(TezAStarNode start, TezAStarNode end)
         {
-            //             Stopwatch stopwatch = new Stopwatch();
-            //             stopwatch.Start();
+//             Stopwatch stopwatch = new Stopwatch();
+//             stopwatch.Start();
 
-            if(end.blocked())
+            if (end.blocked())
             {
                 return;
             }
 
-            List<Node> openSet = new List<Node>();
-            HashSet<Node> closeSet = new HashSet<Node>();
+            List<TezAStarNode> openSet = new List<TezAStarNode>();
+            HashSet<TezAStarNode> closeSet = new HashSet<TezAStarNode>();
 
             openSet.Add(start);
+            int removeIndex = 0;
 
             while (openSet.Count > 0)
             {
+                ///找到当前列表中Cost最小的路径点
+                removeIndex = 0;
                 var currentNode = openSet[0];
-                for (int i = 0; i < openSet.Count; i++)
+                for (int i = 1; i < openSet.Count; i++)
                 {
-                    if (openSet[i].getFCost() < currentNode.getFCost() ||
-                        (openSet[i].getFCost() == currentNode.getFCost() && openSet[i].getHCost() < currentNode.getHCost()))
+                    var temp = openSet[i];
+                    if (temp.fCost < currentNode.fCost
+                        || (temp.fCost == currentNode.fCost && temp.hCost < currentNode.hCost))
                     {
-                        currentNode = openSet[i];
+                        currentNode = temp;
+                        removeIndex = i;
                     }
                 }
 
+                ///如果等于结束点,则找到完整路径
                 if (currentNode == end)
                 {
-                    //                    stopwatch.Stop();
-                    //                    UnityEngine.Debug.Log(stopwatch.ElapsedMilliseconds + "ms");
+//                     stopwatch.Stop();
+//                     UnityEngine.Debug.Log(stopwatch.ElapsedMilliseconds + "ms");
                     this.retracePath(start, end);
-                    break;
+                    return;
                 }
 
-                openSet.Remove(currentNode);
+                ///从开列表中移除当前选择的路径点
+                openSet.RemoveAt(removeIndex);
+                ///加入关列表
                 closeSet.Add(currentNode);
 
+                ///获取当前路径点的邻居
+                ///计算邻居Cost值
+                ///并且加入开列表中
                 var neighbours = currentNode.getNeighbours();
                 foreach (var neighbour in neighbours)
                 {
@@ -144,28 +156,34 @@ namespace tezcat.Framework.Game
                         continue;
                     }
 
-                    var inOpen = openSet.Contains(neighbour);
-                    int newCost = currentNode.getGCost() + currentNode.getDistanceFrom(neighbour);
-                    if (newCost < neighbour.getGCost() || !inOpen)
+                    var inOpen = openSet.Find((TezAStarNode node) =>
                     {
-                        neighbour.setGCost(newCost);
-                        neighbour.setHCost(neighbour.getDistanceFrom(end));
+                        return node.sameAs(neighbour);
+                    }) != null;
 
-                        neighbour.parent = currentNode;
-
+                    int newCost = currentNode.gCost + currentNode.getCostFrom(neighbour);
+                    if (newCost < neighbour.gCost || !inOpen)
+                    {
                         if (!inOpen)
                         {
                             openSet.Add(neighbour);
                         }
+
+                        neighbour.gCost = newCost;
+                        neighbour.hCost = neighbour.getCostFrom(end);
+
+                        neighbour.parent = currentNode;
                     }
                 }
             }
+
+            onPathNotFound?.Invoke();
         }
 
-        public void retracePath(Node start, Node end)
+        public void retracePath(TezAStarNode start, TezAStarNode end)
         {
-            List<Node> path = new List<Node>();
-            Node current = end;
+            List<TezAStarNode> path = new List<TezAStarNode>();
+            TezAStarNode current = end;
 
             while (current != start)
             {
@@ -173,10 +191,7 @@ namespace tezcat.Framework.Game
                 current = current.parent;
             }
 
-            if(onPathFinded != null)
-            {
-                onPathFinded(path);
-            }
+            onPathFound?.Invoke(path);
         }
     }
 }

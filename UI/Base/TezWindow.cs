@@ -73,6 +73,20 @@ namespace tezcat.Framework.UI
             }
         }
 
+        string m_FullName = null;
+        public string fullName
+        {
+            get
+            {
+                if (m_FullName.isNullOrEmpty())
+                {
+                    m_FullName = m_WindowName + m_WindowID;
+                }
+
+                return m_FullName;
+            }
+        }
+
         /// <summary>
         /// 当前窗口的覆盖层
         /// </summary>

@@ -214,7 +214,7 @@ namespace tezcat.Framework.DataBase
 
         protected virtual TezGameObject onCreateObject()
         {
-            return TezService.get<TezClassFactory>().create<TezGameObject>(this.CID);
+            throw new Exception(string.Format("Please override this method for {0}", this.GetType().Name));
         }
 
         public override bool Equals(TezDataBaseItem other)
@@ -232,7 +232,7 @@ namespace tezcat.Framework.DataBase
         /// <param name="db_id"></param>
         public void onAddToDB(int db_id)
         {
-            if(this.RID != null)
+            if (this.RID != null)
             {
                 throw new ArgumentException("RID");
             }

@@ -166,12 +166,12 @@ namespace tezcat.Framework.Game
             return new TezHexCubeCoordinate(center.x + dir.x, center.z + dir.z);
         }
 
-        public static List<TezHexCubeCoordinate> neighbors(TezHexCubeCoordinate center)
+        public static TezHexCubeCoordinate[] neighbors(TezHexCubeCoordinate center)
         {
-            List<TezHexCubeCoordinate> coordinates = new List<TezHexCubeCoordinate>(6);
+            TezHexCubeCoordinate[] coordinates = new TezHexCubeCoordinate[6];
             for (int i = 0; i < CubeDirections.Length; i++)
             {
-                coordinates.Add(center + CubeDirections[i]);
+                coordinates[i] = center + CubeDirections[i];
             }
 
             return coordinates;

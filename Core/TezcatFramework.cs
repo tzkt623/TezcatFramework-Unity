@@ -275,7 +275,7 @@ namespace tezcat.Framework.Core
             window.transform.localPosition = Vector3.zero;
 
             m_WindowList[id] = window;
-            m_WindowDic.Add(name, id);
+            m_WindowDic.Add(window.fullName, id);
             return window;
         }
 
@@ -316,7 +316,7 @@ namespace tezcat.Framework.Core
         {
             m_FreeWindowID.Enqueue(window.windowID);
             m_WindowList[window.windowID] = null;
-            m_WindowDic.Remove(window.windowName);
+            m_WindowDic.Remove(window.fullName);
         }
 
         protected virtual void onCreateWindow(System.Type type, TezWindow window)
