@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using tezcat.Framework.DataBase;
+using tezcat.Framework.ECS;
 using tezcat.Framework.Wrapper;
 using UnityEngine;
 
@@ -46,6 +47,7 @@ namespace tezcat.Framework.Core
     /// </summary>
     public abstract class TezGameObject
          : TezObject
+         , ITezComponent
          , ITezSerializable
          , ITezTagSet
     {
@@ -67,6 +69,33 @@ namespace tezcat.Framework.Core
             m_FreeID.Enqueue(id);
         }
         #endregion
+
+        #region Component
+        public TezEntity entity { get; private set; }
+
+        void ITezComponent.onAdd(TezEntity entity)
+        {
+            this.entity = entity;
+            this.onAddComponent(entity);
+        }
+
+        void ITezComponent.onRemove(TezEntity entity)
+        {
+            this.onRemoveComponent(entity);
+            this.entity = null;
+        }
+
+        protected virtual void onAddComponent(TezEntity entity)
+        {
+
+        }
+
+        protected virtual void onRemoveComponent(TezEntity entity)
+        {
+
+        }
+        #endregion
+
 
         /// <summary>
         /// RID
@@ -133,7 +162,7 @@ namespace tezcat.Framework.Core
 
         public void initWithData(TezDataBaseGameItem item)
         {
-            if(this.GUID == 0)
+            if (this.GUID == 0)
             {
                 this.GUID = giveID();
             }
@@ -161,7 +190,7 @@ namespace tezcat.Framework.Core
         /// </summary>
         public void updateRID()
         {
-            if(m_RID != null)
+            if (m_RID != null)
             {
                 var g = m_RID.group;
                 var sg = m_RID.subgroup;

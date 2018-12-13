@@ -5,9 +5,11 @@ using tezcat.Framework.Utility;
 
 namespace tezcat.Framework.Game
 {
-    public abstract class TezAStarNode : ITezBinaryHeapItem<TezAStarNode>
+    public abstract class TezAStarNode<Self>
+        : ITezBinaryHeapItem<Self>
+        where Self : TezAStarNode<Self>
     {
-        public TezAStarNode parent { get; set; }
+        public Self parent { get; set; }
         public int index { get; set; } = -1;
 
         /// <summary>
@@ -32,30 +34,31 @@ namespace tezcat.Framework.Game
 
         public abstract bool blocked();
 
-        public abstract List<TezAStarNode> getNeighbours();
+        public abstract List<Self> getNeighbours();
 
-        public abstract int getCostFrom(TezAStarNode other);
+        public abstract int getCostFrom(Self other);
 
-        public abstract int CompareTo(TezAStarNode other);
+        public abstract int CompareTo(Self other);
 
-        public abstract bool sameAs(TezAStarNode other);
+        public abstract bool sameAs(Self other);
     }
 
-    public class TezAStar
+    public class TezAStar<Node> where Node : TezAStarNode<Node>
     {
-        public event TezEventExtension.Action<List<TezAStarNode>> onPathFound;
+        public event TezEventExtension.Action<List<Node>> onPathFound;
         public event TezEventExtension.Action onPathNotFound;
 
-        public void findPath(TezAStarNode start, TezAStarNode end, TezBinaryHeap<TezAStarNode> open_set)
+        public void findPath(Node start, Node end, TezBinaryHeap<Node> open_set)
         {
 //             Stopwatch stopwatch = new Stopwatch();
 //             stopwatch.Start(
             if (end.blocked())
             {
+                onPathNotFound?.Invoke();
                 return;
             }
 
-            HashSet<TezAStarNode> closeSet = new HashSet<TezAStarNode>();
+            HashSet<Node> closeSet = new HashSet<Node>();
             open_set.push(start);
 
             while (open_set.count > 0)
@@ -99,18 +102,19 @@ namespace tezcat.Framework.Game
             onPathNotFound?.Invoke();
         }
 
-        public void findPath(TezAStarNode start, TezAStarNode end)
+        public void findPath(Node start, Node end)
         {
 //             Stopwatch stopwatch = new Stopwatch();
 //             stopwatch.Start();
 
             if (end.blocked())
             {
+                onPathNotFound?.Invoke();
                 return;
             }
 
-            List<TezAStarNode> openSet = new List<TezAStarNode>();
-            HashSet<TezAStarNode> closeSet = new HashSet<TezAStarNode>();
+            List<Node> openSet = new List<Node>();
+            HashSet<Node> closeSet = new HashSet<Node>();
 
             openSet.Add(start);
             int removeIndex = 0;
@@ -156,7 +160,7 @@ namespace tezcat.Framework.Game
                         continue;
                     }
 
-                    var inOpen = openSet.Find((TezAStarNode node) =>
+                    var inOpen = openSet.Find((Node node) =>
                     {
                         return node.sameAs(neighbour);
                     }) != null;
@@ -180,10 +184,10 @@ namespace tezcat.Framework.Game
             onPathNotFound?.Invoke();
         }
 
-        public void retracePath(TezAStarNode start, TezAStarNode end)
+        public void retracePath(Node start, Node end)
         {
-            List<TezAStarNode> path = new List<TezAStarNode>();
-            TezAStarNode current = end;
+            List<Node> path = new List<Node>();
+            Node current = end;
 
             while (current != start)
             {

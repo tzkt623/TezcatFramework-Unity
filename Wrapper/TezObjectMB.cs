@@ -1,9 +1,11 @@
 ﻿using tezcat.Framework.Core;
+using tezcat.Framework.ECS;
 
 namespace tezcat.Framework.Wrapper
 {
     public abstract class TezGameObjectMB
         : TezMonoBehaviour
+        , ITezComponent
     {
         public string myName
         {
@@ -16,6 +18,30 @@ namespace tezcat.Framework.Wrapper
         }
 
         public abstract TezGameObject getObject();
+
+        public TezEntity entity { get; private set; }
+
+        void ITezComponent.onAdd(TezEntity entity)
+        {
+            this.entity = entity;
+            this.onAddComponent(entity);
+        }
+
+        void ITezComponent.onRemove(TezEntity entity)
+        {
+            this.onRemoveComponent(entity);
+            this.entity = null;
+        }
+
+        protected virtual void onAddComponent(TezEntity entity)
+        {
+
+        }
+
+        protected virtual void onRemoveComponent(TezEntity entity)
+        {
+
+        }
     }
 
     public abstract class TezGameObjectMB<T> : TezGameObjectMB where T : TezGameObject

@@ -11,6 +11,8 @@ using tezcat.Framework.Wrapper;
 using tezcat.Framework.GraphicSystem;
 using UnityEngine;
 using tezcat.Framework.Threading;
+using tezcat.Framework.ECS;
+using System;
 
 namespace tezcat.Framework.Core
 {
@@ -149,11 +151,15 @@ namespace tezcat.Framework.Core
             TezService.register(this);
             this.registerVersions();
             this.registerService();
+            this.registerComponent(TezService.get<TezComponentManager>());
             this.registerClassFactory(TezService.get<TezClassFactory>());
         }
 
         protected virtual void registerService()
         {
+            TezService.register(new TezComponentManager());
+            TezService.register<ITezEntityManager>(new TezEntityManager());
+
             TezService.register(new TezThread());
             TezService.register(new TezTranslator());
 
@@ -175,6 +181,12 @@ namespace tezcat.Framework.Core
         protected virtual void registerClassFactory(TezClassFactory factory)
         {
 
+        }
+
+        protected virtual void registerComponent(TezComponentManager manager)
+        {
+            manager.register<TezGameObject>();
+            manager.register<TezGameObjectMB>();
         }
 
         protected abstract void registerVersions();
