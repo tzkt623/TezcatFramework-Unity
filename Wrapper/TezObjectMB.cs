@@ -33,12 +33,32 @@ namespace tezcat.Framework.Wrapper
             this.entity = null;
         }
 
+        void ITezComponent.onOtherComponentAdded(ITezComponent component, int com_id)
+        {
+            this.onOtherComponentAdded(component, com_id);
+        }
+
+        void ITezComponent.onOtherComponentRemoved(ITezComponent component, int com_id)
+        {
+            this.onOtherComponentRemoved(component, com_id);
+        }
+
         protected virtual void onAddComponent(TezEntity entity)
         {
 
         }
 
         protected virtual void onRemoveComponent(TezEntity entity)
+        {
+
+        }
+
+        protected virtual void onOtherComponentAdded(ITezComponent com, int com_id)
+        {
+
+        }
+
+        protected virtual void onOtherComponentRemoved(ITezComponent com, int com_id)
         {
 
         }

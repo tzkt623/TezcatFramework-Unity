@@ -8,6 +8,8 @@ namespace tezcat.Framework.ECS
         TezEntity entity { get; }
         void onAdd(TezEntity entity);
         void onRemove(TezEntity entity);
+        void onOtherComponentAdded(ITezComponent component, int com_id);
+        void onOtherComponentRemoved(ITezComponent component, int com_id);
     }
 
     public class TezComponentID<Component>

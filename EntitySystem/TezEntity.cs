@@ -46,6 +46,7 @@ namespace tezcat.Framework.ECS
     public class TezEntity : ITezCloseable
     {
         ITezComponent[] m_Components = new ITezComponent[TezService.get<TezComponentManager>().componentCount];
+        
 
         public int ID { get; private set; } = -1;
         static int m_IDGiver = 0;
@@ -123,6 +124,12 @@ namespace tezcat.Framework.ECS
                 throw new ArgumentException(string.Format("This type [{0}] is not a Component IDGetter, Please Use its BasicClass"
                     , component.GetType().Name));
             }
+
+            foreach (var item in m_Components)
+            {
+                item?.onOtherComponentAdded(component, id);
+            }
+
             m_Components[id] = component;
             component.onAdd(this);
         }
@@ -143,6 +150,11 @@ namespace tezcat.Framework.ECS
             var temp = m_Components[id];
             m_Components[id] = null;
             temp.onRemove(this);
+
+            foreach (var item in m_Components)
+            {
+                item?.onOtherComponentRemoved(temp, id);
+            }
         }
 
         public void close()
