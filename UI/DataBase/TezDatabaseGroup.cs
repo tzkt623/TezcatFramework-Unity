@@ -1,4 +1,5 @@
-﻿using tezcat.Framework.TypeTraits;
+﻿using tezcat.Framework.Core;
+using tezcat.Framework.TypeTraits;
 using UnityEngine;
 
 namespace tezcat.Framework.UI
@@ -39,15 +40,15 @@ namespace tezcat.Framework.UI
             m_Tree.onSelectNode -= onSelectNode;
         }
 
-        protected override void onRefresh(RefreshPhase phase)
+        protected override void onRefresh(TezRefreshPhase phase)
         {
             base.onRefresh(phase);
             switch (phase)
             {
-                case RefreshPhase.OnInit:
+                case TezRefreshPhase.P_OnInit:
                     this.refreshData();
                     break;
-                case RefreshPhase.OnEnable:
+                case TezRefreshPhase.P_OnEnable:
                     break;
                 default:
                     break;
@@ -119,7 +120,7 @@ namespace tezcat.Framework.UI
 
             }
 
-            m_Container.refresh = RefreshPhase.Custom1;
+            m_Container.refreshPhase = TezRefreshPhase.P_Custom1;
         }
 
         protected override void onHide()

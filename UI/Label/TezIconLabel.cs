@@ -1,4 +1,5 @@
-﻿using tezcat.Framework.Extension;
+﻿using tezcat.Framework.Core;
+using tezcat.Framework.Extension;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -23,7 +24,7 @@ namespace tezcat.Framework.UI
             set { m_Label.text = value; }
         }
 
-        protected override void onRefresh(RefreshPhase phase)
+        protected override void onRefresh(TezRefreshPhase phase)
         {
 
         }

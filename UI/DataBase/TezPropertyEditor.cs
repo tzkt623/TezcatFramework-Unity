@@ -9,7 +9,7 @@ namespace tezcat.Framework.UI
         public void bind(TezValueWrapper value)
         {
             m_Property = value;
-            this.refresh = RefreshPhase.Custom1;
+            this.refreshPhase = TezRefreshPhase.P_Custom1;
         }
 
         public override void clear()

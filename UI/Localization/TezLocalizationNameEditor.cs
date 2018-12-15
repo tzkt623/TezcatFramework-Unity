@@ -91,23 +91,23 @@ namespace tezcat.Framework.UI
         {
             m_KeyInput.readOnly = true;
             m_KeyInput.text = key;
-            this.refresh = RefreshPhase.Custom1;
+            this.refreshPhase = TezRefreshPhase.P_Custom1;
         }
 
-        protected override void onRefresh(RefreshPhase phase)
+        protected override void onRefresh(TezRefreshPhase phase)
         {
             switch (phase)
             {
-                case RefreshPhase.Custom1:
+                case TezRefreshPhase.P_Custom1:
                     this.refreshData();
                     break;
-                case RefreshPhase.Custom2:
+                case TezRefreshPhase.P_Custom2:
                     break;
-                case RefreshPhase.Custom3:
+                case TezRefreshPhase.P_Custom3:
                     break;
-                case RefreshPhase.Custom4:
+                case TezRefreshPhase.P_Custom4:
                     break;
-                case RefreshPhase.Custom5:
+                case TezRefreshPhase.P_Custom5:
                     break;
                 default:
                     break;
@@ -132,7 +132,7 @@ namespace tezcat.Framework.UI
             if (eventData.button == PointerEventData.InputButton.Left)
             {
                 TezService.get<TezTranslator>().saveName(m_KeyInput.text, m_LocalizationInput.text);
-                listArea.refresh = RefreshPhase.Custom3;
+                listArea.refreshPhase = TezRefreshPhase.P_Custom3;
                 this.close();
             }
         }

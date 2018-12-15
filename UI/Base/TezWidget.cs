@@ -1,4 +1,4 @@
-﻿using System;
+﻿using tezcat.Framework.Core;
 using UnityEngine.EventSystems;
 
 namespace tezcat.Framework.UI
@@ -8,9 +8,18 @@ namespace tezcat.Framework.UI
     /// </summary>
     public abstract class TezWidget
         : UIBehaviour
+        , ITezRefresher
         , ITezWidget
     {
+        bool m_Init = false;
+        bool m_Clear = false;
+
         bool m_Interactable = true;
+
+        byte m_DirtyMask = 0;
+        byte m_DirtyCount = 0;
+        TezRefreshPhase[] m_RefreshPhaseArray = new TezRefreshPhase[8];
+
         public bool interactable
         {
             get { return m_Interactable; }
@@ -26,27 +35,22 @@ namespace tezcat.Framework.UI
             }
         }
 
-        public enum RefreshPhase : byte
-        {
-            OnInit,
-            OnEnable,
-            Custom1,
-            Custom2,
-            Custom3,
-            Custom4,
-            Custom5
-        }
-
-        bool m_Init = false;
-        bool m_Clear = false;
-
-        public RefreshPhase refresh
+        public TezRefreshPhase refreshPhase
         {
             set
             {
-                if(m_Init && this.gameObject.activeSelf)
+                if (m_Init && this.gameObject.activeSelf)
                 {
-                    this.onRefresh(value);
+                    if ((m_DirtyMask & (byte)value) == 0)
+                    {
+                        if (m_DirtyCount == 0)
+                        {
+                            TezService.get<TezcatFramework>().pushRefresher(this);
+                        }
+
+                        m_DirtyMask |= (byte)value;
+                        m_RefreshPhaseArray[m_DirtyCount++] = value;
+                    }
                 }
             }
         }
@@ -65,7 +69,7 @@ namespace tezcat.Framework.UI
                 base.Start();
                 this.linkEvent();
                 this.initWidget();
-                this.refresh = RefreshPhase.OnInit;
+                this.refreshPhase = TezRefreshPhase.P_OnInit;
             }
         }
 
@@ -75,7 +79,7 @@ namespace tezcat.Framework.UI
             {
                 base.OnEnable();
                 this.linkEvent();
-                this.refresh = RefreshPhase.OnEnable;
+                this.refreshPhase = TezRefreshPhase.P_OnEnable;
             }
         }
 
@@ -125,9 +129,23 @@ namespace tezcat.Framework.UI
         protected abstract void unLinkEvent();
 
         /// <summary>
+        /// 刷新
+        /// </summary>
+        public void refresh()
+        {
+            for (int i = 0; i < m_DirtyCount; i++)
+            {
+                this.onRefresh(m_RefreshPhaseArray[i]);
+            }
+
+            m_DirtyCount = 0;
+            m_DirtyMask = 0;
+        }
+
+        /// <summary>
         /// 自定义刷新数据
         /// </summary>
-        protected abstract void onRefresh(RefreshPhase phase);
+        protected abstract void onRefresh(TezRefreshPhase phase);
 
         /// <summary>
         /// 

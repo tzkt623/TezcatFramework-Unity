@@ -337,10 +337,23 @@ namespace tezcat.Framework.Core
         }
         #endregion
 
-        #region Object
+        #region Refresher
+        Queue<ITezRefresher> m_RefreshQueue = new Queue<ITezRefresher>();
 
+        public void pushRefresher(ITezRefresher refresher)
+        {
+            m_RefreshQueue.Enqueue(refresher);
+        }
         #endregion
 
         protected virtual void Update() { }
+
+        protected virtual void LateUpdate()
+        {
+            while(m_RefreshQueue.Count > 0)
+            {
+                m_RefreshQueue.Dequeue().refresh();
+            }
+        }
     }
 }

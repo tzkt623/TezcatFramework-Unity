@@ -31,7 +31,7 @@ namespace tezcat.Framework.ECS
 
         public void recycle(TezEntity entity)
         {
-            Debug.Log(string.Format("Entity Recycle {0}", entity.ID));
+            Debug.Log(string.Format("Entity : Recycle {0}", entity.ID));
             m_FreeEntity.Add(entity);
         }
 

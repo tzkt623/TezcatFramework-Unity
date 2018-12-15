@@ -74,7 +74,7 @@ namespace tezcat.Framework.UI
             this.gameObject.SetActive(false);
         }
 
-        protected override void onRefresh(RefreshPhase phase)
+        protected override void onRefresh(TezRefreshPhase phase)
         {
 
         }

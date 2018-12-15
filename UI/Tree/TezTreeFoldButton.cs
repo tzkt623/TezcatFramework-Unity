@@ -1,4 +1,5 @@
-﻿using UnityEngine.EventSystems;
+﻿using tezcat.Framework.Core;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 namespace tezcat.Framework.UI
@@ -73,19 +74,19 @@ namespace tezcat.Framework.UI
             }
         }
 
-        protected override void onRefresh(RefreshPhase phase)
+        protected override void onRefresh(TezRefreshPhase phase)
         {
             switch (phase)
             {
-                case RefreshPhase.Custom1:
+                case TezRefreshPhase.P_Custom1:
                     break;
-                case RefreshPhase.Custom2:
+                case TezRefreshPhase.P_Custom2:
                     break;
-                case RefreshPhase.Custom3:
+                case TezRefreshPhase.P_Custom3:
                     break;
-                case RefreshPhase.Custom4:
+                case TezRefreshPhase.P_Custom4:
                     break;
-                case RefreshPhase.Custom5:
+                case TezRefreshPhase.P_Custom5:
                     break;
                 default:
                     break;

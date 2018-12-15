@@ -1,4 +1,5 @@
-﻿using tezcat.Framework.Wrapper;
+﻿using tezcat.Framework.Core;
+using tezcat.Framework.Wrapper;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -20,7 +21,7 @@ namespace tezcat.Framework.UI
         public void bind(TezDatabaseItemWrapper wrapper)
         {
             m_Wrapper = wrapper;
-            this.refresh = RefreshPhase.Custom1;
+            this.refreshPhase = TezRefreshPhase.P_Custom1;
         }
 
         protected override void preInit()
@@ -59,14 +60,14 @@ namespace tezcat.Framework.UI
 //             m_Wrapper = null;
         }
 
-        protected override void onRefresh(RefreshPhase phase)
+        protected override void onRefresh(TezRefreshPhase phase)
         {
             switch (phase)
             {
-                case RefreshPhase.OnInit:
+                case TezRefreshPhase.P_OnInit:
                     this.refreshData();
                     break;
-                case RefreshPhase.OnEnable:
+                case TezRefreshPhase.P_OnEnable:
                     break;
                 default:
                     break;
@@ -126,7 +127,7 @@ namespace tezcat.Framework.UI
 //             TezService.DB.unregisterItem(m_Wrapper.myItem);
 //             m_Wrapper.close();
 //             m_Wrapper = null;
-            this.refresh = RefreshPhase.Custom1;
+            this.refreshPhase = TezRefreshPhase.P_Custom1;
         }
 
         void IPointerDownHandler.OnPointerDown(PointerEventData eventData)

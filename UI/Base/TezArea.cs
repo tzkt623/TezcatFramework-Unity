@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using tezcat.Framework.Core;
 using tezcat.Framework.DataBase;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -82,7 +83,7 @@ namespace tezcat.Framework.UI
 
         }
 
-        protected override void onRefresh(RefreshPhase phase)
+        protected override void onRefresh(TezRefreshPhase phase)
         {
 
         }

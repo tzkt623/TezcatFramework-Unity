@@ -1,4 +1,5 @@
 ﻿using System;
+using tezcat.Framework.Core;
 using tezcat.Framework.DataBase;
 using UnityEngine;
 
@@ -6,18 +7,33 @@ namespace tezcat.Framework.Wrapper
 {
     public abstract class TezMonoBehaviour
         : MonoBehaviour
+        , ITezRefresher
         , ITezPrefab
     {
         bool m_Init = false;
-        public enum RefreshPhase : byte
+
+        byte m_DirtyMask = 0;
+        byte m_DirtyCount = 0;
+        TezRefreshPhase[] m_RefreshPhaseArray = new TezRefreshPhase[8];
+
+        public TezRefreshPhase refreshPhase
         {
-            OnInit,
-            OnEnable,
-            Custom1,
-            Custom2,
-            Custom3,
-            Custom4,
-            Custom5
+            set
+            {
+                if (m_Init && this.gameObject.activeSelf)
+                {
+                    if ((m_DirtyMask & (byte)value) == 0)
+                    {
+                        if (m_DirtyCount == 0)
+                        {
+                            TezService.get<TezcatFramework>().pushRefresher(this);
+                        }
+
+                        m_DirtyMask |= (byte)value;
+                        m_RefreshPhaseArray[m_DirtyCount++] = value;
+                    }
+                }
+            }
         }
 
         private void Awake()
@@ -32,7 +48,7 @@ namespace tezcat.Framework.Wrapper
                 m_Init = true;
                 this.initObject();
                 this.linkEvent();
-                this.refresh(RefreshPhase.OnInit);
+                this.refreshPhase = TezRefreshPhase.P_OnInit;
             }
             else
             {
@@ -45,7 +61,7 @@ namespace tezcat.Framework.Wrapper
             if (m_Init)
             {
                 this.linkEvent();
-                this.refresh(RefreshPhase.OnEnable);
+                this.refreshPhase = TezRefreshPhase.P_OnEnable;
             }
         }
 
@@ -62,12 +78,15 @@ namespace tezcat.Framework.Wrapper
             this.clear();
         }
 
-        public void refresh(RefreshPhase phase)
+        public void refresh()
         {
-            if (this.gameObject.activeSelf && m_Init)
+            for (int i = 0; i < m_DirtyCount; i++)
             {
-                this.onRefresh(phase);
+                this.onRefresh(m_RefreshPhaseArray[i]);
             }
+
+            m_DirtyCount = 0;
+            m_DirtyMask = 0;
         }
 
         /// <summary>
@@ -93,7 +112,7 @@ namespace tezcat.Framework.Wrapper
         /// <summary>
         /// 自定义情况下刷新数据
         /// </summary>
-        protected abstract void onRefresh(RefreshPhase state);
+        protected abstract void onRefresh(TezRefreshPhase state);
 
         /// <summary>
         /// 重置你的MB
@@ -146,7 +165,7 @@ namespace tezcat.Framework.Wrapper
 
         }
 
-        protected override void onRefresh(RefreshPhase state)
+        protected override void onRefresh(TezRefreshPhase state)
         {
 
         }

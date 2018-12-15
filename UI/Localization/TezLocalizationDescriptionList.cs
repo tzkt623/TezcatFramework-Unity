@@ -88,16 +88,16 @@ namespace tezcat.Framework.UI
 
         }
 
-        protected override void onRefresh(RefreshPhase phase)
+        protected override void onRefresh(TezRefreshPhase phase)
         {
             base.onRefresh(phase);
 
             switch (phase)
             {
-                case RefreshPhase.OnInit:
+                case TezRefreshPhase.P_OnInit:
                     this.refreshData();
                     break;
-                case RefreshPhase.OnEnable:
+                case TezRefreshPhase.P_OnEnable:
                     break;
                 default:
                     break;
@@ -162,7 +162,7 @@ namespace tezcat.Framework.UI
             TezService.get<TezTranslator>().removeDescription(m_SelectItem.key);
             m_Vernier.SetParent(this.transform, false);
             m_Vernier.gameObject.SetActive(false);
-            this.refresh = RefreshPhase.Custom3;
+            this.refreshPhase = TezRefreshPhase.P_Custom3;
         }
 
         private void onClearSearchClick(TezButton button, PointerEventData eventData)
@@ -220,7 +220,7 @@ namespace tezcat.Framework.UI
                     TezService.get<TezTranslator>().tryAddDescription(name.name, name.name);
                 });
 
-                this.refresh = RefreshPhase.Custom3;
+                this.refreshPhase = TezRefreshPhase.P_Custom3;
             }
         }
 

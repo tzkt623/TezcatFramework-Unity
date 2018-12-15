@@ -1,4 +1,5 @@
-﻿using tezcat.Framework.Extension;
+﻿using tezcat.Framework.Core;
+using tezcat.Framework.Extension;
 using tezcat.Framework.String;
 using UnityEngine;
 using UnityEngine.UI;
@@ -33,13 +34,13 @@ namespace tezcat.Framework.UI
             m_Input.onEndEdit.RemoveListener(this.set);
         }
 
-        protected override void onRefresh(RefreshPhase phase)
+        protected override void onRefresh(TezRefreshPhase phase)
         {
             switch (phase)
             {
-                case RefreshPhase.OnInit:
+                case TezRefreshPhase.P_OnInit:
                     break;
-                case RefreshPhase.OnEnable:
+                case TezRefreshPhase.P_OnEnable:
                     break;
                 default:
                     break;

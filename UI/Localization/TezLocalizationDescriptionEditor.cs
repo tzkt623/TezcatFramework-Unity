@@ -75,7 +75,7 @@ namespace tezcat.Framework.UI
             else
             {
                 TezService.get<TezTranslator>().addDescription(key, value);
-                this.refresh = RefreshPhase.Custom3;
+                this.refreshPhase = TezRefreshPhase.P_Custom3;
             }
         }
 
@@ -83,7 +83,7 @@ namespace tezcat.Framework.UI
         {
             m_KeyInput.readOnly = true;
             m_KeyInput.text = key;
-            this.refresh = RefreshPhase.Custom3;
+            this.refreshPhase = TezRefreshPhase.P_Custom3;
         }
 
         public void newItem()
@@ -99,7 +99,7 @@ namespace tezcat.Framework.UI
         private void onConfirmClick(TezButton button, PointerEventData eventData)
         {
             TezService.get<TezTranslator>().saveDescription(m_KeyInput.text, m_DescriptionInput.text);
-            listArea.refresh = RefreshPhase.Custom3;
+            listArea.refreshPhase = TezRefreshPhase.P_Custom3;
             this.close();
         }
 
@@ -116,14 +116,14 @@ namespace tezcat.Framework.UI
             }
         }
 
-        protected override void onRefresh(RefreshPhase phase)
+        protected override void onRefresh(TezRefreshPhase phase)
         {
             switch (phase)
             {
-                case RefreshPhase.OnInit:
+                case TezRefreshPhase.P_OnInit:
                     this.refreshData();
                     break;
-                case RefreshPhase.OnEnable:
+                case TezRefreshPhase.P_OnEnable:
                     break;
                 default:
                     break;

@@ -1,4 +1,5 @@
-﻿using tezcat.Framework.Wrapper;
+﻿using tezcat.Framework.Core;
+using tezcat.Framework.Wrapper;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -51,7 +52,7 @@ namespace tezcat.Framework.UI
 
         }
 
-        protected override void onRefresh(RefreshPhase phase)
+        protected override void onRefresh(TezRefreshPhase phase)
         {
 
         }

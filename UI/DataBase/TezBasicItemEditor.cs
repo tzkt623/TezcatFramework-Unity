@@ -1,4 +1,5 @@
-﻿using tezcat.Framework.DataBase;
+﻿using tezcat.Framework.Core;
+using tezcat.Framework.DataBase;
 using tezcat.Framework.Extension;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -65,7 +66,7 @@ namespace tezcat.Framework.UI
                 if (!this.getItem().NID.isNullOrEmpty())
                 {
 
-                    this.refresh = RefreshPhase.Custom1;
+                    this.refreshPhase = TezRefreshPhase.P_Custom1;
                 }
                 else
                 {

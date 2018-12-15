@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using tezcat.Framework.Core;
+using UnityEngine;
 using UnityEngine.EventSystems;
 
 namespace tezcat.Framework.UI
@@ -98,7 +99,7 @@ namespace tezcat.Framework.UI
         {
             if (eventData.button == PointerEventData.InputButton.Left)
             {
-                m_Group.refresh = RefreshPhase.Custom1;
+                m_Group.refreshPhase = TezRefreshPhase.P_Custom1;
             }
         }
 

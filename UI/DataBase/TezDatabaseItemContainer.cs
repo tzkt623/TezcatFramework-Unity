@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using tezcat.Framework.Core;
 using tezcat.Framework.DataBase;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -163,15 +164,15 @@ namespace tezcat.Framework.UI
         }
 #endif
 
-        protected override void onRefresh(RefreshPhase phase)
+        protected override void onRefresh(TezRefreshPhase phase)
         {
             base.onRefresh(phase);
             switch (phase)
             {
-                case RefreshPhase.OnInit:
+                case TezRefreshPhase.P_OnInit:
                     m_PageController.setPage(m_PageController.currentPage);
                     break;
-                case RefreshPhase.OnEnable:
+                case TezRefreshPhase.P_OnEnable:
                     break;
                 default:
                     break;

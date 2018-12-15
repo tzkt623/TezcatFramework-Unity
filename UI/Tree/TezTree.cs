@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using tezcat.Framework.Core;
 using tezcat.Framework.Extension;
 using UnityEngine;
 using UnityEngine.UI;
@@ -152,7 +153,7 @@ namespace tezcat.Framework.UI
             onSelectNode?.Invoke(node);
         }
 
-        protected override void onRefresh(RefreshPhase phase)
+        protected override void onRefresh(TezRefreshPhase phase)
         {
 
         }

@@ -169,7 +169,7 @@ namespace tezcat.Framework.UI
                 {
                     m_Vernier.SetParent(this.transform, false);
                     m_Vernier.gameObject.SetActive(false);
-                    this.refresh = RefreshPhase.Custom3;
+                    this.refreshPhase = TezRefreshPhase.P_Custom3;
                 }
             }
         }
@@ -229,7 +229,7 @@ namespace tezcat.Framework.UI
                     TezService.get<TezTranslator>().tryAddName(name.name, name.name);
                 });
 
-                this.refresh = RefreshPhase.Custom3;
+                this.refreshPhase = TezRefreshPhase.P_Custom3;
             }
         }
 

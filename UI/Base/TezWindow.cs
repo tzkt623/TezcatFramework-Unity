@@ -200,11 +200,11 @@ namespace tezcat.Framework.UI
             TezService.get<TezcatFramework>().removeWindow(this);
         }
 
-        protected override void onRefresh(RefreshPhase phase)
+        protected override void onRefresh(TezRefreshPhase phase)
         {
             foreach (var sub in m_AreaList)
             {
-                sub.refresh = phase;
+                sub.refreshPhase = phase;
             }
         }
 
