@@ -15,6 +15,7 @@
     public interface ITezRefresher
     {
         TezRefreshPhase refreshPhase { set; }
+        ITezRefresher next { get; set; }
         void refresh();
     }
 }

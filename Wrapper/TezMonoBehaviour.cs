@@ -15,7 +15,20 @@ namespace tezcat.Framework.Wrapper
         byte m_DirtyMask = 0;
         byte m_DirtyCount = 0;
         TezRefreshPhase[] m_RefreshPhaseArray = new TezRefreshPhase[8];
-
+        ITezRefresher m_NextRefresher = null;
+        ITezRefresher ITezRefresher.next
+        {
+            get
+            {
+                var temp = m_NextRefresher;
+                m_NextRefresher = null;
+                return temp;
+            }
+            set
+            {
+                m_NextRefresher = value;
+            }
+        }
         public TezRefreshPhase refreshPhase
         {
             set
@@ -35,6 +48,7 @@ namespace tezcat.Framework.Wrapper
                 }
             }
         }
+
 
         private void Awake()
         {

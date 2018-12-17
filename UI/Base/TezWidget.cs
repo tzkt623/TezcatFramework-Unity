@@ -19,6 +19,20 @@ namespace tezcat.Framework.UI
         byte m_DirtyMask = 0;
         byte m_DirtyCount = 0;
         TezRefreshPhase[] m_RefreshPhaseArray = new TezRefreshPhase[8];
+        ITezRefresher m_NextRefresher = null;
+        ITezRefresher ITezRefresher.next
+        {
+            get
+            {
+                var temp = m_NextRefresher;
+                m_NextRefresher = null;
+                return temp;
+            }
+            set
+            {
+                m_NextRefresher = value;
+            }
+        }
 
         public bool interactable
         {
@@ -54,6 +68,7 @@ namespace tezcat.Framework.UI
                 }
             }
         }
+
 
         protected sealed override void Awake()
         {
