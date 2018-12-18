@@ -12,8 +12,8 @@ namespace tezcat.Framework.Wrapper
     {
         bool m_Init = false;
 
-        byte m_DirtyMask = 0;
         byte m_DirtyCount = 0;
+        TezRefreshPhase m_DirtyMask = 0;
         TezRefreshPhase[] m_RefreshPhaseArray = new TezRefreshPhase[8];
         ITezRefresher m_NextRefresher = null;
         ITezRefresher ITezRefresher.next
@@ -35,14 +35,14 @@ namespace tezcat.Framework.Wrapper
             {
                 if (m_Init && this.gameObject.activeSelf)
                 {
-                    if ((m_DirtyMask & (byte)value) == 0)
+                    if ((m_DirtyMask & value) == 0)
                     {
                         if (m_DirtyCount == 0)
                         {
                             TezService.get<TezcatFramework>().pushRefresher(this);
                         }
 
-                        m_DirtyMask |= (byte)value;
+                        m_DirtyMask |= value;
                         m_RefreshPhaseArray[m_DirtyCount++] = value;
                     }
                 }

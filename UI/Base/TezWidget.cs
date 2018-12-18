@@ -16,7 +16,7 @@ namespace tezcat.Framework.UI
 
         bool m_Interactable = true;
 
-        byte m_DirtyMask = 0;
+        TezRefreshPhase m_DirtyMask = 0;
         byte m_DirtyCount = 0;
         TezRefreshPhase[] m_RefreshPhaseArray = new TezRefreshPhase[8];
         ITezRefresher m_NextRefresher = null;
@@ -55,14 +55,14 @@ namespace tezcat.Framework.UI
             {
                 if (m_Init && this.gameObject.activeSelf)
                 {
-                    if ((m_DirtyMask & (byte)value) == 0)
+                    if ((m_DirtyMask & value) == 0)
                     {
                         if (m_DirtyCount == 0)
                         {
                             TezService.get<TezcatFramework>().pushRefresher(this);
                         }
 
-                        m_DirtyMask |= (byte)value;
+                        m_DirtyMask |= value;
                         m_RefreshPhaseArray[m_DirtyCount++] = value;
                     }
                 }

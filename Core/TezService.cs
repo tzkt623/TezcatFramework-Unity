@@ -44,9 +44,23 @@ namespace tezcat.Framework.Core
             }
         }
 
-        public static IService get<IService>() where IService : ITezService
+        /// <summary>
+        /// 获得抽象服务
+        /// </summary>
+        public static IService get<IService>()
+            where IService : ITezService
         {
             return (IService)ServiceID<IService>.service;
+        }
+
+        /// <summary>
+        /// 通过抽象服务对象获得具体服务
+        /// </summary>
+        public static IService get<IService, IImplement>()
+            where IService : ITezService
+            where IImplement : IService
+        {
+            return (IImplement)ServiceID<IService>.service;
         }
 
         public static void close()
