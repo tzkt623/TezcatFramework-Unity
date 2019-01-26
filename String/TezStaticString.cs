@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using tezcat.Framework.Core;
+using tezcat.Framework.ECS;
 
 namespace tezcat.Framework.String
 {

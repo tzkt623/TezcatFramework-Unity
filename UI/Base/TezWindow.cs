@@ -87,6 +87,7 @@ namespace tezcat.Framework.UI
             }
         }
 
+
         /// <summary>
         /// 当前窗口的覆盖层
         /// </summary>
@@ -298,11 +299,15 @@ namespace tezcat.Framework.UI
             }
         }
 
-        public void removeArea(TezArea area)
+        public void removeArea(int area_id)
         {
-            m_AreaList[area.areaID] = null;
-            m_AreaDic.Remove(area.areaName + area.areaID);
-            m_FreeID.Enqueue(area.areaID);
+            if(m_AreaList != null)
+            {
+                var area = m_AreaList[area_id];
+                m_AreaDic.Remove(area.areaName + area.areaID);
+                m_FreeID.Enqueue(area_id);
+                m_AreaList[area_id] = null;
+            }
         }
 
         public T getArea<T>() where T : TezArea

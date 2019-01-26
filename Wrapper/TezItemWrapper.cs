@@ -1,5 +1,6 @@
 ﻿using tezcat.Framework.Core;
 using tezcat.Framework.DataBase;
+using tezcat.Framework.ECS;
 
 namespace tezcat.Framework.Wrapper
 {
@@ -25,6 +26,16 @@ namespace tezcat.Framework.Wrapper
 
         public virtual TezDataBaseItem myItem { get; private set; }
 
+        TezDataBaseItem ITezItemWrapper.myItem
+        {
+            get
+            {
+                throw new System.NotImplementedException();
+            }
+        }
+
+        TezEntity ITezComponent.entity { get { throw new System.NotImplementedException(); } }
+
         public TezItemWrapper(TezDataBaseItem item)
         {
             myItem = item;
@@ -38,6 +49,36 @@ namespace tezcat.Framework.Wrapper
         public Item getItem<Item>() where Item : TezDataBaseItem
         {
             return (Item)myItem;
+        }
+
+        void ITezComponent.onAdd(TezEntity entity)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        void ITezComponent.onRemove(TezEntity entity)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        void ITezComponent.onOtherComponentAdded(ITezComponent component, int com_id)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        void ITezComponent.onOtherComponentRemoved(ITezComponent component, int com_id)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        void ITezCloseable.close()
+        {
+            throw new System.NotImplementedException();
+        }
+
+        void ITezWrapper.retain()
+        {
+            throw new System.NotImplementedException();
         }
 
         public static bool operator true(TezItemWrapper wrapper)

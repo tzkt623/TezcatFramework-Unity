@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using tezcat.Framework.ECS;
 using tezcat.Framework.Wrapper;
 
 namespace tezcat.Framework.Core

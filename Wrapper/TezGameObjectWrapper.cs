@@ -1,13 +1,20 @@
 ﻿using tezcat.Framework.Core;
+using tezcat.Framework.ECS;
 
 namespace tezcat.Framework.Wrapper
 {
+    public interface ITezGameObjectWrapper : ITezWrapper
+    {
+        string myName { get; }
+        string myDescription { get; }
+        TezGameObject getGameObject();
+    }
+
     /// <summary>
     /// GameObject包装器
     /// 用来获得基础资源信息
     /// </summary>
-    public abstract class TezGameObjectWrapper
-        : ITezGameObjectWrapper
+    public abstract class TezGameObjectWrapper : TezWrapper
     {
         public string myName
         {
@@ -19,26 +26,8 @@ namespace tezcat.Framework.Wrapper
             get { return TezService.get<TezTranslator>().translateDescription(this.getGameObject().NID); }
         }
 
+
         public abstract TezGameObject getGameObject();
-
-        public abstract void close();
-
-        #region 重载操作
-        public static bool operator true(TezGameObjectWrapper obj)
-        {
-            return !object.ReferenceEquals(obj, null);
-        }
-
-        public static bool operator false(TezGameObjectWrapper obj)
-        {
-            return object.ReferenceEquals(obj, null);
-        }
-
-        public static bool operator !(TezGameObjectWrapper obj)
-        {
-            return object.ReferenceEquals(obj, null);
-        }
-        #endregion
     }
 
     /// <summary>
@@ -53,42 +42,33 @@ namespace tezcat.Framework.Wrapper
         : TezGameObjectWrapper
         where T : TezGameObject
     {
-        public T myGameObject { get; set; } = null;
+        public T myGameObject { get; private set; } = null;
 
         public sealed override TezGameObject getGameObject()
         {
             return this.myGameObject;
         }
 
-        public override void close()
+        protected override void onClose()
+        {
+            this.myGameObject = null;
+        }
+
+        protected override void onAddComponent(TezEntity entity)
+        {
+            this.myGameObject = entity.getComponent<TezGameObject, T>();
+        }
+
+        protected override void onRemoveComponent(TezEntity entity)
         {
             this.myGameObject = null;
         }
     }
 
 
-    public abstract class TezToolObjectWrapper : ITezToolObjectWrapper
+    public abstract class TezToolObjectWrapper : TezWrapper
     {
         public abstract TezToolObject getToolObject();
-
-        public abstract void close();
-
-        #region 重载操作
-        public static bool operator true(TezToolObjectWrapper obj)
-        {
-            return !object.ReferenceEquals(obj, null);
-        }
-
-        public static bool operator false(TezToolObjectWrapper obj)
-        {
-            return object.ReferenceEquals(obj, null);
-        }
-
-        public static bool operator !(TezToolObjectWrapper obj)
-        {
-            return object.ReferenceEquals(obj, null);
-        }
-        #endregion
     }
 
     public abstract class TezToolObjectWrapper<T>
@@ -102,7 +82,7 @@ namespace tezcat.Framework.Wrapper
             return this.myToolObject;
         }
 
-        public override void close()
+        protected override void onClose()
         {
             this.myToolObject = null;
         }

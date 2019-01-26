@@ -62,7 +62,7 @@ namespace tezcat.Framework.UI
             TezBasicItemEditor prefab = null;
             if(m_EditorDic.Count > category)
             {
-                m_CurrentEditor = TezService.get<TezcatFramework>().createWindow(prefab, "TezItemEditor", this.layer) as TezBasicItemEditor;
+                m_CurrentEditor = TezService.get<TezcatFramework>().createWindow(prefab, this.layer) as TezBasicItemEditor;
             }
             else
             {

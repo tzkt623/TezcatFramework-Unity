@@ -50,7 +50,7 @@ namespace tezcat.Framework.UI
                 if (!this.getItem().NID.isNullOrEmpty())
                 {
 
-                    this.close();
+                    this.onClose();
                 }
                 else
                 {
@@ -79,7 +79,7 @@ namespace tezcat.Framework.UI
         {
             if (eventData.button == PointerEventData.InputButton.Left)
             {
-                this.close();
+                this.onClose();
             }
         }
 

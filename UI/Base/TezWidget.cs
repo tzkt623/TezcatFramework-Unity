@@ -69,6 +69,8 @@ namespace tezcat.Framework.UI
             }
         }
 
+        public bool typeOnly { get; set; } = false;
+
 
         protected sealed override void Awake()
         {
@@ -107,15 +109,16 @@ namespace tezcat.Framework.UI
                 this.unLinkEvent();
             }
 
-            if (m_Clear)
-            {
-                this.clear();
-            }
+//             if (m_Clear)
+//             {
+//                 this.clear();
+//             }
         }
 
         protected sealed override void OnDestroy()
         {
             base.OnDestroy();
+            this.clear();
         }
 
         protected virtual void onInteractable(bool value)
@@ -183,6 +186,10 @@ namespace tezcat.Framework.UI
         /// </summary>
         public void close()
         {
+            if(typeOnly)
+            {
+                TezService.get<TezcatFramework>().removeTypeOnlyWidget(this);
+            }
             m_Clear = true;
             Destroy(this.gameObject);
         }

@@ -1,7 +1,6 @@
 ﻿using tezcat.Framework.Core;
-using tezcat.Framework.ECS;
 
-namespace tezcat.Framework.Wrapper
+namespace tezcat.Framework.ECS
 {
     public abstract class TezGameObjectMB
         : TezMonoBehaviour
@@ -76,7 +75,6 @@ namespace tezcat.Framework.Wrapper
         public void bind(T my_object)
         {
             this.myObject = my_object;
-            my_object.gameObject = this;
             this.onBind();
         }
 

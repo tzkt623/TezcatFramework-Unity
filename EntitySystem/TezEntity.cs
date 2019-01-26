@@ -6,6 +6,11 @@ using UnityEngine;
 
 namespace tezcat.Framework.ECS
 {
+    public interface ITezEntityBinder
+    {
+        void bind(TezEntity entity);
+    }
+
     public interface ITezEntityManager : ITezService
     {
         TezEntity create();
@@ -47,7 +52,6 @@ namespace tezcat.Framework.ECS
     {
         ITezComponent[] m_Components = new ITezComponent[TezService.get<TezComponentManager>().componentCount];
         
-
         public int ID { get; private set; } = -1;
         static int m_IDGiver = 0;
 
@@ -162,11 +166,32 @@ namespace tezcat.Framework.ECS
             for (int i = 0; i < m_Components.Length; i++)
             {
                 ///TODO:删除组件
-                m_Components[i]?.onRemove(this);
-                m_Components[i] = null;
+                var com = m_Components[i];
+                if(com != null)
+                {
+                    m_Components[i] = null;
+                    com.onRemove(this);
+                }
             }
 
             TezService.get<ITezEntityManager>().recycle(this);
         }
+
+        #region 重载操作
+        public static bool operator true(TezEntity entity)
+        {
+            return !object.ReferenceEquals(entity, null);
+        }
+
+        public static bool operator false(TezEntity entity)
+        {
+            return object.ReferenceEquals(entity, null);
+        }
+
+        public static bool operator !(TezEntity entity)
+        {
+            return object.ReferenceEquals(entity, null);
+        }
+        #endregion
     }
 }

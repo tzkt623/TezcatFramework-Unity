@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using tezcat.Framework.DataBase;
+using tezcat.Framework.ECS;
 using tezcat.Framework.Extension;
 
 namespace tezcat.Framework.Core

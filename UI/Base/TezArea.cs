@@ -105,7 +105,7 @@ namespace tezcat.Framework.UI
             m_Children.Clear();
             m_Children = null;
 
-            window.removeArea(this);
+            window.removeArea(this.areaID);
             window = null;
         }
         #endregion

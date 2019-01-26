@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using tezcat.Framework.Core;
+using tezcat.Framework.ECS;
 
 namespace tezcat.Framework.DataBase
 {
@@ -172,11 +173,14 @@ namespace tezcat.Framework.DataBase
             this.RID = null;
         }
 
-        public TezGameObject createObject()
+        public TezEntity createObject()
         {
             var obj = this.onCreateObject();
             obj.initWithData(this);
-            return obj;
+
+            var entity = TezEntity.create();
+            entity.addComponent<TezGameObject>(obj);
+            return entity;
         }
 
         public override void serialize(TezWriter writer)

@@ -46,19 +46,19 @@ namespace tezcat.Framework.Event
             m_Listeners.Add(new Dictionary<object, TezEventExtension.Action<ITezEventData>>());
         }
 
-        public void subscribe<EventData>(object obj, TezEventExtension.Action<ITezEventData> function) where EventData : ITezEventData
+        public void subscribe<EventData>(object listener, TezEventExtension.Action<ITezEventData> function) where EventData : ITezEventData
         {
             if (EventID<EventData>.ID == TezTypeInfo.ErrorID)
             {
                 this.register<EventData>();
             }
 
-            m_Listeners[EventID<EventData>.ID].Add(obj, function);
+            m_Listeners[EventID<EventData>.ID].Add(listener, function);
         }
 
-        public void unsubscribe<EventData>(object obj) where EventData : ITezEventData
+        public void unsubscribe<EventData>(object listener) where EventData : ITezEventData
         {
-            m_DeleteQueue.Enqueue(new KeyValuePair<int, object>(EventID<EventData>.ID, obj));
+            m_DeleteQueue.Enqueue(new KeyValuePair<int, object>(EventID<EventData>.ID, listener));
 
             /*            m_Listeners[EventID<EventData>.ID].Remove(obj);*/
         }

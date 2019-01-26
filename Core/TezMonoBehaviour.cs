@@ -1,9 +1,8 @@
 ﻿using System;
-using tezcat.Framework.Core;
 using tezcat.Framework.DataBase;
 using UnityEngine;
 
-namespace tezcat.Framework.Wrapper
+namespace tezcat.Framework.Core
 {
     public abstract class TezMonoBehaviour
         : MonoBehaviour

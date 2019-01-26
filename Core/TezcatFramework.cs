@@ -13,6 +13,7 @@ using UnityEngine;
 using tezcat.Framework.Threading;
 using tezcat.Framework.ECS;
 using System;
+using tezcat.Framework.TypeTraits;
 
 namespace tezcat.Framework.Core
 {
@@ -178,6 +179,7 @@ namespace tezcat.Framework.Core
             TezService.register(new TezDragDropManager());
         }
 
+
         protected virtual void registerClassFactory(TezClassFactory factory)
         {
 
@@ -185,8 +187,10 @@ namespace tezcat.Framework.Core
 
         protected virtual void registerComponent(TezComponentManager manager)
         {
+            manager.register<TezAssistant>();
             manager.register<TezGameObject>();
             manager.register<TezGameObjectMB>();
+            manager.register<TezWrapper>();
         }
 
         protected abstract void registerVersions();
@@ -236,8 +240,9 @@ namespace tezcat.Framework.Core
 
         #region Window
         List<TezWindow> m_WindowList = new List<TezWindow>();
-        Dictionary<string, int> m_WindowDic = new Dictionary<string, int>();
         Queue<int> m_FreeWindowID = new Queue<int>();
+
+        Dictionary<Type, TezWidget> m_WidgetWithType = new Dictionary<Type, TezWidget>();
 
         private int giveID()
         {
@@ -254,84 +259,124 @@ namespace tezcat.Framework.Core
             return id;
         }
 
-        public TezWidget createWidget(TezWidget prefab, string name, RectTransform parent)
+        public Widget getTypeOnlyWidget<Widget>() where Widget : TezWidget, ITezPrefab
         {
-            var widget = Instantiate(prefab, parent, false);
+            TezWidget widget = null;
+            m_WidgetWithType.TryGetValue(typeof(Widget), out widget);
+            return (Widget)widget;
+        }
+
+        public TezWidget createWidget(TezWidget prefab, string name, RectTransform parent, bool type_only)
+        {
+            TezWidget widget = null;
+            if (type_only)
+            {
+                var type = prefab.GetType();
+                if (m_WidgetWithType.TryGetValue(type, out widget))
+                {
+                    widget.reset();
+                    return widget;
+                }
+                else
+                {
+                    widget = Instantiate(prefab, parent, false);
+                    m_WidgetWithType.Add(type, widget);
+                }
+            }
+            else
+            {
+                widget = Instantiate(prefab, parent, false);
+            }
+
             widget.transform.localPosition = Vector3.zero;
+            widget.typeOnly = type_only;
             widget.name = name;
             return widget;
         }
 
-        public Widget createWidget<Widget>(string name, RectTransform parent) where Widget : TezWidget, ITezPrefab
+        public Widget createWidget<Widget>(string name, RectTransform parent, bool type_only = false) where Widget : TezWidget, ITezPrefab
         {
-            var widget = Instantiate(TezService.get<TezPrefabDatabase>().get<Widget>(), parent, false);
-            widget.transform.localPosition = Vector3.zero;
-            widget.name = name;
-            return widget;
+            return (Widget)this.createWidget(TezService.get<TezPrefabDatabase>().get<Widget>(), name, parent, type_only);
         }
 
-        public Widget createWidget<Widget>(RectTransform parent) where Widget : TezWidget, ITezPrefab
+        /// <summary>
+        /// 创建一个控件
+        /// </summary>
+        /// <typeparam name="Widget">控件类型</typeparam>
+        /// <param name="parent">控件的父级</param>
+        /// <param name="type_only">这类控件是否只能有一个</param>
+        /// <returns></returns>
+        public Widget createWidget<Widget>(RectTransform parent, bool type_only = false) where Widget : TezWidget, ITezPrefab
         {
-            var widget = Instantiate(TezService.get<TezPrefabDatabase>().get<Widget>(), parent, false);
-            widget.transform.localPosition = Vector3.zero;
-            widget.name = typeof(Widget).Name;
-            return widget;
+            return this.createWidget<Widget>(typeof(Widget).Name, parent, type_only);
         }
 
-        private Window createWindow<Window>(Window prefab, string name, int id, TezLayer layer) where Window : TezWindow, ITezPrefab
+        private Window createWindow<Window>(Window prefab
+            , string name
+            , TezLayer layer
+            , bool type_only) where Window : TezWindow, ITezPrefab
         {
-            var window = Instantiate(prefab, layer.transform, false);
+            TezWindow window = null;
+
+            if (type_only)
+            {
+                TezWidget widget = null;
+                var type = typeof(Window);
+                if (m_WidgetWithType.TryGetValue(type, out widget))
+                {
+                    widget.reset();
+                    return (Window)widget;
+                }
+                else
+                {
+                    window = Instantiate(prefab, layer.transform, false);
+                    m_WidgetWithType.Add(type, window);
+                }
+            }
+            else
+            {
+                window = Instantiate(prefab, layer.transform, false);
+            }
+
+            int id = this.giveID();
             window.windowID = id;
             window.windowName = name;
             window.layer = layer;
             window.transform.localPosition = Vector3.zero;
+            window.typeOnly = type_only;
 
             m_WindowList[id] = window;
-            m_WindowDic.Add(window.fullName, id);
-            return window;
+            return (Window)window;
         }
 
-        public TezWindow createWindow(TezWindow prefab, string name, TezLayer layer)
+        public Window createWindow<Window>(string name, TezLayer layer, bool type_only = false) where Window : TezWindow, ITezPrefab
         {
-            int id = -1;
-            if (m_WindowDic.TryGetValue(name, out id))
-            {
-                return m_WindowList[id];
-            }
-
-            return this.createWindow(prefab, name, this.giveID(), layer);
+            return this.createWindow(TezService.get<TezPrefabDatabase>().get<Window>(), name, layer, type_only);
         }
 
-        public Window createWindow<Window>(TezLayer layer) where Window : TezWindow, ITezPrefab
+        public TezWindow createWindow(TezWindow prefab, TezLayer layer, bool type_only = false)
         {
-            int id = -1;
-            if (m_WindowDic.TryGetValue(name, out id))
-            {
-                return (Window)m_WindowList[id];
-            }
-
-            return this.createWindow(TezService.get<TezPrefabDatabase>().get<Window>(), typeof(Window).Name, this.giveID(), layer);
+            return this.createWindow(prefab, prefab.GetType().Name, layer, type_only);
         }
 
-        public Window createWindow<Window>(string name, TezLayer layer) where Window : TezWindow, ITezPrefab
+        public Window createWindow<Window>(TezLayer layer, bool type_only = false) where Window : TezWindow, ITezPrefab
         {
-            int id = -1;
-            if (m_WindowDic.TryGetValue(name, out id))
-            {
-                return (Window)m_WindowList[id];
-            }
-
-            return this.createWindow(TezService.get<TezPrefabDatabase>().get<Window>(), name, this.giveID(), layer);
+            return this.createWindow<Window>(typeof(Window).Name, layer, type_only);
         }
 
         public void removeWindow(TezWindow window)
         {
             m_FreeWindowID.Enqueue(window.windowID);
             m_WindowList[window.windowID] = null;
-            m_WindowDic.Remove(window.fullName);
         }
 
-        protected virtual void onCreateWindow(System.Type type, TezWindow window)
+        public void removeTypeOnlyWidget(TezWidget widget)
+        {
+            m_WidgetWithType.Remove(widget.GetType());
+        }
+
+
+        protected virtual void onCreateWindow(Type type, TezWindow window)
         {
 
         }
@@ -344,7 +389,7 @@ namespace tezcat.Framework.Core
 
         public void pushRefresher(ITezRefresher refresher)
         {
-            if(m_Root == null)
+            if (m_Root == null)
             {
                 m_Root = refresher;
                 m_Current = refresher;
@@ -361,7 +406,7 @@ namespace tezcat.Framework.Core
 
         protected virtual void LateUpdate()
         {
-            while(m_Root != null)
+            while (m_Root != null)
             {
                 m_Root.refresh();
                 m_Root = m_Root.next;
