@@ -24,6 +24,7 @@ namespace tezcat.Framework.UI
         {
             get
             {
+                ///清空当前刷新链表里的下一个缓存
                 var temp = m_NextRefresher;
                 m_NextRefresher = null;
                 return temp;
