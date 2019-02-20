@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using tezcat.Framework.Core;
 using tezcat.Framework.Extension;
 using tezcat.Framework.TypeTraits;

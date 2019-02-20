@@ -406,10 +406,15 @@ namespace tezcat.Framework.Core
 
         protected virtual void LateUpdate()
         {
-            while (m_Root != null)
+            if(m_Root != null)
             {
-                m_Root.refresh();
-                m_Root = m_Root.next;
+                Debug.Log("刷新中......");
+                while (m_Root != null)
+                {
+                    m_Root.refresh();
+                    m_Root = m_Root.next;
+                }
+                Debug.Log("刷新结束!");
             }
         }
     }
