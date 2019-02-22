@@ -19,21 +19,16 @@ namespace tezcat.Framework.ECS
 
     }
 
-    public class TezComponentManager : ITezService
+    public class TezComponentManager
     {
-        public int componentCount { get; private set; }
+        public static int componentCount { get; private set; }
 
-        public void register<Component>() where Component : ITezComponent
+        public static void register<Component>() where Component : ITezComponent
         {
             if (TezComponentID<Component>.ID == TezTypeInfo.ErrorID)
             {
                 TezComponentID<Component>.setID(componentCount++);
             }
-        }
-
-        public void close()
-        {
-
         }
     }
 }

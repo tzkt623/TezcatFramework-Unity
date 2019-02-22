@@ -50,7 +50,7 @@ namespace tezcat.Framework.ECS
 
     public class TezEntity : ITezCloseable
     {
-        ITezComponent[] m_Components = new ITezComponent[TezService.get<TezComponentManager>().componentCount];
+        ITezComponent[] m_Components = new ITezComponent[TezComponentManager.componentCount];
         
         public int ID { get; private set; } = -1;
         static int m_IDGiver = 0;

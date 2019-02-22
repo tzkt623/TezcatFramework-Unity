@@ -99,7 +99,7 @@ namespace tezcat.Framework.Core
         #endregion
 
         #region Engine
-        List<TezGameObjectMB> m_ObjectMBList = new List<TezGameObjectMB>();
+        List<TezRenderer> m_ObjectMBList = new List<TezRenderer>();
 
         protected override void preInit()
         {
@@ -151,14 +151,13 @@ namespace tezcat.Framework.Core
         {
             TezService.register(this);
             this.registerVersions();
+            this.registerComponent();
             this.registerService();
-            this.registerComponent(TezService.get<TezComponentManager>());
             this.registerClassFactory(TezService.get<TezClassFactory>());
         }
 
         protected virtual void registerService()
         {
-            TezService.register(new TezComponentManager());
             TezService.register<ITezEntityManager>(new TezEntityManager());
 
             TezService.register(new TezThread());
@@ -185,12 +184,12 @@ namespace tezcat.Framework.Core
 
         }
 
-        protected virtual void registerComponent(TezComponentManager manager)
+        protected virtual void registerComponent()
         {
-            manager.register<TezAssistant>();
-            manager.register<TezGameObject>();
-            manager.register<TezGameObjectMB>();
-            manager.register<TezWrapper>();
+            TezComponentManager.register<TezAssistant>();
+            TezComponentManager.register<TezGameObject>();
+            TezComponentManager.register<TezRenderer>();
+            TezComponentManager.register<TezWrapper>();
         }
 
         protected abstract void registerVersions();

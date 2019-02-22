@@ -2,7 +2,7 @@
 
 namespace tezcat.Framework.ECS
 {
-    public abstract class TezGameObjectMB
+    public abstract class TezRenderer
         : TezMonoBehaviour
         , ITezComponent
     {
@@ -63,7 +63,7 @@ namespace tezcat.Framework.ECS
         }
     }
 
-    public abstract class TezGameObjectMB<T> : TezGameObjectMB where T : TezGameObject
+    public abstract class TezRenderer<T> : TezRenderer where T : TezGameObject
     {
         public T myObject { get; protected set; }
 
