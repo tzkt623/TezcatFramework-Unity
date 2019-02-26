@@ -8,21 +8,12 @@ namespace tezcat.Framework.Utility
     {
         private T[] m_Data = new T[4];
 
-        int m_Count = 0;
-        public int count
-        {
-            get { return m_Count; }
-        }
-
-        int m_Capacity = 4;
-        public int capacity
-        {
-            get { return m_Capacity; }
-        }
+        public int count { get; private set; } = 0;
+        public int capacity { get; private set; } = 0;
 
         int ICollection<T>.Count
         {
-            get { return m_Count; }
+            get { return count; }
         }
 
         bool ICollection<T>.IsReadOnly
@@ -38,7 +29,7 @@ namespace tezcat.Framework.Utility
 
         int IList<T>.IndexOf(T item)
         {
-            for (int i = 0; i < m_Count; i++)
+            for (int i = 0; i < count; i++)
             {
                 if (object.Equals(item, m_Data[i]))
                 {
@@ -85,7 +76,7 @@ namespace tezcat.Framework.Utility
 
         void ICollection<T>.CopyTo(T[] array, int arrayIndex)
         {
-            if (arrayIndex >= m_Count || arrayIndex < 0)
+            if (arrayIndex >= count || arrayIndex < 0)
             {
                 throw new IndexOutOfRangeException();
             }
@@ -118,7 +109,7 @@ namespace tezcat.Framework.Utility
             return m_Data.GetEnumerator();
         }
 
-        public TezList(int capacity = -1)
+        public TezList(int capacity = 4)
         {
             if (capacity <= 0)
             {
@@ -129,83 +120,83 @@ namespace tezcat.Framework.Utility
 
         public void add(T element)
         {
-            if (m_Count == m_Capacity)
+            if (count == capacity)
             {
-                this.setCapacity(m_Capacity * 2);
+                this.setCapacity(capacity * 2);
             }
 
-            m_Data[m_Count] = element;
-            m_Count++;
+            m_Data[count] = element;
+            count++;
         }
 
         public void clear()
         {
-            m_Count = 0;
+            count = 0;
         }
 
         public void insert(int index, T element)
         {
-            if (index > m_Count || index < 0)
+            if (index > count || index < 0)
             {
                 throw new IndexOutOfRangeException();
             }
-            if (m_Count == m_Capacity)
+            if (count == capacity)
             {
-                this.setCapacity(m_Capacity * 2);
+                this.setCapacity(capacity * 2);
             }
-            if (index < m_Count)
+            if (index < count)
             {
-                Array.Copy(m_Data, index, m_Data, index + 1, m_Count - index);
+                Array.Copy(m_Data, index, m_Data, index + 1, count - index);
             }
             m_Data[index] = element;
-            m_Count++;
+            count++;
         }
 
         public void removeAt(int index)
         {
-            if (index >= m_Count || index < 0)
+            if (index >= count || index < 0)
             {
                 throw new IndexOutOfRangeException();
             }
-            if (index == m_Count - 1)
+            if (index == count - 1)
             {
                 m_Data[index] = default(T);
             }
             else
             {
-                Array.Copy(m_Data, index + 1, m_Data, index, m_Count - index - 1);
-                m_Data[m_Count - 1] = default(T);
+                Array.Copy(m_Data, index + 1, m_Data, index, count - index - 1);
+                m_Data[count - 1] = default(T);
             }
-            m_Count--;
+            count--;
         }
 
         public void unsortedRemoveAt(int index)
         {
-            if (index >= m_Count || index < 0)
+            if (index >= count || index < 0)
             {
                 throw new IndexOutOfRangeException();
             }
-            if (index == m_Count - 1)
+            if (index == count - 1)
             {
                 m_Data[index] = default(T);
             }
             else
             {
-                m_Data[index] = m_Data[m_Count - 1];
-                m_Data[m_Count - 1] = default(T);
+                m_Data[index] = m_Data[count - 1];
+                m_Data[count - 1] = default(T);
             }
-            m_Count--;
+            count--;
         }
 
         private void setCapacity(int new_capacity)
         {
-            int old = m_Capacity;
-            m_Capacity = System.Math.Max(new_capacity, m_Count);
+            int old = capacity;
+            capacity = System.Math.Max(new_capacity, count);
 
-            if (m_Capacity != old)
+            if (capacity != old)
             {
-                T[] array = new T[m_Capacity];
-                Array.Copy(m_Data, array, m_Count);
+                T[] array = new T[capacity];
+                Array.Copy(m_Data, array, count);
                 m_Data = array;
             }
         }

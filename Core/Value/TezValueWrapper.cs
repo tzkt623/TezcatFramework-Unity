@@ -323,7 +323,7 @@ namespace tezcat.Framework.Core
     public class TezModifiableIntValue
         : TezModifiableValue<int>
     {
-        public int modifiedValue
+        public int valueModified
         {
             get
             {
@@ -354,7 +354,7 @@ namespace tezcat.Framework.Core
     public class TezModifiableFloatValue
         : TezModifiableValue<float>
     {
-        public float modifiedValue
+        public float valueModified
         {
             get
             {
