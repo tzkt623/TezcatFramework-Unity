@@ -7,48 +7,47 @@ using UnityEngine.EventSystems;
 namespace tezcat.Framework.UI
 {
     /// <summary>
-    /// Are才是实际包含Widget的容器
-    /// 用于功能区域的设计
+    /// Subwindow用于同一个Window下多个功能区域的设计
     /// </summary>
-    public abstract class TezArea
+    public abstract class TezSubwindow
         : TezWidget
         , ITezFocusableWidget
         , ITezPrefab
     {
         [SerializeField]
-        private int m_AreaID = -1;
-        public int areaID
+        private int m_SubwindowID = -1;
+        public int subwindowID
         {
-            get { return m_AreaID; }
-            set { m_AreaID = value; }
+            get { return m_SubwindowID; }
+            set { m_SubwindowID = value; }
         }
 
         [SerializeField]
-        private string m_AreaName = null;
-        public string areaName
+        private string m_SubwindowName = null;
+        public string subwindowName
         {
             get
             {
-                return m_AreaName;
+                return m_SubwindowName;
             }
             set
             {
-                this.window?.onAreaNameChanged(this, value);
-                m_AreaName = value;
-                this.name = m_AreaName + m_AreaID;
+                this.window?.onSubwindowNameChanged(this, value);
+                m_SubwindowName = value;
+                this.name = m_SubwindowName + m_SubwindowID;
             }
         }
 
         public TezWindow window { get; set; } = null;
         protected TezWidgetEvent.Dispatcher m_EventDispatcher = new TezWidgetEvent.Dispatcher();
-        List<TezArea> m_Children = new List<TezArea>();
+        List<TezSubwindow> m_Children = new List<TezSubwindow>();
 
         #region Widget
         protected override void preInit()
         {
             foreach (RectTransform item in this.transform)
             {
-                var area = item.GetComponent<TezArea>();
+                var area = item.GetComponent<TezSubwindow>();
                 if (area)
                 {
                     this.addChild(area);
@@ -65,7 +64,7 @@ namespace tezcat.Framework.UI
                 this.window = parent.GetComponent<TezWindow>();
             } while (this.window == null);
 
-            this.window.addArea(this);
+            this.window.addSubwindow(this);
         }
 
         protected override void linkEvent()
@@ -105,7 +104,7 @@ namespace tezcat.Framework.UI
             m_Children.Clear();
             m_Children = null;
 
-            window.removeArea(this.areaID);
+            window.removeSubwindow(this.subwindowID);
             window = null;
         }
         #endregion
@@ -126,24 +125,24 @@ namespace tezcat.Framework.UI
             this.m_EventDispatcher.invoke(event_id, data);
         }
 
-        private void growSpace(TezArea area)
+        private void growSpace(TezSubwindow area)
         {
-            while(m_Children.Count <= area.areaID)
+            while(m_Children.Count <= area.subwindowID)
             {
                 m_Children.Add(null);
             }
         }
 
-        public void addChild(TezArea area)
+        public void addChild(TezSubwindow area)
         {
             this.growSpace(area);
-            m_Children[area.areaID] = area;
+            m_Children[area.subwindowID] = area;
             area.window = window;
         }
 
-        public void removeChild(TezArea area)
+        public void removeChild(TezSubwindow area)
         {
-            m_Children[area.areaID] = null;
+            m_Children[area.subwindowID] = null;
         }
     }
 }

@@ -7,7 +7,7 @@ using UnityEngine.UI;
 
 namespace tezcat.Framework.UI
 {
-    public class TezLocalizationNameList : TezArea
+    public class TezLocalizationNameList : TezSubwindow
     {
         [Header("Widget")]
         [SerializeField]

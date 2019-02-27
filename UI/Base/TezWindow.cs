@@ -96,8 +96,8 @@ namespace tezcat.Framework.UI
         /// <summary>
         /// Area
         /// </summary>
-        List<TezArea> m_AreaList = new List<TezArea>();
-        Dictionary<string, int> m_AreaDic = new Dictionary<string, int>();
+        List<TezSubwindow> m_SubwindowList = new List<TezSubwindow>();
+        Dictionary<string, int> m_SubwindowDic = new Dictionary<string, int>();
         Queue<int> m_FreeID = new Queue<int>();
 
         protected ITezFocusableWidget m_FocusWidget = null;
@@ -110,9 +110,9 @@ namespace tezcat.Framework.UI
             (object data) =>
             {
                 int id = -1;
-                if (m_AreaDic.TryGetValue((string)data, out id))
+                if (m_SubwindowDic.TryGetValue((string)data, out id))
                 {
-                    m_AreaList[id].open();
+                    m_SubwindowList[id].open();
                 }
             });
 
@@ -127,11 +127,11 @@ namespace tezcat.Framework.UI
 
         protected override void initWidget()
         {
-            List<TezArea> list = new List<TezArea>();
+            List<TezSubwindow> list = new List<TezSubwindow>();
             this.GetComponentsInChildren(true, list);
             foreach (var area in list)
             {
-                this.registerArea(area);
+                this.registerSubwindow(area);
             }
         }
 
@@ -153,9 +153,9 @@ namespace tezcat.Framework.UI
         public override bool checkForClose()
         {
             bool result = true;
-            List<TezEventExtension.Action> close_function_list = new List<TezEventExtension.Action>(m_AreaList.Count);
+            List<TezEventExtension.Action> close_function_list = new List<TezEventExtension.Action>(m_SubwindowList.Count);
 
-            foreach (var area in m_AreaList)
+            foreach (var area in m_SubwindowList)
             {
                 result &= area.checkForClose();
                 if (result)
@@ -178,7 +178,7 @@ namespace tezcat.Framework.UI
 
         public override void reset()
         {
-            foreach (var area in m_AreaList)
+            foreach (var area in m_SubwindowList)
             {
                 area.reset();
             }
@@ -188,22 +188,22 @@ namespace tezcat.Framework.UI
         {
             overlay = null;
 
-            for (int i = 0; i < m_AreaList.Count; i++)
+            for (int i = 0; i < m_SubwindowList.Count; i++)
             {
-                m_AreaList[i].close();
+                m_SubwindowList[i].close();
             }
-            m_AreaList.Clear();
-            m_AreaList = null;
+            m_SubwindowList.Clear();
+            m_SubwindowList = null;
 
-            m_AreaDic.Clear();
-            m_AreaDic = null;
+            m_SubwindowDic.Clear();
+            m_SubwindowDic = null;
 
             TezService.get<TezcatFramework>().removeWindow(this);
         }
 
         protected override void onRefresh(TezRefreshPhase phase)
         {
-            foreach (var sub in m_AreaList)
+            foreach (var sub in m_SubwindowList)
             {
                 sub.refreshPhase = phase;
             }
@@ -216,12 +216,12 @@ namespace tezcat.Framework.UI
         #endregion
 
         #region Area
-        private void growArea(int id)
+        private void growSubwindow(int id)
         {
-            while (m_AreaList.Count <= id)
+            while (m_SubwindowList.Count <= id)
             {
-                m_FreeID.Enqueue(m_AreaList.Count);
-                m_AreaList.Add(null);
+                m_FreeID.Enqueue(m_SubwindowList.Count);
+                m_SubwindowList.Add(null);
             }
         }
 
@@ -231,7 +231,7 @@ namespace tezcat.Framework.UI
             if (m_FreeID.Count > 0)
             {
                 id = m_FreeID.Dequeue();
-                while (m_AreaList[id])
+                while (m_SubwindowList[id])
                 {
                     if (m_FreeID.Count == 0)
                     {
@@ -244,75 +244,75 @@ namespace tezcat.Framework.UI
 
             if (id == -1)
             {
-                id = m_AreaList.Count;
-                m_AreaList.Add(null);
+                id = m_SubwindowList.Count;
+                m_SubwindowList.Add(null);
             }
 
             return id;
         }
 
-        private void registerArea(TezArea area)
+        private void registerSubwindow(TezSubwindow subwindow)
         {
 #if UNITY_EDITOR
-            TezService.get<TezDebug>().isTrue(area.areaID >= 0, "UIWindow (" + m_WindowName + ")", "Window (" + area.areaName + ") ID Must EqualGreater Than 0");
+            TezService.get<TezDebug>().isTrue(subwindow.subwindowID >= 0, "UIWindow (" + m_WindowName + ")", "Window (" + subwindow.subwindowName + ") ID Must EqualGreater Than 0");
 #endif
-            this.growArea(area.areaID);
+            this.growSubwindow(subwindow.subwindowID);
 
-            if (string.IsNullOrEmpty(area.areaName))
+            if (string.IsNullOrEmpty(subwindow.subwindowName))
             {
-                area.areaName = "Area_" + area.areaID;
+                subwindow.subwindowName = "Area_" + subwindow.subwindowID;
             }
 
-            if (m_AreaList[area.areaID])
+            if (m_SubwindowList[subwindow.subwindowID])
             {
-                area.areaID = this.giveID();
+                subwindow.subwindowID = this.giveID();
             }
-            area.window = this;
-            m_AreaList[area.areaID] = area;
-            m_AreaDic.Add(area.areaName + area.areaID, area.areaID);
+            subwindow.window = this;
+            m_SubwindowList[subwindow.subwindowID] = subwindow;
+            m_SubwindowDic.Add(subwindow.subwindowName + subwindow.subwindowID, subwindow.subwindowID);
 
 #if UNITY_EDITOR
-            TezService.get<TezDebug>().info("UIWindow (" + m_WindowName + ")", "Register Area: " + area.areaName + " ID:" + area.areaID);
+            TezService.get<TezDebug>().info("UIWindow (" + m_WindowName + ")", "Register Area: " + subwindow.subwindowName + " ID:" + subwindow.subwindowID);
 #endif
         }
 
 
-        public void addArea(TezArea area)
+        public void addSubwindow(TezSubwindow subwindow)
         {
-            if (area.areaID != -1 && !m_AreaDic.ContainsKey(area.areaName + area.areaID))
+            if (subwindow.subwindowID != -1 && !m_SubwindowDic.ContainsKey(subwindow.subwindowName + subwindow.subwindowID))
             {
-                this.growArea(area.areaID);
+                this.growSubwindow(subwindow.subwindowID);
 
-                if (string.IsNullOrEmpty(area.areaName))
+                if (string.IsNullOrEmpty(subwindow.subwindowName))
                 {
-                    area.areaName = "Area_" + area.areaID;
+                    subwindow.subwindowName = "Area_" + subwindow.subwindowID;
                 }
 
-                area.areaID = this.giveID();
-                area.window = this;
-                m_AreaList[area.areaID] = area;
-                m_AreaDic.Add(area.areaName + area.areaID, area.areaID);
+                subwindow.subwindowID = this.giveID();
+                subwindow.window = this;
+                m_SubwindowList[subwindow.subwindowID] = subwindow;
+                m_SubwindowDic.Add(subwindow.subwindowName + subwindow.subwindowID, subwindow.subwindowID);
 
 #if UNITY_EDITOR
-                TezService.get<TezDebug>().info("UIWindow (" + m_WindowName + ")", "Add Area: " + area.areaName + " ID:" + area.areaID);
+                TezService.get<TezDebug>().info("UIWindow (" + m_WindowName + ")", "Add Area: " + subwindow.subwindowName + " ID:" + subwindow.subwindowID);
 #endif
             }
         }
 
-        public void removeArea(int area_id)
+        public void removeSubwindow(int subwindow_id)
         {
-            if(m_AreaList != null)
+            if(m_SubwindowList != null)
             {
-                var area = m_AreaList[area_id];
-                m_AreaDic.Remove(area.areaName + area.areaID);
-                m_FreeID.Enqueue(area_id);
-                m_AreaList[area_id] = null;
+                var area = m_SubwindowList[subwindow_id];
+                m_SubwindowDic.Remove(area.subwindowName + area.subwindowID);
+                m_FreeID.Enqueue(subwindow_id);
+                m_SubwindowList[subwindow_id] = null;
             }
         }
 
-        public T getArea<T>() where T : TezArea
+        public T getSubwindow<T>() where T : TezSubwindow
         {
-            foreach (var area in m_AreaList)
+            foreach (var area in m_SubwindowList)
             {
                 if (area is T)
                 {
@@ -323,41 +323,41 @@ namespace tezcat.Framework.UI
             return null;
         }
 
-        public T getArea<T>(string name) where T : TezArea
+        public T getSubwindow<T>(string name) where T : TezSubwindow
         {
             int id = -1;
-            if (m_AreaDic.TryGetValue(name, out id))
+            if (m_SubwindowDic.TryGetValue(name, out id))
             {
-                return (T)m_AreaList[id];
+                return (T)m_SubwindowList[id];
             }
 
             return null;
         }
 
-        public T getArea<T>(int id) where T : TezArea
+        public T getSubwindow<T>(int id) where T : TezSubwindow
         {
-            if (id > m_AreaList.Count || id < 0)
+            if (id > m_SubwindowList.Count || id < 0)
             {
                 return null;
             }
 
-            return (T)m_AreaList[id];
+            return (T)m_SubwindowList[id];
         }
 
-        public void onAreaNameChanged(TezArea area, string new_name)
+        public void onSubwindowNameChanged(TezSubwindow subwindow, string new_name)
         {
 #if UNITY_EDITOR
-            TezService.get<TezDebug>().info("UIWindow (" + m_WindowName + ")", "Area Name: " + area.areaName + " Change To: " + new_name);
+            TezService.get<TezDebug>().info("UIWindow (" + m_WindowName + ")", "Area Name: " + subwindow.subwindowName + " Change To: " + new_name);
 #endif
-            m_AreaDic.Remove(area.areaName + area.areaID);
-            m_AreaDic.Add(new_name + area.areaID, area.areaID);
+            m_SubwindowDic.Remove(subwindow.subwindowName + subwindow.subwindowID);
+            m_SubwindowDic.Add(new_name + subwindow.subwindowID, subwindow.subwindowID);
         }
         #endregion
 
         #region Event
         public void dispathEvent(int event_id, object data)
         {
-            foreach (var area in m_AreaList)
+            foreach (var area in m_SubwindowList)
             {
                 area.onEvent(event_id, data);
             }

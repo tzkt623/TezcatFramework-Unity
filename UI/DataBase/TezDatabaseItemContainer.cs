@@ -8,7 +8,7 @@ using UnityEngine.UI;
 namespace tezcat.Framework.UI
 {
     public class TezDatabaseItemContainer
-        : TezArea
+        : TezSubwindow
     {
         [Header("Widget")]
         [SerializeField]

@@ -4,7 +4,7 @@ using UnityEngine.EventSystems;
 
 namespace tezcat.Framework.UI
 {
-    public class TezDatabaseMenu : TezArea
+    public class TezDatabaseMenu : TezSubwindow
     {
         [SerializeField]
         TezLabelButtonWithBG m_AddItem = null;

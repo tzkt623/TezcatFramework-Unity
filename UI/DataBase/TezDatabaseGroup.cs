@@ -5,7 +5,7 @@ using UnityEngine;
 namespace tezcat.Framework.UI
 {
     public class TezDatabaseGroup
-        : TezArea
+        : TezSubwindow
     {
         [SerializeField]
         TezTree m_Tree = null;

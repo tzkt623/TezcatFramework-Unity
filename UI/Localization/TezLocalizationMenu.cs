@@ -6,7 +6,7 @@ using UnityEngine.EventSystems;
 
 namespace tezcat.Framework.UI
 {
-    public class TezLocalizationMenu : TezArea
+    public class TezLocalizationMenu : TezSubwindow
     {
         [SerializeField]
         TezLabelButtonWithBG m_Refresh = null;
