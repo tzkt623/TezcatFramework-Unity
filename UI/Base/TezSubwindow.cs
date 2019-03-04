@@ -14,7 +14,7 @@ namespace tezcat.Framework.UI
         , ITezFocusableWidget
         , ITezPrefab
     {
-        [SerializeField]
+//        [SerializeField]
         private int m_SubwindowID = -1;
         public int subwindowID
         {
@@ -89,10 +89,10 @@ namespace tezcat.Framework.UI
 
         public override void reset()
         {
-            foreach (var child in m_Children)
-            {
-                child?.reset();
-            }
+//             foreach (var child in m_Children)
+//             {
+//                 child?.reset();
+//             }
         }
 
         public override void clear()

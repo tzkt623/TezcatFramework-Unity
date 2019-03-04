@@ -7,34 +7,11 @@ using UnityEngine;
 
 namespace tezcat.Framework.ECS
 {
-    /// <summary>
-    /// 游戏Object
-    /// </summary>
-    public abstract class TezGameObject
-         : TezObject
-         , ITezComponent
-         , ITezSerializable
-         , ITezTagSet
+    public abstract class TezDataObject
+        : TezObject
+        , ITezComponent
+        , ITezSerializable
     {
-        #region GUID Manager
-        static Queue<uint> m_FreeID = new Queue<uint>();
-        static uint m_IDGiver = 1;
-        static uint giveID()
-        {
-            if (m_FreeID.Count > 0)
-            {
-                return m_FreeID.Dequeue();
-            }
-
-            return m_IDGiver++;
-        }
-
-        static void recycleID(uint id)
-        {
-            m_FreeID.Enqueue(id);
-        }
-        #endregion
-
         #region Component
         public TezEntity entity { get; private set; }
 
@@ -60,26 +37,51 @@ namespace tezcat.Framework.ECS
             this.onOtherComponentRemoved(component, com_id);
         }
 
-        protected virtual void onAddComponent(TezEntity entity)
-        {
+        protected virtual void onAddComponent(TezEntity entity) { }
 
+        protected virtual void onRemoveComponent(TezEntity entity) { }
+
+        protected virtual void onOtherComponentAdded(ITezComponent com, int com_id) { }
+
+        protected virtual void onOtherComponentRemoved(ITezComponent com, int com_id) { }
+
+        public abstract void initNew();
+
+        public abstract void initWithData(ITezSerializableItem item);
+
+        public virtual void serialize(TezSaveManager manager) { }
+
+        public virtual void deserialize(TezSaveManager manager) { }
+        #endregion
+    }
+
+    /// <summary>
+    /// 游戏Object
+    /// </summary>
+    public abstract class TezGameObject
+         : TezDataObject
+         , ITezTagSet
+    {
+        #region GUID Manager
+        static Queue<uint> m_FreeID = new Queue<uint>();
+        static uint m_IDGiver = 1;
+        static uint giveID()
+        {
+            if (m_FreeID.Count > 0)
+            {
+                return m_FreeID.Dequeue();
+            }
+
+            return m_IDGiver++;
         }
 
-        protected virtual void onRemoveComponent(TezEntity entity)
+        static void recycleID(uint id)
         {
-
+            m_FreeID.Enqueue(id);
         }
+        #endregion
 
-        protected virtual void onOtherComponentAdded(ITezComponent com, int com_id)
-        {
-
-        }
-
-        protected virtual void onOtherComponentRemoved(ITezComponent com, int com_id)
-        {
-
-        }
-
+        #region Component
         public Wrapper getWrapper<Wrapper>() where Wrapper : ITezWrapper
         {
             return (Wrapper)this.getWrapper();
@@ -91,7 +93,7 @@ namespace tezcat.Framework.ECS
             if (!wrapper)
             {
                 wrapper = this.onCreateWrapper();
-                if(wrapper)
+                if (wrapper)
                 {
                     this.entity.addComponent<TezWrapper>(wrapper);
                 }
@@ -143,7 +145,7 @@ namespace tezcat.Framework.ECS
         /// <summary>
         /// 初始化Object
         /// </summary>
-        public void initNew()
+        public sealed override void initNew()
         {
             if (this.m_RID == null)
             {
@@ -168,22 +170,24 @@ namespace tezcat.Framework.ECS
 
         }
 
-        public void initWithData(TezDataBaseGameItem item)
+        public sealed override void initWithData(ITezSerializableItem item)
         {
+            var data_item = item as TezDataBaseGameItem;
+
             if (this.GUID == 0)
             {
                 this.GUID = giveID();
             }
 
             this.m_RID?.close();
-            this.m_RID = new TezRID(item.RID);
+            this.m_RID = new TezRID(data_item.RID);
 
-            this.NID = item.NID;
+            this.NID = data_item.NID;
             this.TAG = new TezTagSet();
             this.onInitWithData(item);
         }
 
-        protected virtual void onInitWithData(TezDataBaseGameItem item)
+        protected virtual void onInitWithData(ITezSerializableItem item)
         {
 
         }
@@ -235,13 +239,13 @@ namespace tezcat.Framework.ECS
             this.GUID = 0;
         }
 
-        public virtual void serialize(TezSaveManager manager)
+        public override void serialize(TezSaveManager manager)
         {
             manager.write(TezReadOnlyString.Database.CID, this.CID);
             manager.write(TezReadOnlyString.Database.NID, this.NID);
         }
 
-        public virtual void deserialize(TezSaveManager manager)
+        public override void deserialize(TezSaveManager manager)
         {
             this.NID = manager.readString(TezReadOnlyString.Database.NID);
         }

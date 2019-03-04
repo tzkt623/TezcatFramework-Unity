@@ -2,6 +2,7 @@
 using tezcat.Framework.Core;
 using tezcat.Framework.Extension;
 using UnityEngine.EventSystems;
+using UnityEngine;
 
 namespace tezcat.Framework.UI
 {
@@ -10,6 +11,9 @@ namespace tezcat.Framework.UI
         , ITezDragableWidget
         , ITezClickable
     {
+        [SerializeField]
+        bool m_Pin = false;
+
         TezWindow m_Window = null;
         bool m_Dragging = false;
 
@@ -29,7 +33,7 @@ namespace tezcat.Framework.UI
 
         void IBeginDragHandler.OnBeginDrag(PointerEventData eventData)
         {
-            if (eventData.button == PointerEventData.InputButton.Left)
+            if (!m_Pin && eventData.button == PointerEventData.InputButton.Left)
             {
                 m_Dragging = true;
             }

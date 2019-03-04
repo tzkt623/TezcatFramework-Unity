@@ -225,7 +225,7 @@ namespace tezcat.Framework.UI
             }
         }
 
-        private int giveID()
+        private int giveSubwindowID()
         {
             int id = -1;
             if (m_FreeID.Count > 0)
@@ -254,8 +254,9 @@ namespace tezcat.Framework.UI
         private void registerSubwindow(TezSubwindow subwindow)
         {
 #if UNITY_EDITOR
-            TezService.get<TezDebug>().isTrue(subwindow.subwindowID >= 0, "UIWindow (" + m_WindowName + ")", "Window (" + subwindow.subwindowName + ") ID Must EqualGreater Than 0");
+            TezService.get<TezDebug>().isTrue(subwindow.subwindowID < 0, "UIWindow (" + m_WindowName + ")", "Window (" + subwindow.subwindowName + ") ID Must EqualGreater Than 0");
 #endif
+            subwindow.subwindowID = this.giveSubwindowID();
             this.growSubwindow(subwindow.subwindowID);
 
             if (string.IsNullOrEmpty(subwindow.subwindowName))
@@ -265,7 +266,7 @@ namespace tezcat.Framework.UI
 
             if (m_SubwindowList[subwindow.subwindowID])
             {
-                subwindow.subwindowID = this.giveID();
+                subwindow.subwindowID = this.giveSubwindowID();
             }
             subwindow.window = this;
             m_SubwindowList[subwindow.subwindowID] = subwindow;
@@ -288,7 +289,7 @@ namespace tezcat.Framework.UI
                     subwindow.subwindowName = "Area_" + subwindow.subwindowID;
                 }
 
-                subwindow.subwindowID = this.giveID();
+                subwindow.subwindowID = this.giveSubwindowID();
                 subwindow.window = this;
                 m_SubwindowList[subwindow.subwindowID] = subwindow;
                 m_SubwindowDic.Add(subwindow.subwindowName + subwindow.subwindowID, subwindow.subwindowID);

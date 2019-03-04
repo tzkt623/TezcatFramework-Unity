@@ -179,7 +179,7 @@ namespace tezcat.Framework.DataBase
             obj.initWithData(this);
 
             var entity = TezEntity.create();
-            entity.addComponent<TezGameObject>(obj);
+            entity.addComponent<TezDataObject>(obj);
             return entity;
         }
 

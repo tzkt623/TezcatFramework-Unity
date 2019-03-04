@@ -56,7 +56,7 @@ namespace tezcat.Framework.Wrapper
 
         protected override void onAddComponent(TezEntity entity)
         {
-            this.myGameObject = entity.getComponent<TezGameObject, T>();
+            this.myGameObject = entity.getComponent<TezDataObject, T>();
         }
 
         protected override void onRemoveComponent(TezEntity entity)

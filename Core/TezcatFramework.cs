@@ -186,8 +186,7 @@ namespace tezcat.Framework.Core
 
         protected virtual void registerComponent()
         {
-            TezComponentManager.register<TezAssistant>();
-            TezComponentManager.register<TezGameObject>();
+            TezComponentManager.register<TezDataObject>();
             TezComponentManager.register<TezRenderer>();
             TezComponentManager.register<TezWrapper>();
         }
