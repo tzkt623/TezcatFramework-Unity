@@ -6,17 +6,15 @@ namespace tezcat.Framework.ECS
         : TezMonoBehaviour
         , ITezComponent
     {
-        public string myName
-        {
-            get { return TezService.get<TezTranslator>().translateName(this.getObject().NID); }
-        }
-
-        public string myDescription
-        {
-            get { return TezService.get<TezTranslator>().translateDescription(this.getObject().NID); }
-        }
-
-        public abstract TezGameObject getObject();
+//         public string myName
+//         {
+//             get { return TezService.get<TezTranslator>().translateName(this.getObject().NID); }
+//         }
+// 
+//         public string myDescription
+//         {
+//             get { return TezService.get<TezTranslator>().translateDescription(this.getObject().NID); }
+//         }
 
         public TezEntity entity { get; private set; }
 
@@ -61,28 +59,10 @@ namespace tezcat.Framework.ECS
         {
 
         }
-    }
-
-    public abstract class TezRenderer<T> : TezRenderer where T : TezGameObject
-    {
-        public T myObject { get; protected set; }
-
-        public sealed override TezGameObject getObject()
-        {
-            return this.myObject;
-        }
-
-        public void bind(T my_object)
-        {
-            this.myObject = my_object;
-            this.onBind();
-        }
-
-        protected abstract void onBind();
 
         protected override void clear()
         {
-            this.myObject = null;
+           
         }
     }
 
