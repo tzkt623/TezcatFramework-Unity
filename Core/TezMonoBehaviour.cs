@@ -125,7 +125,7 @@ namespace tezcat.Framework.Core
         /// <summary>
         /// 自定义情况下刷新数据
         /// </summary>
-        protected abstract void onRefresh(TezRefreshPhase state);
+        protected abstract void onRefresh(TezRefreshPhase phase);
 
         /// <summary>
         /// 重置你的MB
@@ -178,7 +178,7 @@ namespace tezcat.Framework.Core
 
         }
 
-        protected override void onRefresh(TezRefreshPhase state)
+        protected override void onRefresh(TezRefreshPhase phase)
         {
 
         }

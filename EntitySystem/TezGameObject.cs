@@ -45,10 +45,6 @@ namespace tezcat.Framework.ECS
 
         protected virtual void onOtherComponentRemoved(ITezComponent com, int com_id) { }
 
-        public abstract void initNew();
-
-        public abstract void initWithData(ITezSerializableItem item);
-
         public virtual void serialize(TezSaveManager manager) { }
 
         public virtual void deserialize(TezSaveManager manager) { }
@@ -145,7 +141,7 @@ namespace tezcat.Framework.ECS
         /// <summary>
         /// 初始化Object
         /// </summary>
-        public sealed override void initNew()
+        public void initNew()
         {
             if (this.m_RID == null)
             {
@@ -170,7 +166,7 @@ namespace tezcat.Framework.ECS
 
         }
 
-        public sealed override void initWithData(ITezSerializableItem item)
+        public void initWithData(ITezSerializableItem item)
         {
             var data_item = item as TezDataBaseGameItem;
 

@@ -69,7 +69,7 @@ namespace tezcat.Framework.DataBase
             var prefab = go.GetComponent<ITezPrefab>();
             if (prefab != null)
             {
-                register(prefab);
+                this.register(prefab);
 //                Debug.Log(prefab.GetType().Name);
             }
             else
