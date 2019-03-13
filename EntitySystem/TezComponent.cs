@@ -1,4 +1,5 @@
-﻿using tezcat.Framework.Core;
+﻿using System;
+using tezcat.Framework.Core;
 using tezcat.Framework.TypeTraits;
 
 namespace tezcat.Framework.ECS
@@ -16,7 +17,15 @@ namespace tezcat.Framework.ECS
         : TezTypeInfo<Component, TezComponentManager>
         where Component : ITezComponent
     {
+        public static bool sameAsID(int com_id)
+        {
+            if(ID == -1)
+            {
+                throw new Exception(string.Format("{0} is type is not a ID Getter", typeof(Component).Name));
+            }
 
+            return ID == com_id;
+        }
     }
 
     public class TezComponentManager
