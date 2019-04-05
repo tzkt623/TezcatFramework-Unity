@@ -5,7 +5,7 @@ namespace tezcat.Framework.Extension
 {
     public interface ITezBinarySearchItem
     {
-        int binaryID { get; }
+        int binaryWeight { get; }
     }
 
     public static class TezListExtension
@@ -51,23 +51,22 @@ namespace tezcat.Framework.Extension
             list.RemoveAt(last_id);
         }
 
-        public static bool binaryFind<T>(this List<T> list, int target_id, out T result) where T : ITezBinarySearchItem
+        public static bool binaryFind<T>(this List<T> list, int target_weight, out T result) where T : ITezBinarySearchItem
         {
-            int min = 0;
-            int max = list.Count;
-            int mid = -1;
+            int begin_pos = 0;
+            int end_pos = list.Count - 1;
 
-            while(min <= max)
+            while(begin_pos <= end_pos)
             {
-                mid = min + (max - min) / 2;
-                var item = list[mid];
-                if (item.binaryID > target_id)
+                var mid_pos = begin_pos + end_pos >> 1;
+                var item = list[mid_pos];
+                if (item.binaryWeight > target_weight)
                 {
-                    max = mid - 1;
+                    end_pos = mid_pos - 1;
                 }
-                else if(item.binaryID < target_id)
+                else if(item.binaryWeight < target_weight)
                 {
-                    min = mid + 1;
+                    begin_pos = mid_pos + 1;
                 }
                 else
                 {
@@ -78,6 +77,41 @@ namespace tezcat.Framework.Extension
 
             result = default(T);
             return false;
+        }
+
+        public static bool binaryFind<T>(this List<T> list, int target_weight, out int index) where T : ITezBinarySearchItem
+        {
+            int begin_pos = 0;
+            int end_pos = list.Count - 1;
+
+            while (begin_pos <= end_pos)
+            {
+                var mid_pos = begin_pos + end_pos >> 1;
+                var item = list[mid_pos];
+                if (item.binaryWeight > target_weight)
+                {
+                    end_pos = mid_pos - 1;
+                }
+                else if (item.binaryWeight < target_weight)
+                {
+                    begin_pos = mid_pos + 1;
+                }
+                else
+                {
+                    index = mid_pos;
+                    return true;
+                }
+            }
+
+            index = begin_pos;
+            return false;
+        }
+
+        public static void addWithBinaryWeight<T>(this List<T> list, T item) where T : ITezBinarySearchItem
+        {
+            int index = 0;
+            list.binaryFind(item.binaryWeight, out index);
+            list.Insert(index, item);
         }
     }
 }

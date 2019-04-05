@@ -30,9 +30,12 @@ namespace tezcat.Framework.Core
 
     public interface ITezValueWrapper : ITezCloseable
     {
-        ITezValueDescriptor descriptor { get; }
+        ITezValueDescriptor descriptor { get; set; }
         string name { get; }
         int ID { get; }
+        Type systemType { get; }
+        TezValueType valueType { get; }
+        TezValueSubType valueSubType { get; }
     }
 
     public abstract class TezValueWrapper
@@ -89,7 +92,7 @@ namespace tezcat.Framework.Core
             get { return TezValueSubType.Normal; }
         }
 
-        public virtual ITezValueDescriptor descriptor { get; } = null;
+        public virtual ITezValueDescriptor descriptor { get; set; } = null;
 
         public string name
         {
@@ -101,9 +104,9 @@ namespace tezcat.Framework.Core
             get { return descriptor.ID; }
         }
 
-        int ITezBinarySearchItem.binaryID
+        int ITezBinarySearchItem.binaryWeight
         {
-            get { return this.ID; }
+            get { return descriptor.ID; }
         }
 
         public bool Equals(TezValueWrapper other)
@@ -282,101 +285,6 @@ namespace tezcat.Framework.Core
         }
 
         public TezValueWithBasic(TezValueDescriptor name) : base(name)
-        {
-
-        }
-    }
-    #endregion
-
-    #region Modified Value
-    public interface ITezModifiableValue : ITezValueWrapper
-    {
-        bool dirty { get; }
-        TezRealModifierContainer container { get; }
-    }
-
-    public class TezModifiableValue<T>
-        : TezValueWrapper<T>
-        , ITezModifiableValue
-    {
-        public sealed override TezValueSubType valueSubType => TezValueSubType.WithModifier;
-        public TezRealModifierContainer container { get; protected set; } = null;
-
-        public bool dirty
-        {
-            get { return container.dirty; }
-        }
-
-        public TezModifiableValue(ITezValueDescriptor name) : base(name)
-        {
-
-        }
-
-        public override void close()
-        {
-            base.close();
-            this.container.close();
-            this.container = null;
-        }
-    }
-
-    public class TezModifiableIntValue
-        : TezModifiableValue<int>
-    {
-        public int valueModified
-        {
-            get
-            {
-                return (int)this.container.refresh(this.value);
-            }
-        }
-
-        public override int value
-        {
-            get
-            {
-                return base.value;
-            }
-
-            set
-            {
-                base.value = value;
-                this.container.dirty = true;
-            }
-        }
-
-        public TezModifiableIntValue(ITezValueDescriptor name) : base(name)
-        {
-
-        }
-    }
-
-    public class TezModifiableFloatValue
-        : TezModifiableValue<float>
-    {
-        public float valueModified
-        {
-            get
-            {
-                return this.container.refresh(this.value);
-            }
-        }
-
-        public override float value
-        {
-            get
-            {
-                return base.value;
-            }
-
-            set
-            {
-                base.value = value;
-                this.container.dirty = true;
-            }
-        }
-
-        public TezModifiableFloatValue(ITezValueDescriptor name) : base(name)
         {
 
         }

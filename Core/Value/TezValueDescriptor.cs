@@ -36,7 +36,7 @@ namespace tezcat.Framework.Core
 
         public override int GetHashCode()
         {
-            return this.ID.GetHashCode();
+            return this.ID;
         }
 
         public static implicit operator int(TezValueDescriptor vn)

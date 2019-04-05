@@ -6,7 +6,7 @@ namespace tezcat.Framework.Utility
 {
     public class TezList<T> : IList<T>, ICollection<T>, IEnumerable<T>
     {
-        private T[] m_Data = new T[4];
+        protected T[] m_Data = new T[4];
 
         public int count { get; private set; } = 0;
         public int capacity { get; private set; } = 0;
@@ -131,7 +131,9 @@ namespace tezcat.Framework.Utility
 
         public void clear()
         {
-            count = 0;
+            this.count = 0;
+            this.capacity = 4;
+            m_Data = new T[this.capacity];
         }
 
         public void insert(int index, T element)
