@@ -77,37 +77,6 @@ namespace tezcat.Framework.ECS
         }
         #endregion
 
-        #region Component
-        public Wrapper getWrapper<Wrapper>() where Wrapper : ITezWrapper
-        {
-            return (Wrapper)this.getWrapper();
-        }
-
-        public ITezWrapper getWrapper()
-        {
-            var wrapper = this.entity.getComponent<TezWrapper>();
-            if (!wrapper)
-            {
-                wrapper = this.onCreateWrapper();
-                if (wrapper)
-                {
-                    this.entity.addComponent<TezWrapper>(wrapper);
-                }
-                else
-                {
-                    Debug.LogError(string.Format("{0} >> Get a Null wrapper", this.GetType().Name));
-                }
-            }
-            return wrapper;
-        }
-
-        protected virtual TezWrapper onCreateWrapper()
-        {
-            return null;
-        }
-        #endregion
-
-
         /// <summary>
         /// RID
         /// </summary>

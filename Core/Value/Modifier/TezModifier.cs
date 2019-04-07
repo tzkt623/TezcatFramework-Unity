@@ -2,7 +2,7 @@
 
 namespace tezcat.Framework.Core
 {
-    public interface ITezModifier : ITezCloseable
+    public interface ITezModifier : ITezValueWrapper
     {
         event TezEventExtension.Action<ITezModifier, float> onValueChanged;
 
@@ -46,6 +46,11 @@ namespace tezcat.Framework.Core
             this.definition = def;
         }
 
+        protected void notifyValueChanged(ITezModifier modifier, float old_value)
+        {
+            onValueChanged?.Invoke(modifier, old_value);
+        }
+
         public override void close()
         {
             base.close();
@@ -54,36 +59,4 @@ namespace tezcat.Framework.Core
             onValueChanged = null;
         }
     }
-
-
-#if false
-    public interface ITezModifier
-        : ITezCloseable
-    {
-        int operationID { get; }
-        object source { get; }
-        ITezModifierOperation operation { get; }
-        ITezValueDescriptor descriptor { get; }      
-    }
-
-    public abstract class TezModifier : ITezModifier
-    {
-        public int operationID
-        {
-            get { return this.operation.toID; }
-        }
-
-        public object source { get; set; }
-        public ITezModifierOperation operation { get; }
-        public ITezValueDescriptor descriptor { get; }
-
-        protected TezModifier(ITezValueDescriptor descriptor, ITezModifierOperation operation)
-        {
-            this.descriptor = descriptor;
-            this.operation = operation;
-        }
-
-        public abstract void close();
-    }
-#endif
 }

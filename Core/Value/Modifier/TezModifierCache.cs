@@ -15,25 +15,33 @@ namespace tezcat.Framework.Core
             this.dirty = true;
         }
 
-        public void removeModifier(ITezModifier modifier)
+        public bool removeModifier(ITezModifier modifier)
         {
-            this.onModifierRemoved(modifier);
-            m_Modifiers.Remove(modifier);
-            modifier.onValueChanged -= changeModifier;
-            this.dirty = true;
+            if (m_Modifiers.Remove(modifier))
+            {
+                this.onModifierRemoved(modifier);
+                modifier.onValueChanged -= changeModifier;
+                this.dirty = true;
+                return true;
+            }
+            return false;
         }
 
-        public void removeAllModifiersFrom(object source)
+        public bool removeAllModifiersFrom(object source)
         {
+            bool flag = false;
             for (int i = m_Modifiers.Count - 1; i >= 0; i--)
             {
                 if (m_Modifiers[i].source == source)
                 {
                     m_Modifiers[i].onValueChanged -= changeModifier;
                     m_Modifiers.RemoveAt(i);
+                    flag = true;
                     this.dirty = true;
                 }
             }
+
+            return flag;
         }
 
         public void changeModifier(ITezModifier modifier, float old_value)

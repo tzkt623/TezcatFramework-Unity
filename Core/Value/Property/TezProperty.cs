@@ -7,7 +7,7 @@ namespace tezcat.Framework.Core
         event TezEventExtension.Action<ITezProperty> onValueChanged;
 
         void addModifier(ITezModifier modifier);
-        void removeModifier(ITezModifier modifier);
+        bool removeModifier(ITezModifier modifier);
     }
 
     public abstract class TezProperty<T>
@@ -25,8 +25,8 @@ namespace tezcat.Framework.Core
             }
             set
             {
-                m_ModifierCache.dirty = true;
                 m_BaseValue = value;
+                this.nodifiyChanged();
             }
         }
 
@@ -55,12 +55,12 @@ namespace tezcat.Framework.Core
             m_ModifierCache.addModifier(modifier);
         }
 
-        public void removeModifier(ITezModifier modifier)
+        public bool removeModifier(ITezModifier modifier)
         {
-            m_ModifierCache.removeModifier(modifier);
+            return m_ModifierCache.removeModifier(modifier);
         }
 
-        protected void nodifiyChanged()
+        protected virtual void nodifiyChanged()
         {
             this.onValueChanged?.Invoke(this);
         }
@@ -84,7 +84,6 @@ namespace tezcat.Framework.Core
                 if (m_ModifierCache.dirty)
                 {
                     m_ModifierCache.dirty = false;
-                    m_Value = m_ModifierCache.calculate(this);
                     this.nodifiyChanged();
                 }
                 return m_Value;
@@ -99,6 +98,12 @@ namespace tezcat.Framework.Core
         {
 
         }
+
+        protected override void nodifiyChanged()
+        {
+            m_Value = m_ModifierCache.calculate(this);
+            base.nodifiyChanged();
+        }
     }
 
     public abstract class TezPropertyInt : TezProperty<int>
@@ -111,7 +116,6 @@ namespace tezcat.Framework.Core
                 if (m_ModifierCache.dirty)
                 {
                     m_ModifierCache.dirty = false;
-                    m_Value = m_ModifierCache.calculate(this);
                     this.nodifiyChanged();
                 }
                 return m_Value;
@@ -125,6 +129,12 @@ namespace tezcat.Framework.Core
         protected TezPropertyInt(ITezValueDescriptor name, TezModifierCache cache) : base(name, cache)
         {
 
+        }
+
+        protected override void nodifiyChanged()
+        {
+            m_Value = m_ModifierCache.calculate(this);
+            base.nodifiyChanged();
         }
     }
 }

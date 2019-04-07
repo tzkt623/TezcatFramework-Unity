@@ -3,7 +3,7 @@
     public abstract class TezPropertyManager : ITezCloseable
     {
         TezPropertySortList m_Properties = null;
-        TezPropertySortList properties
+        public TezPropertySortList properties
         {
             get
             {
@@ -22,11 +22,11 @@
             property?.addModifier(modifier);
         }
 
-        public void removeModifier(ITezModifier modifier)
+        public bool removeModifier(ITezModifier modifier)
         {
             var target = modifier.definition.target;
             var property = this.get<ITezProperty>(target);
-            property?.removeModifier(modifier);
+            return (property != null) && property.removeModifier(modifier);
         }
 
         public T getOrCreate<T>(ITezValueDescriptor descriptor) where T : ITezProperty, new()

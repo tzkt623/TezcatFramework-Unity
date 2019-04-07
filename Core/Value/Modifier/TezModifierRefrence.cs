@@ -1,51 +1,40 @@
-﻿using tezcat.Framework.Extension;
-
-namespace tezcat.Framework.Core
+﻿namespace tezcat.Framework.Core
 {
-    public abstract class TezModifierRefrence
-        : TezValueWrapper<float>
-        , ITezModifier
+    /// <summary>
+    /// 引用型的Modifier
+    /// 其属性值来源于另一个Property
+    /// 其Value值不能被直接Set
+    /// </summary>
+    public abstract class TezModifierRefrence : TezModifier
     {
-        public object source { get; set; }
-        public TezModifierDefinition definition { get; protected set; }
-        public event TezEventExtension.Action<ITezModifier, float> onValueChanged;
-
         ITezProperty m_Property = null;
 
-        public sealed override ITezValueDescriptor descriptor
-        {
-            get { return m_Property.descriptor; }
-            set { }
-        }
-
-        protected float m_Value = 0;
         public override float value
         {
             get
             {
-                switch (m_Property.valueType)
-                {
-                    case TezValueType.Int:
-                        m_Value = ((TezPropertyInt)m_Property).value;
-                        break;
-                    case TezValueType.Float:
-                        m_Value = ((TezPropertyFloat)m_Property).value;
-                        break;
-                }
                 return m_Value;
             }
 
             set
             {
-                m_Value = value;
+                ///引用型Modifier不能被直接Set
             }
         }
 
-        protected TezModifierRefrence(ITezProperty property, TezModifierDefinition def) : base(null)
+        protected TezModifierRefrence(ITezProperty property, ITezValueDescriptor descriptor, TezModifierDefinition def) : base(descriptor, def)
         {
             m_Property = property;
             m_Property.onValueChanged += onRefValueChanged;
-            this.definition = def;
+            switch (m_Property.valueType)
+            {
+                case TezValueType.Int:
+                    m_Value = ((TezPropertyInt)m_Property).value;
+                    break;
+                case TezValueType.Float:
+                    m_Value = ((TezPropertyFloat)m_Property).value;
+                    break;
+            }
         }
 
         private void onRefValueChanged(ITezProperty property)
@@ -60,7 +49,7 @@ namespace tezcat.Framework.Core
                     m_Value = ((TezPropertyFloat)m_Property).value;
                     break;
             }
-            onValueChanged?.Invoke(this, old);
+            this.notifyValueChanged(this, old);
         }
 
         public override void close()
@@ -68,10 +57,6 @@ namespace tezcat.Framework.Core
             base.close();
             m_Property.onValueChanged -= onRefValueChanged;
             m_Property = null;
-
-            this.source = null;
-            this.definition = null;
-            onValueChanged = null;
         }
     }
 

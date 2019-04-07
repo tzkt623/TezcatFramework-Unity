@@ -3,7 +3,7 @@
     public interface ITezModifierRefrenceProperty : ITezProperty
     {
         TezModifierRefrence modifierRefrence { get; }
-        void createRefrence(TezModifierDefinition definition);
+        void createRefrence(ITezValueDescriptor descriptor, TezModifierDefinition definition, object source);
     }
 
     public abstract class TezMRPropertyInt
@@ -18,7 +18,7 @@
 
         }
 
-        public abstract void createRefrence(TezModifierDefinition definition);
+        public abstract void createRefrence(ITezValueDescriptor descriptor, TezModifierDefinition definition, object source);
 
         public override void close()
         {
@@ -40,7 +40,7 @@
         {
         }
 
-        public abstract void createRefrence(TezModifierDefinition definition);
+        public abstract void createRefrence(ITezValueDescriptor descriptor, TezModifierDefinition definition, object source);
 
         public override void close()
         {

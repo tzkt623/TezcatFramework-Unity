@@ -238,6 +238,11 @@ namespace tezcat.Framework.Core
         {
 
         }
+
+        public static void log(string content)
+        {
+            UnityEngine.Debug.Log(content);
+        }
     }
 }
 

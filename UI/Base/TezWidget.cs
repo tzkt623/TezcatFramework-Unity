@@ -3,6 +3,12 @@ using UnityEngine.EventSystems;
 
 namespace tezcat.Framework.UI
 {
+    public enum TezWidgetLifeForm
+    {
+        Normal,
+        TypeOnly
+    }
+
     /// <summary>
     /// Widget组件基类
     /// </summary>
@@ -11,6 +17,8 @@ namespace tezcat.Framework.UI
         , ITezRefresher
         , ITezWidget
     {
+        public TezWidgetLifeForm lifeForm { get; set; } = TezWidgetLifeForm.Normal;
+
         bool m_Init = false;
         bool m_Clear = false;
 
@@ -69,9 +77,6 @@ namespace tezcat.Framework.UI
                 }
             }
         }
-
-        public bool typeOnly { get; set; } = false;
-
 
         protected sealed override void Awake()
         {
@@ -152,7 +157,7 @@ namespace tezcat.Framework.UI
         /// </summary>
         public void refresh()
         {
-            for (int i = 0; i < m_DirtyCount; i++)
+            for (byte i = 0; i < m_DirtyCount; i++)
             {
                 this.onRefresh(m_RefreshPhaseArray[i]);
             }
@@ -187,10 +192,7 @@ namespace tezcat.Framework.UI
         /// </summary>
         public void close()
         {
-            if(typeOnly)
-            {
-                TezService.get<TezcatFramework>().removeTypeOnlyWidget(this);
-            }
+            TezService.get<TezcatFramework>().removeWidget(this);
             m_Clear = true;
             Destroy(this.gameObject);
         }

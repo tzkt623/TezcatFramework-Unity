@@ -63,7 +63,10 @@ namespace tezcat.Framework.Core
         public static TezValueDescriptor get(string name)
         {
             TezValueDescriptor pn;
-            m_NameDic.TryGetValue(name, out pn);
+            if(!m_NameDic.TryGetValue(name, out pn))
+            {
+                throw new Exception(string.Format("This Propoerty[{0}] is not registered!!", name));
+            }
             return pn;
         }
 
