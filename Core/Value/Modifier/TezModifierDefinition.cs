@@ -1,4 +1,6 @@
-﻿namespace tezcat.Framework.Core
+﻿using tezcat.Framework.Definition;
+
+namespace tezcat.Framework.Core
 {
     public abstract class TezModifierDefinition : ITezCloseable
     {
@@ -12,10 +14,14 @@
         }
         public Assemble assemble { get; set; } = Assemble.Null;
         public ITezValueDescriptor target { get; set; } = null;
+        public TezDefinitionPath definitionPath { get; set; }
 
         public virtual void close()
         {
             this.target = null;
+
+            this.definitionPath.close();
+            this.definitionPath = null;
         }
     }
 }

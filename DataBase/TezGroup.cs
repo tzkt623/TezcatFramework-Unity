@@ -1,19 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
+using tezcat.Framework.Definition;
 using tezcat.Framework.Extension;
-using tezcat.Framework.TypeTraits;
 
 namespace tezcat.Framework.DataBase
 {
     public interface ITezGroup
-        : ITezEnumeration
+        : ITezDefinitionToken
         , IEquatable<ITezGroup>
     {
 
     }
 
     public interface ITezSubgroup
-        : ITezEnumeration
+        : ITezDefinitionToken
         , IEquatable<ITezSubgroup>
     {
         TezDataBaseGameItem create();
@@ -64,11 +64,13 @@ namespace tezcat.Framework.DataBase
     }
 
     public abstract class TezGroup<TEnum, TValue>
-        : TezEnumeration<TEnum, TValue>
+        : TezDefinitionToken<TEnum, TValue>
         , ITezGroup
         where TEnum : TezGroup<TEnum, TValue>
         where TValue : struct, IComparable
     {
+        public override TezDefinitionTokenType tokenType => TezDefinitionTokenType.Root;
+
         protected TezGroup(TValue value) : base(value)
         {
             TezGroupManager.registerGroup(this);
@@ -81,12 +83,14 @@ namespace tezcat.Framework.DataBase
     }
 
     public abstract class TezSubgroup<TEnum, TValue>
-        : TezEnumeration<TEnum, TValue>
+        : TezDefinitionToken<TEnum, TValue>
         , ITezSubgroup
         where TEnum : TezSubgroup<TEnum, TValue>
         where TValue : struct, IComparable
     {
         TezEventExtension.Function<TezDataBaseGameItem> m_Creator = null;
+
+        public override TezDefinitionTokenType tokenType => TezDefinitionTokenType.Leaf;
 
         protected TezSubgroup(ITezGroup group, TValue value, TezEventExtension.Function<TezDataBaseGameItem> creator) : base(value)
         {

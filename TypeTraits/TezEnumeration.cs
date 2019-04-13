@@ -318,11 +318,12 @@ namespace tezcat.Framework.TypeTraits
         #endregion
     }
 
-
     public interface ITezEnumeration
     {
+        Type systemType { get; }
         string toName { get; }
         int toID { get; }
+        bool sameAs(ITezEnumeration enumeration);
     }
 
     public abstract class TezEnumeration<TEnumeration, TEnumValue>
@@ -349,7 +350,6 @@ namespace tezcat.Framework.TypeTraits
         }
         #endregion
 
-
         public Type systemType
         {
             get { return typeof(TEnumeration); }
@@ -369,6 +369,11 @@ namespace tezcat.Framework.TypeTraits
             this.value = value;
             EnumWithName[this.toName] = (TEnumeration)this;
             EnumArray[this.toID] = (TEnumeration)this;
+        }
+
+        public bool sameAs(ITezEnumeration enumeration)
+        {
+            return this.systemType == enumeration.systemType && this.toID == enumeration.toID;
         }
 
         public int CompareTo(TEnumeration other)

@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using tezcat.Framework.Core;
 using tezcat.Framework.DataBase;
-using tezcat.Framework.Wrapper;
 using UnityEngine;
 
 namespace tezcat.Framework.ECS
