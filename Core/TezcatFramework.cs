@@ -28,7 +28,7 @@ namespace tezcat.Framework.Core
             {
                 if (string.IsNullOrEmpty(m_DataPath))
                 {
-                    m_DataPath = TezPath.rootPath + "/GameData";
+                    m_DataPath = TezFilePath.rootPath + "/GameData";
                 }
 
                 return m_DataPath;
@@ -52,9 +52,9 @@ namespace tezcat.Framework.Core
 
         public static void checkNeedFile()
         {
-            if (!TezPath.directoryExist(dataPath))
+            if (!TezFilePath.directoryExist(dataPath))
             {
-                var info = TezPath.createDirectory(dataPath);
+                var info = TezFilePath.createDirectory(dataPath);
             }
 
             checkFile(
@@ -88,9 +88,9 @@ namespace tezcat.Framework.Core
 
         private static void checkFile(string path, TezEventExtension.Action<StreamWriter> action)
         {
-            if (!TezPath.fileExist(path))
+            if (!TezFilePath.fileExist(path))
             {
-                var writer = TezPath.createTextFile(path);
+                var writer = TezFilePath.createTextFile(path);
                 action(writer);
                 writer.Close();
             }

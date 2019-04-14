@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace tezcat.Framework.Utility
 {
-    public class TezPath
+    public class TezFilePath
     {
         private static Regex m_RelativePathCleaner = new Regex("\\/[^\\/]*[^:]\\/\\.\\.");
 
@@ -17,7 +17,7 @@ namespace tezcat.Framework.Utility
             {
                 if (string.IsNullOrEmpty(m_RootPath))
                 {
-                    m_RootPath = TezPath.cleanPath(Application.dataPath + "/..");
+                    m_RootPath = TezFilePath.cleanPath(Application.dataPath + "/..");
                 }
                 return m_RootPath;
             }
@@ -53,7 +53,7 @@ namespace tezcat.Framework.Utility
             {
                 return path;
             }
-            return TezPath.rootPath + "/" + path;
+            return TezFilePath.rootPath + "/" + path;
         }
 
         public static string[] getFiles(string directory, bool recursively = false)
@@ -68,7 +68,7 @@ namespace tezcat.Framework.Utility
             if(recursively)
             {
                 List<string> list = new List<string>(1);
-                TezPath.getFilesRecursively(directory, ref list);
+                TezFilePath.getFilesRecursively(directory, ref list);
                 files = list.ToArray();
             }
             else
@@ -78,7 +78,7 @@ namespace tezcat.Framework.Utility
 
             for (int i = 0; i < files.Length; i++)
             {
-                files[i] = TezPath.cleanPath(files[i]);
+                files[i] = TezFilePath.cleanPath(files[i]);
             }
 
             return files;
@@ -98,7 +98,7 @@ namespace tezcat.Framework.Utility
             string[] directories = Directory.GetDirectories(directory);
             for (int i = 0; i < directories.Length; i++)
             {
-                TezPath.getFilesRecursively(directories[i], ref container);
+                TezFilePath.getFilesRecursively(directories[i], ref container);
             }
         }
 

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace tezcat.Framework.Definition
 {
@@ -13,26 +14,33 @@ namespace tezcat.Framework.Definition
             this.onRegisterObject(path_with_object);
 
             var path = path_with_object.definitionPath;
-
-            ITezDefinitionNode node = null;
-            for (int i = 0; i < path.primaryLength; i++)
+            var primary_length = path.primaryLength;
+            if (primary_length > 0)
             {
-                node = this.getPrimaryChild(path.getPrimaryPathToken(i));
-                switch (node.nodeType)
+                ITezDefinitionNode node = this;
+                for (int i = 0; i < primary_length; i++)
                 {
-                    case TezDefinitionNodeType.Path:
-                        ((TezDefinitionChildrenNode)node).onRegisterObject(path_with_object);
-                        break;
-                    case TezDefinitionNodeType.Leaf:
-                        ((TezDefinitionLeafNode)node).onRegisterObject(path_with_object);
-                        break;
+                    switch (node.nodeType)
+                    {
+                        case TezDefinitionNodeType.Root:
+                            node = this.getPrimaryChild(path.getPrimaryPathToken(i));
+                            break;
+                        case TezDefinitionNodeType.Path:
+                            var path_node = (TezDefinitionPathNode)node;
+                            path_node.onRegisterObject(path_with_object);
+                            node = path_node.getPrimaryChild(path.getPrimaryPathToken(i));
+                            break;
+                        default:
+                            throw new Exception(string.Format("{0} : [{1}] can not exist in foreach", this.GetType().Name, node.nodeType));
+                    }
                 }
+                ((TezDefinitionLeafNode)node).onRegisterObject(path_with_object);
             }
 
-            var length = path.secondaryLength;
-            if (length > 0)
+            var secondary_length = path.secondaryLength;
+            if (secondary_length > 0)
             {
-                for (int i = 0; i < length; i++)
+                for (int i = 0; i < secondary_length; i++)
                 {
                     this.getSecondaryChild(path.getSecondaryPathToken(i)).onRegisterObject(path_with_object);
                 }
@@ -45,25 +53,33 @@ namespace tezcat.Framework.Definition
 
             var path = path_with_object.definitionPath;
 
-            ITezDefinitionNode node = null;
-            for (int i = 0; i < path.primaryLength; i++)
+            var primary_length = path.primaryLength;
+            if (primary_length > 0)
             {
-                node = this.getPrimaryChild(path.getPrimaryPathToken(i));
-                switch (node.nodeType)
+                ITezDefinitionNode node = this;
+                for (int i = 0; i < primary_length; i++)
                 {
-                    case TezDefinitionNodeType.Path:
-                        ((TezDefinitionChildrenNode)node).onUnregisterObject(path_with_object);
-                        break;
-                    case TezDefinitionNodeType.Leaf:
-                        ((TezDefinitionLeafNode)node).onUnregisterObject(path_with_object);
-                        break;
+                    switch (node.nodeType)
+                    {
+                        case TezDefinitionNodeType.Root:
+                            node = this.getPrimaryChild(path.getPrimaryPathToken(i));
+                            break;
+                        case TezDefinitionNodeType.Path:
+                            var path_node = (TezDefinitionPathNode)node;
+                            path_node.onUnregisterObject(path_with_object);
+                            node = path_node.getPrimaryChild(path.getPrimaryPathToken(i));
+                            break;
+                        default:
+                            throw new Exception(string.Format("{0} : [{1}] can not exist in foreach", this.GetType().Name, node.nodeType));
+                    }
                 }
+                ((TezDefinitionLeafNode)node).onUnregisterObject(path_with_object);
             }
 
-            var length = path.secondaryLength;
-            if (length > 0)
+            var secondary_length = path.secondaryLength;
+            if (secondary_length > 0)
             {
-                for (int i = 0; i < length; i++)
+                for (int i = 0; i < secondary_length; i++)
                 {
                     this.getSecondaryChild(path.getSecondaryPathToken(i)).onUnregisterObject(path_with_object);
                 }

@@ -38,9 +38,9 @@ namespace tezcat.Framework.UI
 
         private void checkFile(string path)
         {
-            if (!TezPath.fileExist(path))
+            if (!TezFilePath.fileExist(path))
             {
-                TezPath.createFile(path);
+                TezFilePath.createFile(path);
             }
         }
 
