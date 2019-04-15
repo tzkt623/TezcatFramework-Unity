@@ -11,11 +11,19 @@ namespace tezcat.Framework.Definition
     /// </summary>
     public class TezDefinitionPath : ITezCloseable
     {
+        /// <summary>
+        /// 先判断有没有
+        /// 在做处理
+        /// </summary>
         public int primaryLength
         {
-            get { return m_PrimaryPathes.Length; }
+            get { return m_PrimaryPathes != null ? m_PrimaryPathes.Length : 0; }
         }
 
+        /// <summary>
+        /// 先判断有没有
+        /// 在做处理
+        /// </summary>
         public int secondaryLength
         {
             get { return m_SecondaryPathes != null ? m_SecondaryPathes.Length : 0; }
@@ -56,6 +64,41 @@ namespace tezcat.Framework.Definition
         public ITezDefinitionToken getSecondaryPathToken(int index)
         {
             return m_SecondaryPathes[index];
+        }
+
+        public override string ToString()
+        {
+            string primary = "Null", secondary = "Null";
+            if(this.primaryLength > 0)
+            {
+                primary = null;
+                for (int i = 0; i < m_PrimaryPathes.Length; i++)
+                {
+                    primary += m_PrimaryPathes[i].toName;
+                    if (i != m_PrimaryPathes.Length - 1)
+                    {
+                        primary += "-";
+                    }
+                }
+            }
+
+            if(this.secondaryLength > 0)
+            {
+                secondary = null;
+                for (int i = 0; i < m_SecondaryPathes.Length; i++)
+                {
+                    secondary += m_PrimaryPathes[i].toName;
+                    if (i != m_PrimaryPathes.Length - 1)
+                    {
+                        secondary += "-";
+                    }
+                }
+            }
+
+            return string.Format("Main:{0}\nPrimary:{1}\nSecondary:{2}"
+                , m_MainToken.toName
+                , primary
+                , secondary);
         }
 
         public void close()

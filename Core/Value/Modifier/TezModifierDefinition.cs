@@ -23,5 +23,13 @@ namespace tezcat.Framework.Core
             this.definitionPath.close();
             this.definitionPath = null;
         }
+
+        public override string ToString()
+        {
+            return string.Format("Assemble:{0}\nTarget:{1}\nPath:\n**********\n{2}\n**********"
+                , this.assemble
+                , target.name
+                , definitionPath.ToString());
+        }
     }
 }

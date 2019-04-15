@@ -51,6 +51,14 @@ namespace tezcat.Framework.Core
             onValueChanged?.Invoke(modifier, old_value);
         }
 
+        public override string ToString()
+        {
+            return string.Format("[{0}]\nSrc : {1}\nDef:\n======\n{2}\n======"
+                , this.name
+                , this.source.GetType().Name
+                , definition.ToString());
+        }
+
         public override void close()
         {
             base.close();

@@ -21,7 +21,7 @@ namespace tezcat.Framework.Definition
             var node = m_Children[id];
             if (node == null)
             {
-                node = this.onCreateNode(token);
+                node = this.onCreatePrimaryChild(token);
                 m_Children[id] = node;
                 m_ActivedChildren.Add(node);
             }
@@ -34,7 +34,7 @@ namespace tezcat.Framework.Definition
             return (T)this.getPrimaryChild(token);
         }
 
-        protected abstract ITezDefinitionNode onCreateNode(ITezDefinitionToken token);
+        protected abstract ITezDefinitionNode onCreatePrimaryChild(ITezDefinitionToken token);
 
         public abstract void onRegisterObject(ITezDefinitionPathWithObject path_with_object);
         public abstract void onUnregisterObject(ITezDefinitionPathWithObject path_with_object);
