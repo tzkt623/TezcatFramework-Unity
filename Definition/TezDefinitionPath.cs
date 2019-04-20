@@ -40,6 +40,11 @@ namespace tezcat.Framework.Definition
             m_SecondaryPathes = secondary_path;
         }
 
+        public TezDefinitionPath clone()
+        {
+            return new TezDefinitionPath(m_MainToken, m_PrimaryPathes, m_SecondaryPathes);
+        }
+
         /// <summary>
         /// MainToken
         /// 可以用于多种分类

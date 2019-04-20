@@ -62,6 +62,8 @@ namespace tezcat.Framework.Core
         public override void close()
         {
             base.close();
+            this.definition.close();
+
             this.source = null;
             this.definition = null;
             onValueChanged = null;

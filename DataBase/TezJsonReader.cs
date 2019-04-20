@@ -39,7 +39,7 @@ namespace tezcat.Framework.DataBase
                 result = false;
             }
 
-            if(result)
+            if (result)
             {
                 m_Current = JsonMapper.ToObject(content);
                 result = m_Current.IsArray | m_Current.IsObject;
@@ -97,10 +97,21 @@ namespace tezcat.Framework.DataBase
             return m_Current[name].GetJsonType();
         }
 
+        protected override bool hasArray(int key)
+        {
+            JsonData data = null;
+            if (m_Current.tryGet(key, out data))
+            {
+                return data.IsArray;
+            }
+
+            return false;
+        }
+
         protected override void onBeginArray(int key)
         {
             var temp = m_Current[key];
-            if(temp.IsArray)
+            if (temp.IsArray)
             {
                 m_PreRoot.Push(m_Current);
                 m_Current = temp;
@@ -121,10 +132,21 @@ namespace tezcat.Framework.DataBase
             m_Current = m_PreRoot.Pop();
         }
 
+        protected override bool hasArray(string key)
+        {
+            JsonData data = null;
+            if (m_Current.tryGet(key, out data))
+            {
+                return data.IsArray;
+            }
+
+            return false;
+        }
+
         protected override void onBeginArray(string key)
         {
             var temp = m_Current[key];
-            if(temp.IsArray)
+            if (temp.IsArray)
             {
                 m_PreRoot.Push(m_Current);
                 m_Current = temp;
@@ -145,6 +167,16 @@ namespace tezcat.Framework.DataBase
             m_Current = m_PreRoot.Pop();
         }
 
+        protected override bool hasObject(int key)
+        {
+            JsonData data = null;
+            if (m_Current.tryGet(key, out data))
+            {
+                return data.IsObject;
+            }
+
+            return false;
+        }
 
         protected override void onBeginObject(int key)
         {
@@ -170,6 +202,16 @@ namespace tezcat.Framework.DataBase
             m_Current = m_PreRoot.Pop();
         }
 
+        protected override bool hasObject(string key)
+        {
+            JsonData data = null;
+            if (m_Current.tryGet(key, out data))
+            {
+                return data.IsObject;
+            }
+
+            return false;
+        }
 
         protected override void onBeginObject(string key)
         {
@@ -197,9 +239,10 @@ namespace tezcat.Framework.DataBase
 
         public override bool tryRead(int key, out bool result)
         {
-            if(m_Current.IsArray && m_Current.Count > key)
+            JsonData data = null;
+            if (m_Current.tryGet(key, out data))
             {
-                result = (bool)m_Current[key];
+                result = (bool)data;
                 return true;
             }
 
@@ -209,9 +252,10 @@ namespace tezcat.Framework.DataBase
 
         public override bool tryRead(int key, out int result)
         {
-            if (m_Current.IsArray && m_Current.Count > key)
+            JsonData data = null;
+            if (m_Current.tryGet(key, out data))
             {
-                result = (int)m_Current[key];
+                result = (int)data;
                 return true;
             }
 
@@ -221,9 +265,10 @@ namespace tezcat.Framework.DataBase
 
         public override bool tryRead(int key, out float result)
         {
-            if (m_Current.IsArray && m_Current.Count > key)
+            JsonData data = null;
+            if (m_Current.tryGet(key, out data))
             {
-                result = (float)m_Current[key];
+                result = (float)data;
                 return true;
             }
 
@@ -233,9 +278,10 @@ namespace tezcat.Framework.DataBase
 
         public override bool tryRead(int key, out string result)
         {
-            if (m_Current.IsArray && m_Current.Count > key)
+            JsonData data = null;
+            if (m_Current.tryGet(key, out data))
             {
-                result = (string)m_Current[key];
+                result = (string)data;
                 return true;
             }
 
@@ -246,7 +292,7 @@ namespace tezcat.Framework.DataBase
         public override bool tryRead(string key, out bool result)
         {
             JsonData data = null;
-            if (m_Current.IsObject && m_Current.tryGet(key, out data))
+            if (m_Current.tryGet(key, out data))
             {
                 result = (bool)data;
                 return true;
@@ -259,7 +305,7 @@ namespace tezcat.Framework.DataBase
         public override bool tryRead(string key, out int result)
         {
             JsonData data = null;
-            if (m_Current.IsObject && m_Current.tryGet(key, out data))
+            if (m_Current.tryGet(key, out data))
             {
                 result = (int)data;
                 return true;
@@ -272,7 +318,7 @@ namespace tezcat.Framework.DataBase
         public override bool tryRead(string key, out float result)
         {
             JsonData data = null;
-            if (m_Current.IsObject && m_Current.tryGet(key, out data))
+            if (m_Current.tryGet(key, out data))
             {
                 result = (float)data;
                 return true;
@@ -285,7 +331,7 @@ namespace tezcat.Framework.DataBase
         public override bool tryRead(string key, out string result)
         {
             JsonData data = null;
-            if (m_Current.IsObject && m_Current.tryGet(key, out data))
+            if (m_Current.tryGet(key, out data))
             {
                 result = (string)data;
                 return true;
@@ -298,7 +344,7 @@ namespace tezcat.Framework.DataBase
 
         public override ICollection<string> getKeys()
         {
-            if(!m_Current.IsObject)
+            if (!m_Current.IsObject)
             {
                 throw new System.ArgumentException();
             }

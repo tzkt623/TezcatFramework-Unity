@@ -69,7 +69,7 @@ namespace tezcat.Framework.DataBase
         where TEnum : TezGroup<TEnum, TValue>
         where TValue : struct, IComparable
     {
-        public override TezDefinitionTokenType tokenType => TezDefinitionTokenType.Root;
+        public sealed override TezDefinitionTokenType tokenType => TezDefinitionTokenType.Root;
 
         protected TezGroup(TValue value) : base(value)
         {
@@ -90,7 +90,7 @@ namespace tezcat.Framework.DataBase
     {
         TezEventExtension.Function<TezDataBaseGameItem> m_Creator = null;
 
-        public override TezDefinitionTokenType tokenType => TezDefinitionTokenType.Leaf;
+        public sealed override TezDefinitionTokenType tokenType => TezDefinitionTokenType.Leaf;
 
         protected TezSubgroup(ITezGroup group, TValue value, TezEventExtension.Function<TezDataBaseGameItem> creator) : base(value)
         {

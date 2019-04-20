@@ -187,7 +187,7 @@ namespace tezcat.Framework.DataBase
             return (T)this.get(group_name, sub_name, item_name);
         }
 
-        public T get<T>(int group_id, int sub_id, int item_id) where T : TezDataBaseGameItem
+        public T get<T>(int group_id, int sub_id, int item_id = 0) where T : TezDataBaseGameItem
         {
             return (T)this.get(group_id, sub_id, item_id);
         }

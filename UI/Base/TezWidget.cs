@@ -1,4 +1,5 @@
 ﻿using tezcat.Framework.Core;
+using UnityEngine;
 using UnityEngine.EventSystems;
 
 namespace tezcat.Framework.UI
@@ -235,6 +236,8 @@ namespace tezcat.Framework.UI
     /// </summary>
     public abstract class TezUIWidget : TezWidget
     {
+        public RectTransform rectTransform => (RectTransform)this.transform;
+
         public override void clear()
         {
 

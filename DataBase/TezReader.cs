@@ -12,6 +12,22 @@ namespace tezcat.Framework.DataBase
         public abstract bool load(string path);
 
         #region Array
+        public bool tryBeginArray(string key)
+        {
+            if(this.hasArray(key))
+            {
+                this.beginArray(key);
+                return true;
+            }
+
+            return false;
+        }
+
+        protected virtual bool hasArray(string key)
+        {
+            return true;
+        }
+
         public void beginArray(string key)
         {
             m_CheckStringKey.Push(key);
@@ -36,6 +52,21 @@ namespace tezcat.Framework.DataBase
         protected abstract void onEndArray(string key);
 
         //======================================================//
+        public bool tryBeginArray(int key)
+        {
+            if (this.hasArray(key))
+            {
+                this.beginArray(key);
+                return true;
+            }
+
+            return false;
+        }
+
+        protected virtual bool hasArray(int key)
+        {
+            return true;
+        }
 
         public void beginArray(int key)
         {
@@ -62,6 +93,22 @@ namespace tezcat.Framework.DataBase
         #endregion
 
         #region Object
+        public bool tryBeginObject(string key)
+        {
+            if (this.hasObject(key))
+            {
+                this.beginObject(key);
+                return true;
+            }
+
+            return false;
+        }
+
+        protected virtual bool hasObject(string key)
+        {
+            return true;
+        }
+
         public void beginObject(string key)
         {
             m_CheckStringKey.Push(key);
@@ -86,6 +133,21 @@ namespace tezcat.Framework.DataBase
         protected abstract void onEndObject(string key);
 
         //===============================================//
+        public bool tryBeginObject(int key)
+        {
+            if (this.hasObject(key))
+            {
+                this.beginObject(key);
+                return true;
+            }
+
+            return false;
+        }
+
+        protected virtual bool hasObject(int key)
+        {
+            return true;
+        }
 
         public void beginObject(int key)
         {
