@@ -452,6 +452,7 @@ namespace tezcat.Framework.Game
         {
             HexMesh mesh = new HexMesh();
             mesh.vertices.Capacity = 12;
+            mesh.indices.Capacity = BorderTriangleIndices.Length;
 
             for (int i = 0; i < 6; i++)
             {
@@ -471,10 +472,44 @@ namespace tezcat.Framework.Game
             return mesh;
         }
 
+        public HexMesh createBorderMesh(List<Vector3> center_list, float border_scale = 0.8f)
+        {
+            HexMesh mesh = new HexMesh();
+            mesh.vertices.Capacity = center_list.Count * 12;
+            mesh.indices.Capacity = center_list.Count * BorderTriangleIndices.Length;
+
+            for (int center_index = 0; center_index < center_list.Count; center_index++)
+            {
+                var center = center_list[center_index];
+                for (int i = 0; i < 6; i++)
+                {
+                    mesh.vertices.Add(this.createCorner(i, Vector3.zero) + center);
+                }
+
+                for (int i = 0; i < 6; i++)
+                {
+                    ///将所有点移动到0点进行计算
+                    ///可以方便进行Vector3的Scale运算
+                    ///然后再把计算好的点移动到指定的center上
+                    ///否则很难在指定的center上进行Vector3的Scale计算
+                    mesh.vertices.Add(this.createCorner(i, Vector3.zero, border_scale) + center);
+                }
+
+                var offset = 12 * center_index;
+                for (int i = 0; i < BorderTriangleIndices.Length; i++)
+                {
+                    mesh.indices.Add(BorderTriangleIndices[i] + offset);
+                }
+            }
+
+            return mesh;
+        }
+
         public HexMesh createMesh(List<Vector3> center_list)
         {
             HexMesh mesh = new HexMesh();
             mesh.vertices.Capacity = 7 * center_list.Count;
+            mesh.indices.Capacity = center_list.Count * HexTriangleIndices.Length;
 
             for (int i = 0; i < center_list.Count; i++)
             {
