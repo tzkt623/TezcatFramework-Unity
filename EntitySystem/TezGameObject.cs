@@ -12,7 +12,10 @@ namespace tezcat.Framework.ECS
         , ITezSerializable
     {
         #region Component
+        public static int StaticComID { get; private set; } = TezComponentID<TezDataObject>.ID;
+
         public TezEntity entity { get; private set; }
+        public int ComID => StaticComID;
 
         void ITezComponent.onAdd(TezEntity entity)
         {

@@ -10,7 +10,12 @@ namespace tezcat.Framework.Wrapper
 
     public abstract class TezWrapper : ITezWrapper
     {
+        public static int StaticComID { get; private set; } = TezComponentID<TezWrapper>.ID;
+
         public TezEntity entity { get; private set; }
+
+        public int ComID => StaticComID;
+
         int m_RefCount = 0; 
 
         public void close()

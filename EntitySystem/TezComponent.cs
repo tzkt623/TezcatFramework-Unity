@@ -7,6 +7,7 @@ namespace tezcat.Framework.ECS
     public interface ITezComponent : ITezCloseable
     {
         TezEntity entity { get; }
+        int ComID { get; }
         void onAdd(TezEntity entity);
         void onRemove(TezEntity entity);
         void onOtherComponentAdded(ITezComponent component, int com_id);
@@ -26,6 +27,11 @@ namespace tezcat.Framework.ECS
 
             return ID == com_id;
         }
+
+        void test()
+        {
+
+        }
     }
 
     public class TezComponentManager
@@ -38,6 +44,16 @@ namespace tezcat.Framework.ECS
             {
                 TezComponentID<Component>.setID(componentCount++);
             }
+        }
+    }
+
+    public struct TezCID<Component> where Component : ITezComponent
+    {
+        public static int ParentID { get; private set; }
+
+        public static void setParentID(int id)
+        {
+            ParentID = id;
         }
     }
 }

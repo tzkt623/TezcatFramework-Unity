@@ -6,15 +6,19 @@ namespace tezcat.Framework.ECS
         : TezMonoBehaviour
         , ITezComponent
     {
-//         public string myName
-//         {
-//             get { return TezService.get<TezTranslator>().translateName(this.getObject().NID); }
-//         }
-// 
-//         public string myDescription
-//         {
-//             get { return TezService.get<TezTranslator>().translateDescription(this.getObject().NID); }
-//         }
+        //         public string myName
+        //         {
+        //             get { return TezService.get<TezTranslator>().translateName(this.getObject().NID); }
+        //         }
+        // 
+        //         public string myDescription
+        //         {
+        //             get { return TezService.get<TezTranslator>().translateDescription(this.getObject().NID); }
+        //         }
+
+        public static int StaticComID { get; private set; } = TezComponentID<TezRenderer>.ID;
+
+        public int ComID => TezComponentID<TezRenderer>.ID;
 
         public TezEntity entity { get; private set; }
 

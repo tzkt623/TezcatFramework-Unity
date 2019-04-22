@@ -36,6 +36,8 @@ namespace tezcat.Framework.Wrapper
 
         TezEntity ITezComponent.entity { get { throw new System.NotImplementedException(); } }
 
+        public int ComID => throw new System.NotImplementedException();
+
         public TezItemWrapper(TezDataBaseItem item)
         {
             myItem = item;
