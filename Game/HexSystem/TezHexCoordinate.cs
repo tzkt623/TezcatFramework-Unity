@@ -47,6 +47,11 @@ namespace tezcat.Framework.Game
             {
                 case TezHexGrid.Layout.Pointy:
                     {
+                        ///-5, 0, 5
+                        ///-5 + (5 + (5 & 1) >> 1)
+                        ///-5 + (6 >> 1)
+                        ///-5 + 3 = -2
+                        /// = 5
                         var q = x + (z + (z & 1) >> 1);
                         var r = z;
                         return new TezHexOffsetCoordinate(q, r);

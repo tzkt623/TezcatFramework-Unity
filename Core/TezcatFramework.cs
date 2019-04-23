@@ -235,6 +235,14 @@ namespace tezcat.Framework.Core
         }
         #endregion
 
+        #region Renderer
+        public Renderer createRenderer<Renderer>(Transform parent) where Renderer : TezRenderer
+        {
+            var prefab = TezService.get<TezPrefabDatabase>().get<Renderer>();
+            return MonoBehaviour.Instantiate(prefab, parent);
+        }
+        #endregion
+
         #region Window
         List<TezWindow> m_WindowList = new List<TezWindow>();
         Queue<int> m_FreeWindowID = new Queue<int>();

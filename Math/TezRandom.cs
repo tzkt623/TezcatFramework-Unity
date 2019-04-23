@@ -26,7 +26,7 @@ namespace tezcat.Framework.Math
     {
         private const uint MAX_MASK_UINT = int.MaxValue;
         //        private const float MAX_MASK_FLOAT = 2.14748365E+09f;
-        private const float MAX_MASK_FLOAT = MAX_MASK_UINT;
+        private const float MAX_MASK_FLOAT = MAX_MASK_UINT + 1000;
         private const uint factor = 16807;
 
         private uint m_Seed;
@@ -74,7 +74,7 @@ namespace tezcat.Framework.Math
 
         public int nextInt(int min, int max)
         {
-            return (int)(min + (max - min) * this.nextFloat());
+            return min + (int)((max - min) * this.nextFloat());
         }
 
         public float nextFloat()
