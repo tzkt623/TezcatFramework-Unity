@@ -3,22 +3,11 @@
 namespace tezcat.Framework.ECS
 {
     public abstract class TezRenderer
-        : TezMonoBehaviour
+        : TezMonoObject
         , ITezComponent
     {
-        public static int StaticComID { get; private set; } = int.MinValue;
-
-        public int ComID
-        {
-            get
-            {
-                if(StaticComID < 0)
-                {
-                    StaticComID = TezComponentID<TezRenderer>.ID;
-                }
-                return StaticComID;
-            }
-        }
+        public static int StaticComID { get; private set; } = TezComponentManager.register<TezRenderer>();
+        public int ComID => StaticComID;
 
         public TezEntity entity { get; private set; }
 
@@ -70,7 +59,7 @@ namespace tezcat.Framework.ECS
         }
     }
 
-    public abstract class TezToolObjectMB<T> : TezMonoBehaviour where T : TezToolObject
+    public abstract class TezToolObjectMB<T> : TezMonoObject where T : TezToolObject
     {
         public T myObject { get; protected set; }
 

@@ -119,18 +119,9 @@ namespace tezcat.Framework.ECS
         /// </summary>
         /// <typeparam name="BasicComponent">组件检索类型</typeparam>
         /// <param name="component">实际组件对象</param>
-        //         public void addComponent<BasicComponent>(ITezComponent component)
-        //             where BasicComponent : ITezComponent
         public void addComponent(ITezComponent component)
         {
-//            var id = TezComponentID<BasicComponent>.ID;
             var id = component.ComID;
-            if (id == TezTypeInfo.ErrorID)
-            {
-                throw new ArgumentException(string.Format("This type [{0}] is not a Component IDGetter, Please Use its BasicClass"
-                    , component.GetType().Name));
-            }
-
             foreach (var item in m_Components)
             {
                 item?.onOtherComponentAdded(component, id);

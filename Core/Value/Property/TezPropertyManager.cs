@@ -28,7 +28,7 @@ namespace tezcat.Framework.Core
 
         public void addModifier(ITezModifier modifier)
         {
-            if(m_CheckForAdd(modifier))
+            if (m_CheckForAdd(modifier))
             {
                 var target = modifier.definition.target;
                 var property = this.get<ITezProperty>(target);
@@ -38,7 +38,7 @@ namespace tezcat.Framework.Core
 
         public bool removeModifier(ITezModifier modifier)
         {
-            if(m_CheckForAdd(modifier))
+            if (m_CheckForAdd(modifier))
             {
                 var target = modifier.definition.target;
                 var property = this.get<ITezProperty>(target);
@@ -83,6 +83,10 @@ namespace tezcat.Framework.Core
 
         public void clearAllProperty()
         {
+            if (m_Properties == null)
+            {
+                return;
+            }
             foreach (var item in m_Properties)
             {
                 item.close();

@@ -182,6 +182,9 @@ namespace tezcat.Framework.Game
             return CubeDirections[(int)direction];
         }
 
+        /// <summary>
+        /// 取得一个范围的块(包含center自己)
+        /// </summary>
         public static List<TezHexCubeCoordinate> range(TezHexCubeCoordinate center, int range)
         {
             List<TezHexCubeCoordinate> list = new List<TezHexCubeCoordinate>();

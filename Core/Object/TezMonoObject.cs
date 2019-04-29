@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace tezcat.Framework.Core
 {
-    public abstract class TezMonoBehaviour
+    public abstract class TezMonoObject
         : MonoBehaviour
         , ITezRefresher
         , ITezPrefab
@@ -156,7 +156,7 @@ namespace tezcat.Framework.Core
         }
     }
 
-    public abstract class TezGameMB : TezMonoBehaviour
+    public abstract class TezGameMB : TezMonoObject
     {
         public override void reset()
         {

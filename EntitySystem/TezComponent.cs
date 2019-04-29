@@ -27,33 +27,22 @@ namespace tezcat.Framework.ECS
 
             return ID == com_id;
         }
-
-        void test()
-        {
-
-        }
     }
 
     public class TezComponentManager
     {
         public static int componentCount { get; private set; }
 
-        public static void register<Component>() where Component : ITezComponent
+        public static int register<Component>() where Component : ITezComponent
         {
             if (TezComponentID<Component>.ID == TezTypeInfo.ErrorID)
             {
-                TezComponentID<Component>.setID(componentCount++);
+                var id = componentCount++;
+                TezComponentID<Component>.setID(id);
+                return id;
             }
-        }
-    }
 
-    public struct TezCID<Component> where Component : ITezComponent
-    {
-        public static int ParentID { get; private set; }
-
-        public static void setParentID(int id)
-        {
-            ParentID = id;
+            return -1;
         }
     }
 }
