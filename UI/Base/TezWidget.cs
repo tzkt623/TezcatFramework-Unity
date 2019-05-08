@@ -172,6 +172,8 @@ namespace tezcat.Framework.UI
         /// </summary>
         protected abstract void onRefresh(TezRefreshPhase phase);
 
+
+
         /// <summary>
         /// 
         /// </summary>

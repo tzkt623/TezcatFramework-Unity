@@ -9,7 +9,7 @@ namespace tezcat.Framework.Definition
     /// <para>主分类为线性分类(0号分类信息为MainToken),有且只有一条主路径信息</para>
     /// <para>次分类为离散分类(依托在MainToken分类信息下),可以有多条次路径信息</para>
     /// </summary>
-    public class TezDefinitionPath : ITezCloseable
+    public sealed class TezDefinitionPath : ITezCloseable
     {
         /// <summary>
         /// 先判断有没有

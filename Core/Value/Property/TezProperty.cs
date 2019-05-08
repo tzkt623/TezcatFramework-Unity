@@ -30,19 +30,6 @@ namespace tezcat.Framework.Core
             }
         }
 
-        protected T m_RefValue = default(T);
-        public virtual T refValue
-        {
-            get
-            {
-                return m_RefValue;
-            }
-            set
-            {
-                m_RefValue = value;
-            }
-        }
-
         protected TezModifierCache m_ModifierCache = null;
 
         protected TezProperty(ITezValueDescriptor name, TezModifierCache cache) : base(name)

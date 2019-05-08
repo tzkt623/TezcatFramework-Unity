@@ -194,6 +194,11 @@ namespace tezcat.Framework.Core
         {
             return property.value;
         }
+
+        public override string ToString()
+        {
+            return this.value.ToString();
+        }
     }
 
     #region 特殊Value

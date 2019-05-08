@@ -47,7 +47,7 @@ namespace tezcat.Framework.ECS
         /// <summary>
         /// 类型次级分组
         /// </summary>
-        public abstract ITezSubgroup subgroup { get; }
+        public abstract ITezDetailedGroup subgroup { get; }
 
         /// <summary>
         /// 唯一名称ID

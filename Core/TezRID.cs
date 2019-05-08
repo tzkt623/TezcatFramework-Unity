@@ -77,13 +77,13 @@ namespace tezcat.Framework.Core
             public const ulong EmptyID = 0;
 
             public ITezGroup group = null;
-            public ITezSubgroup subGroup = null;
+            public ITezDetailedGroup subGroup = null;
             public ulong itemID = EmptyID;
             public int dbID = -1;
 
             public int refrence { get; private set; } = 0;
 
-            public Ref(ITezGroup group, ITezSubgroup sub_group)
+            public Ref(ITezGroup group, ITezDetailedGroup sub_group)
             {
                 this.group = group;
                 this.subGroup = sub_group;
@@ -132,7 +132,7 @@ namespace tezcat.Framework.Core
 
         Ref m_Ref = null;
         public ITezGroup group { get { return m_Ref.group; } }
-        public ITezSubgroup subgroup { get { return m_Ref.subGroup; } }
+        public ITezDetailedGroup subgroup { get { return m_Ref.subGroup; } }
         public ulong itemID
         {
             get { return m_Ref.itemID; }
@@ -157,7 +157,7 @@ namespace tezcat.Framework.Core
         /// 生成一个新的ID不包含数据库ID
         /// 引用计数自动加一
         /// </summary>
-        public TezRID(ITezGroup group, ITezSubgroup sub_group)
+        public TezRID(ITezGroup group, ITezDetailedGroup sub_group)
         {
             if (m_Ref != null)
             {
@@ -173,7 +173,7 @@ namespace tezcat.Framework.Core
         /// 生成一个新的ID并且包含数据库ID
         /// 引用计数自动加一
         /// </summary>
-        public TezRID(ITezGroup group, ITezSubgroup sub_group, int db_id)
+        public TezRID(ITezGroup group, ITezDetailedGroup sub_group, int db_id)
         {
             if (m_Ref != null)
             {

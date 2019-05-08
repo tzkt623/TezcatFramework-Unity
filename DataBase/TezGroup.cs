@@ -12,9 +12,9 @@ namespace tezcat.Framework.DataBase
 
     }
 
-    public interface ITezSubgroup
+    public interface ITezDetailedGroup
         : ITezDefinitionToken
-        , IEquatable<ITezSubgroup>
+        , IEquatable<ITezDetailedGroup>
     {
         TezDataBaseGameItem create();
     }
@@ -24,7 +24,7 @@ namespace tezcat.Framework.DataBase
         public class Pair
         {
             public ITezGroup group;
-            public List<ITezSubgroup> subgroupList = new List<ITezSubgroup>();
+            public List<ITezDetailedGroup> detailedGroupList = new List<ITezDetailedGroup>();
         }
 
         static Dictionary<string, int> m_GroupDic = new Dictionary<string, int>();
@@ -41,9 +41,9 @@ namespace tezcat.Framework.DataBase
             m_GroupDic[group.toName] = group.toID;
         }
 
-        public static void registerSubGroup(ITezGroup group, ITezSubgroup subgroup)
+        public static void registerDetailedGroup(ITezGroup group, ITezDetailedGroup subgroup)
         {
-            var list = m_GroupList[group.toID].subgroupList;
+            var list = m_GroupList[group.toID].detailedGroupList;
             while (list.Count <= subgroup.toID)
             {
                 list.Add(null);
@@ -63,6 +63,9 @@ namespace tezcat.Framework.DataBase
         }
     }
 
+    /// <summary>
+    /// 对象大组
+    /// </summary>
     public abstract class TezGroup<TEnum, TValue>
         : TezDefinitionToken<TEnum, TValue>
         , ITezGroup
@@ -82,20 +85,23 @@ namespace tezcat.Framework.DataBase
         }
     }
 
-    public abstract class TezSubgroup<TEnum, TValue>
+    /// <summary>
+    /// 对象详细类型分组
+    /// </summary>
+    public abstract class TezDetailedGroup<TEnum, TValue>
         : TezDefinitionToken<TEnum, TValue>
-        , ITezSubgroup
-        where TEnum : TezSubgroup<TEnum, TValue>
+        , ITezDetailedGroup
+        where TEnum : TezDetailedGroup<TEnum, TValue>
         where TValue : struct, IComparable
     {
         TezEventExtension.Function<TezDataBaseGameItem> m_Creator = null;
 
         public sealed override TezDefinitionTokenType tokenType => TezDefinitionTokenType.Leaf;
 
-        protected TezSubgroup(ITezGroup group, TValue value, TezEventExtension.Function<TezDataBaseGameItem> creator) : base(value)
+        protected TezDetailedGroup(ITezGroup group, TValue value, TezEventExtension.Function<TezDataBaseGameItem> creator) : base(value)
         {
             m_Creator = creator;
-            TezGroupManager.registerSubGroup(group, this);
+            TezGroupManager.registerDetailedGroup(group, this);
         }
 
         public TezDataBaseGameItem create()
@@ -103,9 +109,23 @@ namespace tezcat.Framework.DataBase
             return m_Creator();
         }
 
-        public bool Equals(ITezSubgroup other)
+        public bool Equals(ITezDetailedGroup other)
         {
             return this.toID == other.toID;
+        }
+    }
+
+    /// <summary>
+    /// 对象细分组
+    /// </summary>
+    public abstract class TezTokenGroup<TEnumeration, TEnumValue>
+        : TezDefinitionToken<TEnumeration, TEnumValue>
+        where TEnumeration : TezDefinitionToken<TEnumeration, TEnumValue>
+        where TEnumValue : struct, IComparable
+    {
+        protected TezTokenGroup(TEnumValue value) : base(value)
+        {
+
         }
     }
 }

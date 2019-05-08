@@ -4,8 +4,8 @@
     {
         public TezDefinitionNodeType nodeType => TezDefinitionNodeType.Leaf;
 
-        public abstract void onRegisterObject(ITezDefinitionPathWithObject path_with_object);
-        public abstract void onUnregisterObject(ITezDefinitionPathWithObject path_with_object);
+        public abstract void onRegisterObject(ITezDefinitionPathObject path_object);
+        public abstract void onUnregisterObject(ITezDefinitionPathObject path_object);
 
         public abstract void close();
     }

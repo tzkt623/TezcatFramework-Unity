@@ -15,7 +15,7 @@ namespace tezcat.Framework.Definition
         TezDefinitionNodeType nodeType { get; }
     }
 
-    public interface ITezDefinitionPathWithObject
+    public interface ITezDefinitionPathObject
     {
         TezDefinitionPath definitionPath { get; }
     }

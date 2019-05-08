@@ -14,15 +14,25 @@ namespace tezcat.Framework.ECS
         void onOtherComponentRemoved(ITezComponent component, int com_id);
     }
 
-    public class TezComponentID<Component>
-        : TezTypeInfo<Component, TezComponentManager>
-        where Component : ITezComponent
+    public struct TezComponentID<Component> where Component : ITezComponent
     {
+        public static int ID { get; private set; } = TezTypeInfo.ErrorID;
+
+        public static void setID(int com_id)
+        {
+            if(ID != TezTypeInfo.ErrorID)
+            {
+                throw new Exception(string.Format("{0} this type has initialized", typeof(Component).Name));
+            }
+
+            ID = com_id;
+        }
+
         public static bool sameAsID(int com_id)
         {
-            if(ID == -1)
+            if (ID == TezTypeInfo.ErrorID)
             {
-                throw new Exception(string.Format("{0} is type is not a ID Getter", typeof(Component).Name));
+                throw new Exception(string.Format("{0} this type is not a ID Getter", typeof(Component).Name));
             }
 
             return ID == com_id;

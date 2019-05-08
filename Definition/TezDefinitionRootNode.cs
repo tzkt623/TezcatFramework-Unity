@@ -5,7 +5,7 @@ namespace tezcat.Framework.Definition
 {
     public abstract class TezDefinitionRootNode : TezDefinitionChildrenNode
     {
-        public override TezDefinitionNodeType nodeType => TezDefinitionNodeType.Root;
+        public sealed override TezDefinitionNodeType nodeType => TezDefinitionNodeType.Root;
 
         List<TezDefinitionLeafNode> m_SecondaryChildren = new List<TezDefinitionLeafNode>();
 
@@ -14,8 +14,9 @@ namespace tezcat.Framework.Definition
         /// </summary>
         protected ITezDefinitionNode findPrimaryNode(TezDefinitionPath path)
         {
-            var primary_length = path.primaryLength;
             ITezDefinitionNode node = this;
+
+            var primary_length = path.primaryLength;
             for (int i = 0; i < primary_length; i++)
             {
                 switch (node.nodeType)
@@ -32,15 +33,16 @@ namespace tezcat.Framework.Definition
                         throw new Exception(string.Format("{0} : [{1}] can not be Found in search!!", this.GetType().Name, node.nodeType));
                 }
             }
+
             return node;
         }
 
-        public void registerObject(ITezDefinitionPathWithObject path_with_object)
+        public void registerObject(ITezDefinitionPathObject path_object)
         {
-            this.onRegisterObject(path_with_object);
+            this.onRegisterObject(path_object);
 
             ///在主路径上注册Object
-            var path = path_with_object.definitionPath;
+            var path = path_object.definitionPath;
             var primary_length = path.primaryLength;
             if (primary_length > 0)
             {
@@ -55,14 +57,15 @@ namespace tezcat.Framework.Definition
                             break;
                         case TezDefinitionNodeType.Path:
                             var path_node = (TezDefinitionPathNode)node;
-                            path_node.onRegisterObject(path_with_object);
+                            path_node.onRegisterObject(path_object);
                             node = path_node.getPrimaryChild(path.getPrimaryPathToken(i));
                             break;
                         default:
                             throw new Exception(string.Format("{0} : [{1}] can not be Found in search!!", this.GetType().Name, node.nodeType));
                     }
                 }
-                ((TezDefinitionLeafNode)node).onRegisterObject(path_with_object);
+                ///最后的Node必定是Leaf
+                ((TezDefinitionLeafNode)node).onRegisterObject(path_object);
             }
 
             ///在次路径上注册Object
@@ -71,16 +74,16 @@ namespace tezcat.Framework.Definition
             {
                 for (int i = 0; i < secondary_length; i++)
                 {
-                    this.getSecondaryChild(path.getSecondaryPathToken(i)).onRegisterObject(path_with_object);
+                    this.getSecondaryChild(path.getSecondaryPathToken(i)).onRegisterObject(path_object);
                 }
             }
         }
 
-        public void unregisterObject(ITezDefinitionPathWithObject path_with_object)
+        public void unregisterObject(ITezDefinitionPathObject path_object)
         {
-            this.onUnregisterObject(path_with_object);
+            this.onUnregisterObject(path_object);
 
-            var path = path_with_object.definitionPath;
+            var path = path_object.definitionPath;
 
             var primary_length = path.primaryLength;
             if (primary_length > 0)
@@ -96,14 +99,14 @@ namespace tezcat.Framework.Definition
                             break;
                         case TezDefinitionNodeType.Path:
                             var path_node = (TezDefinitionPathNode)node;
-                            path_node.onUnregisterObject(path_with_object);
+                            path_node.onUnregisterObject(path_object);
                             node = path_node.getPrimaryChild(path.getPrimaryPathToken(i));
                             break;
                         default:
                             throw new Exception(string.Format("{0} : [{1}] can not exist in foreach", this.GetType().Name, node.nodeType));
                     }
                 }
-                ((TezDefinitionLeafNode)node).onUnregisterObject(path_with_object);
+                ((TezDefinitionLeafNode)node).onUnregisterObject(path_object);
             }
 
             var secondary_length = path.secondaryLength;
@@ -111,7 +114,7 @@ namespace tezcat.Framework.Definition
             {
                 for (int i = 0; i < secondary_length; i++)
                 {
-                    this.getSecondaryChild(path.getSecondaryPathToken(i)).onUnregisterObject(path_with_object);
+                    this.getSecondaryChild(path.getSecondaryPathToken(i)).onUnregisterObject(path_object);
                 }
             }
         }
