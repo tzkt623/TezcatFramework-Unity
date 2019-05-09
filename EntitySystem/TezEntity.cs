@@ -51,7 +51,7 @@ namespace tezcat.Framework.ECS
     public class TezEntity : ITezCloseable
     {
         ITezComponent[] m_Components = new ITezComponent[TezComponentManager.componentCount];
-        
+
         public int ID { get; private set; } = -1;
         static int m_IDGiver = 0;
 
@@ -104,7 +104,7 @@ namespace tezcat.Framework.ECS
                 throw new ArgumentException(string.Format("This type [{0}] is not a Component", typeof(Component).Name));
             }
 
-            if(TezComponentID<BasicComponent>.ID >= m_Components.Length)
+            if (TezComponentID<BasicComponent>.ID >= m_Components.Length)
             {
                 throw new ArgumentOutOfRangeException(string.Format("This type [{0}]`s ID[{1}] is out of range"
                     , typeof(BasicComponent).Name
@@ -127,6 +127,33 @@ namespace tezcat.Framework.ECS
                 item?.onOtherComponentAdded(component, id);
             }
 
+            m_Components[id] = component;
+            component.onAdd(this);
+        }
+
+        /// <summary>
+        /// 替换Component
+        /// </summary>
+        /// <param name="component"></param>
+        public void replaceComponent(ITezComponent component)
+        {
+            var id = component.ComID;
+
+            var old = m_Components[id];
+            if (old != null)
+            {
+                m_Components[id] = null;
+                old.onRemove(this);
+                foreach (var item in m_Components)
+                {
+                    item?.onOtherComponentRemoved(old, id);
+                }
+            }
+
+            foreach (var item in m_Components)
+            {
+                item?.onOtherComponentAdded(component, id);
+            }
             m_Components[id] = component;
             component.onAdd(this);
         }
@@ -173,7 +200,7 @@ namespace tezcat.Framework.ECS
             {
                 ///TODO:删除组件
                 var com = m_Components[i];
-                if(com != null)
+                if (com != null)
                 {
                     m_Components[i] = null;
                     com.onRemove(this);
