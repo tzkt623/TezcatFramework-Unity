@@ -187,6 +187,7 @@ namespace tezcat.Framework.DataBase
         {
             base.serialize(writer);
             writer.write(TezReadOnlyString.Database.CID, this.CID);
+            writer.write(TezReadOnlyString.Database.NID, this.NID);
         }
 
         protected void serializeTag(TezWriter writer)
@@ -203,6 +204,7 @@ namespace tezcat.Framework.DataBase
         {
             base.deserialize(reader);
             this.CID = reader.readString(TezReadOnlyString.Database.CID);
+            this.NID = reader.readString(TezReadOnlyString.Database.NID);
         }
 
         protected void deserializeTag(TezReader reader)

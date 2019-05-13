@@ -23,8 +23,17 @@ namespace tezcat.Framework.DataBase
     {
         public class Pair
         {
-            public ITezGroup group;
-            public List<ITezDetailedGroup> detailedGroupList = new List<ITezDetailedGroup>();
+            public ITezGroup group { get; set; }
+
+            public List<ITezDetailedGroup> detailedGroupList { get; private set; } = new List<ITezDetailedGroup>();
+
+            public ITezDetailedGroup getDetailedGroup(string name)
+            {
+                return detailedGroupList.Find((ITezDetailedGroup DG) =>
+                {
+                    return DG.toName == name;
+                });
+            }
         }
 
         static Dictionary<string, int> m_GroupDic = new Dictionary<string, int>();

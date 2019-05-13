@@ -22,7 +22,7 @@
             /// <summary>
             /// SubGroup ID
             /// </summary>
-            public const string SGID = "SGID";
+            public const string DGID = "DGID";
 
             /// <summary>
             /// Item ID

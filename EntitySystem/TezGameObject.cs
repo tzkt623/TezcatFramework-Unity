@@ -47,7 +47,7 @@ namespace tezcat.Framework.ECS
         /// <summary>
         /// 类型次级分组
         /// </summary>
-        public abstract ITezDetailedGroup subgroup { get; }
+        public abstract ITezDetailedGroup detailedGroup { get; }
 
         /// <summary>
         /// 唯一名称ID
@@ -72,7 +72,7 @@ namespace tezcat.Framework.ECS
                 }
 
                 this.onInitNew();
-                this.m_RID = new TezRID(group, subgroup);
+                this.m_RID = new TezRID(group, detailedGroup);
                 this.NID = this.NID ?? string.Empty;
                 this.TAG = new TezTagSet();
             }
@@ -128,7 +128,7 @@ namespace tezcat.Framework.ECS
             }
             else
             {
-                m_RID = new TezRID(group, subgroup);
+                m_RID = new TezRID(group, detailedGroup);
             }
 
             this.m_RID.updateID();
