@@ -89,10 +89,10 @@ namespace tezcat.Framework.UI
         {
             if (!m_Init)
             {
-                m_Init = true;
                 base.Start();
                 this.linkEvent();
                 this.initWidget();
+                m_Init = true;
                 this.refreshPhase = TezRefreshPhase.P_OnInit;
             }
         }

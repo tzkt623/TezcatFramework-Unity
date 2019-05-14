@@ -7,7 +7,7 @@ namespace tezcat.Framework.UI
     public class TezPageController : ITezCloseable
     {
         TezEventExtension.Action<int, int> m_OnPageChanged;
-        TezEventExtension.Action m_OnEmptyPage;
+        TezEventExtension.Action m_OnPageEmpty;
 
         public int currentPage { get; private set; } = 1;
         public int maxPage { get; private set; } = 0;
@@ -26,12 +26,15 @@ namespace tezcat.Framework.UI
         /// <para>begin 当前页面Item开始位置</para> 
         /// <para>end 当前页面Item结束位置的后一位</para>
         /// </summary>
-        public void setListener(TezEventExtension.Action<int, int> on_page_changed, TezEventExtension.Action on_empty_page)
+        public void setListener(TezEventExtension.Action<int, int> on_page_changed, TezEventExtension.Action on_page_empty)
         {
             m_OnPageChanged = on_page_changed;
-            m_OnEmptyPage = on_empty_page;
+            m_OnPageEmpty = on_page_empty;
         }
 
+        /// <summary>
+        /// 计算最大页数
+        /// </summary>
         public void calculateMaxPage(int total_count)
         {
             m_TotalCount = total_count;
@@ -48,6 +51,9 @@ namespace tezcat.Framework.UI
             return -1;
         }
 
+        /// <summary>
+        /// 不会低于第一页
+        /// </summary>
         public void pageUp()
         {
             if (currentPage <= 1)
@@ -63,10 +69,13 @@ namespace tezcat.Framework.UI
             }
             else
             {
-                m_OnEmptyPage();
+                m_OnPageEmpty();
             }
         }
 
+        /// <summary>
+        /// 不会超过最大页数
+        /// </summary>
         public void pageDown()
         {
             if (currentPage >= maxPage)
@@ -82,7 +91,7 @@ namespace tezcat.Framework.UI
             }
             else
             {
-                m_OnEmptyPage();
+                m_OnPageEmpty();
             }
         }
 
@@ -91,7 +100,7 @@ namespace tezcat.Framework.UI
             if(this.maxPage == 0)
             {
                 this.currentPage = 0;
-                m_OnEmptyPage();
+                m_OnPageEmpty();
                 return;
             }
 
@@ -114,7 +123,7 @@ namespace tezcat.Framework.UI
             }
             else
             {
-                m_OnEmptyPage();
+                m_OnPageEmpty();
             }
         }
 
