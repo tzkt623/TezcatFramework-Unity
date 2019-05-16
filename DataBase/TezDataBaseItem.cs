@@ -28,12 +28,12 @@ namespace tezcat.Framework.DataBase
 
         public virtual void serialize(TezWriter writer)
         {
-            writer.write(TezReadOnlyString.Database.NID, this.NID);
+            writer.write(TezReadOnlyString.NID, this.NID);
         }
 
         public virtual void deserialize(TezReader reader)
         {
-            this.NID = reader.readString(TezReadOnlyString.Database.NID);
+            this.NID = reader.readString(TezReadOnlyString.NID);
         }
 
         public abstract void close();
@@ -138,7 +138,7 @@ namespace tezcat.Framework.DataBase
 
         public abstract ITezGroup group { get; }
 
-        public abstract ITezDetailedGroup subgroup { get; }
+        public abstract ITezDetailedGroup detailedGroup { get; }
 
         public ulong itemID
         {
@@ -186,36 +186,36 @@ namespace tezcat.Framework.DataBase
         public override void serialize(TezWriter writer)
         {
             base.serialize(writer);
-            writer.write(TezReadOnlyString.Database.CID, this.CID);
-            writer.write(TezReadOnlyString.Database.NID, this.NID);
+            writer.write(TezReadOnlyString.CID, this.CID);
+            writer.write(TezReadOnlyString.NID, this.NID);
         }
 
         protected void serializeTag(TezWriter writer)
         {
-            writer.beginArray(TezReadOnlyString.Database.TAG);
+            writer.beginArray(TezReadOnlyString.TAG);
             for (int i = 0; i < TAGS.Count; i++)
             {
                 writer.write(TAGS[i]);
             }
-            writer.endArray(TezReadOnlyString.Database.TAG);
+            writer.endArray(TezReadOnlyString.TAG);
         }
 
         public override void deserialize(TezReader reader)
         {
             base.deserialize(reader);
-            this.CID = reader.readString(TezReadOnlyString.Database.CID);
-            this.NID = reader.readString(TezReadOnlyString.Database.NID);
+            this.CID = reader.readString(TezReadOnlyString.CID);
+            this.NID = reader.readString(TezReadOnlyString.NID);
         }
 
         protected void deserializeTag(TezReader reader)
         {
-            reader.beginArray(TezReadOnlyString.Database.TAG);
+            reader.beginArray(TezReadOnlyString.TAG);
             var count = reader.count;
             for (int i = 0; i < count; i++)
             {
                 TAGS.Add(reader.readString(i));
             }
-            reader.endArray(TezReadOnlyString.Database.TAG);
+            reader.endArray(TezReadOnlyString.TAG);
         }
 
         protected virtual TezGameObject onCreateObject()
@@ -226,7 +226,7 @@ namespace tezcat.Framework.DataBase
         public override bool Equals(TezDataBaseItem other)
         {
             var go = other as TezDataBaseGameItem;
-            return go ? this.group.Equals(go.group) && this.subgroup.Equals(go.subgroup) : false;
+            return go ? this.group.Equals(go.group) && this.detailedGroup.Equals(go.detailedGroup) : false;
         }
 
         protected abstract void registerProperty(ITezPropertyCollection collection);
@@ -243,7 +243,7 @@ namespace tezcat.Framework.DataBase
                 throw new ArgumentException("RID");
             }
 
-            this.RID = new TezRID(group, subgroup, db_id);
+            this.RID = new TezRID(group, detailedGroup, db_id);
         }
     }
 }

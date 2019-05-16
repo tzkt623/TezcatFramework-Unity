@@ -26,9 +26,9 @@ namespace tezcat.Framework.Core
                     return m_IDGiver++;
                 }
 
-                public void recycleID(ref ulong id)
+                public void recycleID(ulong id)
                 {
-                    m_Free.Enqueue(id);
+                    m_Free.Enqueue(id & 0xFFFFFFFF);
                 }
             }
 
@@ -36,7 +36,7 @@ namespace tezcat.Framework.Core
             {
                 List<SubGroup> m_SubGroups = new List<SubGroup>();
 
-                public ulong giveID(ref int sub_gid)
+                public ulong giveID(int sub_gid)
                 {
                     while (sub_gid >= m_SubGroups.Count)
                     {
@@ -46,9 +46,9 @@ namespace tezcat.Framework.Core
                     return m_SubGroups[sub_gid].giveID();
                 }
 
-                public void recycleID(ref int sub_gid, ref ulong id)
+                public void recycleID(int sub_gid, ulong id)
                 {
-                    m_SubGroups[sub_gid].recycleID(ref id);
+                    m_SubGroups[sub_gid].recycleID(id);
                 }
             }
 
@@ -61,12 +61,12 @@ namespace tezcat.Framework.Core
                     m_Groups.Add(new Group());
                 }
 
-                return (ulong)gid << 48 | (ulong)sub_gid << 32 | m_Groups[gid].giveID(ref sub_gid);
+                return (ulong)gid << 48 | (ulong)sub_gid << 32 | m_Groups[gid].giveID(sub_gid);
             }
 
             public void recycleID(int gid, int sub_gid, ulong id)
             {
-                m_Groups[gid].recycleID(ref sub_gid, ref id);
+                m_Groups[gid].recycleID(sub_gid, id);
             }
         }
         static readonly IDManager Manager = new IDManager();

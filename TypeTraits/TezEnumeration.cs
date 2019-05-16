@@ -334,19 +334,18 @@ namespace tezcat.Framework.TypeTraits
         where TEnumValue : struct, IComparable
     {
         #region Static
-        protected static readonly string[] EnumNameArray = null;
+        public static readonly string[] EnumNameArray = null;
         protected static readonly TEnumeration[] EnumArray = null;
         protected static readonly Dictionary<string, TEnumeration> EnumWithName = null;
-
-        public static readonly int enumCount = -1;
+        public static readonly int EnumCount = -1;
 
         static TezEnumeration()
         {
             var temp = (TEnumValue[])Enum.GetValues(typeof(TEnumValue));
-            enumCount = temp.Length;
-            EnumWithName = new Dictionary<string, TEnumeration>(enumCount);
+            EnumCount = temp.Length;
+            EnumWithName = new Dictionary<string, TEnumeration>(EnumCount);
             EnumNameArray = Enum.GetNames(typeof(TEnumValue));
-            EnumArray = new TEnumeration[enumCount];
+            EnumArray = new TEnumeration[EnumCount];
         }
         #endregion
 

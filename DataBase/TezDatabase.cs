@@ -57,6 +57,11 @@ namespace tezcat.Framework.DataBase
                 return m_List.Count;
             }
 
+            public List<TezDataBaseGameItem> getAllItem()
+            {
+                return m_List;
+            }
+
             public void close()
             {
                 m_Dic.Clear();
@@ -77,12 +82,12 @@ namespace tezcat.Framework.DataBase
 
             public void add(TezDataBaseGameItem item)
             {
-                var sgid = item.subgroup.toID;
+                var sgid = item.detailedGroup.toID;
                 Subgroup sub;
-                if (!m_Dic.TryGetValue(item.subgroup.toName, out sub))
+                if (!m_Dic.TryGetValue(item.detailedGroup.toName, out sub))
                 {
-                    sub = new Subgroup() { NID = item.subgroup.toName, SGID = sgid };
-                    m_Dic.Add(item.subgroup.toName, sub);
+                    sub = new Subgroup() { NID = item.detailedGroup.toName, SGID = sgid };
+                    m_Dic.Add(item.detailedGroup.toName, sub);
 
                     while (m_List.Count <= sgid)
                     {
@@ -155,7 +160,20 @@ namespace tezcat.Framework.DataBase
                 return m_List.Count;
             }
 
+            public List<TezDataBaseGameItem> getAllItem()
+            {
+                List<TezDataBaseGameItem> list = new List<TezDataBaseGameItem>();
 
+                foreach (var sub in m_List)
+                {
+                    if(sub != null)
+                    {
+                        list.AddRange(sub.getAllItem());
+                    }
+                }
+
+                return list;
+            }
         }
 
         Dictionary<string, Group> m_GroupDic = new Dictionary<string, Group>();
@@ -238,6 +256,11 @@ namespace tezcat.Framework.DataBase
                 for_group(group.NID, group.GID);
                 group.foreachSubgroup(for_subgroup, for_item);
             }
+        }
+
+        public List<TezDataBaseGameItem> get(int group_id)
+        {
+            return m_GroupList[group_id].getAllItem();
         }
 
         public void close()

@@ -107,12 +107,12 @@ namespace tezcat.Framework.UI
                 view.open();
 
                 view = Instantiate(m_PrefabPE_View, m_Content, false);
-                view.set(() => TezService.get<TezTranslator>().translateName(TezReadOnlyString.Database.NID, TezReadOnlyString.Database.NID),
+                view.set(() => TezService.get<TezTranslator>().translateName(TezReadOnlyString.NID, TezReadOnlyString.NID),
                     () => m_Item.NID.ToString());
                 view.open();
 
                 var editor = Instantiate(m_PrefabPE_StaticString, m_Content, false);
-                editor.bind(() => TezService.get<TezTranslator>().translateName(TezReadOnlyString.Database.NID, TezReadOnlyString.Database.NID), m_Item.NID);
+                editor.bind(() => TezService.get<TezTranslator>().translateName(TezReadOnlyString.NID, TezReadOnlyString.NID), m_Item.NID);
                 editor.open();
 
                 var properties = m_Item.properties;

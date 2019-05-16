@@ -158,13 +158,13 @@ namespace tezcat.Framework.ECS
 
         public override void serialize(TezSaveManager manager)
         {
-            manager.write(TezReadOnlyString.Database.CID, this.CID);
-            manager.write(TezReadOnlyString.Database.NID, this.NID);
+            manager.write(TezReadOnlyString.CID, this.CID);
+            manager.write(TezReadOnlyString.NID, this.NID);
         }
 
         public override void deserialize(TezSaveManager manager)
         {
-            this.NID = manager.readString(TezReadOnlyString.Database.NID);
+            this.NID = manager.readString(TezReadOnlyString.NID);
         }
     }
 

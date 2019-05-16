@@ -105,8 +105,6 @@ namespace tezcat.Framework.DataBase
     {
         TezEventExtension.Function<TezDataBaseGameItem> m_Creator = null;
 
-        public sealed override TezDefinitionTokenType tokenType => TezDefinitionTokenType.Leaf;
-
         protected TezDetailedGroup(ITezGroup group, TValue value, TezEventExtension.Function<TezDataBaseGameItem> creator) : base(value)
         {
             m_Creator = creator;

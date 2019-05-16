@@ -104,7 +104,7 @@ namespace tezcat.Framework.Core
                 for (int i = 0; i < count; i++)
                 {
                     reader.beginObject(i);
-                    var CID = reader.readString(TezReadOnlyString.Database.CID);
+                    var CID = reader.readString(TezReadOnlyString.CID);
                     var obj = factory.create<TezGameObject>(CID);
                     if (obj != null)
                     {
