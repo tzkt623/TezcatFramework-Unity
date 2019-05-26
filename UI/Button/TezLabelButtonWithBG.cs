@@ -8,6 +8,11 @@ namespace tezcat.Framework.UI
         [SerializeField]
         protected Image m_Background = null;
 
+        public Image getBG()
+        {
+            return m_Background;
+        }
+
         public override void clear()
         {
             base.clear();

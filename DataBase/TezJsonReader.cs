@@ -19,6 +19,12 @@ namespace tezcat.Framework.DataBase
             get { return m_Current.Count; }
         }
 
+        public bool loadContent(string json_string)
+        {
+            m_Current = JsonMapper.ToObject(json_string);
+            return m_Current.IsArray | m_Current.IsObject;
+        }
+
         public override bool load(string path)
         {
             if (!File.Exists(path))

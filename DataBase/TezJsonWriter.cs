@@ -26,6 +26,11 @@ namespace tezcat.Framework.DataBase
 
         }
 
+        public override string ToString()
+        {
+            return m_Root.ToJson();
+        }
+
         #region Object
         protected override void onBeginObject(int key)
         {

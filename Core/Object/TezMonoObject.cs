@@ -156,7 +156,7 @@ namespace tezcat.Framework.Core
         }
     }
 
-    public abstract class TezGameMB : TezMonoObject
+    public abstract class TezGameMonoObject : TezMonoObject
     {
         public override void reset()
         {

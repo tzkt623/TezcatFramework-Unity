@@ -241,6 +241,12 @@ namespace tezcat.Framework.Core
             var prefab = TezService.get<TezPrefabDatabase>().get<Renderer>();
             return MonoBehaviour.Instantiate(prefab, parent);
         }
+
+        public GameMonoObject createGMO<GameMonoObject>(Transform parent) where GameMonoObject : TezGameMonoObject
+        {
+            var prefab = TezService.get<TezPrefabDatabase>().get<GameMonoObject>();
+            return MonoBehaviour.Instantiate(prefab, parent);
+        }
         #endregion
 
         #region Window

@@ -71,10 +71,12 @@ namespace tezcat.Framework.ECS
                     this.GUID = giveID();
                 }
 
+                this.preInit();
                 this.onInitNew();
                 this.m_RID = new TezRID(group, detailedGroup);
                 this.NID = this.NID ?? string.Empty;
                 this.TAG = new TezTagSet();
+                this.postInit();
             }
             else
             {
@@ -96,15 +98,27 @@ namespace tezcat.Framework.ECS
                 this.GUID = giveID();
             }
 
+            this.preInit();
             this.m_RID?.close();
             this.m_RID = new TezRID(data_item.RID);
 
             this.NID = data_item.NID;
             this.TAG = new TezTagSet();
             this.onInitWithData(item);
+            this.postInit();
         }
 
         protected virtual void onInitWithData(ITezSerializableItem item)
+        {
+
+        }
+
+        protected virtual void preInit()
+        {
+
+        }
+
+        protected virtual void postInit()
         {
 
         }

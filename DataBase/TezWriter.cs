@@ -93,7 +93,7 @@ namespace tezcat.Framework.DataBase
         public void endArray(string key)
         {
             var checker = m_Checker.Pop();
-            if (string.IsNullOrEmpty(key) && checker.name == key)
+            if (!string.IsNullOrEmpty(key) && checker.name == key)
             {
                 this.onEndArray(checker.name);
             }
