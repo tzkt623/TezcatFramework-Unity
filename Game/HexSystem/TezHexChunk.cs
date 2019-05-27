@@ -34,9 +34,15 @@ namespace tezcat.Framework.Game
 
         }
 
-        public virtual void set(int x, int y, Block block)
+        public void set(int x, int y, Block block)
         {
             m_BlockArray[x, y] = block;
+            this.onBlockSetted(block);
+        }
+
+        protected virtual void onBlockSetted(Block block)
+        {
+
         }
 
         public Block get(int x, int y)

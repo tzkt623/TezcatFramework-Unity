@@ -11,7 +11,6 @@ using tezcat.Framework.Math;
 using tezcat.Framework.Threading;
 using tezcat.Framework.UI;
 using tezcat.Framework.Utility;
-using tezcat.Framework.Wrapper;
 using UnityEngine;
 
 namespace tezcat.Framework.Core
@@ -150,7 +149,6 @@ namespace tezcat.Framework.Core
         {
             TezService.register(this);
             this.registerVersions();
-            this.registerComponent();
             this.registerService();
             this.registerClassFactory(TezService.get<TezClassFactory>());
         }
@@ -181,13 +179,6 @@ namespace tezcat.Framework.Core
         protected virtual void registerClassFactory(TezClassFactory factory)
         {
 
-        }
-
-        protected virtual void registerComponent()
-        {
-            TezComponentManager.register<TezDataObject>();
-            TezComponentManager.register<TezRenderer>();
-            TezComponentManager.register<TezWrapper>();
         }
 
         protected abstract void registerVersions();
@@ -239,13 +230,17 @@ namespace tezcat.Framework.Core
         public Renderer createRenderer<Renderer>(Transform parent) where Renderer : TezRenderer
         {
             var prefab = TezService.get<TezPrefabDatabase>().get<Renderer>();
-            return MonoBehaviour.Instantiate(prefab, parent);
+            var go = MonoBehaviour.Instantiate(prefab, parent);
+            go.name = typeof(Renderer).Name;
+            return go;
         }
 
         public GameMonoObject createGMO<GameMonoObject>(Transform parent) where GameMonoObject : TezGameMonoObject
         {
             var prefab = TezService.get<TezPrefabDatabase>().get<GameMonoObject>();
-            return MonoBehaviour.Instantiate(prefab, parent);
+            var go = MonoBehaviour.Instantiate(prefab, parent);
+            go.name = typeof(GameMonoObject).Name;
+            return go;
         }
         #endregion
 
