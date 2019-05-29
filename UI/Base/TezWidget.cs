@@ -4,7 +4,7 @@ using UnityEngine.EventSystems;
 
 namespace tezcat.Framework.UI
 {
-    public enum TezWidgetLifeForm
+    public enum TezWidgetLifeState
     {
         Normal,
         TypeOnly
@@ -18,11 +18,9 @@ namespace tezcat.Framework.UI
         , ITezRefresher
         , ITezWidget
     {
-        public TezWidgetLifeForm lifeForm { get; set; } = TezWidgetLifeForm.Normal;
+        public TezWidgetLifeState lifeState { get; set; } = TezWidgetLifeState.Normal;
 
         bool m_Init = false;
-        bool m_Clear = false;
-
         bool m_Interactable = true;
 
         TezRefreshPhase m_DirtyMask = 0;
@@ -63,7 +61,7 @@ namespace tezcat.Framework.UI
         {
             set
             {
-                if (m_Init && this.gameObject.activeSelf)
+                if (this.gameObject.activeSelf)
                 {
                     if ((m_DirtyMask & value) == 0)
                     {
@@ -79,53 +77,68 @@ namespace tezcat.Framework.UI
             }
         }
 
+        #region 启动流程
+        /// <summary>
+        /// 第一步 Awake
+        /// </summary>
         protected sealed override void Awake()
         {
             base.Awake();
             this.preInit();
         }
 
-        protected sealed override void Start()
-        {
-            if (!m_Init)
-            {
-                base.Start();
-                this.linkEvent();
-                this.initWidget();
-                m_Init = true;
-                this.refreshPhase = TezRefreshPhase.P_OnInit;
-            }
-        }
-
+        /// <summary>
+        /// 第二步 OnEnable
+        /// 由于init参数的限制
+        /// 并不会在此步执行事件连接函数和触发刷新动作
+        /// 所以在类disable之后再enable时
+        /// 会触发OnEnable状态下的刷新动作
+        /// 使类的数据自动被刷新
+        /// </summary>
         protected sealed override void OnEnable()
         {
+            base.OnEnable();
             if (m_Init)
             {
-                base.OnEnable();
                 this.linkEvent();
                 this.refreshPhase = TezRefreshPhase.P_OnEnable;
             }
         }
 
+        /// <summary>
+        /// 第三步 执行Start
+        /// 执行事件连接函数
+        /// 完成整个初始化步奏
+        /// 并且在OnInit状态下刷新数据
+        /// </summary>
+        protected sealed override void Start()
+        {
+            base.Start();
+            this.linkEvent();
+            this.initWidget();
+            this.refreshPhase = TezRefreshPhase.P_OnInit;
+            m_Init = true;
+
+        }
+        #endregion
+
         protected sealed override void OnDisable()
         {
+            base.OnDisable();
             if (m_Init)
             {
-                base.OnDisable();
                 this.onHide();
                 this.unLinkEvent();
             }
-
-//             if (m_Clear)
-//             {
-//                 this.clear();
-//             }
         }
 
         protected sealed override void OnDestroy()
         {
             base.OnDestroy();
-            this.clear();
+            if (m_Init)
+            {
+                this.clear();
+            }
         }
 
         protected virtual void onInteractable(bool value)
@@ -195,8 +208,14 @@ namespace tezcat.Framework.UI
         /// </summary>
         public void close()
         {
-            TezService.get<TezcatFramework>().removeWidget(this);
-            m_Clear = true;
+            switch (lifeState)
+            {
+                case TezWidgetLifeState.TypeOnly:
+                    TezService.get<TezcatFramework>().removeTypeOnlyWidget(this);
+                    break;
+                default:
+                    break;
+            }
             Destroy(this.gameObject);
         }
 

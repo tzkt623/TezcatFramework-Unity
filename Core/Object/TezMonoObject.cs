@@ -1,5 +1,4 @@
-﻿using System;
-using tezcat.Framework.DataBase;
+﻿using tezcat.Framework.DataBase;
 using UnityEngine;
 
 namespace tezcat.Framework.Core
@@ -32,7 +31,7 @@ namespace tezcat.Framework.Core
         {
             set
             {
-                if (m_Init && this.gameObject.activeSelf)
+                if (this.gameObject.activeSelf)
                 {
                     if ((m_DirtyMask & value) == 0)
                     {
@@ -56,17 +55,10 @@ namespace tezcat.Framework.Core
 
         private void Start()
         {
-            if (!m_Init)
-            {
-                m_Init = true;
-                this.initObject();
-                this.linkEvent();
-                this.refreshPhase = TezRefreshPhase.P_OnInit;
-            }
-            else
-            {
-                throw new Exception("MB is Init");
-            }
+            this.initObject();
+            this.linkEvent();
+            this.refreshPhase = TezRefreshPhase.P_OnInit;
+            m_Init = true;
         }
 
         private void OnEnable()
@@ -153,44 +145,6 @@ namespace tezcat.Framework.Core
         public void close()
         {
             Destroy(this.gameObject);
-        }
-    }
-
-    public abstract class TezGameMonoObject : TezMonoObject
-    {
-        public override void reset()
-        {
-
-        }
-
-        protected override void clear()
-        {
-
-        }
-
-        protected override void initObject()
-        {
-
-        }
-
-        protected override void linkEvent()
-        {
-
-        }
-
-        protected override void onRefresh(TezRefreshPhase phase)
-        {
-
-        }
-
-        protected override void preInit()
-        {
-
-        }
-
-        protected override void unLinkEvent()
-        {
-
         }
     }
 }
