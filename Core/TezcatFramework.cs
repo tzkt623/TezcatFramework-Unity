@@ -114,8 +114,18 @@ namespace tezcat.Framework.Core
                     this.addLayer(layer);
                 }
             }
+        }
 
-            StartCoroutine(loadResources());
+        protected override void onRefresh(TezRefreshPhase phase)
+        {
+            switch (phase)
+            {
+                case TezRefreshPhase.P_OnInit:
+                    StartCoroutine(loadResources());
+                    break;
+                default:
+                    break;
+            }
         }
 
         protected override void linkEvent()

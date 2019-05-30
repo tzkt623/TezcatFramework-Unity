@@ -1,4 +1,6 @@
-﻿namespace tezcat.Framework.Core
+﻿using System;
+
+namespace tezcat.Framework.Core
 {
     /// <summary>
     /// 引用型的Modifier
@@ -19,6 +21,7 @@
             set
             {
                 ///引用型Modifier不能被直接Set
+                throw new MethodAccessException(string.Format("{0} : 引用型Modifier不能被直接Set", this.GetType().Name));
             }
         }
 

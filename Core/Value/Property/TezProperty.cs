@@ -16,7 +16,7 @@ namespace tezcat.Framework.Core
     {
         public event TezEventExtension.Action<ITezProperty> onValueChanged;
 
-        protected T m_BaseValue = default(T);
+        protected T m_BaseValue = default;
         public virtual T baseValue
         {
             get
@@ -29,6 +29,8 @@ namespace tezcat.Framework.Core
                 this.nodifiyChanged();
             }
         }
+
+        public T oldValue { get; protected set; }
 
         protected TezModifierCache m_ModifierCache = null;
 
@@ -88,6 +90,7 @@ namespace tezcat.Framework.Core
 
         protected override void nodifiyChanged()
         {
+            this.oldValue = m_Value;
             m_Value = m_ModifierCache.calculate(this);
             base.nodifiyChanged();
         }
@@ -120,6 +123,7 @@ namespace tezcat.Framework.Core
 
         protected override void nodifiyChanged()
         {
+            this.oldValue = m_Value;
             m_Value = m_ModifierCache.calculate(this);
             base.nodifiyChanged();
         }
