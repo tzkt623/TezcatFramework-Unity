@@ -8,7 +8,7 @@ namespace tezcat.Framework.UI
 {
     public class TezNewTitle
         : TezUIWidget
-        , ITezDragableWidget
+        , ITezDragableWidgetNew
         , ITezClickable
     {
         [SerializeField]

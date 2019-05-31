@@ -1,5 +1,4 @@
 ﻿using tezcat.Framework.Core;
-using tezcat.Framework.Wrapper;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -16,13 +15,6 @@ namespace tezcat.Framework.UI
 
         public TezDatabaseItemContainer container { get; set; }
 
-        TezDatabaseItemWrapper m_Wrapper = null;
-
-        public void bind(TezDatabaseItemWrapper wrapper)
-        {
-            m_Wrapper = wrapper;
-            this.refreshPhase = TezRefreshPhase.P_Custom1;
-        }
 
         protected override void preInit()
         {
@@ -76,25 +68,17 @@ namespace tezcat.Framework.UI
 
         private void refreshData()
         {
-            if (m_Wrapper != null)
-            {
-                m_Icon.gameObject.SetActive(true);
-                m_Icon.sprite = m_Wrapper.getIcon();
-            }
-            else
-            {
-                m_Icon.gameObject.SetActive(false);
-            }
+
         }
 
         void IPointerEnterHandler.OnPointerEnter(PointerEventData eventData)
         {
-            m_Wrapper?.showTip();
+
         }
 
         void IPointerExitHandler.OnPointerExit(PointerEventData eventData)
         {
-            m_Wrapper?.hideTip();
+
         }
 
         void IPointerUpHandler.OnPointerUp(PointerEventData eventData)
