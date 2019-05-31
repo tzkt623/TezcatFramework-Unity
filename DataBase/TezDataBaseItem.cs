@@ -229,7 +229,7 @@ namespace tezcat.Framework.DataBase
             return go ? this.group.Equals(go.group) && this.detailedGroup.Equals(go.detailedGroup) : false;
         }
 
-        protected abstract void registerProperty(ITezPropertyCollection collection);
+        protected virtual void registerProperty(ITezPropertyCollection collection) { }
 
         /// <summary>
         /// 数据库回调函数
