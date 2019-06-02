@@ -410,7 +410,7 @@ namespace tezcat.Framework.TypeTraits
             var flagx = object.ReferenceEquals(x, null);
             var flagy = object.ReferenceEquals(y, null);
 
-            return (!flagx || !flagy) && (flagx || flagy) || (x.value.CompareTo(y.value) != 0);
+            return (!flagx || !flagy) && (flagx || flagy || x.value.CompareTo(y.value) != 0);
         }
 
         public static bool operator ==(TezEnumeration<TEnumeration, TEnumValue> x, TezEnumeration<TEnumeration, TEnumValue> y)
@@ -422,7 +422,7 @@ namespace tezcat.Framework.TypeTraits
             var flagx = object.ReferenceEquals(x, null);
             var flagy = object.ReferenceEquals(y, null);
 
-            return (flagx && flagy) || (!flagx && !flagy) && (x.value.CompareTo(y.value) == 0);
+            return (flagx && flagy) || (!flagx && !flagy && x.value.CompareTo(y.value) == 0);
         }
 
         public static bool operator true(TezEnumeration<TEnumeration, TEnumValue> obj)

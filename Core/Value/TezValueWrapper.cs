@@ -111,7 +111,7 @@ namespace tezcat.Framework.Core
 
         public bool Equals(TezValueWrapper other)
         {
-            return this.descriptor.Equals(other.descriptor);
+            return other != null && this.descriptor.Equals(other.descriptor);
         }
 
         public override bool Equals(object obj)
@@ -136,12 +136,18 @@ namespace tezcat.Framework.Core
 
         public static bool operator ==(TezValueWrapper a, TezValueWrapper b)
         {
-            return a.Equals(b);
+            var flag_a = object.ReferenceEquals(a, null);
+            var flag_b = object.ReferenceEquals(b, null);
+
+            return (flag_a && flag_b) || (!flag_a && !flag_b) && a.descriptor.Equals(b.descriptor);
         }
 
         public static bool operator !=(TezValueWrapper a, TezValueWrapper b)
         {
-            return !a.Equals(b);
+            var flag_a = object.ReferenceEquals(a, null);
+            var flag_b = object.ReferenceEquals(b, null);
+
+            return (!flag_a || !flag_b) && (flag_a || flag_b) || !a.descriptor.Equals(b.descriptor);
         }
 
         public static bool operator true(TezValueWrapper value)
