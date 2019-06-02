@@ -15,6 +15,11 @@ namespace tezcat.Framework.Utility
         , IEnumerable
     {
         public int count { get; private set; } = 0;
+
+        /// <summary>
+        /// 内部数组长度
+        /// 不是元素个数
+        /// </summary>
         public int capacity
         {
             get { return m_Array.Length; }
