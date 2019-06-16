@@ -20,6 +20,17 @@ namespace tezcat.Framework.Math
             m_Value = new TezTuple<Name, int>[m_Capacity];
         }
 
+        public TezIntRoulette(TezTuple<Name, int>[] tuples)
+        {
+            m_Capacity = tuples.Length;
+            m_Size = m_Capacity;
+            m_Value = tuples;
+            foreach (var value in m_Value)
+            {
+                this.maxValue += value.v2;
+            }
+        }
+
         ~TezIntRoulette()
         {
             m_Value = null;
@@ -53,7 +64,7 @@ namespace tezcat.Framework.Math
                 }
             }
 
-            throw new ArgumentOutOfRangeException(string.Format("TezIntRoulette roll {0}/{1}", value, sun));
+            throw new ArgumentOutOfRangeException(string.Format("TezIntRoulette roll {0}/{1}/{2}", value, sun, this.maxValue));
         }
 
         public void reset()
