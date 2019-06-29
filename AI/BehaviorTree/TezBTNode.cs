@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-using System.Collections;
-using tezcat.Framework.Core;
+﻿using tezcat.Framework.Core;
 
 namespace tezcat.Framework.AI
 {

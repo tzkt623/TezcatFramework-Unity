@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace tezcat.Framework.AI
+﻿namespace tezcat.Framework.AI
 {
     public class TezBehaviorTree<Data>
         : TezBTCompositeNode<Data>
