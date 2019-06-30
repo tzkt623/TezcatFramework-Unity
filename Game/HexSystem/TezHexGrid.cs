@@ -1,125 +1,61 @@
-﻿using System;
-using System.Collections.Generic;
-using tezcat.Framework.Math;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
 namespace tezcat.Framework.Game
 {
-    public class Container<T> where T : class, ITezHexBlock
-    {
-        class Wrapper
-        {
-            /// <summary>
-            /// 1,1
-            /// 1,-1
-            /// -1,1
-            /// -1,-1
-            /// </summary>
-            T[] m_Array = new T[4];
-
-            public T get(int q, int r)
-            {
-                return m_Array[(q < 0 ? 2 : 0) + (r < 0 ? 1 : 0)];
-            }
-
-            public void add(T node)
-            {
-                var c = node.coordinate;
-                m_Array[(c.q < 0 ? 2 : 0) + (c.r < 0 ? 1 : 0)] = node;
-            }
-
-            public void close()
-            {
-                m_Array = null;
-            }
-        }
-
-        Wrapper[,] m_List = new Wrapper[1, 1];
-
-        public void add(T node)
-        {
-            var coordinate = node.coordinate;
-            var q = Mathf.Abs(coordinate.q);
-            var r = Mathf.Abs(coordinate.r);
-
-            var grow_q = m_List.GetLength(0) < q;
-            var grow_r = m_List.GetLength(0) < r;
-
-        }
-
-        public T get(int q, int r)
-        {
-            return m_List[Mathf.Abs(q), Mathf.Abs(r)].get(q, r);
-        }
-    }
-
-    public struct TezHexOffsetCoordinate
-    {
-        public int q;
-        public int r;
-
-        public TezHexOffsetCoordinate(int q, int r)
-        {
-            this.q = q;
-            this.r = r;
-        }
-
-        public override bool Equals(object obj)
-        {
-            return obj.GetHashCode() == this.GetHashCode();
-        }
-
-        public override int GetHashCode()
-        {
-            var hash = TezHash.intHash(q);
-            hash = TezHash.intHash(hash + r);
-            return hash;
-        }
-
-        public TezHexCubeCoordinate toCube(TezHexGrid.Layout layout)
-        {
-            switch (layout)
-            {
-                case TezHexGrid.Layout.Pointy:
-                    {
-                        var x = q - (r + (r & 1) >> 1);
-                        var z = r;
-                        return new TezHexCubeCoordinate(x, z);
-                    }
-                case TezHexGrid.Layout.Flat:
-                    {
-                        var x = q;
-                        var z = r - (q + (q & 1) >> 1);
-                        return new TezHexCubeCoordinate(x, z);
-                    }
-            }
-
-            throw new Exception("TezHexOffsetCoordinate toCoordinate");
-        }
-
-        public override string ToString()
-        {
-            return string.Format("{0},{1}", q, r);
-        }
-    }
-
     public class TezHexGrid
-    {
+    {    
+        #region Tool
         public static readonly float Sqrt3 = Mathf.Sqrt(3);
         public static readonly float Sqrt3D2 = Mathf.Sqrt(3) / 2;
         public static readonly float Sqrt3D3 = Mathf.Sqrt(3) / 3;
 
+        /// <summary>
+        /// 朝向
+        /// 格式为
+        /// [零坐标]_[正增长坐标][负增长坐标]
+        /// </summary>
         public enum Direction : int
         {
-            P_N_Z,
-            P_Z_N,
-            Z_P_N,
-            N_P_Z,
-            N_Z_P,
-            Z_N_P
+            /// <summary>
+            /// Z[0]_X[+]Y[-]
+            /// </summary>
+            Z_XY = 0,
+
+            /// <summary>
+            /// Y[0]_X[+]Z[-]
+            /// </summary>
+            Y_XZ,
+
+            /// <summary>
+            /// X[0]_Y[+]Z[-]
+            /// </summary>
+            X_YZ,
+
+            /// <summary>
+            /// Z[0]_Y[+]X[-]
+            /// </summary>
+            Z_YX,
+
+            /// <summary>
+            /// Y[0]_Z[+]X[-]
+            /// </summary>
+            Y_ZX,
+
+            /// <summary>
+            /// X[0]_Z[+]Y[-]
+            /// </summary>
+            X_ZY
         }
 
-        public static readonly TezHexCubeCoordinate[] CubeDirections = new TezHexCubeCoordinate[6]
+        /*
+         * 坐标格式
+         * 
+         *  x   z
+         *
+         *    y
+         */
+        public static readonly TezHexCubeCoordinate[] Directions = new TezHexCubeCoordinate[6]
         {
             new TezHexCubeCoordinate(1, -1, 0),
             new TezHexCubeCoordinate(1, 0, -1),
@@ -169,9 +105,9 @@ namespace tezcat.Framework.Game
         public static TezHexCubeCoordinate[] neighbors(TezHexCubeCoordinate center)
         {
             TezHexCubeCoordinate[] coordinates = new TezHexCubeCoordinate[6];
-            for (int i = 0; i < CubeDirections.Length; i++)
+            for (int i = 0; i < Directions.Length; i++)
             {
-                coordinates[i] = center + CubeDirections[i];
+                coordinates[i] = center + Directions[i];
             }
 
             return coordinates;
@@ -179,7 +115,7 @@ namespace tezcat.Framework.Game
 
         public static TezHexCubeCoordinate direction(Direction direction)
         {
-            return CubeDirections[(int)direction];
+            return Directions[(int)direction];
         }
 
         /// <summary>
@@ -214,50 +150,24 @@ namespace tezcat.Framework.Game
             List<TezHexCubeCoordinate> list = new List<TezHexCubeCoordinate>();
             list.Capacity = 6 * radius;
 
-            var begin = CubeDirections[4];
+            var begin = Directions[(int)Direction.Y_ZX];
             begin.scale(radius);
-            begin.add(center.x, center.z);
+            begin.add(center.x, center.y, center.z);
 
             for (int i = 0; i < 6; i++)
             {
                 for (int j = 0; j < radius; j++)
                 {
                     list.Add(begin);
-                    begin = neighbor(begin, CubeDirections[i]);
+                    begin = neighbor(begin, Directions[i]);
                 }
             }
 
             return list;
         }
+        #endregion
 
-        public class HexMesh
-        {
-            public List<Vector3> vertices = new List<Vector3>();
-            public List<int> indices = new List<int>();
-            public List<Vector2> uv = new List<Vector2>();
-
-            public void combine(HexMesh data)
-            {
-                int rate = vertices.Count > 0 ? vertices.Count / 4 : 0;
-
-                for (int i = 0; i < data.vertices.Count; i++)
-                {
-                    vertices.Add(data.vertices[i]);
-                }
-
-                int add = rate * data.vertices.Count;
-                for (int i = 0; i < data.indices.Count; i++)
-                {
-                    indices.Add(data.indices[i] + add);
-                }
-
-                for (int i = 0; i < data.uv.Count; i++)
-                {
-                    uv.Add(data.uv[i]);
-                }
-            }
-        }
-
+        #region Grid
         public enum Layout
         {
             Pointy,
@@ -333,7 +243,7 @@ namespace tezcat.Framework.Game
             return this.round(new Vector3(position.x, -position.x - position.y, position.y));
         }
 
-        TezHexCubeCoordinate cubeToaxial(TezHexCubeCoordinate cube)
+        TezHexCubeCoordinate cubeToAxial(TezHexCubeCoordinate cube)
         {
             return new TezHexCubeCoordinate(cube.x, cube.z);
         }
@@ -429,10 +339,41 @@ namespace tezcat.Framework.Game
                 corner.y,
                 corner.z + size * Mathf.Sin(angle_rad)) * scale;
         }
+        #endregion
 
-        public HexMesh createHexMesh(Vector3 center)
+        #region Mesh
+
+        public class Mesh
         {
-            HexMesh mesh = new HexMesh();
+            public List<Vector3> vertices = new List<Vector3>();
+            public List<int> indices = new List<int>();
+            public List<Vector2> uv = new List<Vector2>();
+
+            public void combine(Mesh data)
+            {
+                int rate = vertices.Count > 0 ? vertices.Count / 4 : 0;
+
+                for (int i = 0; i < data.vertices.Count; i++)
+                {
+                    vertices.Add(data.vertices[i]);
+                }
+
+                int add = rate * data.vertices.Count;
+                for (int i = 0; i < data.indices.Count; i++)
+                {
+                    indices.Add(data.indices[i] + add);
+                }
+
+                for (int i = 0; i < data.uv.Count; i++)
+                {
+                    uv.Add(data.uv[i]);
+                }
+            }
+        }
+
+        public Mesh createHexMesh(Vector3 center)
+        {
+            Mesh mesh = new Mesh();
             mesh.vertices.Capacity = 7;
 
             mesh.vertices.Add(center);
@@ -451,9 +392,9 @@ namespace tezcat.Framework.Game
             return mesh;
         }
 
-        public HexMesh createBorderMesh(Vector3 center, float border_scale = 0.8f)
+        public Mesh createBorderMesh(Vector3 center, float border_scale = 0.8f)
         {
-            HexMesh mesh = new HexMesh();
+            Mesh mesh = new Mesh();
             mesh.vertices.Capacity = 12;
             mesh.indices.Capacity = BorderTriangleIndices.Length;
 
@@ -475,9 +416,9 @@ namespace tezcat.Framework.Game
             return mesh;
         }
 
-        public HexMesh createBorderMesh(List<Vector3> center_list, float border_scale = 0.8f)
+        public Mesh createBorderMesh(List<Vector3> center_list, float border_scale = 0.8f)
         {
-            HexMesh mesh = new HexMesh();
+            Mesh mesh = new Mesh();
             mesh.vertices.Capacity = center_list.Count * 12;
             mesh.indices.Capacity = center_list.Count * BorderTriangleIndices.Length;
 
@@ -508,9 +449,9 @@ namespace tezcat.Framework.Game
             return mesh;
         }
 
-        public HexMesh createMesh(List<Vector3> center_list)
+        public Mesh createMesh(List<Vector3> center_list)
         {
-            HexMesh mesh = new HexMesh();
+            Mesh mesh = new Mesh();
             mesh.vertices.Capacity = 7 * center_list.Count;
             mesh.indices.Capacity = center_list.Count * HexTriangleIndices.Length;
 
@@ -534,5 +475,6 @@ namespace tezcat.Framework.Game
 
             return mesh;
         }
+        #endregion
     }
 }

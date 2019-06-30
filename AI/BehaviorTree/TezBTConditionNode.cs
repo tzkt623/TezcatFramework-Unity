@@ -4,6 +4,6 @@
         : TezBTNode<Data>
         where Data : ITezBTData
     {
-
+        public sealed override TezBTNodeType nodeType => TezBTNodeType.Condition;
     }
 }

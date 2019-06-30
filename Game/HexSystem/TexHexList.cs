@@ -10,8 +10,6 @@ namespace tezcat.Framework.Game
 
     public class TexHexList<T> where T : ITezHexBlock
     {
-
-
         class Wrapper
         {
             /// <summary>

@@ -2,23 +2,15 @@
 
 namespace tezcat.Framework.AI
 {
-    public enum TezBTResult : byte
-    {
-        Empty = 0,
-        Fail,
-        Success,
-        Running,
-    }
-
     public abstract class TezBTNode<Data>
         : ITezCloseable
         where Data : ITezBTData
     {
         public string name { get; set; }
-
-        public abstract void close();
+        public abstract TezBTNodeType nodeType { get; }
 
         public abstract TezBTResult execute(Data data);
+        public abstract void close();
 
         public static bool operator true(TezBTNode<Data> obj)
         {

@@ -1,21 +1,19 @@
 ﻿namespace tezcat.Framework.AI
 {
-    public class TezBehaviorTree<Data>
-        : TezBTCompositeNode<Data>
-        where Data : ITezBTData
+    public class TezBehaviorTree<Data> where Data : ITezBTData
     {
         public TezBTResult state { get; private set; } = TezBTResult.Empty;
 
-        TezBTNode<Data> m_Root = null;
+        TezBTNode<Data> m_RootNode = null;
 
-        public override void addNode(TezBTNode<Data> node)
+        public void setNode(TezBTNode<Data> node)
         {
-            m_Root = node;
+            m_RootNode = node;
         }
 
-        public override TezBTResult execute(Data data)
+        public TezBTResult execute(Data data)
         {
-            state = m_Root.execute(data);
+            state = m_RootNode.execute(data);
             switch (state)
             {
                 case TezBTResult.Fail:
@@ -34,10 +32,10 @@
             return state;
         }
 
-        public override void close()
+        public virtual void close()
         {
-            m_Root.close();
-            m_Root = null;
+            m_RootNode.close();
+            m_RootNode = null;
         }
 
         protected virtual void onSuccess(Data data)

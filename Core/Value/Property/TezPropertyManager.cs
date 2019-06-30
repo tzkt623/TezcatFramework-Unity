@@ -87,10 +87,12 @@ namespace tezcat.Framework.Core
             {
                 return;
             }
-            foreach (var item in m_Properties)
+
+            for (int i = 0; i < m_Properties.count; i++)
             {
-                item.close();
+                m_Properties[i].close();
             }
+
             m_Properties.clear();
         }
 

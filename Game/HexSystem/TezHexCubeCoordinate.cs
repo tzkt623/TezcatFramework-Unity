@@ -6,39 +6,73 @@ namespace tezcat.Framework.Game
 {
     public struct TezHexCubeCoordinate : IEquatable<TezHexCubeCoordinate>
     {
-        public static readonly TezHexCubeCoordinate zero = new TezHexCubeCoordinate(0, 0, 0);
-        public static readonly TezHexCubeCoordinate one = new TezHexCubeCoordinate(1, 1, 1);
-        public static readonly TezHexCubeCoordinate max = new TezHexCubeCoordinate(int.MaxValue, int.MaxValue, int.MaxValue);
-        public static readonly TezHexCubeCoordinate min = new TezHexCubeCoordinate(int.MinValue, int.MinValue, int.MinValue);
+        public static readonly TezHexCubeCoordinate zero = new TezHexCubeCoordinate(0, 0, 0, true);
+        public static readonly TezHexCubeCoordinate one = new TezHexCubeCoordinate(1, 1, 1, true);
+        public static readonly TezHexCubeCoordinate max = new TezHexCubeCoordinate(int.MaxValue, int.MaxValue, int.MaxValue, true);
+        public static readonly TezHexCubeCoordinate min = new TezHexCubeCoordinate(int.MinValue, int.MinValue, int.MinValue, true);
 
-        public int x;
+        const int ID_X = 0;
+        const int ID_Y = 1;
+        const int ID_Z = 2;
+
+        int[] m_Data;
+
+        public int x
+        {
+            set { m_Data[ID_X] = value; }
+            get { return m_Data[ID_X]; }
+        }
         public int y
         {
-            get { return -x - z; }
+            set { m_Data[ID_Y] = value; }
+            get { return m_Data[ID_Y]; }
         }
-        public int z;
+        public int z
+        {
+            set { m_Data[ID_Z] = value; }
+            get { return m_Data[ID_Z]; }
+        }
 
         public int q
         {
-            get { return x; }
-            set { x = value; }
+            set { m_Data[ID_X] = value; }
+            get { return m_Data[ID_X]; }
         }
         public int r
         {
-            get { return z; }
-            set { z = value; }
+            set { m_Data[ID_Z] = value; }
+            get { return m_Data[ID_Z]; }
+        }
+
+        private TezHexCubeCoordinate(int x, int y, int z, bool holder)
+        {
+            m_Data = new int[3];
+            m_Data[ID_X] = x;
+            m_Data[ID_Y] = y;
+            m_Data[ID_Z] = z;
         }
 
         public TezHexCubeCoordinate(int x, int y, int z)
         {
-            this.x = x;
-            this.z = z;
+#if UNITY_EDITOR
+            if (x + y + z != 0)
+            {
+                throw new Exception(string.Format("TezHexCubeCoordinate : {0},{1},{2}", x, y, z));
+            }
+#endif
+
+            m_Data = new int[3];
+            m_Data[ID_X] = x;
+            m_Data[ID_Y] = y;
+            m_Data[ID_Z] = z;
         }
 
         public TezHexCubeCoordinate(int q, int r)
         {
-            this.x = q;
-            this.z = r;
+            m_Data = new int[3];
+            m_Data[ID_X] = q;
+            m_Data[ID_Y] = -q - r;
+            m_Data[ID_Z] = r;
         }
 
         public TezHexOffsetCoordinate toOffset(TezHexGrid.Layout layout)
@@ -85,9 +119,16 @@ namespace tezcat.Framework.Game
 
         public override int GetHashCode()
         {
-            var hash = TezHash.intHash(x);
-            hash = TezHash.intHash(hash + z);
+#if false
+            var hash = TezHash.intHash(q);
+            hash = TezHash.intHash(hash + r);
             return hash;
+#else
+
+            var hq = TezHash.intHash(q);
+            var hr = TezHash.intHash(r);
+            return hq ^ (hr + 0x61C88647 + (hq << 6) + (hq >> 2));
+#endif
         }
 
         public int getDistanceFrom(TezHexCubeCoordinate other)
@@ -100,15 +141,17 @@ namespace tezcat.Framework.Game
             return string.Format("{0},{1},{2}", x, y, z);
         }
 
-        public void scale(int radius)
+        public void scale(int value)
         {
-            this.x *= radius;
-            this.z *= radius;
+            this.x *= value;
+            this.y *= value;
+            this.z *= value;
         }
 
-        public void add(int x, int z)
+        public void add(int x, int y, int z)
         {
             this.x += x;
+            this.y += y;
             this.z += z;
         }
 

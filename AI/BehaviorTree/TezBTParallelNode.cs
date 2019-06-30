@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using tezcat.Framework.Utility;
-using UnityEngine;
+﻿using tezcat.Framework.Utility;
 
 namespace tezcat.Framework.AI
 {
@@ -25,12 +23,14 @@ namespace tezcat.Framework.AI
         : TezBTCompositeNode<Data>
         where Data : ITezBTData
     {
-        public enum Category
+        public sealed override TezBTNodeType nodeType => TezBTNodeType.Parallel;
+
+        public enum Algorithm
         {
             And,    //与
             Or      //或
         }
-        public Category category { get; set; } = Category.And;
+        public Algorithm algorithm { get; set; } = Algorithm.And;
 
         TezArray<TezBTNode<Data>> m_Nodes = new TezArray<TezBTNode<Data>>(0);
 
@@ -47,13 +47,11 @@ namespace tezcat.Framework.AI
 
         public override TezBTResult execute(Data data)
         {
-            Debug.Log(string.Format("BT : {0}[{1}]", this.name, this.GetType().Name));
-
-            switch (this.category)
+            switch (this.algorithm)
             {
-                case Category.And:
+                case Algorithm.And:
                     return this.exeAnd(data);
-                case Category.Or:
+                case Algorithm.Or:
                     return this.exeOr(data);
                 default:
                     return TezBTResult.Fail;

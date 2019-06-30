@@ -1,5 +1,4 @@
 ﻿using tezcat.Framework.Utility;
-using UnityEngine;
 
 namespace tezcat.Framework.AI
 {
@@ -16,6 +15,8 @@ namespace tezcat.Framework.AI
         : TezBTCompositeNode<Data>
         where Data : ITezBTData
     {
+        public sealed override TezBTNodeType nodeType => TezBTNodeType.Sequence;
+
         int m_CurrentRunning = -1;
         TezArray<TezBTNode<Data>> m_Nodes = new TezArray<TezBTNode<Data>>(0);
 
@@ -27,16 +28,12 @@ namespace tezcat.Framework.AI
         public override void close()
         {
             m_Nodes.close();
-
             m_Nodes = null;
         }
 
         public override TezBTResult execute(Data data)
         {
-            Debug.Log(string.Format("BT : {0}[{1}]", this.name, this.GetType().Name));
-
             TezBTResult state = TezBTResult.Success;
-
             int index = m_CurrentRunning == -1 ? 0 : m_CurrentRunning;
             while(index < m_Nodes.count)
             {
@@ -57,6 +54,8 @@ namespace tezcat.Framework.AI
                 index += 1;
             }
 
+            ///全部执行完
+            m_CurrentRunning = -1;
             return state;
         }
     }

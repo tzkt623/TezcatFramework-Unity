@@ -19,17 +19,29 @@ namespace tezcat.Framework.AI
 
     public class TezTestSelectorNode : TezBTSelectorNode<TezBTTestData>
     {
-
+        public override TezBTResult execute(TezBTTestData data)
+        {
+            Debug.Log(string.Format("BT : {0}[{1}]", this.name, this.GetType().Name));
+            return base.execute(data);
+        }
     }
 
     public class TezTestParallelNode : TezBTParallelNode<TezBTTestData>
     {
-
+        public override TezBTResult execute(TezBTTestData data)
+        {
+            Debug.Log(string.Format("BT : {0}[{1}]", this.name, this.GetType().Name));
+            return base.execute(data);
+        }
     }
 
     public class TezTestSequenceNode : TezBTSequenceNode<TezBTTestData>
     {
-
+        public override TezBTResult execute(TezBTTestData data)
+        {
+            Debug.Log(string.Format("BT : {0}[{1}]", this.name, this.GetType().Name));
+            return base.execute(data);
+        }
     }
 
     public class TezTestActionNode : TezBTActionNode<TezBTTestData>
@@ -72,12 +84,12 @@ namespace tezcat.Framework.AI
             {
                 name = "Selector 1"
             };
-            bt.addNode(selector);
+            bt.setNode(selector);
 
 
             var parallel_and = new TezTestParallelNode()
             {
-                category = TezTestParallelNode.Category.And,
+                algorithm = TezTestParallelNode.Algorithm.And,
                 name = "Parallel 1 [And]"
             };
             parallel_and.addNode(new TezTestActionNode()
@@ -91,7 +103,7 @@ namespace tezcat.Framework.AI
 
             var parallel_or = new TezTestParallelNode()
             {
-                category = TezTestParallelNode.Category.Or,
+                algorithm = TezTestParallelNode.Algorithm.Or,
                 name = "Parallel 2 [Or]"
             };
             parallel_or.addNode(new TezTestActionNode()

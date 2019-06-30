@@ -1,5 +1,4 @@
 ﻿using tezcat.Framework.Utility;
-using UnityEngine;
 
 namespace tezcat.Framework.AI
 {
@@ -21,6 +20,8 @@ namespace tezcat.Framework.AI
         : TezBTCompositeNode<Data>
         where Data : ITezBTData
     {
+        public sealed override TezBTNodeType nodeType => TezBTNodeType.Selector;
+
         int m_CurrentRunning = -1;
         TezArray<TezBTNode<Data>> m_Nodes = new TezArray<TezBTNode<Data>>(0);
 
@@ -38,24 +39,39 @@ namespace tezcat.Framework.AI
 
         public override TezBTResult execute(Data data)
         {
-            Debug.Log(string.Format("BT : {0}[{1}]", this.name, this.GetType().Name));
-
-            int index = m_CurrentRunning == -1 ? 0 : m_CurrentRunning;
-            while (index < m_Nodes.count)
+            if (m_CurrentRunning >= 0)
             {
-                var state = m_Nodes[index].execute(data);
+                var state = m_Nodes[m_CurrentRunning].execute(data);
                 switch (state)
                 {
                     case TezBTResult.Success:
                         m_CurrentRunning = -1;
                         return TezBTResult.Success;
                     case TezBTResult.Running:
-                        m_CurrentRunning = index;
                         return TezBTResult.Running;
                     default:
                         break;
                 }
-                index += 1;
+            }
+            else
+            {
+                int index = 0;
+                while (index < m_Nodes.count)
+                {
+                    var state = m_Nodes[index].execute(data);
+                    switch (state)
+                    {
+                        case TezBTResult.Success:
+                            m_CurrentRunning = -1;
+                            return TezBTResult.Success;
+                        case TezBTResult.Running:
+                            m_CurrentRunning = index;
+                            return TezBTResult.Running;
+                        default:
+                            break;
+                    }
+                    index += 1;
+                }
             }
 
             m_CurrentRunning = -1;

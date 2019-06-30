@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace tezcat.Framework.Utility
 {
-    public class TezList<T> : IList<T>, ICollection<T>, IEnumerable<T>
+    public class TezList<T> : IList<T>, ICollection<T>
     {
         protected T[] m_Data = new T[4];
 
@@ -101,7 +101,7 @@ namespace tezcat.Framework.Utility
 
         IEnumerator<T> IEnumerable<T>.GetEnumerator()
         {
-            return (IEnumerator<T>)m_Data.GetEnumerator();
+            throw new Exception("”–Œ Ã‚!!");
         }
 
         IEnumerator IEnumerable.GetEnumerator()
