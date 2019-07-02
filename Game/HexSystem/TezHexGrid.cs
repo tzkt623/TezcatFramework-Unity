@@ -4,7 +4,7 @@ using UnityEngine;
 namespace tezcat.Framework.Game
 {
     public class TezHexGrid
-    {    
+    {
         #region Tool
         public static readonly float Sqrt3 = Mathf.Sqrt(3);
         public static readonly float Sqrt3D2 = Mathf.Sqrt(3) / 2;
@@ -113,7 +113,7 @@ namespace tezcat.Framework.Game
             return coordinates;
         }
 
-        public static TezHexCubeCoordinate direction(Direction direction)
+        public static TezHexCubeCoordinate getDirection(Direction direction)
         {
             return Directions[(int)direction];
         }

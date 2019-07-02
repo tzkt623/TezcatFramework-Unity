@@ -56,24 +56,21 @@ namespace tezcat.Framework.Game
 
         public bool tryGetBlock(TezHexOffsetCoordinate coordinate, out Block block)
         {
-            var array_index = this.toArrayIndex(coordinate);
+            var array_index = this.toArrayIndex(ref coordinate);
 
-            int chunk_x = array_index.chunk_x;
-            int chunk_y = array_index.chunk_y;
-
-            if (chunk_x < 0 || chunk_x >= m_ChunkWidth || chunk_y < 0 || chunk_y >= m_ChunkHeight)
+            if (array_index.isChunkOutOfRange(m_ChunkWidth, m_ChunkHeight))
             {
                 block = null;
                 return false;
             }
 
-            var local_x = array_index.block_x;
-            var local_y = array_index.block_y;
-
-            return m_ChunkArray[chunk_x, chunk_y].tryGetBlock(local_x, local_y, out block);
+            return m_ChunkArray[array_index.chunk_x, array_index.chunk_y].tryGetBlock(
+                array_index.block_x,
+                array_index.block_y,
+                out block);
         }
 
-        public TezHexArrayIndex toArrayIndex(TezHexOffsetCoordinate coordinate)
+        protected TezHexArrayIndex toArrayIndex(ref TezHexOffsetCoordinate coordinate)
         {
             var pos_x = halfWidth + coordinate.q;
             var pos_y = halfHeight + coordinate.r;

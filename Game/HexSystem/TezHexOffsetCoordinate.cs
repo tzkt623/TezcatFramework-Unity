@@ -1,7 +1,5 @@
-﻿using UnityEngine;
-using System.Collections;
+﻿using System;
 using tezcat.Framework.Math;
-using System;
 
 namespace tezcat.Framework.Game
 {

@@ -14,5 +14,15 @@
             this.block_x = b_x;
             this.block_y = b_y;
         }
+
+        public bool isChunkOutOfRange(int width, int height)
+        {
+            if (chunk_x < 0 || chunk_x >= width || chunk_y < 0 || chunk_y >= height)
+            {
+                return true;
+            }
+
+            return false;
+        }
     }
 }

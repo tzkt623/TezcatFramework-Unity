@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using tezcat.Framework.Core;
 using UnityEngine;
 
@@ -10,6 +11,8 @@ namespace tezcat.Framework.GraphicSystem
         Queue<int> m_FreeID = new Queue<int>();
         int m_IDGiver = 0;
         Transform m_Root = null;
+
+        List<TezRenderCommand> m_CMDs = new List<TezRenderCommand>();
 
         public TezGraphicSystem()
         {
@@ -45,6 +48,8 @@ namespace tezcat.Framework.GraphicSystem
             }
 
             m_Pool[cmd.objectID] = cmd;
+
+            m_CMDs.Add(cmd);
         }
 
         public void close()
@@ -57,7 +62,7 @@ namespace tezcat.Framework.GraphicSystem
             m_Pool.Clear();
             m_Pool = null;
 
-            Object.Destroy(m_Root.gameObject);
+            UnityEngine.Object.Destroy(m_Root.gameObject);
         }
 
 
@@ -79,6 +84,15 @@ namespace tezcat.Framework.GraphicSystem
             cmd.draw(vertex, color, parent, material);
 
             this.add(cmd);
+        }
+
+        public void clear()
+        {
+            for (int i = 0; i < m_CMDs.Count; i++)
+            {
+                m_CMDs[i].close();
+            }
+            m_CMDs.Clear();
         }
 
         public void drawCircle(Vector3 center, float radius, int fragment, Color color)
@@ -105,7 +119,7 @@ namespace tezcat.Framework.GraphicSystem
 
         public void drawRect(Vector3 center, float width, float height, Color color)
         {
-            this.drawRect(center, width, height, color, m_Root, new Material(Shader.Find("Particles/Additive")));
+            this.drawRect(center, width, height, color, m_Root, new Material(Shader.Find("Particles/Standard Unlit")));
         }
 
         public void drawLine(Vector3 from, Vector3 to, Color color, Transform parent, Material material)

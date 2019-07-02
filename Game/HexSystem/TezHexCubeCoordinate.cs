@@ -11,45 +11,26 @@ namespace tezcat.Framework.Game
         public static readonly TezHexCubeCoordinate max = new TezHexCubeCoordinate(int.MaxValue, int.MaxValue, int.MaxValue, true);
         public static readonly TezHexCubeCoordinate min = new TezHexCubeCoordinate(int.MinValue, int.MinValue, int.MinValue, true);
 
-        const int ID_X = 0;
-        const int ID_Y = 1;
-        const int ID_Z = 2;
-
-        int[] m_Data;
-
-        public int x
-        {
-            set { m_Data[ID_X] = value; }
-            get { return m_Data[ID_X]; }
-        }
-        public int y
-        {
-            set { m_Data[ID_Y] = value; }
-            get { return m_Data[ID_Y]; }
-        }
-        public int z
-        {
-            set { m_Data[ID_Z] = value; }
-            get { return m_Data[ID_Z]; }
-        }
+        public int x;
+        public int y;
+        public int z;
 
         public int q
         {
-            set { m_Data[ID_X] = value; }
-            get { return m_Data[ID_X]; }
+            set { x = value; }
+            get { return x; }
         }
         public int r
         {
-            set { m_Data[ID_Z] = value; }
-            get { return m_Data[ID_Z]; }
+            set { z = value; }
+            get { return z; }
         }
 
         private TezHexCubeCoordinate(int x, int y, int z, bool holder)
         {
-            m_Data = new int[3];
-            m_Data[ID_X] = x;
-            m_Data[ID_Y] = y;
-            m_Data[ID_Z] = z;
+            this.x = x;
+            this.y = y;
+            this.z = z;
         }
 
         public TezHexCubeCoordinate(int x, int y, int z)
@@ -61,18 +42,16 @@ namespace tezcat.Framework.Game
             }
 #endif
 
-            m_Data = new int[3];
-            m_Data[ID_X] = x;
-            m_Data[ID_Y] = y;
-            m_Data[ID_Z] = z;
+            this.x = x;
+            this.y = y;
+            this.z = z;
         }
 
         public TezHexCubeCoordinate(int q, int r)
         {
-            m_Data = new int[3];
-            m_Data[ID_X] = q;
-            m_Data[ID_Y] = -q - r;
-            m_Data[ID_Z] = r;
+            this.x = q;
+            this.y = -q - r;
+            this.z = r;
         }
 
         public TezHexOffsetCoordinate toOffset(TezHexGrid.Layout layout)
@@ -153,6 +132,54 @@ namespace tezcat.Framework.Game
             this.x += x;
             this.y += y;
             this.z += z;
+        }
+
+        public void rotateLeft()
+        {
+            var x = -this.y;
+            var y = -this.z;
+            var z = -this.x;
+
+            this.x = x;
+            this.y = y;
+            this.z = z;
+        }
+
+        public void rotateRight()
+        {
+            var x = -this.z;
+            var y = -this.x;
+            var z = -this.y;
+
+            this.x = x;
+            this.y = y;
+            this.z = z;
+        }
+
+        public void rotate180()
+        {
+            var x = -this.x;
+            var y = -this.y;
+            var z = -this.z;
+
+            this.x = x;
+            this.y = y;
+            this.z = z;
+        }
+
+        public TezHexCubeCoordinate rotateToLeft()
+        {
+            return new TezHexCubeCoordinate(-this.y, -this.z, -this.x);
+        }
+
+        public TezHexCubeCoordinate rotateToRight()
+        {
+            return new TezHexCubeCoordinate(-this.z, -this.x, -this.y);
+        }
+
+        public TezHexCubeCoordinate rotateTo180()
+        {
+            return new TezHexCubeCoordinate(-this.x, -this.y, -this.z);
         }
 
         public static TezHexCubeCoordinate fromAxial(int q, int r)

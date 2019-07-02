@@ -57,8 +57,9 @@ namespace tezcat.Framework.Core
         public override void close()
         {
             base.close();
-            this.onValueChanged = null;
             m_ModifierCache.close();
+
+            this.onValueChanged = null;
             m_ModifierCache = null;
         }
     }
