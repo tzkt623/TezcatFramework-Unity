@@ -430,13 +430,13 @@ namespace tezcat.Framework.Core
         {
             if (m_Root != null)
             {
-                Debug.Log("刷新中......");
+//                Debug.Log("刷新中......");
                 while (m_Root != null)
                 {
                     m_Root.refresh();
                     m_Root = m_Root.next;
                 }
-                Debug.Log("刷新结束!");
+//                Debug.Log("刷新结束!");
             }
         }
     }

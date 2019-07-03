@@ -20,13 +20,15 @@ namespace tezcat.Framework.Utility
         const int Quadrant_3 = 2;
         const int Quadrant_4 = 3;
 
+        public event TezEventExtension.Action onRefresh;
+
         public int maxLevel { get; set; }
         public int maxObject { get; set; }
 
         bool m_IsSubdivided = false;
         List<TezQtEntry> m_Objects = null;
         TezQuadtree[] m_Nodes = null;
-        TezRectangle m_Bounds = null;
+        public TezRectangle bounds { get; private set; }
         int m_Level = 0;
 
         public TezQuadtree(int level, TezRectangle bounds, int max_level, int max_object)
@@ -36,7 +38,7 @@ namespace tezcat.Framework.Utility
 
             m_Level = level;
             m_Nodes = new TezQuadtree[4];
-            m_Bounds = bounds;
+            this.bounds = bounds;
             m_Objects = new List<TezQtEntry>(max_object);
         }
 
@@ -53,14 +55,14 @@ namespace tezcat.Framework.Utility
 
         private void subdivide()
         {
-            int half_width_l = m_Bounds.width >> 1;
-            int half_height_b = m_Bounds.height >> 1;
+            int half_width_l = bounds.width >> 1;
+            int half_height_b = bounds.height >> 1;
 
             int half_width_r = half_width_l;
             int half_height_t = half_height_b;
 
-            int ox = m_Bounds.originX;
-            int oy = m_Bounds.originY;
+            int ox = bounds.originX;
+            int oy = bounds.originY;
 
             m_Nodes[Quadrant_1] = new TezQuadtree(
                 m_Level + 1,
@@ -113,8 +115,8 @@ namespace tezcat.Framework.Utility
 
         private int calculateQuadrant(TezShape shape)
         {
-            bool in_left = shape.originX <= m_Bounds.midX;
-            bool in_bottom = shape.originY <= m_Bounds.midY;
+            bool in_left = shape.originX <= bounds.midX;
+            bool in_bottom = shape.originY <= bounds.midY;
 
             if (in_left)
             {
@@ -143,7 +145,7 @@ namespace tezcat.Framework.Utility
         public bool insert(TezQtEntry obj)
         {
             ///形状没有被完美包含在范围内
-            if (!m_Bounds.contains(obj.shape))
+            if (!bounds.contains(obj.shape))
             {
                 return false;
             }
@@ -241,7 +243,7 @@ namespace tezcat.Framework.Utility
             List<TezQtEntry> result = new List<TezQtEntry>();
 
             var shape = obj.shape;
-            if (!m_Bounds.intersects(shape))
+            if (!bounds.intersects(shape))
             {
                 return result;
             }
@@ -264,7 +266,7 @@ namespace tezcat.Framework.Utility
 
         private void retrieve(TezShape shape, ref List<TezQtEntry> result)
         {
-            if (!m_Bounds.intersects(shape))
+            if (!bounds.intersects(shape))
             {
                 return;
             }
@@ -294,7 +296,7 @@ namespace tezcat.Framework.Utility
                     m_Objects[i].close();
                     m_Objects.RemoveAt(i);
                 }
-                else if (!m_Bounds.contains(m_Objects[i].shape))
+                else if (!bounds.contains(m_Objects[i].shape))
                 {
                     list.Add(m_Objects[i]);
                     m_Objects.RemoveAt(i);
@@ -319,6 +321,8 @@ namespace tezcat.Framework.Utility
 
             list.Clear();
             list = null;
+
+            onRefresh?.Invoke();
         }
 
         private void refresh(ref List<TezQtEntry> list)
@@ -330,7 +334,7 @@ namespace tezcat.Framework.Utility
                     m_Objects[i].close();
                     m_Objects.RemoveAt(i);
                 }
-                else if (!m_Bounds.contains(m_Objects[i].shape))
+                else if (!bounds.contains(m_Objects[i].shape))
                 {
                     list.Add(m_Objects[i]);
                     m_Objects.RemoveAt(i);
@@ -367,7 +371,7 @@ namespace tezcat.Framework.Utility
                 m_Nodes[Quadrant_4].draw(draw_function);
             }
 
-            draw_function(m_Bounds);
+            draw_function(bounds);
         }
     }
 }

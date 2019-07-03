@@ -12,5 +12,10 @@ namespace tezcat.Framework.Utility
         {
             this.usrData = null;
         }
+
+        public override string ToString()
+        {
+            return usrData.ToString();
+        }
     }
 }
