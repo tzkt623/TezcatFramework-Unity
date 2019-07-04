@@ -1,4 +1,6 @@
-﻿namespace tezcat.Framework.AI
+﻿using System;
+
+namespace tezcat.Framework.AI
 {
     public class TezBehaviorTree<Data> where Data : ITezBTData
     {
@@ -40,17 +42,17 @@
 
         protected virtual void onSuccess(Data data)
         {
-
+            throw new NotImplementedException();
         }
 
         protected virtual void onFail(Data data)
         {
-
+            throw new NotImplementedException();
         }
 
         protected virtual void onRunning(Data data)
         {
-
+            throw new NotImplementedException();
         }
     }
 }
