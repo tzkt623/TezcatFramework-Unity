@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using tezcat.Framework.Core;
 using UnityEngine;
 
@@ -62,7 +61,7 @@ namespace tezcat.Framework.GraphicSystem
             m_Pool.Clear();
             m_Pool = null;
 
-            UnityEngine.Object.Destroy(m_Root.gameObject);
+            Object.Destroy(m_Root.gameObject);
         }
 
 
@@ -86,18 +85,52 @@ namespace tezcat.Framework.GraphicSystem
             this.add(cmd);
         }
 
-        public void clear()
-        {
-            for (int i = 0; i < m_CMDs.Count; i++)
-            {
-                m_CMDs[i].close();
-            }
-            m_CMDs.Clear();
-        }
-
         public void drawCircle(Vector3 center, float radius, int fragment, Color color)
         {
-            this.drawCircle(center, radius, fragment, color, m_Root, new Material(Shader.Find("Particles/Additive")));
+            this.drawCircle(center, radius, fragment, color, m_Root, new Material(Shader.Find("Particles/Standard Unlit")));
+        }
+
+        public void drawEllipse(Vector3 center, float width, float height, int fragment, float angle, Color color, Transform parent)
+        {
+            float per = 360.0f / fragment;
+            var vertex = new Vector3[fragment];
+            for (int i = 0; i < fragment; i++)
+            {
+                var r = (i * per) * Mathf.Deg2Rad;
+                var x = width * Mathf.Sin(r);
+                var z = height * Mathf.Cos(r);
+                vertex[i] = Quaternion.AngleAxis(angle, Vector3.up) * new Vector3(x, 0, z);
+            }
+
+            var cmd = new TezDrawEllipse(this.giveID());
+            cmd.graphicObject.transform.position = center;
+            cmd.draw(vertex, color, parent, new Material(Shader.Find("Particles/Standard Unlit")));
+
+            this.add(cmd);
+        }
+
+        public void drawEllipse(Vector3 center, float width, float height, int fragment, Color color, Transform parent)
+        {
+            this.drawEllipse(center, width, height, fragment, color, parent, new Material(Shader.Find("Particles/Standard Unlit")));
+        }
+
+        public void drawEllipse(Vector3 center, float width, float height, int fragment, Color color, Transform parent, Material material)
+        {
+            float per = 360.0f / fragment;
+            var vertex = new Vector3[fragment];
+            for (int i = 0; i < fragment; i++)
+            {
+                var r = (i * per) * Mathf.Deg2Rad;
+                var x = width * Mathf.Sin(r);
+                var z = height * Mathf.Cos(r);
+                vertex[i] = new Vector3(x, 0, z);
+            }
+
+            var cmd = new TezDrawEllipse(this.giveID());
+            cmd.graphicObject.transform.position = center;
+            cmd.draw(vertex, color, parent, material);
+
+            this.add(cmd);
         }
 
         public void drawRect(Vector3 center, float width, float height, Color color, Transform parent, Material material)
@@ -144,6 +177,15 @@ namespace tezcat.Framework.GraphicSystem
             this.drawLine(from, to, color, m_Root, new Material(Shader.Find("Particles/Additive")));
         }
         #endregion
+
+        public void clear()
+        {
+            for (int i = 0; i < m_CMDs.Count; i++)
+            {
+                m_CMDs[i].close();
+            }
+            m_CMDs.Clear();
+        }
     }
 }
 

@@ -39,6 +39,46 @@ namespace tezcat.Framework.GraphicSystem
         public abstract void draw(Vector3[] vertex_array, Color color, Transform parent, Material material);
     }
 
+    public class TezDrawEllipse : TezRenderWithGameObject
+    {
+        public TezDrawEllipse(int allow_id) : base(allow_id)
+        {
+            graphicObject.name = "TezDrawEllipse";
+        }
+
+        public override void draw(Vector3[] vertex_array, Color color, Transform parent, Material material)
+        {
+            graphicObject.transform.parent = parent;
+
+            var mr = graphicObject.gameObject.AddComponent<MeshRenderer>();
+            var mf = graphicObject.gameObject.AddComponent<MeshFilter>();
+
+            var indices = new int[vertex_array.Length + 1];
+            var colors = new Color[vertex_array.Length];
+            for (int i = 0; i < indices.Length - 1; i++)
+            {
+                indices[i] = i;
+                colors[i] = color;
+            }
+
+            var mesh = new Mesh();
+            mesh.name = "EllipseMesh";
+            mesh.vertices = vertex_array;
+            indices[indices.Length - 1] = 0;
+            mesh.SetIndices(indices, MeshTopology.LineStrip, 0);
+            mesh.colors = colors;
+
+            material.color = color;
+            mr.material = material;
+            mr.reflectionProbeUsage = UnityEngine.Rendering.ReflectionProbeUsage.Off;
+            mr.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
+            mr.lightProbeUsage = UnityEngine.Rendering.LightProbeUsage.Off;
+            mr.receiveShadows = false;
+
+            mf.mesh = mesh;
+        }
+    }
+
     public class TezDrawCircle : TezRenderWithGameObject
     {
         public TezDrawCircle(int allow_id) : base(allow_id)
