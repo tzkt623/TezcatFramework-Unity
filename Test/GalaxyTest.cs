@@ -1,38 +1,148 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using tezcat.Framework.Game.Galaxy;
+﻿using tezcat.Framework.Game.Galaxy;
+using tezcat.Framework.GraphicSystem;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class GalaxyTest : MonoBehaviour
 {
     [SerializeField]
     Transform m_Star = null;
+    [SerializeField]
+    Transform m_Dust = null;
+
+    [Header("Data")]
+    [SerializeField]
+    Slider m_AngleOffset = null;
+    [SerializeField]
+    Slider m_CoreRadius = null;
+    [SerializeField]
+    Slider m_GalaxyRadius = null;
+    [SerializeField]
+    Slider m_InnerExcentricity = null;
+    [SerializeField]
+    Slider m_OuterExcentricity = null;
+    [SerializeField]
+    Slider m_Arms = null;
+    [SerializeField]
+    Slider m_N = null;
+
     float m_Speed = 30;
 
     TezGalaxySimulator m_Simulator = new TezGalaxySimulator();
+
+    TezGraphicSystem m_Graphic = null;
 
     #region 相机控制
     Vector3 m_CameraAngle;
     float m_CameraHeight = 2.5f;
     #endregion
 
+    int m_ColorCount = 200;
+    Color[] m_Colors = null;
+    float m_T0 = 1000;
+    float m_T1 = 10000;
+
     void Start()
     {
+        m_AngleOffset.onValueChanged.AddListener(onAngleOffsetChanged);
+        m_CoreRadius.onValueChanged.AddListener(onCoreRadiusChanged);
+        m_GalaxyRadius.onValueChanged.AddListener(onGalaxyRadiusChanged);
+        m_InnerExcentricity.onValueChanged.AddListener(onInnerExcentricityChanged);
+        m_OuterExcentricity.onValueChanged.AddListener(onOuterExcentricityChanged);
+        m_Arms.onValueChanged.AddListener(onArmsChanged);
+        m_N.onValueChanged.AddListener(onNChanged);
+
         m_CameraAngle = this.transform.eulerAngles;
 
-        m_Simulator.generate(600, 40, 0.0004f, 0.85f, 0.95f, 2000);
-        m_Simulator.foreachStar((TezStar star) =>
+        var speactra = new TezGalaxySpectra();
+        m_Colors = new Color[m_ColorCount];
+        float dt = (m_T1 - m_T0) / m_ColorCount;
+        float x, y, z;
+        for (int i = 0; i < m_ColorCount; ++i)
         {
-            var star_renderer = Instantiate(m_Star);
-            star_renderer.gameObject.SetActive(true);
-            star_renderer.position = star.calculateOrbit();
-            var rate = star.temperature / 6000f;
-            star_renderer.GetComponent<MeshRenderer>().material.color = Color.Lerp(
-                Color.Lerp(Color.blue, Color.red, rate),
-                Color.white,
-                rate);
-            star.usrdata = star_renderer;
+            Color color = new Color();
+            speactra.bbTemp = m_T0 + dt * i;
+            speactra.spectrum_to_xyz(speactra.bb_spectrum, out x, out y, out z);
+            speactra.xyz_to_rgb(TezGalaxySpectra.SMPTEsystem, x, y, z, out color.r, out color.g, out color.b);
+            speactra.norm_rgb(ref color.r, ref color.g, ref color.b);
+            m_Colors[i] = color;
+        }
+
+        m_Simulator.generate(400, 50, 0.012f, 0.75f, 0.9f, 2000);
+        m_Simulator.foreachStar((TezGalaxyBody star) =>
+        {
+            var renderer = Instantiate(m_Star);
+            renderer.gameObject.SetActive(true);
+            renderer.position = star.calculateOrbit();
+            star.usrdata = renderer;
+
+//            var color = new Color(0.2f, 0.2f, 0.2f, 1.0f) + this.colorFromTemperature(star.temperature) * star.brigtness;
+            var color = this.colorFromTemperature(star.temperature) * star.brigtness;
+            renderer.GetComponent<MeshRenderer>().material.SetColor("_EmissionColor", color);
+            renderer.GetComponent<MeshRenderer>().material.color = color;
         });
+
+        m_Simulator.foreachDust((TezGalaxyBody dust) =>
+        {
+            var renderer = Instantiate(m_Dust);
+            renderer.gameObject.SetActive(true);
+            renderer.position = dust.calculateOrbit();
+            dust.usrdata = renderer;
+
+            var color = this.colorFromTemperature(dust.temperature) * dust.brigtness;
+            renderer.GetComponent<MeshRenderer>().material.SetColor("_EmissionColor", color);
+            renderer.GetComponent<MeshRenderer>().material.color = color;
+        });
+
+        //         m_Graphic = new TezGraphicSystem();
+        //         int count = 40;
+        //         for (int i = 0; i < count; i++)
+        //         {
+        //             m_Graphic.drawEllipse(Vector3.zero, 20 + i * 2, 10 + i * 2, 200, i / (float)count * 360.0f, Color.red, null);
+        //         }
+    }
+
+    private Color colorFromTemperature(float temp)
+    {
+        int index = (int)((temp - m_T0) / (m_T1 - m_T0) * m_ColorCount);
+        index = Mathf.Min(m_ColorCount - 1, index);
+        index = Mathf.Max(0, index);
+        return m_Colors[index];
+    }
+
+    private void onNChanged(float value)
+    {
+        m_Simulator.pertAmp = value;
+    }
+
+    private void onArmsChanged(float value)
+    {
+        m_Simulator.pertN = (int)value;
+    }
+
+    private void onAngleOffsetChanged(float value)
+    {
+        m_Simulator.angleOffset = value;
+    }
+
+    private void onCoreRadiusChanged(float value)
+    {
+        m_Simulator.radiusCore = value;
+    }
+
+    private void onGalaxyRadiusChanged(float value)
+    {
+        m_Simulator.radiusGalaxy = value;
+    }
+
+    private void onInnerExcentricityChanged(float value)
+    {
+        m_Simulator.innerExcentricity = value;
+    }
+
+    private void onOuterExcentricityChanged(float value)
+    {
+        m_Simulator.outerExcentricity = value;
     }
 
     private void move()
@@ -64,20 +174,28 @@ public class GalaxyTest : MonoBehaviour
         this.transform.eulerAngles = m_CameraAngle;
         this.transform.position = new Vector3(this.transform.position.x, this.transform.position.y, this.transform.position.z);
 
-//         float camy = m_CameraAngle.y;
-//         this.transform.eulerAngles = new Vector3(this.transform.eulerAngles.x, camy, this.transform.eulerAngles.z);
+        //         float camy = m_CameraAngle.y;
+        //         this.transform.eulerAngles = new Vector3(this.transform.eulerAngles.x, camy, this.transform.eulerAngles.z);
     }
 
     void Update()
     {
-        this.move();
+        //        this.move();
 
+        var speed = Time.deltaTime * 100000;
 
-        m_Simulator.foreachStar((TezStar star) =>
+        m_Simulator.foreachStar((TezGalaxyBody star) =>
         {
-            star.theta += star.velocityTheta * Time.deltaTime * 50000;
+            star.theta += star.velocityTheta * speed;
             var star_renderer = (Transform)star.usrdata;
             star_renderer.position = star.calculateOrbit();
+        });
+
+        m_Simulator.foreachDust((TezGalaxyBody dust) =>
+        {
+            dust.theta += dust.velocityTheta * speed;
+            var renderer = (Transform)dust.usrdata;
+            renderer.position = dust.calculateOrbit();
         });
     }
 }

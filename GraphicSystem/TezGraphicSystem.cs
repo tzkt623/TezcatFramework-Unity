@@ -90,16 +90,26 @@ namespace tezcat.Framework.GraphicSystem
             this.drawCircle(center, radius, fragment, color, m_Root, new Material(Shader.Find("Particles/Standard Unlit")));
         }
 
-        public void drawEllipse(Vector3 center, float width, float height, int fragment, float angle, Color color, Transform parent)
+        public void drawEllipse(Vector3 center, float width, float height, int fragment, float offset_angle, Color color, Transform parent)
         {
+            var offset_radian = Mathf.Deg2Rad * offset_angle;
+            var sin_offset_angle = Mathf.Sin(offset_radian);
+            var cos_offset_angle = Mathf.Cos(offset_radian);
+
             float per = 360.0f / fragment;
             var vertex = new Vector3[fragment];
+
             for (int i = 0; i < fragment; i++)
             {
                 var r = (i * per) * Mathf.Deg2Rad;
+                ///求椭圆坐标
                 var x = width * Mathf.Sin(r);
                 var z = height * Mathf.Cos(r);
-                vertex[i] = Quaternion.AngleAxis(angle, Vector3.up) * new Vector3(x, 0, z);
+
+                ///求偏移坐标
+                var x1 = x * cos_offset_angle - z * sin_offset_angle;
+                var z1 = x * sin_offset_angle + z * cos_offset_angle;
+                vertex[i] = new Vector3(x1, 0, z1);
             }
 
             var cmd = new TezDrawEllipse(this.giveID());
