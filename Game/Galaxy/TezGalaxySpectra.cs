@@ -57,9 +57,9 @@ namespace tezcat.Framework.Game.Galaxy
             public float gamma;
         }
 
-        static Vector2 IlluminantC = new Vector2(0.3101f, 0.3162f);
-        static Vector2 IlluminantD65 = new Vector2(0.3127f, 0.3291f);
-        static Vector2 IlluminantE = new Vector2(0.33333333f, 0.33333333f);
+        static readonly Vector2 IlluminantC = new Vector2(0.3101f, 0.3162f);
+        static readonly Vector2 IlluminantD65 = new Vector2(0.3127f, 0.3291f);
+        static readonly Vector2 IlluminantE = new Vector2(0.33333333f, 0.33333333f);
 
         /*  Gamma of nonlinear correction.
 
@@ -322,8 +322,7 @@ namespace tezcat.Framework.Game.Galaxy
 
         /*                          NORM_RGB
 
-            Normalise RGB components so the most intense (unless all
-            are zero) has a value of 1.
+            Normalise RGB components so the most intense (unless all are zero) has a value of 1.
         */
         public void norm_rgb(ref float r, ref float g, ref float b)
         {
@@ -400,9 +399,9 @@ namespace tezcat.Framework.Game.Galaxy
         public void spectrum_to_xyz(TezEventExtension.Function<float, float> spec_intens, out float x, out float y, out float z)
         {
             int i;
-            float lambda, X = 0, Y = 0, Z = 0, XYZ;
+            float lambda, X = 0, Y = 0, Z = 0, XYZ = 0;
 
-            for (i = 0, lambda = 380; lambda < 780.1; i++, lambda += 5)
+            for (i = 0, lambda = 380; lambda < 780.1f; i++, lambda += 5)
             {
                 float Me;
 

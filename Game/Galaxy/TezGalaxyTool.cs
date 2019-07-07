@@ -4,8 +4,8 @@ namespace tezcat.Framework.Game.Galaxy
 {
     public class TezGalaxyTool
     {
-    #region VelocityCurve
-    static float MS(float r)
+        #region VelocityCurve
+        static float MS(float r)
         {
             float d = 2000f;  // Dicke der Scheibe
             float rho_so = 1f;  // Dichte im Mittelpunkt

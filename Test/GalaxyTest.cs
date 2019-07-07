@@ -60,7 +60,7 @@ public class GalaxyTest : MonoBehaviour
         float x, y, z;
         for (int i = 0; i < m_ColorCount; ++i)
         {
-            Color color = new Color();
+            Color color = new Color(0, 0, 0, 1);
             speactra.bbTemp = m_T0 + dt * i;
             speactra.spectrum_to_xyz(speactra.bb_spectrum, out x, out y, out z);
             speactra.xyz_to_rgb(TezGalaxySpectra.SMPTEsystem, x, y, z, out color.r, out color.g, out color.b);
@@ -72,12 +72,13 @@ public class GalaxyTest : MonoBehaviour
         m_Simulator.foreachStar((TezGalaxyBody star) =>
         {
             var renderer = Instantiate(m_Star);
+            renderer.name = "Star";
             renderer.gameObject.SetActive(true);
             renderer.position = star.calculateOrbit();
             star.usrdata = renderer;
 
-//            var color = new Color(0.2f, 0.2f, 0.2f, 1.0f) + this.colorFromTemperature(star.temperature) * star.brigtness;
-            var color = this.colorFromTemperature(star.temperature) * star.brigtness;
+            var color = new Color(0.2f, 0.2f, 0.2f, 1.0f) + this.colorFromTemperature(star.temperature);
+//            var color = this.colorFromTemperature(star.temperature) * star.brigtness;
             renderer.GetComponent<MeshRenderer>().material.SetColor("_EmissionColor", color);
             renderer.GetComponent<MeshRenderer>().material.color = color;
         });
@@ -85,11 +86,25 @@ public class GalaxyTest : MonoBehaviour
         m_Simulator.foreachDust((TezGalaxyBody dust) =>
         {
             var renderer = Instantiate(m_Dust);
+            renderer.name = "Dust";
             renderer.gameObject.SetActive(true);
             renderer.position = dust.calculateOrbit();
             dust.usrdata = renderer;
 
-            var color = this.colorFromTemperature(dust.temperature) * dust.brigtness;
+            var color = this.colorFromTemperature(dust.temperature);
+            renderer.GetComponent<MeshRenderer>().material.SetColor("_EmissionColor", color);
+            renderer.GetComponent<MeshRenderer>().material.color = color;
+        });
+
+        m_Simulator.foreachH2((TezGalaxyBody h2) =>
+        {
+            var renderer = Instantiate(m_Star);
+            renderer.name = "H2";
+            renderer.gameObject.SetActive(true);
+            renderer.position = h2.calculateOrbit();
+            h2.usrdata = renderer;
+
+            var color = this.colorFromTemperature(h2.temperature) * new Color(2, 0.5f, 0.5f);
             renderer.GetComponent<MeshRenderer>().material.SetColor("_EmissionColor", color);
             renderer.GetComponent<MeshRenderer>().material.color = color;
         });
@@ -196,6 +211,13 @@ public class GalaxyTest : MonoBehaviour
             dust.theta += dust.velocityTheta * speed;
             var renderer = (Transform)dust.usrdata;
             renderer.position = dust.calculateOrbit();
+        });
+
+        m_Simulator.foreachH2((TezGalaxyBody star) =>
+        {
+            star.theta += star.velocityTheta * speed;
+            var renderer = (Transform)star.usrdata;
+            renderer.position = star.calculateOrbit();
         });
     }
 }

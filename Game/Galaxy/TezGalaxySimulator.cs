@@ -108,9 +108,12 @@ namespace tezcat.Framework.Game.Galaxy
 
         public int starCount { get; set; }
         public int dustCount { get; set; }
+        public int h2Count { get; set; } = 300;
 
         TezGalaxyBody[] m_Stars = null;
         TezGalaxyBody[] m_Dust = null;
+        TezGalaxyBody[] m_H2 = null;
+
         TezGalaxyCDF m_CDF = new TezGalaxyCDF();
 
         public void foreachStar(TezEventExtension.Action<TezGalaxyBody> function)
@@ -126,6 +129,15 @@ namespace tezcat.Framework.Game.Galaxy
             for (int i = 0; i < this.dustCount; i++)
             {
                 function(m_Dust[i]);
+            }
+        }
+
+        public void foreachH2(TezEventExtension.Action<TezGalaxyBody> function)
+        {
+            var count = this.h2Count * 2;
+            for (int i = 0; i < count; i++)
+            {
+                function(m_H2[i]);
             }
         }
 
@@ -197,7 +209,7 @@ namespace tezcat.Framework.Game.Galaxy
                 star.angle = this.calculateAngleOffset(radius);
                 star.theta = Random.value * 360.0f;
                 star.velocityTheta = this.calculateOrbitalVelocity((star.offsetWidth + star.offsetHeight) / 2.0f);
-                star.center = Vector3.zero;
+                star.center = new Vector3(0, 0, ((Random.value * 2) - 1) * 40f);
                 star.temperature = 6000 + (4000 * Random.value) - 2000;
                 star.brigtness = 0.3f + 0.2f * Random.value;
                 m_Stars[i] = star;
@@ -227,11 +239,47 @@ namespace tezcat.Framework.Game.Galaxy
                 dust.angle = this.calculateAngleOffset(rad);
                 dust.theta = 360.0f * Random.value;
                 dust.velocityTheta = this.calculateOrbitalVelocity((dust.offsetWidth + dust.offsetHeight) / 2.0f);
-                dust.center = Vector3.zero;
+                dust.center = new Vector3(0, 0, ((Random.value * 2) - 1) * 40f);
                 dust.temperature = 5000 + rad / 4.5f;
                 dust.brigtness = 0.015f + 0.01f * Random.value;
                 m_Dust[i] = dust;
 
+            }
+            #endregion
+
+            #region H2
+            m_H2 = new TezGalaxyBody[this.h2Count * 2];
+            for (int i = 0; i < h2Count; ++i)
+            {
+                x = 2 * this.radiusGalaxy * Random.value - this.radiusGalaxy;
+                y = 2 * this.radiusGalaxy * Random.value - this.radiusGalaxy;
+                rad = Mathf.Sqrt(x * x + y * y);
+
+                int k1 = 2 * i;
+                var h2_1 = new TezGalaxyBody() { simulator = this };
+                h2_1.offsetWidth = rad;
+                h2_1.offsetHeight = rad * this.calculateExcentricity(rad);
+                h2_1.angle = this.calculateAngleOffset(rad);
+                h2_1.theta = 360.0f * Random.value;
+                h2_1.velocityTheta = this.calculateOrbitalVelocity((h2_1.offsetWidth + h2_1.offsetHeight) / 2.0f);
+                h2_1.center = new Vector3(0, 0, ((Random.value * 2) - 1) * 40f);
+                h2_1.temperature = 6000 + (6000 * Random.value) - 3000;
+                h2_1.brigtness = 0.1f + 0.05f * Random.value;
+                m_H2[k1] = h2_1;
+
+                // Create second point 100 pc away from the first one
+                var h2_2 = new TezGalaxyBody() { simulator = this };
+                int dist = 1000;
+                int k2 = 2 * i + 1;
+                h2_2.offsetWidth = rad + dist;
+                h2_2.offsetHeight = rad /*+ dist*/ * this.calculateExcentricity(rad /*+ dist*/);
+                h2_2.angle = this.calculateAngleOffset(rad);
+                h2_2.theta = h2_1.theta;
+                h2_2.velocityTheta = h2_1.velocityTheta;
+                h2_2.center = h2_1.center;
+                h2_2.temperature = h2_1.temperature;
+                h2_2.brigtness = h2_1.brigtness;
+                m_H2[k2] = h2_2;
             }
             #endregion
         }
@@ -304,6 +352,33 @@ namespace tezcat.Framework.Game.Galaxy
                 dust.offsetHeight = rad * this.calculateExcentricity(rad);
                 dust.angle = this.calculateAngleOffset(rad);
                 dust.velocityTheta = this.calculateOrbitalVelocity((dust.offsetWidth + dust.offsetHeight) / 2.0f);
+            }
+            #endregion
+
+            #region H2
+            for (int i = 0; i < h2Count; ++i)
+            {
+                x = 2 * this.radiusGalaxy * Random.value - this.radiusGalaxy;
+                y = 2 * this.radiusGalaxy * Random.value - this.radiusGalaxy;
+                rad = Mathf.Sqrt(x * x + y * y);
+
+                int k1 = 2 * i;
+                var h2_1 = m_H2[k1];
+                h2_1.offsetWidth = rad;
+                h2_1.offsetHeight = rad * this.calculateExcentricity(rad);
+                h2_1.angle = this.calculateAngleOffset(rad);
+                h2_1.theta = 360.0f * Random.value;
+                h2_1.velocityTheta = this.calculateOrbitalVelocity((h2_1.offsetWidth + h2_1.offsetHeight) / 2.0f);
+
+                // Create second point 100 pc away from the first one
+                int dist = 1000;
+                int k2 = 2 * i + 1;
+                var h2_2 = m_H2[k2];
+                h2_2.offsetWidth = rad + dist;
+                h2_2.offsetHeight = rad /*+ dist*/ * this.calculateExcentricity(rad /*+ dist*/);
+                h2_2.angle = this.calculateAngleOffset(rad);
+                h2_2.theta = h2_1.theta;
+                h2_2.velocityTheta = h2_1.velocityTheta;
             }
             #endregion
         }
