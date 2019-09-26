@@ -75,15 +75,22 @@ namespace tezcat.Framework.Utility
 
             if (index == this.count - 1)
             {
-                m_Array[index] = default;
+                m_Array[index] = default(T);
             }
             else
             {
                 Array.Copy(m_Array, index + 1, m_Array, index, count - index - 1);
-                m_Array[count - 1] = default;
+                m_Array[count - 1] = default(T);
             }
 
             this.count--;
+        }
+
+        public T[] toArray()
+        {
+            T[] array = new T[this.count];
+            Array.Copy(m_Array, 0, array, 0, this.count);
+            return array;
         }
 
         public void close()

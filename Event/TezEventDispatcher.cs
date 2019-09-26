@@ -2,6 +2,9 @@
 using tezcat.Framework.Core;
 using tezcat.Framework.Extension;
 using tezcat.Framework.TypeTraits;
+#if UNITY_EDITOR
+using UnityEngine;
+#endif
 
 namespace tezcat.Framework.Event
 {
@@ -68,7 +71,9 @@ namespace tezcat.Framework.Event
             switch (EventID<EventData>.ID)
             {
                 case TezTypeInfo.ErrorID:
-                    TezService.get<ITezLog>().info(string.Format("{0} : no one subscribe this event", EventID<EventData>.Name));
+#if UNITY_EDITOR
+                    Debug.Log(string.Format("{0} : no one subscribe this event", EventID<EventData>.Name));
+#endif
                     data.close();
                     break;
                 default:
@@ -79,8 +84,9 @@ namespace tezcat.Framework.Event
 
         private void dispatchEvent(int id, ITezEventData data)
         {
-            TezService.get<ITezLog>().info(string.Format("{0}", data.name));
-
+#if UNITY_EDITOR
+            Debug.Log(string.Format("{0}", data.name));
+#endif
             var dic = m_Listeners[id];
             foreach (var pair in dic)
             {
@@ -101,7 +107,9 @@ namespace tezcat.Framework.Event
             switch (EventID<EventData>.ID)
             {
                 case TezTypeInfo.ErrorID:
-                    TezService.get<ITezLog>().info(string.Format("{0} : no one subscribe this event", EventID<EventData>.Name));
+#if UNITY_EDITOR
+            Debug.Log(string.Format("{0} : no one subscribe this event", EventID<EventData>.Name));
+#endif
                     data.close();
                     break;
                 default:

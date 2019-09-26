@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using tezcat.Framework.Core;
 using UnityEngine;
 
@@ -21,7 +22,7 @@ namespace tezcat.Framework.UI
 
         public static TezLayer overlay { get; protected set; } = null;
 
-        private static void register(TezLayer layer)
+        public static void register(TezLayer layer)
         {
             if (layer.ID == -1)
             {
@@ -38,6 +39,14 @@ namespace tezcat.Framework.UI
                 Manager[layer.ID] = layer;
             }
         }
+
+        public static void sortLayers()
+        {
+            for (int i = 0; i < Manager.Count; i++)
+            {
+                Manager[i].sort();
+            }
+        }
         #endregion
 
         public int ID { get; private set; } = -1;
@@ -49,13 +58,12 @@ namespace tezcat.Framework.UI
 
         protected override void preInit()
         {
-            register(this);
+
         }
 
         protected override void initWidget()
         {
-            this.transform.SetSiblingIndex(ID);
-            this.name = "Layer_" + ID;
+
         }
 
         protected override void linkEvent()
@@ -66,6 +74,12 @@ namespace tezcat.Framework.UI
         protected override void unLinkEvent()
         {
 
+        }
+
+        protected virtual void sort()
+        {
+            this.transform.SetSiblingIndex(ID);
+            this.name = "Layer_" + ID;
         }
 
         public override void clear()
@@ -87,5 +101,6 @@ namespace tezcat.Framework.UI
         {
 
         }
+
     }
 }

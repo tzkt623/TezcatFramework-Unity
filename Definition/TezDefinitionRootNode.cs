@@ -121,7 +121,7 @@ namespace tezcat.Framework.Definition
 
         protected TezDefinitionLeafNode getSecondaryChild(ITezDefinitionToken token)
         {
-            var id = token.toID;
+            var id = token.tokenID;
             ///检测分路径是否存在
             while (m_SecondaryChildren.Count <= id)
             {

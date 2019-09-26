@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using tezcat.Framework.DataBase;
+using tezcat.Framework.Database;
 
 namespace tezcat.Framework.Core
 {
@@ -11,7 +11,7 @@ namespace tezcat.Framework.Core
         #region IDManager
         class IDManager
         {
-            class SubGroup
+            class RSubclass
             {
                 private ulong m_IDGiver = 1;
                 private Queue<ulong> m_Free = new Queue<ulong>();
@@ -32,41 +32,41 @@ namespace tezcat.Framework.Core
                 }
             }
 
-            class Group
+            class RClass
             {
-                List<SubGroup> m_SubGroups = new List<SubGroup>();
+                List<RSubclass> m_SubclassList = new List<RSubclass>();
 
                 public ulong giveID(int sub_gid)
                 {
-                    while (sub_gid >= m_SubGroups.Count)
+                    while (sub_gid >= m_SubclassList.Count)
                     {
-                        m_SubGroups.Add(new SubGroup());
+                        m_SubclassList.Add(new RSubclass());
                     }
 
-                    return m_SubGroups[sub_gid].giveID();
+                    return m_SubclassList[sub_gid].giveID();
                 }
 
                 public void recycleID(int sub_gid, ulong id)
                 {
-                    m_SubGroups[sub_gid].recycleID(id);
+                    m_SubclassList[sub_gid].recycleID(id);
                 }
             }
 
-            List<Group> m_Groups = new List<Group>();
+            List<RClass> m_Groups = new List<RClass>();
 
-            public ulong giveID(int gid, int sub_gid)
+            public ulong giveID(int class_id, int subclass_id)
             {
-                while (gid >= m_Groups.Count)
+                while (class_id >= m_Groups.Count)
                 {
-                    m_Groups.Add(new Group());
+                    m_Groups.Add(new RClass());
                 }
 
-                return (ulong)gid << 48 | (ulong)sub_gid << 32 | m_Groups[gid].giveID(sub_gid);
+                return (ulong)class_id << 48 | (ulong)subclass_id << 32 | m_Groups[class_id].giveID(subclass_id);
             }
 
-            public void recycleID(int gid, int sub_gid, ulong id)
+            public void recycleID(int class_id, int subclass_id, ulong id)
             {
-                m_Groups[gid].recycleID(sub_gid, id);
+                m_Groups[class_id].recycleID(subclass_id, id);
             }
         }
         static readonly IDManager Manager = new IDManager();
@@ -77,16 +77,25 @@ namespace tezcat.Framework.Core
             public const ulong EmptyID = 0;
 
             public ITezGroup group = null;
-            public ITezDetailedGroup subGroup = null;
+            public ITezSubgroup subGroup = null;
+
+            public int classID;
+            public int subclassID;
             public ulong itemID = EmptyID;
             public int dbID = -1;
 
             public int refrence { get; private set; } = 0;
 
-            public Ref(ITezGroup group, ITezDetailedGroup sub_group)
+            public Ref(ITezGroup group, ITezSubgroup sub_group)
             {
                 this.group = group;
                 this.subGroup = sub_group;
+            }
+
+            public Ref(int class_id, int subclass_id)
+            {
+                this.classID = class_id;
+                this.subclassID = subclass_id;
             }
 
             public void retain()
@@ -131,8 +140,16 @@ namespace tezcat.Framework.Core
         }
 
         Ref m_Ref = null;
-        public ITezGroup group { get { return m_Ref.group; } }
-        public ITezDetailedGroup subgroup { get { return m_Ref.subGroup; } }
+        public ITezGroup group
+        {
+            get { return m_Ref.group; }
+        }
+
+        public ITezSubgroup subgroup
+        {
+            get { return m_Ref.subGroup; }
+        }
+
         public ulong itemID
         {
             get { return m_Ref.itemID; }
@@ -154,10 +171,11 @@ namespace tezcat.Framework.Core
         }
 
         /// <summary>
-        /// 生成一个新的ID不包含数据库ID
+        /// 生成一个新的ID
+        /// 不包含数据库ID
         /// 引用计数自动加一
         /// </summary>
-        public TezRID(ITezGroup group, ITezDetailedGroup sub_group)
+        public TezRID(ITezGroup group, ITezSubgroup sub_group)
         {
             if (m_Ref != null)
             {
@@ -173,15 +191,39 @@ namespace tezcat.Framework.Core
         /// 生成一个新的ID并且包含数据库ID
         /// 引用计数自动加一
         /// </summary>
-        public TezRID(ITezGroup group, ITezDetailedGroup sub_group, int db_id)
+        public TezRID(ITezGroup group, ITezSubgroup sub_group, int db_id)
         {
             if (m_Ref != null)
             {
                 throw new ArgumentException("m_Ref must null");
             }
 
-            m_Ref = new Ref(group, sub_group) { dbID = db_id };
+            m_Ref = new Ref(group, sub_group)
+            {
+                dbID = db_id
+            };
+
             m_Ref.itemID = Manager.giveID(group.toID, subgroup.toID);
+            m_Ref.retain();
+        }
+
+        /// <summary>
+        /// 生成一个新的ID并且包含数据库ID
+        /// 引用计数自动加一
+        /// </summary>
+        public TezRID(int class_id, int subclass_id, int db_id)
+        {
+            if (m_Ref != null)
+            {
+                throw new ArgumentException("m_Ref must null");
+            }
+
+            m_Ref = new Ref(class_id, subclass_id)
+            {
+                dbID = db_id
+            };
+
+            m_Ref.itemID = Manager.giveID(class_id, subclass_id);
             m_Ref.retain();
         }
 
@@ -212,11 +254,11 @@ namespace tezcat.Framework.Core
         /// </summary>
         public void updateID()
         {
-            var temp = new Ref(m_Ref.group, m_Ref.subGroup);
+            var temp = new Ref(m_Ref.classID, m_Ref.subclassID);
 
             if (m_Ref.release())
             {
-                Manager.recycleID(m_Ref.group.toID, m_Ref.subGroup.toID, m_Ref.itemID);
+                Manager.recycleID(m_Ref.classID, m_Ref.subclassID, m_Ref.itemID);
                 m_Ref.close();
             }
 

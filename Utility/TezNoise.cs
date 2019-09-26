@@ -389,9 +389,9 @@ namespace tezcat.Framework.Utility
             float tz = smooth(tz0);
 
             return Mathf.Lerp(
-                Mathf.Lerp(Mathf.Lerp(v000, v100, tx), Mathf.Lerp(v010, v110, tx), ty)
-                , Mathf.Lerp(Mathf.Lerp(v001, v101, tx), Mathf.Lerp(v011, v111, tx), ty)
-                , tz);
+                Mathf.Lerp(Mathf.Lerp(v000, v100, tx), Mathf.Lerp(v010, v110, tx), ty),
+                Mathf.Lerp(Mathf.Lerp(v001, v101, tx), Mathf.Lerp(v011, v111, tx), ty),
+                tz);
         }
         #endregion
 

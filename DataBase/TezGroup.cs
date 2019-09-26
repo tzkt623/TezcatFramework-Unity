@@ -2,21 +2,22 @@
 using System.Collections.Generic;
 using tezcat.Framework.Definition;
 using tezcat.Framework.Extension;
+using tezcat.Framework.TypeTraits;
 
-namespace tezcat.Framework.DataBase
+namespace tezcat.Framework.Database
 {
     public interface ITezGroup
-        : ITezDefinitionToken
+        : ITezEnumeration
         , IEquatable<ITezGroup>
     {
 
     }
 
-    public interface ITezDetailedGroup
-        : ITezDefinitionToken
-        , IEquatable<ITezDetailedGroup>
+    public interface ITezSubgroup
+        : ITezEnumeration
+        , IEquatable<ITezSubgroup>
     {
-        TezDataBaseGameItem create();
+        TezDatabaseGameItem create();
     }
 
     public class TezGroupManager
@@ -25,11 +26,11 @@ namespace tezcat.Framework.DataBase
         {
             public ITezGroup group { get; set; }
 
-            public List<ITezDetailedGroup> detailedGroupList { get; private set; } = new List<ITezDetailedGroup>();
+            public List<ITezSubgroup> detailedGroupList { get; private set; } = new List<ITezSubgroup>();
 
-            public ITezDetailedGroup getDetailedGroup(string name)
+            public ITezSubgroup getDetailedGroup(string name)
             {
-                return detailedGroupList.Find((ITezDetailedGroup DG) =>
+                return detailedGroupList.Find((ITezSubgroup DG) =>
                 {
                     return DG.toName == name;
                 });
@@ -50,7 +51,7 @@ namespace tezcat.Framework.DataBase
             m_GroupDic[group.toName] = group.toID;
         }
 
-        public static void registerDetailedGroup(ITezGroup group, ITezDetailedGroup subgroup)
+        public static void registerDetailedGroup(ITezGroup group, ITezSubgroup subgroup)
         {
             var list = m_GroupList[group.toID].detailedGroupList;
             while (list.Count <= subgroup.toID)
@@ -76,13 +77,11 @@ namespace tezcat.Framework.DataBase
     /// 对象大组
     /// </summary>
     public abstract class TezGroup<TEnum, TValue>
-        : TezDefinitionToken<TEnum, TValue>
+        : TezEnumeration<TEnum, TValue>
         , ITezGroup
         where TEnum : TezGroup<TEnum, TValue>
         where TValue : struct, IComparable
     {
-        public sealed override TezDefinitionTokenType tokenType => TezDefinitionTokenType.Root;
-
         protected TezGroup(TValue value) : base(value)
         {
             TezGroupManager.registerGroup(this);
@@ -97,26 +96,26 @@ namespace tezcat.Framework.DataBase
     /// <summary>
     /// 对象详细类型分组
     /// </summary>
-    public abstract class TezDetailedGroup<TEnum, TValue>
-        : TezDefinitionToken<TEnum, TValue>
-        , ITezDetailedGroup
-        where TEnum : TezDetailedGroup<TEnum, TValue>
+    public abstract class TezSubgroup<TEnum, TValue>
+        : TezEnumeration<TEnum, TValue>
+        , ITezSubgroup
+        where TEnum : TezSubgroup<TEnum, TValue>
         where TValue : struct, IComparable
     {
-        TezEventExtension.Function<TezDataBaseGameItem> m_Creator = null;
+        TezEventExtension.Function<TezDatabaseGameItem> m_Creator = null;
 
-        protected TezDetailedGroup(ITezGroup group, TValue value, TezEventExtension.Function<TezDataBaseGameItem> creator) : base(value)
+        protected TezSubgroup(ITezGroup group, TValue value, TezEventExtension.Function<TezDatabaseGameItem> creator) : base(value)
         {
             m_Creator = creator;
             TezGroupManager.registerDetailedGroup(group, this);
         }
 
-        public TezDataBaseGameItem create()
+        public TezDatabaseGameItem create()
         {
             return m_Creator();
         }
 
-        public bool Equals(ITezDetailedGroup other)
+        public bool Equals(ITezSubgroup other)
         {
             return this.toID == other.toID;
         }
@@ -130,7 +129,8 @@ namespace tezcat.Framework.DataBase
         where TEnumeration : TezDefinitionToken<TEnumeration, TEnumValue>
         where TEnumValue : struct, IComparable
     {
-        protected TezTokenGroup(TEnumValue value) : base(value)
+        protected TezTokenGroup(TEnumValue value, TezDefinitionTokenType token_type)
+            : base(value, token_type)
         {
 
         }

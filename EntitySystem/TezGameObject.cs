@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using tezcat.Framework.Core;
-using tezcat.Framework.DataBase;
+using tezcat.Framework.Database;
+using tezcat.Framework.Definition;
 using UnityEngine;
 
 namespace tezcat.Framework.ECS
@@ -9,6 +10,7 @@ namespace tezcat.Framework.ECS
     public abstract class TezGameObject
          : TezDataObject
          , ITezTagSet
+         , ITezDefinitionPathObject
     {
         #region GUID Manager
         static Queue<uint> m_FreeID = new Queue<uint>();
@@ -47,7 +49,7 @@ namespace tezcat.Framework.ECS
         /// <summary>
         /// 类型次级分组
         /// </summary>
-        public abstract ITezDetailedGroup detailedGroup { get; }
+        public abstract ITezSubgroup subgroup { get; }
 
         /// <summary>
         /// 唯一名称ID
@@ -58,6 +60,44 @@ namespace tezcat.Framework.ECS
         /// 标签
         /// </summary>
         public TezTagSet TAG { get; private set; } = null;
+
+
+        #region 定义路径
+        public TezDefinitionPath definitionPath { get; private set; }
+
+        protected virtual ITezDefinitionToken mainToken { get; } = null;
+        protected List<ITezDefinitionToken> primaryTokens
+        {
+            get
+            {
+                List<ITezDefinitionToken> list = new List<ITezDefinitionToken>(2);
+                this.onBuildPrimaryTokens(ref list);
+                return list;
+            }
+        }
+        protected List<ITezDefinitionToken> secondaryTokens
+        {
+            get
+            {
+                List<ITezDefinitionToken> list = new List<ITezDefinitionToken>(2);
+                this.onBuildSecondaryTokens(ref list);
+                return list;
+            }
+        }
+
+        protected virtual void onBuildPrimaryTokens(ref List<ITezDefinitionToken> list)
+        {
+
+        }
+
+        protected virtual void onBuildSecondaryTokens(ref List<ITezDefinitionToken> list)
+        {
+
+        }
+        #endregion
+
+
+
 
         /// <summary>
         /// 初始化Object
@@ -72,10 +112,12 @@ namespace tezcat.Framework.ECS
                 }
 
                 this.preInit();
+
                 this.onInitNew();
-                this.m_RID = new TezRID(group, detailedGroup);
+                this.m_RID = new TezRID(group, subgroup);
                 this.NID = this.NID ?? string.Empty;
                 this.TAG = new TezTagSet();
+
                 this.postInit();
             }
             else
@@ -89,9 +131,9 @@ namespace tezcat.Framework.ECS
 
         }
 
-        public void initWithData(ITezSerializableItem item)
+        public void initWithData(ITezSerializableItem item, bool copy)
         {
-            var data_item = item as TezDataBaseGameItem;
+            var data_item = item as TezDatabaseGameItem;
 
             if (this.GUID == 0)
             {
@@ -99,12 +141,22 @@ namespace tezcat.Framework.ECS
             }
 
             this.preInit();
-            this.m_RID?.close();
-            this.m_RID = new TezRID(data_item.RID);
+
+            m_RID?.close();
+            if (copy)
+            {
+                m_RID = new TezRID(data_item.RID);
+            }
+            else
+            {
+                m_RID = new TezRID(data_item.RID.group, data_item.RID.subgroup);
+            }
 
             this.NID = data_item.NID;
             this.TAG = new TezTagSet();
+
             this.onInitWithData(item);
+
             this.postInit();
         }
 
@@ -115,7 +167,10 @@ namespace tezcat.Framework.ECS
 
         protected virtual void preInit()
         {
-
+            this.definitionPath = new TezDefinitionPath(
+                this.mainToken,
+                this.primaryTokens.Count > 0 ? this.primaryTokens.ToArray() : null,
+                this.secondaryTokens.Count > 0 ? this.secondaryTokens.ToArray() : null);
         }
 
         protected virtual void postInit()
@@ -142,7 +197,7 @@ namespace tezcat.Framework.ECS
             }
             else
             {
-                m_RID = new TezRID(group, detailedGroup);
+                m_RID = new TezRID(group, subgroup);
             }
 
             this.m_RID.updateID();
@@ -158,12 +213,12 @@ namespace tezcat.Framework.ECS
         /// </summary>
         public override void close()
         {
+            this.definitionPath.close();
             this.TAG.close();
-            this.TAG = null;
-
-            this.NID = null;
-
             this.m_RID?.close();
+
+            this.TAG = null;
+            this.NID = null;
             this.m_RID = null;
 
             recycleID(this.GUID);
@@ -180,14 +235,6 @@ namespace tezcat.Framework.ECS
         {
             this.NID = manager.readString(TezReadOnlyString.NID);
         }
-    }
-
-    /// <summary>
-    /// 工具Object
-    /// </summary>
-    public abstract class TezToolObject : TezObject
-    {
-
     }
 }
 

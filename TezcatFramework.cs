@@ -2,18 +2,20 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
-using tezcat.Framework.DataBase;
+using tezcat.Framework.Core;
+using tezcat.Framework.Database;
 using tezcat.Framework.ECS;
 using tezcat.Framework.Event;
 using tezcat.Framework.Extension;
 using tezcat.Framework.GraphicSystem;
+using tezcat.Framework.InputSystem;
 using tezcat.Framework.Math;
 using tezcat.Framework.Threading;
 using tezcat.Framework.UI;
 using tezcat.Framework.Utility;
 using UnityEngine;
 
-namespace tezcat.Framework.Core
+namespace tezcat.Framework
 {
     public abstract class TezcatFramework
         : TezUIWidget
@@ -114,6 +116,8 @@ namespace tezcat.Framework.Core
                     this.addLayer(layer);
                 }
             }
+
+            TezLayer.sortLayers();
         }
 
         protected override void onRefresh(TezRefreshPhase phase)
@@ -173,6 +177,7 @@ namespace tezcat.Framework.Core
             TezService.register(new TezDebug());
             TezService.register(new TezGraphicSystem());
             TezService.register(new TezEventDispatcher());
+            TezService.register(new TezInputController());
 
             TezService.register(new TezClassFactory());
             TezService.register(new TezSaveManager());
@@ -181,6 +186,7 @@ namespace tezcat.Framework.Core
             TezService.register(new TezTextureDatabase());
             TezService.register(new TezPrefabDatabase());
             TezService.register(new TezDatabase());
+            TezService.register(new TezFastDatabase());
             TezService.register(new TezTipController());
             TezService.register(new TezDragDropManager());
         }
@@ -213,26 +219,15 @@ namespace tezcat.Framework.Core
 
         public void addLayer(TezLayer layer)
         {
-            if (!m_LayerDic.ContainsKey(layer.name))
-            {
-                while (m_LayerList.Count <= layer.ID)
-                {
-                    m_LayerList.Add(null);
-                }
+            TezLayer.register(layer);
 
-                m_LayerDic.Add(layer.name, layer.ID);
-                m_LayerList[layer.ID] = layer;
-
-#if UNITY_EDITOR
-                TezService.get<TezDebug>().info("UIRoot", "Add Layer: " + layer.name + " ID: " + layer.ID);
-#endif
-            }
-#if UNITY_EDITOR
-            else
-            {
-                TezService.get<TezDebug>().waring("UIRoot", "Repeat to add layer " + layer.name);
-            }
-#endif
+            //                 while (m_LayerList.Count <= layer.ID)
+            //                 {
+            //                     m_LayerList.Add(null);
+            //                 }
+            // 
+            //                 m_LayerDic.Add(layer.name, layer.ID);
+            //                 m_LayerList[layer.ID] = layer;
         }
         #endregion
 
@@ -328,6 +323,11 @@ namespace tezcat.Framework.Core
         public Widget createWidget<Widget>(RectTransform parent, TezWidgetLifeState life_form = TezWidgetLifeState.Normal) where Widget : TezWidget, ITezPrefab
         {
             return this.createWidget<Widget>(typeof(Widget).Name, parent, life_form);
+        }
+
+        public Widget createWidget<Widget>(TezLayer layer, TezWidgetLifeState life_form = TezWidgetLifeState.Normal) where Widget : TezWidget, ITezPrefab
+        {
+            return this.createWidget<Widget>(typeof(Widget).Name, layer.rectTransform, life_form);
         }
 
         private Window createWindow<Window>(Window prefab
@@ -430,13 +430,13 @@ namespace tezcat.Framework.Core
         {
             if (m_Root != null)
             {
-//                Debug.Log("刷新中......");
+                //                Debug.Log("刷新中......");
                 while (m_Root != null)
                 {
                     m_Root.refresh();
                     m_Root = m_Root.next;
                 }
-//                Debug.Log("刷新结束!");
+                //                Debug.Log("刷新结束!");
             }
         }
     }

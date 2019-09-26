@@ -4,7 +4,7 @@ using tezcat.Framework.Core;
 using tezcat.Framework.Extension;
 using UnityEngine.Assertions;
 
-namespace tezcat.Framework.DataBase
+namespace tezcat.Framework.Database
 {
     public sealed class TezDatabase : ITezService
     {
@@ -13,10 +13,10 @@ namespace tezcat.Framework.DataBase
             public string NID { get; set; }
             public int SGID { get; set; }
 
-            Dictionary<string, TezDataBaseGameItem> m_Dic = new Dictionary<string, TezDataBaseGameItem>();
-            List<TezDataBaseGameItem> m_List = new List<TezDataBaseGameItem>();
+            Dictionary<string, TezDatabaseGameItem> m_Dic = new Dictionary<string, TezDatabaseGameItem>();
+            List<TezDatabaseGameItem> m_List = new List<TezDatabaseGameItem>();
 
-            public void add(TezDataBaseGameItem item)
+            public void add(TezDatabaseGameItem item)
             {
                 Assert.IsFalse(m_Dic.ContainsKey(item.NID), string.Format("DataBase Item : {0} is added", item.NID));
                 item.onAddToDB(m_List.Count);
@@ -25,16 +25,16 @@ namespace tezcat.Framework.DataBase
                 m_Dic.Add(item.NID, item);
             }
 
-            public TezDataBaseGameItem get(int item_id)
+            public TezDatabaseGameItem get(int item_id)
             {
                 Assert.IsFalse(item_id > m_List.Count, string.Format("Database : [M : get(int item_id)] {0} out of index", item_id));
                 return m_List[item_id];
             }
 
-            public TezDataBaseGameItem get(string item_name)
+            public TezDatabaseGameItem get(string item_name)
             {
-                TezDataBaseGameItem item = null;
-                if(m_Dic.TryGetValue(item_name, out item))
+                TezDatabaseGameItem item = null;
+                if (m_Dic.TryGetValue(item_name, out item))
                 {
                     return item;
                 }
@@ -44,7 +44,7 @@ namespace tezcat.Framework.DataBase
                 }
             }
 
-            public void foreachItem(TezEventExtension.Action<TezDataBaseGameItem> for_item)
+            public void foreachItem(TezEventExtension.Action<TezDatabaseGameItem> for_item)
             {
                 for (int i = 0; i < m_List.Count; i++)
                 {
@@ -57,7 +57,7 @@ namespace tezcat.Framework.DataBase
                 return m_List.Count;
             }
 
-            public List<TezDataBaseGameItem> getAllItem()
+            public List<TezDatabaseGameItem> getAllItem()
             {
                 return m_List;
             }
@@ -80,14 +80,14 @@ namespace tezcat.Framework.DataBase
             Dictionary<string, Subgroup> m_Dic = new Dictionary<string, Subgroup>();
             List<Subgroup> m_List = new List<Subgroup>();
 
-            public void add(TezDataBaseGameItem item)
+            public void add(TezDatabaseGameItem item)
             {
-                var sgid = item.detailedGroup.toID;
+                var sgid = item.subgroup.toID;
                 Subgroup sub;
-                if (!m_Dic.TryGetValue(item.detailedGroup.toName, out sub))
+                if (!m_Dic.TryGetValue(item.subgroup.toName, out sub))
                 {
-                    sub = new Subgroup() { NID = item.detailedGroup.toName, SGID = sgid };
-                    m_Dic.Add(item.detailedGroup.toName, sub);
+                    sub = new Subgroup() { NID = item.subgroup.toName, SGID = sgid };
+                    m_Dic.Add(item.subgroup.toName, sub);
 
                     while (m_List.Count <= sgid)
                     {
@@ -105,10 +105,10 @@ namespace tezcat.Framework.DataBase
 
             }
 
-            public TezDataBaseGameItem get(string sub_name, string item_name)
+            public TezDatabaseGameItem get(string sub_name, string item_name)
             {
                 Subgroup subgroup = null;
-                if(m_Dic.TryGetValue(sub_name, out subgroup))
+                if (m_Dic.TryGetValue(sub_name, out subgroup))
                 {
                     return subgroup.get(item_name);
                 }
@@ -118,12 +118,12 @@ namespace tezcat.Framework.DataBase
                 }
             }
 
-            public TezDataBaseGameItem get(int sub_id, int item_id)
+            public TezDatabaseGameItem get(int sub_id, int item_id)
             {
                 return m_List[sub_id].get(item_id);
             }
 
-            public TezDataBaseGameItem get(int sub_id, string item_name)
+            public TezDatabaseGameItem get(int sub_id, string item_name)
             {
                 return m_List[sub_id].get(item_name);
             }
@@ -141,7 +141,7 @@ namespace tezcat.Framework.DataBase
                 m_List = null;
             }
 
-            public void foreachSubgroup(TezEventExtension.Action<string, int> for_subgroup, TezEventExtension.Action<TezDataBaseGameItem> for_item)
+            public void foreachSubgroup(TezEventExtension.Action<string, int> for_subgroup, TezEventExtension.Action<TezDatabaseGameItem> for_item)
             {
                 foreach (var subgroup in m_List)
                 {
@@ -160,13 +160,13 @@ namespace tezcat.Framework.DataBase
                 return m_List.Count;
             }
 
-            public List<TezDataBaseGameItem> getAllItem()
+            public List<TezDatabaseGameItem> getAllItem()
             {
-                List<TezDataBaseGameItem> list = new List<TezDataBaseGameItem>();
+                List<TezDatabaseGameItem> list = new List<TezDatabaseGameItem>();
 
                 foreach (var sub in m_List)
                 {
-                    if(sub != null)
+                    if (sub != null)
                     {
                         list.AddRange(sub.getAllItem());
                     }
@@ -179,7 +179,7 @@ namespace tezcat.Framework.DataBase
         Dictionary<string, Group> m_GroupDic = new Dictionary<string, Group>();
         List<Group> m_GroupList = new List<Group>();
 
-        public void add(TezDataBaseGameItem item)
+        public void add(TezDatabaseGameItem item)
         {
             var gid = item.group.toID;
 
@@ -200,32 +200,32 @@ namespace tezcat.Framework.DataBase
             group.add(item);
         }
 
-        public T get<T>(string group_name, string sub_name, string item_name) where T : TezDataBaseGameItem
+        public T get<T>(string group_name, string sub_name, string item_name) where T : TezDatabaseGameItem
         {
             return (T)this.get(group_name, sub_name, item_name);
         }
 
-        public T get<T>(int group_id, int sub_id, int item_id = 0) where T : TezDataBaseGameItem
+        public T get<T>(int group_id, int sub_id, int item_id = 0) where T : TezDatabaseGameItem
         {
             return (T)this.get(group_id, sub_id, item_id);
         }
 
-        public T get<T>(int group_id, int sub_id, string item_name) where T : TezDataBaseGameItem
+        public T get<T>(int group_id, int sub_id, string item_name) where T : TezDatabaseGameItem
         {
             return (T)m_GroupList[group_id].get(sub_id, item_name);
         }
 
-        public T get<T>(int group_id, string sub_name, string item_name) where T : TezDataBaseGameItem
+        public T get<T>(int group_id, string sub_name, string item_name) where T : TezDatabaseGameItem
         {
             return (T)m_GroupList[group_id].get(sub_name, item_name);
         }
 
-        public TezDataBaseGameItem get(int group_id, int sub_id, int item_id)
+        public TezDatabaseGameItem get(int group_id, int sub_id, int item_id)
         {
             return m_GroupList[group_id].get(sub_id, item_id);
         }
 
-        public TezDataBaseGameItem get(string group_name, string sub_name, string item_name)
+        public TezDatabaseGameItem get(string group_name, string sub_name, string item_name)
         {
             return m_GroupDic[group_name].get(sub_name, item_name);
         }
@@ -248,7 +248,7 @@ namespace tezcat.Framework.DataBase
         public void foreachDataBase(
             TezEventExtension.Action<string, int> for_group,
             TezEventExtension.Action<string, int> for_subgroup,
-            TezEventExtension.Action<TezDataBaseGameItem> for_item)
+            TezEventExtension.Action<TezDatabaseGameItem> for_item)
         {
             for (int i = 0; i < m_GroupList.Count; i++)
             {
@@ -258,7 +258,7 @@ namespace tezcat.Framework.DataBase
             }
         }
 
-        public List<TezDataBaseGameItem> get(int group_id)
+        public List<TezDatabaseGameItem> get(int group_id)
         {
             return m_GroupList[group_id].getAllItem();
         }

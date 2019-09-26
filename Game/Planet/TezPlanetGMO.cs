@@ -5,6 +5,7 @@ namespace tezcat.Framework.Game
 {
     public class TezPlanetGMO : TezGameMonoObject
     {
+        [Header("Config")]
         [Range(2, 256)]
         public int resolution = 10;
         [Range(1, 1000)]
@@ -22,8 +23,8 @@ namespace tezcat.Framework.Game
         public float strength = 0;
         public float minLevel = 0;
 
-
-        MeshFilter[] m_MeshFilters;
+        protected MeshFilter[] m_MeshFilters;
+        protected GameObject[] m_Surface = new GameObject[6];
 
         TezPlanet m_Planet = new TezPlanet();
 
@@ -41,7 +42,7 @@ namespace tezcat.Framework.Game
             this.createColor();
         }
 
-        private void generate()
+        protected void generate()
         {
             if (m_MeshFilters == null || m_MeshFilters.Length == 0)
             {
@@ -50,12 +51,9 @@ namespace tezcat.Framework.Game
 
             Vector3[] directions =
             {
-                Vector3.up
-                , Vector3.down
-                , Vector3.left
-                , Vector3.right
-                , Vector3.forward
-                , Vector3.back
+                Vector3.up, Vector3.down,
+                Vector3.left, Vector3.right,
+                Vector3.forward, Vector3.back
             };
 
             m_Planet.radius = radius;
@@ -69,36 +67,25 @@ namespace tezcat.Framework.Game
             {
                 if (m_MeshFilters[i] == null)
                 {
-                    GameObject go = new GameObject("MeshChunk");
-                    go.transform.parent = this.transform;
+                    GameObject surface = new GameObject("MeshChunk");
+                    surface.transform.parent = this.transform;
+                    surface.AddComponent<MeshRenderer>().sharedMaterial = new Material(Shader.Find("Standard"));
+                    var filter = surface.AddComponent<MeshFilter>();
+                    filter.sharedMesh = new Mesh();
 
-                    go.AddComponent<MeshRenderer>().sharedMaterial = new Material(Shader.Find("Standard"));
-                    m_MeshFilters[i] = go.AddComponent<MeshFilter>();
-                    m_MeshFilters[i].sharedMesh = new Mesh();
-
+                    m_MeshFilters[i] = filter;
+                    m_Surface[i] = surface;
                 }
                 m_Planet.createTerrain(i, m_MeshFilters[i].sharedMesh, directions[i]);
             }
         }
 
-        private void createColor()
+        protected void createColor()
         {
             foreach (MeshFilter filter in m_MeshFilters)
             {
                 filter.GetComponent<MeshRenderer>().sharedMaterial.color = color;
             }
         }
-
-//         private void OnValidate()
-//         {
-//             if (m_Planet == null)
-//             {
-//                 m_Planet = new TezPlanet();
-//             }
-// 
-//             this.generate();
-//             m_Planet.createPlanet(frequency, octaves, lacunarity, persistence);
-//             this.createColor();
-//         }
     }
 }

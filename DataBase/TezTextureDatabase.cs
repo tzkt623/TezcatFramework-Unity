@@ -2,7 +2,7 @@
 using tezcat.Framework.Core;
 using UnityEngine;
 
-namespace tezcat.Framework.DataBase
+namespace tezcat.Framework.Database
 {
     public class TezTextureDatabase : ITezService
     {

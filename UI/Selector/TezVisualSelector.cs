@@ -1,4 +1,5 @@
 ﻿using tezcat.Framework.Core;
+using tezcat.Framework.ECS;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -9,11 +10,11 @@ namespace tezcat.Framework.UI
     {
         Image m_Icon = null;
 
+        public TezGameObject singleItem { get; private set; }
+
         protected override void preInit()
         {
             m_Icon = this.GetComponent<Image>();
-
-            this.gameObject.SetActive(false);
         }
 
         protected override void initWidget()
@@ -33,7 +34,8 @@ namespace tezcat.Framework.UI
 
         protected override void onHide()
         {
-
+            this.singleItem = null;
+            m_Icon.color = Color.gray;
         }
 
         public override void reset()
@@ -41,31 +43,14 @@ namespace tezcat.Framework.UI
 
         }
 
-        private void onCancelSelect(TezBasicSelector selector)
+        public void onSelect(TezGameObject item)
         {
-            m_Icon.sprite = null;
-            this.gameObject.SetActive(false);
+            this.singleItem = item;
         }
 
         public override void clear()
         {
 
-        }
-
-        private void onSelect(TezBasicSelector selector)
-        {
-            this.transform.position = Input.mousePosition;
-            this.gameObject.SetActive(true);
-            switch (selector.selectorType)
-            {
-                case TezSelectorType.Object:
-                    break;
-                case TezSelectorType.Item:
-                    m_Icon.sprite = null;
-                    break;
-                default:
-                    break;
-            }
         }
 
         public void Update()
@@ -77,17 +62,15 @@ namespace tezcat.Framework.UI
         {
             switch (phase)
             {
-                case TezRefreshPhase.P_Custom1:
+                case TezRefreshPhase.P_OnInit:
+                    this.gameObject.SetActive(false);
                     break;
-                case TezRefreshPhase.P_Custom2:
-                    break;
-                case TezRefreshPhase.P_Custom3:
-                    break;
-                case TezRefreshPhase.P_Custom4:
-                    break;
-                case TezRefreshPhase.P_Custom5:
-                    break;
-                default:
+                case TezRefreshPhase.P_OnEnable:
+                    this.transform.position = Input.mousePosition;
+                    if(this.singleItem != null)
+                    {
+                        m_Icon.color = Color.green;
+                    }
                     break;
             }
         }

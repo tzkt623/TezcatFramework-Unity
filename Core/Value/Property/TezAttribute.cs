@@ -16,6 +16,7 @@ namespace tezcat.Framework.Core
         , ITezAttribute
     {
         public event TezEventExtension.Action<ITezAttribute> onValueChanged;
+        public override TezValueSubType valueSubType => TezValueSubType.Attribute;
 
         List<TezAttributeBuffer> m_Buffers = new List<TezAttributeBuffer>();
 

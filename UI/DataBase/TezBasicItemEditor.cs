@@ -1,5 +1,5 @@
 ﻿using tezcat.Framework.Core;
-using tezcat.Framework.DataBase;
+using tezcat.Framework.Database;
 using tezcat.Framework.Extension;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -23,7 +23,7 @@ namespace tezcat.Framework.UI
          public abstract void bind(int category);
 //        public abstract void bind(TezItem item);
 
-        protected abstract TezDataBaseItem getItem();
+        protected abstract TezDatabaseItem getItem();
 
         protected override void initWidget()
         {

@@ -1,5 +1,5 @@
 ﻿using tezcat.Framework.Core;
-using tezcat.Framework.DataBase;
+using tezcat.Framework.Database;
 using tezcat.Framework.Utility;
 using UnityEngine;
 
@@ -24,14 +24,14 @@ namespace tezcat.Framework.UI
             get { return new int[0]; }
         }
 
-        TezDataBaseGameItem m_Item = null;
+        TezDatabaseGameItem m_Item = null;
 
         protected override void preInit()
         {
             base.preInit();
         }
 
-        protected override TezDataBaseItem getItem()
+        protected override TezDatabaseItem getItem()
         {
             return m_Item;
         }

@@ -2,11 +2,11 @@
 
 namespace tezcat.Framework.Core
 {
-    public abstract class TezPropertyManager : ITezCloseable
+    public class TezPropertyManager : ITezCloseable
     {
-        static bool defaultCheck(ITezModifier modifier) { return true; }
+        static bool defaultCheck(ITezValueModifier modifier) { return true; }
 
-        TezEventExtension.Function<bool, ITezModifier> m_CheckForAdd = defaultCheck;
+        TezEventExtension.Function<bool, ITezValueModifier> m_CheckForAdd = defaultCheck;
 
         TezPropertySortList m_Properties = null;
         public TezPropertySortList properties
@@ -21,31 +21,23 @@ namespace tezcat.Framework.Core
             }
         }
 
-        public void setCheckFuncion(TezEventExtension.Function<bool, ITezModifier> function)
+        public void setCheckFuncion(TezEventExtension.Function<bool, ITezValueModifier> function)
         {
             m_CheckForAdd = function;
         }
 
-        public void addModifier(ITezModifier modifier)
+        public void addModifier(ITezValueModifier modifier)
         {
-            if (m_CheckForAdd(modifier))
-            {
-                var target = modifier.definition.target;
-                var property = this.get<ITezProperty>(target);
-                property?.addModifier(modifier);
-            }
+            var target = ((TezValueModifierDefinition)modifier.definition).target;
+            var property = this.get<ITezProperty>(target);
+            property?.addModifier(modifier);
         }
 
-        public bool removeModifier(ITezModifier modifier)
+        public bool removeModifier(ITezValueModifier modifier)
         {
-            if (m_CheckForAdd(modifier))
-            {
-                var target = modifier.definition.target;
-                var property = this.get<ITezProperty>(target);
-                return (property != null) && property.removeModifier(modifier);
-            }
-
-            return false;
+            var target = ((TezValueModifierDefinition)modifier.definition).target;
+            var property = this.get<ITezProperty>(target);
+            return (property != null) && property.removeModifier(modifier);
         }
 
         public T getOrCreate<T>(ITezValueDescriptor descriptor) where T : ITezProperty, new()

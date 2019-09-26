@@ -6,7 +6,7 @@ using tezcat.Framework.Extension;
 using tezcat.Framework.TypeTraits;
 using UnityEngine;
 
-namespace tezcat.Framework.DataBase
+namespace tezcat.Framework.Database
 {
     public interface ITezPrefab
     {

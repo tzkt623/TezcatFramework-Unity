@@ -7,7 +7,7 @@ namespace tezcat.Framework.Core
     /// 其属性值来源于另一个Property
     /// 其Value值不能被直接Set
     /// </summary>
-    public abstract class TezModifierRefrence : TezModifier
+    public class TezValueModifierRefrence : TezValueModifier
     {
         ITezProperty m_Property = null;
 
@@ -25,7 +25,7 @@ namespace tezcat.Framework.Core
             }
         }
 
-        protected TezModifierRefrence(ITezProperty property, ITezValueDescriptor descriptor, TezModifierDefinition def) : base(descriptor, def)
+        public TezValueModifierRefrence(ITezProperty property, ITezValueDescriptor descriptor, TezValueModifierDefinition def) : base(descriptor, def)
         {
             m_Property = property;
             m_Property.onValueChanged += onRefValueChanged;

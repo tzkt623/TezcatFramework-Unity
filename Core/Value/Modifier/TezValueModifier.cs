@@ -2,26 +2,19 @@
 
 namespace tezcat.Framework.Core
 {
-    public interface ITezModifier : ITezValueWrapper
-    {
-        event TezEventExtension.Action<ITezModifier, float> onValueChanged;
-
-        object source { get; set; }
-        float value { get; }
-        TezModifierDefinition definition { get; }
-    }
-
-    public abstract class TezModifier
+    public class TezValueModifier
         : TezValueWrapper<float>
-        , ITezModifier
+        , ITezValueModifier
     {
         public object source { get; set; }
         public TezModifierDefinition definition { get; protected set; }
+        public TezModifierType modifierType { get; } = TezModifierType.Value;
+
         /// <summary>
         /// <para>TezModifier --> Self</para> 
-        /// <para>float -- > old value</para>
+        /// <para>float --> old value</para>
         /// </summary>
-        public event TezEventExtension.Action<ITezModifier, float> onValueChanged;
+        public event TezEventExtension.Action<ITezValueModifier, float> onValueChanged;
 
         protected float m_Value;
         public override float value
@@ -41,12 +34,12 @@ namespace tezcat.Framework.Core
             }
         }
 
-        protected TezModifier(ITezValueDescriptor name, TezModifierDefinition def) : base(name)
+        protected TezValueModifier(ITezValueDescriptor name, TezValueModifierDefinition def) : base(name)
         {
             this.definition = def;
         }
 
-        protected void notifyValueChanged(ITezModifier modifier, float old_value)
+        protected void notifyValueChanged(ITezValueModifier modifier, float old_value)
         {
             onValueChanged?.Invoke(modifier, old_value);
         }

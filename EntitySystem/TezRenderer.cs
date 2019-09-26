@@ -58,22 +58,4 @@ namespace tezcat.Framework.ECS
            
         }
     }
-
-    public abstract class TezToolObjectMB<T> : TezMonoObject where T : TezToolObject
-    {
-        public T myObject { get; protected set; }
-
-        public void bind(T my_object)
-        {
-            this.myObject = my_object;
-            this.onBind();
-        }
-
-        protected abstract void onBind();
-
-        protected override void clear()
-        {
-            this.myObject = null;
-        }
-    }
 }

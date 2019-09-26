@@ -1,23 +1,25 @@
 ﻿using tezcat.Framework.Core;
-using tezcat.Framework.DataBase;
 
 namespace tezcat.Framework.Definition
 {
     /// <summary>
     /// <para>类型分类信息</para>
     /// <para>包括对象 属性 Modifier等</para>
-    /// <para>主分类为线性分类(0号分类信息为MainToken),有且只有一条主路径信息</para>
+    /// <para>主分类为线性分类,有且只有一条主路径信息</para>
     /// <para>次分类为离散分类(依托在MainToken分类信息下),可以有多条次路径信息</para>
     /// </summary>
     public sealed class TezDefinitionPath : ITezCloseable
     {
+        static readonly ITezDefinitionToken[] m_DefaultPrimaryPath = new ITezDefinitionToken[0];
+        static readonly ITezDefinitionToken[] m_DefaultSecondaryPath = new ITezDefinitionToken[0];
+
         /// <summary>
         /// 先判断有没有
         /// 在做处理
         /// </summary>
         public int primaryLength
         {
-            get { return m_PrimaryPathes != null ? m_PrimaryPathes.Length : 0; }
+            get { return m_PrimaryPath.Length; }
         }
 
         /// <summary>
@@ -26,23 +28,30 @@ namespace tezcat.Framework.Definition
         /// </summary>
         public int secondaryLength
         {
-            get { return m_SecondaryPathes != null ? m_SecondaryPathes.Length : 0; }
+            get { return m_SecondaryPath.Length; }
         }
 
-        ITezGroup m_MainToken = null;
-        ITezDefinitionToken[] m_PrimaryPathes = null;
-        ITezDefinitionToken[] m_SecondaryPathes = null;
+        ITezDefinitionToken m_MainToken = null;
+        ITezDefinitionToken[] m_PrimaryPath = null;
+        ITezDefinitionToken[] m_SecondaryPath = null;
 
-        public TezDefinitionPath(ITezGroup main_token, ITezDefinitionToken[] primary_path = null, ITezDefinitionToken[] secondary_path = null)
+        public TezDefinitionPath(ITezDefinitionToken main_token, ITezDefinitionToken[] primary_path = null, ITezDefinitionToken[] secondary_path = null)
         {
             m_MainToken = main_token;
-            m_PrimaryPathes = primary_path;
-            m_SecondaryPathes = secondary_path;
+            m_PrimaryPath = primary_path == null ? m_DefaultPrimaryPath : primary_path;
+            m_SecondaryPath = secondary_path == null ? m_DefaultSecondaryPath : secondary_path;
+        }
+
+        public TezDefinitionPath(ITezDefinitionToken[] primary_path = null, ITezDefinitionToken[] secondary_path = null)
+        {
+            m_MainToken = null;
+            m_PrimaryPath = primary_path == null ? m_DefaultPrimaryPath : primary_path;
+            m_SecondaryPath = secondary_path == null ? m_DefaultSecondaryPath : secondary_path;
         }
 
         public TezDefinitionPath clone()
         {
-            return new TezDefinitionPath(m_MainToken, m_PrimaryPathes, m_SecondaryPathes);
+            return new TezDefinitionPath(m_MainToken, m_PrimaryPath, m_SecondaryPath);
         }
 
         /// <summary>
@@ -60,7 +69,7 @@ namespace tezcat.Framework.Definition
         /// </summary>
         public ITezDefinitionToken getPrimaryPathToken(int index)
         {
-            return m_PrimaryPathes[index];
+            return m_PrimaryPath[index];
         }
 
         /// <summary>
@@ -68,32 +77,32 @@ namespace tezcat.Framework.Definition
         /// </summary>
         public ITezDefinitionToken getSecondaryPathToken(int index)
         {
-            return m_SecondaryPathes[index];
+            return m_SecondaryPath[index];
         }
 
         public override string ToString()
         {
             string primary = "Null", secondary = "Null";
-            if(this.primaryLength > 0)
+            if (this.primaryLength > 0)
             {
                 primary = null;
-                for (int i = 0; i < m_PrimaryPathes.Length; i++)
+                for (int i = 0; i < m_PrimaryPath.Length; i++)
                 {
-                    primary += m_PrimaryPathes[i].toName;
-                    if (i != m_PrimaryPathes.Length - 1)
+                    primary += m_PrimaryPath[i].tokenName;
+                    if (i != m_PrimaryPath.Length - 1)
                     {
                         primary += "-";
                     }
                 }
             }
 
-            if(this.secondaryLength > 0)
+            if (this.secondaryLength > 0)
             {
                 secondary = null;
-                for (int i = 0; i < m_SecondaryPathes.Length; i++)
+                for (int i = 0; i < m_SecondaryPath.Length; i++)
                 {
-                    secondary += m_PrimaryPathes[i].toName;
-                    if (i != m_PrimaryPathes.Length - 1)
+                    secondary += m_PrimaryPath[i].tokenName;
+                    if (i != m_PrimaryPath.Length - 1)
                     {
                         secondary += "-";
                     }
@@ -101,7 +110,7 @@ namespace tezcat.Framework.Definition
             }
 
             return string.Format("Main:{0}\nPrimary:{1}\nSecondary:{2}"
-                , m_MainToken.toName
+                , m_MainToken.tokenName
                 , primary
                 , secondary);
         }
@@ -109,8 +118,8 @@ namespace tezcat.Framework.Definition
         public void close()
         {
             m_MainToken = null;
-            m_PrimaryPathes = null;
-            m_SecondaryPathes = null;
+            m_PrimaryPath = null;
+            m_SecondaryPath = null;
         }
     }
 }

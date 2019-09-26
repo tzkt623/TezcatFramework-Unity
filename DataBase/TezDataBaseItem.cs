@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using tezcat.Framework.Core;
 using tezcat.Framework.ECS;
 
-namespace tezcat.Framework.DataBase
+namespace tezcat.Framework.Database
 {
-    public abstract class TezDataBaseItem
-        : IEquatable<TezDataBaseItem>
+    public abstract class TezDatabaseItem
+        : IEquatable<TezDatabaseItem>
         , ITezSerializableItem
         , ITezCloseable
     {
@@ -41,17 +41,17 @@ namespace tezcat.Framework.DataBase
         #region 重载
         public override bool Equals(object other)
         {
-            return this.Equals((TezDataBaseItem)other);
+            return this.Equals((TezDatabaseItem)other);
         }
 
-        public abstract bool Equals(TezDataBaseItem other);
+        public abstract bool Equals(TezDatabaseItem other);
 
         public override int GetHashCode()
         {
             return base.GetHashCode();
         }
 
-        public static bool operator ==(TezDataBaseItem a, TezDataBaseItem b)
+        public static bool operator ==(TezDatabaseItem a, TezDatabaseItem b)
         {
             var flagA = object.ReferenceEquals(a, null);
             var flagB = object.ReferenceEquals(b, null);
@@ -68,7 +68,7 @@ namespace tezcat.Framework.DataBase
             return (flagA && flagB) || (!flagA && !flagB && a.Equals(b));
         }
 
-        public static bool operator !=(TezDataBaseItem a, TezDataBaseItem b)
+        public static bool operator !=(TezDatabaseItem a, TezDatabaseItem b)
         {
             var flagA = object.ReferenceEquals(a, null);
             var flagB = object.ReferenceEquals(b, null);
@@ -85,17 +85,17 @@ namespace tezcat.Framework.DataBase
             return (!flagA || !flagB) && (flagA || flagB || !a.Equals(b));
         }
 
-        public static bool operator true(TezDataBaseItem item)
+        public static bool operator true(TezDatabaseItem item)
         {
             return !object.ReferenceEquals(item, null);
         }
 
-        public static bool operator false(TezDataBaseItem item)
+        public static bool operator false(TezDatabaseItem item)
         {
             return object.ReferenceEquals(item, null);
         }
 
-        public static bool operator !(TezDataBaseItem item)
+        public static bool operator !(TezDatabaseItem item)
         {
             return object.ReferenceEquals(item, null);
         }
@@ -105,14 +105,14 @@ namespace tezcat.Framework.DataBase
     /// <summary>
     /// 图片文本Item
     /// </summary>
-    public abstract class TezDataBaseAssetItem : TezDataBaseItem
+    public abstract class TezDataBaseAssetItem : TezDatabaseItem
     {
         public override Category itemCategory
         {
             get { return Category.AssetItem; }
         }
 
-        public override bool Equals(TezDataBaseItem other)
+        public override bool Equals(TezDatabaseItem other)
         {
             return this.NID == other.NID;
         }
@@ -121,7 +121,7 @@ namespace tezcat.Framework.DataBase
     /// <summary>
     /// 游戏对象Item
     /// </summary>
-    public abstract class TezDataBaseGameItem : TezDataBaseItem
+    public abstract class TezDatabaseGameItem : TezDatabaseItem
     {
         /// <summary>
         /// 类型
@@ -138,7 +138,7 @@ namespace tezcat.Framework.DataBase
 
         public abstract ITezGroup group { get; }
 
-        public abstract ITezDetailedGroup detailedGroup { get; }
+        public abstract ITezSubgroup subgroup { get; }
 
         public ulong itemID
         {
@@ -154,7 +154,7 @@ namespace tezcat.Framework.DataBase
 
         public List<string> TAGS { get; private set; } = new List<string>();
 
-        public TezDataBaseGameItem()
+        public TezDatabaseGameItem()
         {
             this.registerProperty(this.properties);
         }
@@ -173,10 +173,10 @@ namespace tezcat.Framework.DataBase
             this.RID = null;
         }
 
-        public TezEntity createObject()
+        public TezEntity createObject(bool copy = false)
         {
             var obj = this.onCreateObject();
-            obj.initWithData(this);
+            obj.initWithData(this, copy);
 
             var entity = TezEntity.create();
             entity.addComponent(obj);
@@ -223,10 +223,10 @@ namespace tezcat.Framework.DataBase
             throw new Exception(string.Format("Please override this method for {0}", this.GetType().Name));
         }
 
-        public override bool Equals(TezDataBaseItem other)
+        public override bool Equals(TezDatabaseItem other)
         {
-            var go = other as TezDataBaseGameItem;
-            return go ? this.group.Equals(go.group) && this.detailedGroup.Equals(go.detailedGroup) : false;
+            var go = other as TezDatabaseGameItem;
+            return go ? this.group.Equals(go.group) && this.subgroup.Equals(go.subgroup) : false;
         }
 
         protected virtual void registerProperty(ITezPropertyCollection collection) { }
@@ -243,7 +243,7 @@ namespace tezcat.Framework.DataBase
                 throw new ArgumentException("RID");
             }
 
-            this.RID = new TezRID(group, detailedGroup, db_id);
+            this.RID = new TezRID(group, subgroup, db_id);
         }
     }
 }

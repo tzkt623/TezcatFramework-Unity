@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using tezcat.Framework.Core;
-using tezcat.Framework.DataBase;
+using tezcat.Framework.Database;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -33,7 +33,7 @@ namespace tezcat.Framework.UI
 
         TezDatabaseGroup m_Group = null;
         TezDatabaseSlot m_CurrentSlot = null;
-        public TezDataBaseItem currentItem
+        public TezDatabaseItem currentItem
         {
             get; private set;
         }

@@ -12,7 +12,7 @@ namespace tezcat.Framework.Definition
 
         public ITezDefinitionNode getPrimaryChild(ITezDefinitionToken token)
         {
-            var id = token.toID;
+            var id = token.tokenID;
 
             ITezDefinitionNode node = null;
             if(!m_ChildrenWithID.TryGetValue(id, out node))

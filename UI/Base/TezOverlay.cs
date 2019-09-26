@@ -10,12 +10,17 @@ namespace tezcat.Framework.UI
         protected override void preInit()
         {
             overlay = this;
-            this.name = "Layer_Overlay";
         }
 
         protected override void initWidget()
         {
             m_Canvas = this.GetComponent<Canvas>();
+        }
+
+        protected override void sort()
+        {
+            this.transform.SetAsLastSibling();
+            this.name = "Layer_Overlay";
         }
     }
 }

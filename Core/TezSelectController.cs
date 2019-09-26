@@ -1,4 +1,4 @@
-﻿using tezcat.Framework.DataBase;
+﻿using tezcat.Framework.Database;
 using tezcat.Framework.Extension;
 
 namespace tezcat.Framework.Core
@@ -65,7 +65,7 @@ namespace tezcat.Framework.Core
             m_Slot = slot;
         }
 
-        public Item convertItem<Item>() where Item : TezDataBaseItem
+        public Item convertItem<Item>() where Item : TezDatabaseItem
         {
             return (Item)m_Slot.myItem;
         }

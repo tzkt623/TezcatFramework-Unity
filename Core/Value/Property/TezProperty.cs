@@ -6,8 +6,9 @@ namespace tezcat.Framework.Core
     {
         event TezEventExtension.Action<ITezProperty> onValueChanged;
 
-        void addModifier(ITezModifier modifier);
-        bool removeModifier(ITezModifier modifier);
+        void addModifier(ITezValueModifier modifier);
+        bool removeModifier(ITezValueModifier modifier);
+        void update();
     }
 
     public abstract class TezProperty<T>
@@ -16,7 +17,7 @@ namespace tezcat.Framework.Core
     {
         public event TezEventExtension.Action<ITezProperty> onValueChanged;
 
-        protected T m_BaseValue = default;
+        protected T m_BaseValue = default(T);
         public virtual T baseValue
         {
             get
@@ -32,19 +33,20 @@ namespace tezcat.Framework.Core
 
         public T oldValue { get; protected set; }
 
-        protected TezModifierCache m_ModifierCache = null;
+        protected TezValueModifierBaseCache m_ModifierCache = null;
+        public override TezValueSubType valueSubType => TezValueSubType.Property;
 
-        protected TezProperty(ITezValueDescriptor name, TezModifierCache cache) : base(name)
+        protected TezProperty(ITezValueDescriptor name, TezValueModifierBaseCache cache) : base(name)
         {
             m_ModifierCache = cache;
         }
 
-        public void addModifier(ITezModifier modifier)
+        public void addModifier(ITezValueModifier modifier)
         {
             m_ModifierCache.addModifier(modifier);
         }
 
-        public bool removeModifier(ITezModifier modifier)
+        public bool removeModifier(ITezValueModifier modifier)
         {
             return m_ModifierCache.removeModifier(modifier);
         }
@@ -53,6 +55,8 @@ namespace tezcat.Framework.Core
         {
             this.onValueChanged?.Invoke(this);
         }
+
+        public abstract void update();
 
         public override void close()
         {
@@ -84,7 +88,7 @@ namespace tezcat.Framework.Core
             }
         }
 
-        protected TezPropertyFloat(ITezValueDescriptor name, TezModifierCache cache) : base(name, cache)
+        protected TezPropertyFloat(ITezValueDescriptor name, TezValueModifierBaseCache cache) : base(name, cache)
         {
 
         }
@@ -94,6 +98,15 @@ namespace tezcat.Framework.Core
             this.oldValue = m_Value;
             m_Value = m_ModifierCache.calculate(this);
             base.nodifiyChanged();
+        }
+
+        public override void update()
+        {
+            if (m_ModifierCache.dirty)
+            {
+                m_ModifierCache.dirty = false;
+                this.nodifiyChanged();
+            }
         }
     }
 
@@ -117,7 +130,7 @@ namespace tezcat.Framework.Core
             }
         }
 
-        protected TezPropertyInt(ITezValueDescriptor name, TezModifierCache cache) : base(name, cache)
+        protected TezPropertyInt(ITezValueDescriptor name, TezValueModifierBaseCache cache) : base(name, cache)
         {
 
         }
@@ -127,6 +140,15 @@ namespace tezcat.Framework.Core
             this.oldValue = m_Value;
             m_Value = m_ModifierCache.calculate(this);
             base.nodifiyChanged();
+        }
+
+        public override void update()
+        {
+            if (m_ModifierCache.dirty)
+            {
+                m_ModifierCache.dirty = false;
+                this.nodifiyChanged();
+            }
         }
     }
 }

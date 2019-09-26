@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 
-namespace tezcat.Framework.DataBase
+namespace tezcat.Framework.Database
 {
     public class TezJsonReader : TezReader
     {

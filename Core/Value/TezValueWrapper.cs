@@ -22,9 +22,11 @@ namespace tezcat.Framework.Core
     public enum TezValueSubType
     {
         Normal,
+        Property,
+        MRProperty,
+        Attribute,
         WithMinMax,
         WithBasic,
-        WithModifier,
         GetterSetter,
     }
 

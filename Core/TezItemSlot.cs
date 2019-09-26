@@ -1,12 +1,12 @@
-﻿using tezcat.Framework.DataBase;
+﻿using tezcat.Framework.Database;
 
 namespace tezcat.Framework.Core
 {
     public abstract class TezItemSlot : TezSlot
     {
-        public TezDataBaseItem myItem { get; set; } = null;
+        public TezDatabaseItem myItem { get; set; } = null;
 
-        public bool theSameAs(TezDataBaseItem item)
+        public bool theSameAs(TezDatabaseItem item)
         {
             if (myItem == null)
             {

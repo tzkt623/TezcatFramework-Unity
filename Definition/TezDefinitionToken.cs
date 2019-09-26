@@ -1,4 +1,5 @@
 ﻿using System;
+using tezcat.Framework.Core;
 using tezcat.Framework.TypeTraits;
 
 namespace tezcat.Framework.Definition
@@ -11,22 +12,23 @@ namespace tezcat.Framework.Definition
         Leaf
     }
 
-    public interface ITezDefinitionToken : ITezEnumeration
+    public interface ITezDefinitionToken : ITezCloseable
     {
         TezDefinitionTokenType tokenType { get; }
+        int tokenID { get; }
+        string tokenName { get; }
     }
 
     public abstract class TezDefinitionToken<TEnumeration, TEnumValue>
         : TezEnumeration<TEnumeration, TEnumValue>
-        , ITezDefinitionToken
         where TEnumeration : TezEnumeration<TEnumeration, TEnumValue>
         where TEnumValue : struct, IComparable
     {
-        public abstract TezDefinitionTokenType tokenType { get; }
+        public TezDefinitionTokenType tokenType { get; }
 
-        protected TezDefinitionToken(TEnumValue value) : base(value)
+        protected TezDefinitionToken(TEnumValue value, TezDefinitionTokenType token_type) : base(value)
         {
-
+            this.tokenType = token_type;
         }
     }
 }

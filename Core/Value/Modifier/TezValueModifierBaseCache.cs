@@ -2,12 +2,17 @@
 
 namespace tezcat.Framework.Core
 {
-    public abstract class TezModifierCache : ITezCloseable
+    public interface ITezModifierCache
+    {
+
+    }
+
+    public abstract class TezValueModifierBaseCache : ITezCloseable
     {
         public bool dirty { get; set; } = false;
-        List<ITezModifier> m_Modifiers = new List<ITezModifier>();
+        List<ITezValueModifier> m_Modifiers = new List<ITezValueModifier>();
 
-        public void addModifier(ITezModifier modifier)
+        public void addModifier(ITezValueModifier modifier)
         {
             this.onModifierAdded(modifier);
             m_Modifiers.Add(modifier);
@@ -15,7 +20,7 @@ namespace tezcat.Framework.Core
             this.dirty = true;
         }
 
-        public bool removeModifier(ITezModifier modifier)
+        public bool removeModifier(ITezValueModifier modifier)
         {
             if (m_Modifiers.Remove(modifier))
             {
@@ -25,6 +30,11 @@ namespace tezcat.Framework.Core
                 return true;
             }
             return false;
+        }
+
+        private void onRemoveModifier(ITezValueModifier modifier)
+        {
+            this.removeModifier(modifier);
         }
 
         public bool removeAllModifiersFrom(object source)
@@ -44,9 +54,19 @@ namespace tezcat.Framework.Core
             return flag;
         }
 
-        public void changeModifier(ITezModifier modifier, float old_value)
+        public void changeModifier(ITezValueModifier modifier, float old_value)
         {
             this.onModifierChanged(modifier, old_value);
+            this.dirty = true;
+        }
+
+        public virtual void clear()
+        {
+            foreach (var modifier in m_Modifiers)
+            {
+                modifier.onValueChanged -= changeModifier;
+            }
+            m_Modifiers.Clear();
             this.dirty = true;
         }
 
@@ -60,9 +80,9 @@ namespace tezcat.Framework.Core
             m_Modifiers = null;
         }
 
-        protected abstract void onModifierAdded(ITezModifier modifier);
-        protected abstract void onModifierRemoved(ITezModifier modifier);
-        protected abstract void onModifierChanged(ITezModifier modifier, float old_value);
+        protected abstract void onModifierAdded(ITezValueModifier modifier);
+        protected abstract void onModifierRemoved(ITezValueModifier modifier);
+        protected abstract void onModifierChanged(ITezValueModifier modifier, float old_value);
 
         public abstract float calculate(TezPropertyFloat property);
         public abstract int calculate(TezPropertyInt property);

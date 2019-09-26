@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using tezcat.Framework.Core;
-using tezcat.Framework.DataBase;
+using tezcat.Framework.Database;
 using UnityEngine;
 
 namespace tezcat.Framework.UI
@@ -84,7 +84,7 @@ namespace tezcat.Framework.UI
             m_CurrentEditor.open();
         }
 
-        public void editItem(TezDataBaseItem item)
+        public void editItem(TezDatabaseItem item)
         {
 //             if (m_CurrentEditor)
 //             {

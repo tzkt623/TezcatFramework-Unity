@@ -1,5 +1,4 @@
-﻿
-namespace tezcat.Framework.Utility
+﻿namespace tezcat.Framework.Utility
 {
     public abstract class TezSingleton<T> where T : class, new()
     {

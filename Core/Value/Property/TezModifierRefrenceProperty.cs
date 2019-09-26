@@ -2,23 +2,25 @@
 {
     public interface ITezModifierRefrenceProperty : ITezProperty
     {
-        TezModifierRefrence modifierRefrence { get; }
-        void createRefrence(ITezValueDescriptor descriptor, TezModifierDefinition definition, object source);
+        TezValueModifierRefrence modifierRefrence { get; }
+        void createRefrence(ITezValueDescriptor descriptor, TezValueModifierDefinition definition, object source);
     }
 
     public abstract class TezMRPropertyInt
         : TezPropertyInt
         , ITezModifierRefrenceProperty
     {
-        public TezModifierRefrence modifierRefrence { get; protected set; }
+        public TezValueModifierRefrence modifierRefrence { get; protected set; }
+        public override TezValueSubType valueSubType => TezValueSubType.MRProperty;
 
-        protected TezMRPropertyInt(ITezValueDescriptor name, TezModifierCache cache)
+
+        protected TezMRPropertyInt(ITezValueDescriptor name, TezValueModifierBaseCache cache)
             : base(name, cache)
         {
 
         }
 
-        public abstract void createRefrence(ITezValueDescriptor descriptor, TezModifierDefinition definition, object source);
+        public abstract void createRefrence(ITezValueDescriptor descriptor, TezValueModifierDefinition definition, object source);
 
         public override void close()
         {
@@ -33,14 +35,15 @@
         : TezPropertyFloat
         , ITezModifierRefrenceProperty
     {
-        public TezModifierRefrence modifierRefrence { get; protected set; }
+        public TezValueModifierRefrence modifierRefrence { get; protected set; }
+        public override TezValueSubType valueSubType => TezValueSubType.MRProperty;
 
-        protected TezMRPropertyFloat(ITezValueDescriptor name, TezModifierCache cache)
+        protected TezMRPropertyFloat(ITezValueDescriptor name, TezValueModifierBaseCache cache)
             : base(name, cache)
         {
         }
 
-        public abstract void createRefrence(ITezValueDescriptor descriptor, TezModifierDefinition definition, object source);
+        public abstract void createRefrence(ITezValueDescriptor descriptor, TezValueModifierDefinition definition, object source);
 
         public override void close()
         {
