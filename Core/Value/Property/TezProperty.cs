@@ -1,4 +1,5 @@
-﻿using tezcat.Framework.Extension;
+﻿using System;
+using tezcat.Framework.Extension;
 
 namespace tezcat.Framework.Core
 {
@@ -84,7 +85,7 @@ namespace tezcat.Framework.Core
             }
             set
             {
-                m_Value = value;
+                throw new Exception("TezProperty Can not Set [value], Maybe you want to Set [baseValue]");
             }
         }
 
@@ -126,7 +127,7 @@ namespace tezcat.Framework.Core
             }
             set
             {
-                m_Value = value;
+                throw new Exception("TezProperty Can not Set [value], Maybe you want to Set [baseValue]");
             }
         }
 

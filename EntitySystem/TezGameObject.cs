@@ -65,6 +65,10 @@ namespace tezcat.Framework.ECS
         #region 定义路径
         public TezDefinitionPath definitionPath { get; private set; }
 
+        protected virtual bool buildMainToken { get; } = true;
+        protected virtual bool buildPrimaryToken { get; } = true;
+        protected virtual bool buildSecondaryToken { get; } = true;
+
         protected virtual ITezDefinitionToken mainToken { get; } = null;
         protected List<ITezDefinitionToken> primaryTokens
         {
@@ -168,9 +172,9 @@ namespace tezcat.Framework.ECS
         protected virtual void preInit()
         {
             this.definitionPath = new TezDefinitionPath(
-                this.mainToken,
-                this.primaryTokens.Count > 0 ? this.primaryTokens.ToArray() : null,
-                this.secondaryTokens.Count > 0 ? this.secondaryTokens.ToArray() : null);
+                this.buildMainToken ? this.mainToken : null,
+                (this.buildPrimaryToken && this.primaryTokens.Count > 0) ? this.primaryTokens.ToArray() : null,
+                (this.buildSecondaryToken && this.secondaryTokens.Count > 0) ? this.secondaryTokens.ToArray() : null);
         }
 
         protected virtual void postInit()
