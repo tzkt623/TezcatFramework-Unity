@@ -123,7 +123,7 @@ namespace tezcat.Framework.Definition
         protected TezDefinitionSetLeaf getOrCreateSecondaryNode(ITezDefinitionToken token)
         {
             var id = token.tokenID;
-            while (m_SecondaryNodes.Count < id)
+            while (m_SecondaryNodes.Count <= id)
             {
                 m_SecondaryNodes.Add(null);
             }
