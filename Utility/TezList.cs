@@ -132,8 +132,8 @@ namespace tezcat.Framework.Utility
         public void clear()
         {
             this.count = 0;
-            this.capacity = 4;
-            m_Data = new T[this.capacity];
+            this.capacity = 0;
+            m_Data = null;
         }
 
         public void insert(int index, T element)
@@ -195,7 +195,11 @@ namespace tezcat.Framework.Utility
             int old = capacity;
             capacity = System.Math.Max(new_capacity, count);
 
-            if (capacity != old)
+            if(m_Data == null)
+            {
+                m_Data = new T[capacity];
+            }
+            else if (capacity != old)
             {
                 T[] array = new T[capacity];
                 Array.Copy(m_Data, array, count);

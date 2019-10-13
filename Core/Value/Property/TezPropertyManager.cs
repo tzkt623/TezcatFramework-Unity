@@ -90,9 +90,8 @@ namespace tezcat.Framework.Core
 
         public virtual void close()
         {
-            m_Properties?.clear();
+            this.clearAllProperty();
             m_Properties = null;
-
             m_CheckForAdd = null;
         }
     }
