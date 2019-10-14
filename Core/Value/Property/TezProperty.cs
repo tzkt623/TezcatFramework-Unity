@@ -85,7 +85,7 @@ namespace tezcat.Framework.Core
             }
             set
             {
-                throw new Exception("TezProperty Can not Set [value], Maybe you want to Set [baseValue]");
+//                throw new Exception("TezProperty Can not Set [value], Maybe you want to Set [baseValue]");
             }
         }
 
@@ -127,7 +127,7 @@ namespace tezcat.Framework.Core
             }
             set
             {
-                throw new Exception("TezProperty Can not Set [value], Maybe you want to Set [baseValue]");
+//                throw new Exception("TezProperty Can not Set [value], Maybe you want to Set [baseValue]");
             }
         }
 

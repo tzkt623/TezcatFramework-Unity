@@ -204,6 +204,7 @@ namespace tezcat.Framework.ECS
                 {
                     m_Components[i] = null;
                     com.onRemove(this);
+                    com.close();
                 }
             }
 
