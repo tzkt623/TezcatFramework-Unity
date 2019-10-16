@@ -8,7 +8,7 @@ namespace tezcat.Framework.Core
 
         public virtual void close()
         {
-            this.definitionPath.close();
+            this.definitionPath?.close();
             this.definitionPath = null;
         }
 

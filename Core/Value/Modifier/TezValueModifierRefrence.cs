@@ -21,7 +21,7 @@ namespace tezcat.Framework.Core
             set
             {
                 ///引用型Modifier不能被直接Set
-                throw new MethodAccessException(string.Format("{0} : 引用型Modifier不能被直接Set", this.GetType().Name));
+//                throw new MethodAccessException(string.Format("{0} : 引用型Modifier不能被直接Set", this.GetType().Name));
             }
         }
 
