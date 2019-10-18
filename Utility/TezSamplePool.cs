@@ -16,11 +16,12 @@ namespace tezcat.Framework.Utility
         public TezSamplePool(TezEventExtension.Action<T> on_release = null)
         {
             m_AutoRelease = on_release != null;
+            m_OnRelease = on_release;
         }
 
         public T create()
         {
-            if(m_Pool.Count > 0)
+            if (m_Pool.Count > 0)
             {
                 return m_Pool.Pop();
             }
@@ -30,7 +31,7 @@ namespace tezcat.Framework.Utility
 
         public void release(T obj)
         {
-            if(m_AutoRelease)
+            if (m_AutoRelease)
             {
                 m_OnRelease(obj);
             }
