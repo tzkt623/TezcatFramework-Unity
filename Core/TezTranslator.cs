@@ -7,7 +7,7 @@ namespace tezcat.Framework.Core
 {
     public sealed class TezTranslator : ITezService
     {
-        public class Text
+        class Text
         {
             public readonly string key;
             public string value;
@@ -25,402 +25,387 @@ namespace tezcat.Framework.Core
             }
         }
 
-        Dictionary<string, Text> m_NameDic = new Dictionary<string, Text>();
-        List<Text> m_NameList = new List<Text>();
-        public int nameCount
+        class Translator
         {
-            get { return m_NameList.Count; }
+            Dictionary<string, Text> m_Dic = new Dictionary<string, Text>();
+            List<Text> m_List = new List<Text>();
+            public int count
+            {
+                get { return m_List.Count; }
+            }
+
+            public void sort()
+            {
+                m_List.Sort((Text p1, Text p2) =>
+                {
+                    return string.CompareOrdinal(p1.key, p2.key);
+                });
+
+                for (int i = 0; i < m_List.Count; i++)
+                {
+                    m_List[i].ID = i;
+                }
+            }
+
+            public bool tryAdd(string key, string value)
+            {
+                Text package = null;
+                if (!m_Dic.TryGetValue(key, out package))
+                {
+                    this.add(key, value);
+                    return true;
+                }
+
+                return false;
+            }
+
+            public void add(string key, string value)
+            {
+                Text package = new Text(key, value);
+                package.ID = m_List.Count;
+                m_Dic.Add(key, package);
+                m_List.Add(package);
+            }
+
+            public bool remove(string key)
+            {
+                Text package = null;
+                if (m_Dic.TryGetValue(key, out package))
+                {
+                    var ID = package.ID;
+                    if (ID != m_Dic.Count - 1)
+                    {
+                        m_List[ID] = m_List[m_List.Count - 1];
+                        m_List[ID].ID = ID;
+                        ID = m_Dic.Count - 1;
+                    }
+
+                    m_List.RemoveAt(ID);
+                    m_Dic.Remove(key);
+                    package.clear();
+                    this.sort();
+                    return true;
+                }
+
+                return false;
+            }
+
+            public bool translate(int index, out string key, out string value)
+            {
+                if (index >= m_Dic.Count || index < 0)
+                {
+                    key = null;
+                    value = null;
+                    return false;
+                }
+
+                key = m_List[index].key;
+                value = m_List[index].value;
+                return true;
+            }
+
+            public bool translate(string key, out string value)
+            {
+                value = null;
+                if (string.IsNullOrEmpty(key))
+                {
+                    return false;
+                }
+
+                Text package = null;
+                if (m_Dic.TryGetValue(key, out package))
+                {
+                    value = package.value;
+                    return true;
+                }
+
+                return false;
+            }
+
+            public string translate(string key, string value = "$error_description")
+            {
+                if (string.IsNullOrEmpty(key))
+                {
+                    return value;
+                }
+
+                Text package = null;
+                if (m_Dic.TryGetValue(key, out package))
+                {
+                    return package.value;
+                }
+
+                return value;
+            }
+
+            public string translate(string key)
+            {
+                if (string.IsNullOrEmpty(key))
+                {
+                    return string.Format("##Error Null Or Empty Key##", key);
+                }
+
+                Text package = null;
+                if (m_Dic.TryGetValue(key, out package))
+                {
+                    return package.value;
+                }
+
+                return string.Format("#{0}", key);
+            }
+
+            public void foreachText(TezEventExtension.Action<string, string> action)
+            {
+                for (int i = 0; i < m_List.Count; i++)
+                {
+                    action(m_List[i].key, m_List[i].value);
+                }
+            }
+
+            public void foreachText(TezEventExtension.Action<string, string> action, int begin, int end)
+            {
+                end = Mathf.Min(end, m_List.Count);
+                for (int i = begin; i < end; i++)
+                {
+                    action(m_List[i].key, m_List[i].value);
+                }
+            }
+
+            public void close()
+            {
+                for (int i = 0; i < m_List.Count; i++)
+                {
+                    m_List[i].clear();
+                }
+                m_List.Clear();
+                m_Dic.Clear();
+
+                m_List = null;
+                m_Dic = null;
+            }
         }
 
-        Dictionary<string, Text> m_DescriptionDic = new Dictionary<string, Text>();
-        List<Text> m_DescriptionList = new List<Text>();
+        Translator m_Name = new Translator();
+        Translator m_Description = new Translator();
+        Translator m_Extra = new Translator();
+
+        public int nameCount
+        {
+            get { return m_Name.count; }
+        }
+
         public int descriptionCount
         {
-            get { return m_DescriptionList.Count; }
+            get { return m_Description.count; }
         }
 
         public void deserialization(TezReader reader)
         {
-            reader.beginObject("name");
-            foreach (var key in reader.getKeys())
-            {
-                var package = new Text(key, reader.readString(key));
-                package.ID = m_NameList.Count;
-                m_NameDic.Add(key, package);
-                m_NameList.Add(package);
-            }
-            reader.endObject("name");
 
-            reader.beginObject("description");
-            foreach (var key in reader.getKeys())
-            {
-                var package = new Text(key, reader.readString(key));
-                package.ID = m_DescriptionList.Count;
-                m_DescriptionDic.Add(key, package);
-                m_DescriptionList.Add(package);
-            }
-            reader.endObject("description");
-
-            sortName();
-            sortDescription();
         }
 
         public void serialization(TezWriter writer)
         {
-            writer.beginObject("name");
-            for (int i = 0; i < m_NameList.Count; i++)
-            {
-                writer.write(m_NameList[i].key, m_NameList[i].value);
-            }
-            writer.endObject("name");
 
-            writer.beginObject("description");
-            for (int i = 0; i < m_DescriptionList.Count; i++)
-            {
-                writer.write(m_DescriptionList[i].key, m_DescriptionList[i].value);
-            }
-            writer.endObject("description");
         }
 
         #region Name
         public void sortName()
         {
-            m_NameList.Sort((Text p1, Text p2) =>
-            {
-                return string.CompareOrdinal(p1.key, p2.key);
-            });
-
-            for (int i = 0; i < m_NameList.Count; i++)
-            {
-                m_NameList[i].ID = i;
-            }
+            m_Name.sort();
         }
 
         public bool tryAddName(string key, string value)
         {
-            Text package = null;
-            if (!m_NameDic.TryGetValue(key, out package))
-            {
-                addName(key, value);
-                return true;
-            }
-
-            return false;
+            return m_Name.tryAdd(key, value);
         }
 
         public void addName(string key, string value)
         {
-            var package = new Text(key, value);
-            package.ID = m_NameList.Count;
-            m_NameDic.Add(key, package);
-            m_NameList.Add(package);
-
-            sortName();
+            m_Name.add(key, value);
         }
 
         public bool removeName(string key)
         {
-            Text package = null;
-            if (m_NameDic.TryGetValue(key, out package))
-            {
-                var ID = package.ID;
-                if (ID != m_NameList.Count - 1)
-                {
-                    m_NameList[ID] = m_NameList[m_NameList.Count - 1];
-                    m_NameList[ID].ID = ID;
-                    ID = m_NameList.Count - 1;
-                }
-
-                m_NameList.RemoveAt(ID);
-                m_NameDic.Remove(key);
-                package.clear();
-                sortName();
-                return true;
-            }
-
-            return false;
+            return m_Name.remove(key);
         }
 
         public void foreachName(TezEventExtension.Action<string, string> action)
         {
-            for (int i = 0; i < m_NameList.Count; i++)
-            {
-                action(m_NameList[i].key, m_NameList[i].value);
-            }
+            m_Name.foreachText(action);
         }
 
         public void foreachName(TezEventExtension.Action<string, string> action, int begin, int end)
         {
-            end = Mathf.Min(end, m_NameList.Count);
-            for (int i = begin; i < end; i++)
-            {
-                action(m_NameList[i].key, m_NameList[i].value);
-            }
+            m_Name.foreachText(action, begin, end);
         }
 
         public void saveName(int key, string value)
         {
-            if (key >= m_NameList.Count || key < 0)
-            {
-                return;
-            }
 
-            m_NameList[key].value = value;
         }
 
         public void saveName(string key, string value)
         {
-            Text package = null;
-            if (m_NameDic.TryGetValue(key, out package))
-            {
-                package.value = value;
-            }
-            else
-            {
-                addName(key, value);
-            }
+
         }
 
         public bool translateName(int index, out string key, out string value)
         {
-            if (index >= m_NameList.Count || index < 0)
-            {
-                key = null;
-                value = null;
-                return false;
-            }
-
-            key = m_NameList[index].key;
-            value = m_NameList[index].value;
-            return true;
+            return m_Name.translate(index, out key, out value);
         }
 
         public bool translateName(string key, out string value)
         {
-            value = null;
-            if (string.IsNullOrEmpty(key))
-            {
-                return false;
-            }
-
-            Text package = null;
-            if (m_NameDic.TryGetValue(key, out package))
-            {
-                value = package.value;
-                return true;
-            }
-
-            return false;
+            return m_Name.translate(key, out value);
         }
 
         public string translateName(string key, string value)
         {
-            if (string.IsNullOrEmpty(key))
-            {
-                return value;
-            }
-
-            Text package = null;
-            if (m_NameDic.TryGetValue(key, out package))
-            {
-                return package.value;
-            }
-
-            return value;
+            return m_Name.translate(key, value);
         }
 
         public string translateName(string key)
         {
-            if (string.IsNullOrEmpty(key))
-            {
-                return string.Format("#{0}", key);
-            }
-
-            Text package = null;
-            if (m_NameDic.TryGetValue(key, out package))
-            {
-                return package.value;
-            }
-
-            return string.Format("#{0}", key);
+            return m_Name.translate(key);
         }
         #endregion
 
         #region Description
         public void sortDescription()
         {
-            m_DescriptionList.Sort((Text p1, Text p2) =>
-            {
-                return string.CompareOrdinal(p1.key, p2.key);
-            });
-
-            for (int i = 0; i < m_DescriptionList.Count; i++)
-            {
-                m_DescriptionList[i].ID = i;
-            }
+            m_Description.sort();
         }
 
         public bool tryAddDescription(string key, string value)
         {
-            Text package = null;
-            if (!m_DescriptionDic.TryGetValue(key, out package))
-            {
-                addDescription(key, value);
-                return true;
-            }
-
-            return false;
+            return m_Description.tryAdd(key, value);
         }
 
         public void addDescription(string key, string value)
         {
-            Text package = new Text(key, value);
-            package.ID = m_NameList.Count;
-            m_DescriptionDic.Add(key, package);
-            m_DescriptionList.Add(package);
-
-            sortDescription();
+            m_Description.add(key, value);
         }
 
-        public void removeDescription(string key)
+        public bool removeDescription(string key)
         {
-            Text package = null;
-            if (m_DescriptionDic.TryGetValue(key, out package))
-            {
-                var ID = package.ID;
-                if (ID != m_DescriptionList.Count - 1)
-                {
-                    m_DescriptionList[ID] = m_DescriptionList[m_DescriptionList.Count - 1];
-                    m_DescriptionList[ID].ID = ID;
-                    ID = m_DescriptionList.Count - 1;
-                }
-
-                m_DescriptionList.RemoveAt(ID);
-                m_DescriptionDic.Remove(key);
-                package.clear();
-                sortDescription();
-            }
+            return m_Description.remove(key);
         }
 
         public void foreachDescription(TezEventExtension.Action<string, string> action)
         {
-            for (int i = 0; i < m_DescriptionList.Count; i++)
-            {
-                action(m_DescriptionList[i].key, m_DescriptionList[i].value);
-            }
+            m_Description.foreachText(action);
         }
 
         public void foreachDescription(TezEventExtension.Action<string, string> action, int begin, int end)
         {
-            end = Mathf.Min(end, m_DescriptionList.Count);
-            for (int i = begin; i < end; i++)
-            {
-                action(m_DescriptionList[i].key, m_DescriptionList[i].value);
-            }
+            m_Description.foreachText(action, begin, end);
         }
 
         public void saveDescription(int key, string value)
         {
-            if (key >= m_DescriptionList.Count || key < 0)
-            {
-                return;
-            }
 
-            m_DescriptionList[key].value = value;
         }
 
         public void saveDescription(string key, string value)
         {
-            Text package = null;
-            if (m_DescriptionDic.TryGetValue(key, out package))
-            {
-                package.value = value;
-            }
-            else
-            {
-                addDescription(key, value);
-            }
+
         }
 
         public bool translateDescription(int index, out string key, out string value)
         {
-            if (index >= m_DescriptionList.Count || index < 0)
-            {
-                key = null;
-                value = null;
-                return false;
-            }
-
-            key = m_DescriptionList[index].key;
-            value = m_DescriptionList[index].value;
-            return true;
+            return m_Description.translate(index, out key, out value);
         }
 
         public bool translateDescription(string key, out string value)
         {
-            value = null;
-            if (string.IsNullOrEmpty(key))
-            {
-                return false;
-            }
-
-            Text package = null;
-            if (m_DescriptionDic.TryGetValue(key, out package))
-            {
-                value = package.value;
-                return true;
-            }
-
-            return false;
+            return m_Description.translate(key, out value);
         }
 
         public string translateDescription(string key, string value = "$error_description")
         {
-            if (string.IsNullOrEmpty(key))
-            {
-                return value;
-            }
-
-            Text package = null;
-            if (m_DescriptionDic.TryGetValue(key, out package))
-            {
-                return package.value;
-            }
-
-            return value;
+            return m_Description.translate(key, value);
         }
 
         public string translateDescription(string key)
         {
-            if (string.IsNullOrEmpty(key))
-            {
-                return string.Format("#{0}", key);
-            }
-
-            Text package = null;
-            if (m_DescriptionDic.TryGetValue(key, out package))
-            {
-                return package.value;
-            }
-
-            return string.Format("#{0}", key);
+            return m_Description.translate(key);
         }
+        #endregion
+
+
+        #region Extra
+        public void sortExtra()
+        {
+            m_Extra.sort();
+        }
+
+        public bool tryAddExtra(string key, string value)
+        {
+            return m_Extra.tryAdd(key, value);
+        }
+
+        public void addExtra(string key, string value)
+        {
+            m_Extra.add(key, value);
+        }
+
+        public bool removeExtra(string key)
+        {
+            return m_Extra.remove(key);
+        }
+
+        public void foreachExtra(TezEventExtension.Action<string, string> action)
+        {
+            m_Extra.foreachText(action);
+        }
+
+        public void foreachExtra(TezEventExtension.Action<string, string> action, int begin, int end)
+        {
+            m_Extra.foreachText(action, begin, end);
+        }
+
+        public void saveExtra(int key, string value)
+        {
+
+        }
+
+        public void saveExtra(string key, string value)
+        {
+
+        }
+
+        public bool translateExtra(int index, out string key, out string value)
+        {
+            return m_Extra.translate(index, out key, out value);
+        }
+
+        public bool translateExtra(string key, out string value)
+        {
+            return m_Extra.translate(key, out value);
+        }
+
+        public string translateExtra(string key, string value = "$error_description")
+        {
+            return m_Extra.translate(key, value);
+        }
+
+        public string translateExtra(string key)
+        {
+            return m_Extra.translate(key);
+        }
+        #endregion
 
         public void close()
         {
-            m_DescriptionDic.Clear();
-            m_DescriptionList.Clear();
+            m_Name.close();
+            m_Description.close();
+            m_Extra.close();
 
-            m_NameDic.Clear();
-            m_NameList.Clear();
-
-            m_DescriptionList = null;
-            m_DescriptionDic = null;
-
-            m_NameList = null;
-            m_NameDic = null;
+            m_Name = null;
+            m_Description = null;
+            m_Extra = null;
         }
-        #endregion
     }
 }
 
