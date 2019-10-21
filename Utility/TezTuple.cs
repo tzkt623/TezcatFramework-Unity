@@ -1,4 +1,6 @@
-﻿namespace tezcat.Framework.Utility
+﻿using tezcat.Framework.Core;
+
+namespace tezcat.Framework.Utility
 {
     public interface ITezTuple
     {
