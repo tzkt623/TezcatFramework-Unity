@@ -10,7 +10,7 @@ namespace tezcat.Framework.UI
         : TezToolWidget
         , IPointerEnterHandler
         , IPointerExitHandler
-        , ITezClickable
+        , ITezClickableWidget
         , ITezPrefab
     {
         [SerializeField]
@@ -68,7 +68,7 @@ namespace tezcat.Framework.UI
             m_KeyName.text = key;
         }
 
-        public override void clear()
+        protected override void onClose()
         {
             m_Flag = null;
             m_KeyName = null;

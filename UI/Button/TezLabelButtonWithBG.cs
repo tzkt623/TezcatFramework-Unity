@@ -13,9 +13,9 @@ namespace tezcat.Framework.UI
             return m_Background;
         }
 
-        public override void clear()
+        protected override void onClose()
         {
-            base.clear();
+            base.onClose();
             m_Background = null;
         }
     }

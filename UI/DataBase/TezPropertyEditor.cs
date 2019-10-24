@@ -12,7 +12,7 @@ namespace tezcat.Framework.UI
             this.refreshPhase = TezRefreshPhase.P_Custom1;
         }
 
-        public override void clear()
+        protected override void onClose()
         {
             m_Property = null;
         }

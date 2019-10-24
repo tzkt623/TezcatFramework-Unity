@@ -6,7 +6,7 @@ namespace tezcat.Framework.UI
 {
     public class TezTreeFoldButton
         : TezWidget
-        , ITezClickable
+        , ITezClickableWidget
     {
         Image m_Flag = null;
 
@@ -43,7 +43,7 @@ namespace tezcat.Framework.UI
 
         }
 
-        public override void clear()
+        protected override void onClose()
         {
             m_Node = null;
         }

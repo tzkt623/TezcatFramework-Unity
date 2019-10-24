@@ -82,7 +82,7 @@ namespace tezcat.Framework.UI
             this.name = "Layer_" + ID;
         }
 
-        public override void clear()
+        protected override void onClose()
         {
 
         }

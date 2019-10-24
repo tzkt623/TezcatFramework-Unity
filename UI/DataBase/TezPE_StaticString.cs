@@ -57,7 +57,7 @@ namespace tezcat.Framework.UI
 
         }
 
-        public override void clear()
+        protected override void onClose()
         {
             m_PropertyName = null;
         }

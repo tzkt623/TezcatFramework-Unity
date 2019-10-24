@@ -17,7 +17,7 @@ namespace tezcat.Framework.UI
     public abstract class TezButton
         : TezUIWidget
         , ITezFocusableWidget
-        , ITezClickable
+        , ITezClickableWidget
     {
         public event TezEventExtension.Action<TezButton, PointerEventData> onClick;
         public abstract Graphic graphicController { get; }
@@ -66,7 +66,7 @@ namespace tezcat.Framework.UI
 
         }
 
-        public override void clear()
+        protected override void onClose()
         {
             listener = null;
             onClick = null;

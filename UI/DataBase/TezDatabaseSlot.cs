@@ -8,7 +8,7 @@ namespace tezcat.Framework.UI
     public class TezDatabaseSlot
         : TezToolWidget
         , ITezFocusableWidget
-        , ITezClickable
+        , ITezClickableWidget
     {
         [SerializeField]
         Image m_Icon = null;
@@ -46,7 +46,7 @@ namespace tezcat.Framework.UI
 
         }
 
-        public override void clear()
+        protected override void onClose()
         {
 //             m_Wrapper?.close();
 //             m_Wrapper = null;

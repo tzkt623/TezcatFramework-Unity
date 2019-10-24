@@ -16,7 +16,7 @@ namespace tezcat.Framework.UI
         [SerializeField]
         TezLabelButtonWithBG m_Cancel = null;
 
-        public event TezEventExtension.Action onClose;
+        public event TezEventExtension.Action onEventClose;
 
         public abstract int[] supportCategory { get; }
 // 
@@ -33,14 +33,14 @@ namespace tezcat.Framework.UI
             m_Cancel.onClick += cancel;
         }
 
-        public override void clear()
+        protected override void onClose()
         {
             m_Confirm.onClick -= confirm;
             m_Save.onClick -= save;
             m_Cancel.onClick -= cancel;
 
-            onClose = null;
-            base.clear();
+            onEventClose = null;
+            base.onClose();
         }
 
         private void confirm(TezButton button, PointerEventData eventData)

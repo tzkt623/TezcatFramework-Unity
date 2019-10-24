@@ -17,9 +17,9 @@ namespace tezcat.Framework.UI
             get { return m_Label; }
         }
 
-        public override void clear()
+        protected override void onClose()
         {
-            base.clear();
+            base.onClose();
             m_Label = null;
         }
     }

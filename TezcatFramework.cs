@@ -200,7 +200,6 @@ namespace tezcat.Framework
         protected abstract void registerVersions();
         #endregion
 
-
         #region Loading
         protected abstract IEnumerator onLoadResources();
 
@@ -395,12 +394,6 @@ namespace tezcat.Framework
         public void removeTypeOnlyWidget(TezWidget widget)
         {
             m_WidgetWithType.Remove(widget.GetType());
-        }
-
-
-        protected virtual void onCreateWindow(Type type, TezWindow window)
-        {
-
         }
         #endregion
 

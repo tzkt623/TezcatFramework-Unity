@@ -103,13 +103,13 @@ namespace tezcat.Framework.UI
             }
         }
 
-        public override void clear()
+        protected override void onClose()
         {
             m_Save.onClick -= onSave;
             m_AddItem.onClick -= onAddItem;
             m_RefreshDataBase.onClick -= onRefreshDataBase;
 
-            base.clear();
+            base.onClose();
         }
 
         protected override void onHide()

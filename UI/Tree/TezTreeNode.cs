@@ -153,7 +153,7 @@ namespace tezcat.Framework.UI
             return child;
         }
 
-        public override void clear()
+        protected override void onClose()
         {
             foreach (var item in m_Children)
             {

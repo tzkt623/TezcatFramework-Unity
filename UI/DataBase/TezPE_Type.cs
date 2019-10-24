@@ -40,7 +40,7 @@ namespace tezcat.Framework.UI
 
         }
 
-        public override void clear()
+        protected override void onClose()
         {
             m_Types.Clear();
             m_Types = null;

@@ -48,7 +48,7 @@ namespace tezcat.Framework.UI
             this.singleItem = item;
         }
 
-        public override void clear()
+        protected override void onClose()
         {
 
         }

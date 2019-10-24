@@ -95,7 +95,7 @@ namespace tezcat.Framework.UI
 //             }
         }
 
-        public override void clear()
+        protected override void onClose()
         {
             foreach (var child in m_Children)
             {

@@ -51,7 +51,7 @@ namespace tezcat.Framework.UI
             m_Page.onEndEdit.AddListener(this.onPageSet);
         }
 
-        public override void clear()
+        protected override void onClose()
         {
             foreach (var slot in m_SlotList)
             {
@@ -70,7 +70,7 @@ namespace tezcat.Framework.UI
             m_CurrentSlot = null;
             this.currentItem = null;
 
-            base.clear();
+            base.onClose();
         }
 
         protected override void linkEvent()

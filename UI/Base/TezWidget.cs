@@ -137,7 +137,7 @@ namespace tezcat.Framework.UI
             base.OnDestroy();
             if (m_Init)
             {
-                this.clear();
+                this.onClose();
             }
         }
 
@@ -185,8 +185,6 @@ namespace tezcat.Framework.UI
         /// </summary>
         protected abstract void onRefresh(TezRefreshPhase phase);
 
-
-
         /// <summary>
         /// 
         /// </summary>
@@ -201,7 +199,7 @@ namespace tezcat.Framework.UI
         /// <summary>
         /// 在这里清理所有的托管资源
         /// </summary>
-        public abstract void clear();
+        protected abstract void onClose();
 
         /// <summary>
         /// 关闭并销毁控件
@@ -216,6 +214,7 @@ namespace tezcat.Framework.UI
                 default:
                     break;
             }
+
             Destroy(this.gameObject);
         }
 
@@ -259,7 +258,7 @@ namespace tezcat.Framework.UI
     {
         public RectTransform rectTransform => (RectTransform)this.transform;
 
-        public override void clear()
+        protected override void onClose()
         {
 
         }
@@ -300,7 +299,7 @@ namespace tezcat.Framework.UI
     /// </summary>
     public abstract class TezFunctionWidget : TezWidget
     {
-        public override void clear()
+        protected override void onClose()
         {
 
         }

@@ -7,7 +7,7 @@ namespace tezcat.Framework.UI
 {
     public class TezLocalizationNameItem
         : TezToolWidget
-        , ITezClickable
+        , ITezClickableWidget
         , ITezPrefab
     {
         [SerializeField]
@@ -53,7 +53,7 @@ namespace tezcat.Framework.UI
 
         }
 
-        public override void clear()
+        protected override void onClose()
         {
             m_Edit.onClick -= onEditClick;
             m_KeyName = null;

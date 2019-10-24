@@ -79,7 +79,7 @@ namespace tezcat.Framework.UI
 //             }
 
             m_CurrentEditor.transform.SetAsLastSibling();
-            m_CurrentEditor.onClose += this.onEditorClose;
+            m_CurrentEditor.onEventClose += this.onEditorClose;
             m_CurrentEditor.bind(category);
             m_CurrentEditor.open();
         }
@@ -112,9 +112,9 @@ namespace tezcat.Framework.UI
             m_CurrentEditor = null;
         }
 
-        public override void clear()
+        protected override void onClose()
         {
-            base.clear();
+            base.onClose();
             TezService.get<TezcatFramework>().createWindow<TezcatToolWindow>("TezcatToolWindow", TezLayer.last).open();
         }
     }

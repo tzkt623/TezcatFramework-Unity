@@ -83,7 +83,7 @@ namespace tezcat.Framework.UI
             throw new NotImplementedException();
         }
 
-        public override void clear()
+        protected override void onClose()
         {
             m_Add.onClick -= onAddClick;
             m_Remove.onClick -= onRemoveClick;
@@ -99,7 +99,7 @@ namespace tezcat.Framework.UI
             m_PageDown.onClick -= onPageDownClick;
             m_Page.onValueChanged.RemoveListener(this.onPageSet);
 
-            base.clear();
+            base.onClose();
         }
 
         private void refreshData()
