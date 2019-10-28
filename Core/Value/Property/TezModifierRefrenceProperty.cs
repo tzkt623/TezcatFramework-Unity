@@ -11,7 +11,7 @@
         , ITezModifierRefrenceProperty
     {
         public TezValueModifierRefrence modifierRefrence { get; protected set; }
-        public override TezValueSubType valueSubType => TezValueSubType.MRProperty;
+        public override TezWrapperType wrapperType => TezWrapperType.MRProperty;
 
 
         protected TezMRPropertyInt(ITezValueDescriptor name, TezValueModifierBaseCache cache)
@@ -36,7 +36,7 @@
         , ITezModifierRefrenceProperty
     {
         public TezValueModifierRefrence modifierRefrence { get; protected set; }
-        public override TezValueSubType valueSubType => TezValueSubType.MRProperty;
+        public override TezWrapperType wrapperType => TezWrapperType.MRProperty;
 
         protected TezMRPropertyFloat(ITezValueDescriptor name, TezValueModifierBaseCache cache)
             : base(name, cache)

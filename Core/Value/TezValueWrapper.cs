@@ -19,12 +19,13 @@ namespace tezcat.Framework.Core
         Unknown
     }
 
-    public enum TezValueSubType
+    public enum TezWrapperType
     {
         Normal,
         Property,
         MRProperty,
         Attribute,
+        Notification,
         WithMinMax,
         WithBasic,
         GetterSetter,
@@ -37,7 +38,7 @@ namespace tezcat.Framework.Core
         int ID { get; }
         Type systemType { get; }
         TezValueType valueType { get; }
-        TezValueSubType valueSubType { get; }
+        TezWrapperType wrapperType { get; }
     }
 
     public abstract class TezValueWrapper
@@ -89,9 +90,9 @@ namespace tezcat.Framework.Core
 
         public abstract Type systemType { get; }
         public abstract TezValueType valueType { get; }
-        public virtual TezValueSubType valueSubType
+        public virtual TezWrapperType wrapperType
         {
-            get { return TezValueSubType.Normal; }
+            get { return TezWrapperType.Normal; }
         }
 
         public virtual ITezValueDescriptor descriptor { get; set; } = null;
@@ -257,9 +258,9 @@ namespace tezcat.Framework.Core
             set { setter(value); }
         }
 
-        public override TezValueSubType valueSubType
+        public override TezWrapperType wrapperType
         {
-            get { return TezValueSubType.GetterSetter; }
+            get { return TezWrapperType.GetterSetter; }
         }
 
         public TezValueGetterSetter(TezValueDescriptor name) : base(name)
@@ -275,9 +276,9 @@ namespace tezcat.Framework.Core
         public T min { get; set; }
         public T max { get; set; }
 
-        public override TezValueSubType valueSubType
+        public override TezWrapperType wrapperType
         {
-            get { return TezValueSubType.WithMinMax; }
+            get { return TezWrapperType.WithMinMax; }
         }
 
         public TezValueWithMinMax(TezValueDescriptor name) : base(name)
@@ -292,9 +293,9 @@ namespace tezcat.Framework.Core
     {
         public T basic { get; set; }
 
-        public override TezValueSubType valueSubType
+        public override TezWrapperType wrapperType
         {
-            get { return TezValueSubType.WithBasic; }
+            get { return TezWrapperType.WithBasic; }
         }
 
         public TezValueWithBasic(TezValueDescriptor name) : base(name)

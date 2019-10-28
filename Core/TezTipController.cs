@@ -229,7 +229,7 @@ namespace tezcat.Framework.Core
             switch (property.valueType)
             {
                 case TezValueType.Float:
-                    if(property.valueSubType == TezValueSubType.WithBasic && display_basic)
+                    if(property.wrapperType == TezWrapperType.WithBasic && display_basic)
                     {
                         this.pushAttribute(TezService.get<TezTranslator>().translateName(property.name),
                             string.Format("{0:N1}/{1:N1}", ((TezValueWithBasic<float>)property).value, ((TezValueWithBasic<float>)property).basic));
@@ -240,7 +240,7 @@ namespace tezcat.Framework.Core
                     }
                     break;
                 case TezValueType.Int:
-                    if(property.valueSubType == TezValueSubType.WithBasic && display_basic)
+                    if(property.wrapperType == TezWrapperType.WithBasic && display_basic)
                     {
                         this.pushAttribute(TezService.get<TezTranslator>().translateName(property.name),
                             string.Format("{0}/{1}", ((TezValueWithBasic<int>)property).value, ((TezValueWithBasic<int>)property).basic));

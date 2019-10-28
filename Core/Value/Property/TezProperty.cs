@@ -35,7 +35,7 @@ namespace tezcat.Framework.Core
         public T oldValue { get; protected set; }
 
         protected TezValueModifierBaseCache m_ModifierCache = null;
-        public override TezValueSubType valueSubType => TezValueSubType.Property;
+        public override TezWrapperType wrapperType => TezWrapperType.Property;
 
         protected TezProperty(ITezValueDescriptor name, TezValueModifierBaseCache cache) : base(name)
         {
