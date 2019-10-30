@@ -23,13 +23,13 @@ namespace tezcat.Framework.Extension
             writer.endObject(name);
         }
 
-        public static void readPropertyCollection(TezReader reader, ITezPropertyCollection collection, string name)
+        public static void readPropertyCollection<Descriptor>(TezReader reader, ITezPropertyCollection collection, string name)
         {
             reader.beginObject(name);
             var keys = reader.getKeys();
             foreach (var key in keys)
             {
-                collection.register(new TezValueWrapper<int>(TezValueDescriptor.get(key))
+                collection.register(new TezValueWrapper<int>(TezValueDescriptor<Descriptor>.get(key))
                 {
                     value = reader.readInt(key)
                 });

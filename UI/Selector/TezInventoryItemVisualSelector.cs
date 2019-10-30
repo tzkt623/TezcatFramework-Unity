@@ -1,12 +1,15 @@
 ﻿using tezcat.Framework.Core;
 using tezcat.Framework.ECS;
+using tezcat.Framework.Game.Inventory;
 using UnityEngine;
 using UnityEngine.UI;
 
 namespace tezcat.Framework.UI
 {
     [RequireComponent(typeof(Image))]
-    public class TezVisualSelector : TezUIWidget
+    public class TezInventoryItemVisualSelector
+        : TezUIWidget
+        , ITezInventoryVisualSelector
     {
         Image m_Icon = null;
 
@@ -46,6 +49,12 @@ namespace tezcat.Framework.UI
         public void onSelect(TezGameObject item)
         {
             this.singleItem = item;
+            this.open();
+        }
+
+        public void onComplete()
+        {
+            this.hide();
         }
 
         protected override void onClose()
@@ -67,7 +76,7 @@ namespace tezcat.Framework.UI
                     break;
                 case TezRefreshPhase.P_OnEnable:
                     this.transform.position = Input.mousePosition;
-                    if(this.singleItem != null)
+                    if (this.singleItem != null)
                     {
                         m_Icon.color = Color.green;
                     }

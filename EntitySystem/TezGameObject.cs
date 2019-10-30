@@ -8,9 +8,10 @@ using UnityEngine;
 namespace tezcat.Framework.ECS
 {
     public abstract class TezGameObject
-         : TezDataObject
-         , ITezTagSet
-         , ITezDefinitionPathObject
+        : TezDataObject
+        , ITezTagSet
+        , ITezDefinitionPathObject
+        , ITezGameObjectComparer
     {
         #region GUID Manager
         static Queue<uint> m_FreeID = new Queue<uint>();
@@ -63,7 +64,7 @@ namespace tezcat.Framework.ECS
 
 
         #region 定义路径
-        public TezDefinitionPath definitionPath { get; private set; }
+        public TezDefinitionPath definitionPath { get; private set; } = null;
 
         protected virtual bool buildMainToken { get; } = true;
         protected virtual bool buildPrimaryToken { get; } = true;
@@ -100,9 +101,6 @@ namespace tezcat.Framework.ECS
         }
         #endregion
 
-
-
-
         /// <summary>
         /// 初始化Object
         /// </summary>
@@ -118,9 +116,9 @@ namespace tezcat.Framework.ECS
                 this.preInit();
 
                 this.onInitNew();
-                this.m_RID = new TezRID(group, subgroup);
                 this.NID = this.NID ?? string.Empty;
                 this.TAG = new TezTagSet();
+                m_RID = new TezRID(group, subgroup);
 
                 this.postInit();
             }
@@ -137,7 +135,7 @@ namespace tezcat.Framework.ECS
 
         public void initWithData(ITezSerializableItem item, bool copy)
         {
-            var data_item = item as TezDatabaseGameItem;
+            var data_item = (TezDatabaseGameItem)item;
 
             if (this.GUID == 0)
             {
@@ -169,22 +167,46 @@ namespace tezcat.Framework.ECS
 
         }
 
+        /// <summary>
+        /// 数据初始化之前
+        /// </summary>
         protected virtual void preInit()
         {
-            this.definitionPath = new TezDefinitionPath(
-                this.buildMainToken ? this.mainToken : null,
-                (this.buildPrimaryToken && this.primaryTokens.Count > 0) ? this.primaryTokens.ToArray() : null,
-                (this.buildSecondaryToken && this.secondaryTokens.Count > 0) ? this.secondaryTokens.ToArray() : null);
+
         }
 
+        /// <summary>
+        /// 数据初始化之后
+        /// </summary>
         protected virtual void postInit()
         {
 
         }
 
-        public bool sameAs(TezGameObject game_object)
+        /// <summary>
+        /// 建立类别路径
+        /// </summary>
+        public void buildDefinitionPath()
         {
-            return this.m_RID.sameAs(game_object.m_RID);
+            this.definitionPath = new TezDefinitionPath(
+                this.buildMainToken ? this.mainToken : null,
+                (this.buildPrimaryToken && this.primaryTokens.Count > 0) ? this.primaryTokens.ToArray() : null,
+                (this.buildSecondaryToken && this.secondaryTokens.Count > 0) ? this.secondaryTokens.ToArray() : null);
+
+            this.onBuildDefinitionPath();
+        }
+
+        /// <summary>
+        /// 路径建立完成之后
+        /// </summary>
+        protected virtual void onBuildDefinitionPath()
+        {
+
+        }
+
+        public bool sameAs(TezGameObject other_game_object)
+        {
+            return m_RID.sameAs(other_game_object.m_RID);
         }
 
         /// <summary>
@@ -204,7 +226,7 @@ namespace tezcat.Framework.ECS
                 m_RID = new TezRID(group, subgroup);
             }
 
-            this.m_RID.updateID();
+            m_RID.updateID();
         }
 
         public void debugRID()
@@ -219,11 +241,11 @@ namespace tezcat.Framework.ECS
         {
             this.definitionPath.close();
             this.TAG.close();
-            this.m_RID?.close();
+            m_RID?.close();
 
             this.TAG = null;
             this.NID = null;
-            this.m_RID = null;
+            m_RID = null;
 
             recycleID(this.GUID);
             this.GUID = 0;

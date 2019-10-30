@@ -228,7 +228,7 @@ namespace tezcat.Framework.Core
         }
 
         /// <summary>
-        /// 构造一个相同的ID副本
+        /// 构造一个相同ID资源的副本
         /// 引用计数自动加一
         /// </summary>
         public TezRID(TezRID other)

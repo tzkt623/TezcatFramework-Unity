@@ -12,13 +12,13 @@ namespace tezcat.Framework.Core
         string name { get; }
     }
 
-    public class TezValueDescriptor
+    public sealed class TezValueDescriptor<Descriptor>
         : ITezValueDescriptor
     {
         public int ID { get; }
         public string name { get; }
 
-        protected TezValueDescriptor(int id, string name)
+        TezValueDescriptor(int id, string name)
         {
             this.name = name;
             this.ID = id;
@@ -39,20 +39,20 @@ namespace tezcat.Framework.Core
             return this.ID;
         }
 
-        public static implicit operator int(TezValueDescriptor vn)
+        public static implicit operator int(TezValueDescriptor<Descriptor> vn)
         {
             return vn.ID;
         }
 
         #region 注册
-        static Dictionary<string, TezValueDescriptor> m_NameDic = new Dictionary<string, TezValueDescriptor>();
-        static List<TezValueDescriptor> m_NameList = new List<TezValueDescriptor>();
-        public static TezValueDescriptor register(string name)
+        static Dictionary<string, ITezValueDescriptor> m_NameDic = new Dictionary<string, ITezValueDescriptor>();
+        static List<ITezValueDescriptor> m_NameList = new List<ITezValueDescriptor>();
+        public static ITezValueDescriptor register(string name)
         {
-            TezValueDescriptor property;
+            ITezValueDescriptor property;
             if (!m_NameDic.TryGetValue(name, out property))
             {
-                property = new TezValueDescriptor(m_NameList.Count, name);
+                property = new TezValueDescriptor<Descriptor>(m_NameList.Count, name);
                 m_NameDic.Add(name, property);
                 m_NameList.Add(property);
             }
@@ -60,22 +60,22 @@ namespace tezcat.Framework.Core
             return property;
         }
 
-        public static TezValueDescriptor get(string name)
+        public static ITezValueDescriptor get(string name)
         {
-            TezValueDescriptor pn;
+            ITezValueDescriptor pn;
             if(!m_NameDic.TryGetValue(name, out pn))
             {
-                throw new Exception(string.Format("This Propoerty[{0}] is not registered!!", name));
+                throw new Exception(string.Format("This Value[{0}] is not registered!!", name));
             }
             return pn;
         }
 
-        public static TezValueDescriptor get(int id)
+        public static ITezValueDescriptor get(int id)
         {
             return m_NameList[id];
         }
 
-        public static void foreachName(TezEventExtension.Action<TezValueDescriptor> action)
+        public static void foreachName(TezEventExtension.Action<ITezValueDescriptor> action)
         {
             foreach (var pair in m_NameDic)
             {

@@ -77,7 +77,6 @@ namespace tezcat.Framework.Core
             }
         }
 
-
         public TezValueWrapper(ITezValueDescriptor name)
         {
             this.descriptor = name;
@@ -220,7 +219,7 @@ namespace tezcat.Framework.Core
             get { return TezValueType.Type; }
         }
 
-        public TezPV_Type(TezValueDescriptor name) : base(name)
+        public TezPV_Type(ITezValueDescriptor name) : base(name)
         {
 
         }
@@ -241,7 +240,7 @@ namespace tezcat.Framework.Core
             get { return typeof(T); }
         }
 
-        public TezPV_Type(TezValueDescriptor name) : base(name)
+        public TezPV_Type(ITezValueDescriptor name) : base(name)
         {
 
         }
@@ -263,7 +262,7 @@ namespace tezcat.Framework.Core
             get { return TezWrapperType.GetterSetter; }
         }
 
-        public TezValueGetterSetter(TezValueDescriptor name) : base(name)
+        public TezValueGetterSetter(ITezValueDescriptor name) : base(name)
         {
 
         }
@@ -281,7 +280,7 @@ namespace tezcat.Framework.Core
             get { return TezWrapperType.WithMinMax; }
         }
 
-        public TezValueWithMinMax(TezValueDescriptor name) : base(name)
+        public TezValueWithMinMax(ITezValueDescriptor name) : base(name)
         {
 
         }
@@ -298,7 +297,7 @@ namespace tezcat.Framework.Core
             get { return TezWrapperType.WithBasic; }
         }
 
-        public TezValueWithBasic(TezValueDescriptor name) : base(name)
+        public TezValueWithBasic(ITezValueDescriptor name) : base(name)
         {
 
         }

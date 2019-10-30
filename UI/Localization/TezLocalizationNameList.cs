@@ -224,10 +224,10 @@ namespace tezcat.Framework.UI
         {
             if (eventData.button == PointerEventData.InputButton.Left)
             {
-                TezValueDescriptor.foreachName((TezValueDescriptor name) =>
-                {
-                    TezService.get<TezTranslator>().tryAddName(name.name, name.name);
-                });
+//                 TezValueDescriptor.foreachName((ITezValueDescriptor name) =>
+//                 {
+//                     TezService.get<TezTranslator>().tryAddName(name.name, name.name);
+//                 });
 
                 this.refreshPhase = TezRefreshPhase.P_Custom3;
             }
