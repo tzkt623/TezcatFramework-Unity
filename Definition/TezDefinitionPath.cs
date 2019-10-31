@@ -1,4 +1,5 @@
 ﻿using tezcat.Framework.Core;
+using tezcat.Framework.Extension;
 
 namespace tezcat.Framework.Definition
 {
@@ -52,6 +53,39 @@ namespace tezcat.Framework.Definition
         public TezDefinitionPath clone()
         {
             return new TezDefinitionPath(m_MainToken, m_PrimaryPath, m_SecondaryPath);
+        }
+
+        /// <summary>
+        /// 单独设置主路径
+        /// </summary>
+        public void setPrimaryPath(ITezDefinitionToken[] path)
+        {
+            m_PrimaryPath = path;
+        }
+
+        /// <summary>
+        /// 单独设置副路径
+        /// </summary>
+        public void setSecondaryPath(ITezDefinitionToken[] path)
+        {
+            m_SecondaryPath = path;
+        }
+
+        /// <summary>
+        /// 替换SecondaryPath中的某个Token
+        /// </summary>
+        public bool replaceSecondaryPathToken(ITezDefinitionToken new_token, TezEventExtension.Function<bool, ITezDefinitionToken> finder)
+        {
+            for (int i = 0; i < m_SecondaryPath.Length; i++)
+            {
+                if (finder(m_SecondaryPath[i]))
+                {
+                    m_SecondaryPath[i] = new_token;
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         /// <summary>

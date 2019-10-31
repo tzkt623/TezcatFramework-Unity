@@ -21,6 +21,16 @@ namespace tezcat.Framework.Definition
                 this.tokenType = type;
             }
 
+            public override bool Equals(object obj)
+            {
+                return this.tokenID == ((Element)obj).tokenID;
+            }
+
+            public override int GetHashCode()
+            {
+                return tokenID.GetHashCode();
+            }
+
             public void close()
             {
 
@@ -148,52 +158,119 @@ namespace tezcat.Framework.Definition
             return m_SecondaryNodes[id];
         }
 
+        /// <summary>
+        /// 注册Object
+        /// </summary>
         public void registerObject(ITezDefinitionPathObject path_with_object)
         {
             var definition_path = path_with_object.definitionPath;
             var primary_length = definition_path.primaryLength;
-            if (primary_length > 0)
+            TezDefinitionSetPath pre_path_node = null;
+            for (int i = 0; i < primary_length; i++)
             {
-                TezDefinitionSetPath pre_path_node = null;
-                for (int i = 0; i < primary_length; i++)
-                {
-                    this.getOrCreatePrimaryNode(definition_path.getPrimaryPathToken(i), ref pre_path_node)
-                        .onRegisterObject(path_with_object);
-                }
+                this.getOrCreatePrimaryNode(definition_path.getPrimaryPathToken(i), ref pre_path_node).onRegisterObject(path_with_object);
             }
 
             var secondary_length = definition_path.secondaryLength;
-            if (secondary_length > 0)
+            for (int i = 0; i < secondary_length; i++)
             {
-                for (int i = 0; i < secondary_length; i++)
-                {
-                    this.getOrCreateSecondaryNode(definition_path.getSecondaryPathToken(i)).onRegisterObject(path_with_object);
-                }
+                this.getOrCreateSecondaryNode(definition_path.getSecondaryPathToken(i)).onRegisterObject(path_with_object);
             }
         }
 
+        /// <summary>
+        /// 单独注册PrimaryPath
+        /// </summary>
+        public void registerPrimaryPath(ITezDefinitionPathObject path_with_object)
+        {
+            var definition_path = path_with_object.definitionPath;
+            var primary_length = definition_path.primaryLength;
+            TezDefinitionSetPath pre_path_node = null;
+            for (int i = 0; i < primary_length; i++)
+            {
+                this.getOrCreatePrimaryNode(definition_path.getPrimaryPathToken(i), ref pre_path_node).onRegisterObject(path_with_object);
+            }
+        }
+
+        /// <summary>
+        /// 单独注册SecondaryPath
+        /// </summary>
+        public void registerSecondaryPath(ITezDefinitionPathObject path_with_object)
+        {
+            var definition_path = path_with_object.definitionPath;
+            var secondary_length = definition_path.secondaryLength;
+            for (int i = 0; i < secondary_length; i++)
+            {
+                this.getOrCreateSecondaryNode(definition_path.getSecondaryPathToken(i)).onRegisterObject(path_with_object);
+            }
+        }
+
+        /// <summary>
+        /// 单独注册一个SecondaryToken
+        /// </summary>
+        /// <param name="path_with_object"></param>
+        public void registerSecondaryPath(ITezDefinitionPathObject path_with_object, ITezDefinitionToken token)
+        {
+            this.getOrCreateSecondaryNode(token).onRegisterObject(path_with_object);
+        }
+
+        /// <summary>
+        /// 注销Object
+        /// </summary>
         public void unregisterObject(ITezDefinitionPathObject path_with_object)
         {
             var definition_path = path_with_object.definitionPath;
             var primary_length = definition_path.primaryLength;
-            if (primary_length > 0)
+            for (int i = 0; i < primary_length; i++)
             {
-                for (int i = 0; i < primary_length; i++)
-                {
-                    this.getPrimaryNode(definition_path.getPrimaryPathToken(i)).onUnregisterObject(path_with_object);
-                }
+                this.getPrimaryNode(definition_path.getPrimaryPathToken(i)).onUnregisterObject(path_with_object);
             }
 
             var secondary_length = definition_path.secondaryLength;
-            if (secondary_length > 0)
+            for (int i = 0; i < secondary_length; i++)
             {
-                for (int i = 0; i < secondary_length; i++)
-                {
-                    this.getSecondaryNode(definition_path.getSecondaryPathToken(i)).onUnregisterObject(path_with_object);
-                }
+                this.getSecondaryNode(definition_path.getSecondaryPathToken(i)).onUnregisterObject(path_with_object);
             }
         }
 
+        /// <summary>
+        /// 单独注销PrimaryPath
+        /// </summary>
+        public void unregisterPrimaryPath(ITezDefinitionPathObject path_with_object)
+        {
+            var definition_path = path_with_object.definitionPath;
+            var primary_length = definition_path.primaryLength;
+            for (int i = 0; i < primary_length; i++)
+            {
+                this.getPrimaryNode(definition_path.getPrimaryPathToken(i)).onUnregisterObject(path_with_object);
+            }
+        }
+
+        /// <summary>
+        /// 单独注销SecondaryPath
+        /// </summary>
+        public void unregisterSecondaryPath(ITezDefinitionPathObject path_with_object)
+        {
+            var definition_path = path_with_object.definitionPath;
+            var secondary_length = definition_path.secondaryLength;
+            for (int i = 0; i < secondary_length; i++)
+            {
+                this.getSecondaryNode(definition_path.getSecondaryPathToken(i)).onUnregisterObject(path_with_object);
+            }
+        }
+
+        /// <summary>
+        /// 单独注销一个SecondaryToken
+        /// </summary>
+        /// <param name="path_with_object"></param>
+        public void unregisterSecondaryPath(ITezDefinitionPathObject path_with_object, ITezDefinitionToken token)
+        {
+            this.getSecondaryNode(token).onUnregisterObject(path_with_object);
+        }
+
+        /// <summary>
+        /// 关闭
+        /// </summary>
         public virtual void close()
         {
             for (int i = 0; i < m_PrimaryNodes.Count; i++)
