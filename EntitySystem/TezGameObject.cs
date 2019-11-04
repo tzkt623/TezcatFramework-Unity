@@ -133,7 +133,7 @@ namespace tezcat.Framework.ECS
 
         }
 
-        public void initWithData(ITezSerializableItem item, bool copy)
+        public void initWithData(ITezSerializableItem item, bool create_copy = false)
         {
             var data_item = (TezDatabaseGameItem)item;
 
@@ -145,7 +145,7 @@ namespace tezcat.Framework.ECS
             this.preInit();
 
             m_RID?.close();
-            if (copy)
+            if (create_copy)
             {
                 m_RID = new TezRID(data_item.RID);
             }

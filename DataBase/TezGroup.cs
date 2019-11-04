@@ -6,6 +6,9 @@ using tezcat.Framework.TypeTraits;
 
 namespace tezcat.Framework.Database
 {
+    /// <summary>
+    /// Object的组分类
+    /// </summary>
     public interface ITezGroup
         : ITezEnumeration
         , IEquatable<ITezGroup>
@@ -13,6 +16,9 @@ namespace tezcat.Framework.Database
 
     }
 
+    /// <summary>
+    /// Object的子组分类
+    /// </summary>
     public interface ITezSubgroup
         : ITezEnumeration
         , IEquatable<ITezSubgroup>
@@ -20,56 +26,83 @@ namespace tezcat.Framework.Database
         TezDatabaseGameItem create();
     }
 
-    public class TezGroupManager
+    public static class TezGroupManager
     {
-        public class Pair
+        public class Linker
         {
             public ITezGroup group { get; set; }
 
-            public List<ITezSubgroup> detailedGroupList { get; private set; } = new List<ITezSubgroup>();
+            ITezEnumeration[] m_List = null;
+            Dictionary<string, ITezEnumeration> m_Dic = null;
 
-            public ITezSubgroup getDetailedGroup(string name)
+            public ITezSubgroup getSubgroup(string name)
             {
-                return detailedGroupList.Find((ITezSubgroup DG) =>
+                return (ITezSubgroup)m_Dic[name];
+            }
+
+            public ITezSubgroup getSubgroup(int index)
+            {
+                return (ITezSubgroup)m_List[index];
+            }
+
+            public void register(Dictionary<string, ITezEnumeration> enumWithName, ITezEnumeration[] enumArray)
+            {
+                if (m_Dic == null)
                 {
-                    return DG.toName == name;
-                });
+                    m_Dic = enumWithName;
+                }
+
+                if (m_List == null)
+                {
+                    m_List = enumArray;
+                }
             }
         }
 
-        static Dictionary<string, int> m_GroupDic = new Dictionary<string, int>();
-        static List<Pair> m_GroupList = new List<Pair>();
+        static Dictionary<string, Linker> m_Dic = new Dictionary<string, Linker>();
+        static List<Linker> m_List = new List<Linker>();
 
         public static void registerGroup(ITezGroup group)
         {
-            while (m_GroupList.Count <= group.toID)
+            while (m_List.Count <= group.toID)
             {
-                m_GroupList.Add(new Pair());
+                m_List.Add(new Linker());
             }
 
-            m_GroupList[group.toID].group = group;
-            m_GroupDic[group.toName] = group.toID;
+            m_List[group.toID].group = group;
+            m_Dic[group.toName] = new Linker() { group = group };
         }
 
-        public static void registerDetailedGroup(ITezGroup group, ITezSubgroup subgroup)
+        public static Linker get(ITezGroup group)
         {
-            var list = m_GroupList[group.toID].detailedGroupList;
-            while (list.Count <= subgroup.toID)
+            return m_List[group.toID];
+        }
+
+        public static Linker get(string name)
+        {
+            return m_Dic[name];
+        }
+
+        public static void registerSubgroup(ITezGroup group,
+            Dictionary<string, ITezEnumeration> enumWithName,
+            ITezEnumeration[] enumArray)
+        {
+            int id = group.toID;
+            while (id >= m_List.Count)
             {
-                list.Add(null);
+                m_List.Add(null);
             }
 
-            list[subgroup.toID] = subgroup;
-        }
-
-        public static Pair get(ITezGroup group)
-        {
-            return m_GroupList[group.toID];
-        }
-
-        public static Pair get(string name)
-        {
-            return m_GroupList[m_GroupDic[name]];
+            if (m_List[id] == null)
+            {
+                var info = new Linker()
+                {
+                    group = group
+                };
+                info.register(enumWithName, enumArray);
+                m_List[id] = info;
+                m_Dic.Add(group.toName, info);
+            }
         }
     }
 
@@ -84,7 +117,7 @@ namespace tezcat.Framework.Database
     {
         protected TezGroup(TValue value) : base(value)
         {
-            TezGroupManager.registerGroup(this);
+//            TezGroupManager.registerGroup(this);
         }
 
         public bool Equals(ITezGroup other)
@@ -106,8 +139,8 @@ namespace tezcat.Framework.Database
 
         protected TezSubgroup(ITezGroup group, TValue value, TezEventExtension.Function<TezDatabaseGameItem> creator) : base(value)
         {
+            TezGroupManager.registerSubgroup(group, EnumWithName, EnumArray);
             m_Creator = creator;
-            TezGroupManager.registerDetailedGroup(group, this);
         }
 
         public TezDatabaseGameItem create()

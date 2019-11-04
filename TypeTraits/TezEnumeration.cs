@@ -335,8 +335,8 @@ namespace tezcat.Framework.TypeTraits
     {
         #region Static
         static readonly string[] EnumNameArray = null;
-        protected static readonly TEnumeration[] EnumArray = null;
-        protected static readonly Dictionary<string, TEnumeration> EnumWithName = null;
+        protected static readonly ITezEnumeration[] EnumArray = null;
+        protected static readonly Dictionary<string, ITezEnumeration> EnumWithName = null;
         public static readonly int EnumCount = -1;
 
         static TezEnumeration()
@@ -344,9 +344,9 @@ namespace tezcat.Framework.TypeTraits
             var temp = (TEnumValue[])Enum.GetValues(typeof(TEnumValue));
             EnumCount = temp.Length;
 
-            EnumWithName = new Dictionary<string, TEnumeration>(EnumCount);
+            EnumWithName = new Dictionary<string, ITezEnumeration>(EnumCount);
             EnumNameArray = Enum.GetNames(typeof(TEnumValue));
-            EnumArray = new TEnumeration[EnumCount];
+            EnumArray = new ITezEnumeration[EnumCount];
         }
         #endregion
 
