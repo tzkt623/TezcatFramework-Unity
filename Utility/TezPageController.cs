@@ -2,7 +2,7 @@
 using tezcat.Framework.Extension;
 using UnityEngine;
 
-namespace tezcat.Framework.UI
+namespace tezcat.Framework.Utility
 {
     public class TezPageController : ITezCloseable
     {
@@ -58,6 +58,7 @@ namespace tezcat.Framework.UI
         {
             if (currentPage <= 1)
             {
+                currentPage = 1;
                 return;
             }
 
@@ -80,6 +81,7 @@ namespace tezcat.Framework.UI
         {
             if (currentPage >= maxPage)
             {
+                currentPage = maxPage;
                 return;
             }
 
@@ -99,7 +101,7 @@ namespace tezcat.Framework.UI
         {
             if(this.maxPage == 0)
             {
-                this.currentPage = 0;
+                this.currentPage = 1;
                 m_OnPageEmpty();
                 return;
             }
