@@ -285,7 +285,7 @@ namespace tezcat.Framework.TypeTraits
             var flagx = object.ReferenceEquals(x, null);
             var flagy = object.ReferenceEquals(y, null);
 
-            return (!flagx || !flagy) && (flagx || flagy) || (x.ID != y.ID);
+            return (!flagx || !flagy) && (flagx || flagy || (x.ID != y.ID));
         }
 
         public static bool operator ==(TezType x, TezType y)
@@ -297,7 +297,7 @@ namespace tezcat.Framework.TypeTraits
             var flagx = object.ReferenceEquals(x, null);
             var flagy = object.ReferenceEquals(y, null);
 
-            return (flagx && flagy) || (!flagx && !flagy) && (x.ID == y.ID);
+            return (flagx && flagy) || (!flagx && !flagy && (x.ID == y.ID));
         }
 
         #region 重载操作

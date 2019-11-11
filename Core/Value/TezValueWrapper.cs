@@ -141,7 +141,7 @@ namespace tezcat.Framework.Core
             var flag_a = object.ReferenceEquals(a, null);
             var flag_b = object.ReferenceEquals(b, null);
 
-            return (flag_a && flag_b) || (!flag_a && !flag_b) && a.descriptor.Equals(b.descriptor);
+            return (flag_a && flag_b) || (!flag_a && !flag_b && a.descriptor.Equals(b.descriptor));
         }
 
         public static bool operator !=(TezValueWrapper a, TezValueWrapper b)
@@ -149,7 +149,7 @@ namespace tezcat.Framework.Core
             var flag_a = object.ReferenceEquals(a, null);
             var flag_b = object.ReferenceEquals(b, null);
 
-            return (!flag_a || !flag_b) && (flag_a || flag_b) || !a.descriptor.Equals(b.descriptor);
+            return (!flag_a || !flag_b) && (flag_a || flag_b || !a.descriptor.Equals(b.descriptor));
         }
 
         public static bool operator true(TezValueWrapper value)
