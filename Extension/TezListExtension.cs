@@ -113,5 +113,18 @@ namespace tezcat.Framework.Extension
             list.binaryFind(item.binaryWeight, out index);
             list.Insert(index, item);
         }
+
+        /// <summary>
+        /// 输入插入位置的随机函数
+        /// </summary>
+        public static void randomSort<T>(this List<T> list, TezEventExtension.Function<int, int> insert_position)
+        {
+            List<T> sorter = new List<T>(list);
+            list.Clear();
+            foreach (var item in sorter)
+            {
+                list.Insert(insert_position(list.Count), item);
+            }
+        }
     }
 }
