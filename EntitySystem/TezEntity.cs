@@ -135,7 +135,7 @@ namespace tezcat.Framework.ECS
         /// 替换Component
         /// </summary>
         /// <param name="component"></param>
-        public void replaceComponent(ITezComponent component)
+        public void replaceComponent(ITezComponent component, bool close_old = true)
         {
             var id = component.ComID;
 
@@ -147,6 +147,11 @@ namespace tezcat.Framework.ECS
                 foreach (var item in m_Components)
                 {
                     item?.onOtherComponentRemoved(old, id);
+                }
+
+                if(close_old)
+                {
+                    old.close();
                 }
             }
 
@@ -162,7 +167,7 @@ namespace tezcat.Framework.ECS
         /// 根据BasicComponent类型检索并移除组件
         /// </summary>
         /// <typeparam name="BasicComponent"></typeparam>
-        public void removeComponent<BasicComponent>()
+        public void removeComponent<BasicComponent>(bool close_old = true)
             where BasicComponent : ITezComponent
         {
             var id = TezComponentID<BasicComponent>.ID;
@@ -178,6 +183,11 @@ namespace tezcat.Framework.ECS
             foreach (var item in m_Components)
             {
                 item?.onOtherComponentRemoved(temp, id);
+            }
+
+            if (close_old)
+            {
+                temp.close();
             }
         }
 

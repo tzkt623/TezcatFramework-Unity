@@ -53,7 +53,7 @@ namespace tezcat.Framework.ECS
 
         }
 
-        protected override void clear()
+        protected override void onClose()
         {
            
         }

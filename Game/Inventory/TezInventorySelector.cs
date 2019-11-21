@@ -13,6 +13,11 @@ namespace tezcat.Framework.Game.Inventory
         : ITezService
         where Object : TezGameObject, ITezInventoryItem
     {
+        public bool isActive
+        {
+            get { return this.sourceSlot != null; }
+        }
+
         public ITezInventory sourceInventory { get; private set; }
         public ITezInventory targetInventory { get; set; }
 
@@ -46,6 +51,9 @@ namespace tezcat.Framework.Game.Inventory
         public void complete()
         {
             m_VisualSelector.onComplete();
+            this.sourceInventory = null;
+            this.targetInventory = null;
+            this.sourceSlot = null;
         }
 
         public virtual void close()

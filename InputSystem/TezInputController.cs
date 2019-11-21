@@ -81,11 +81,18 @@ namespace tezcat.Framework.InputSystem
             }
         }
 
-        public void pop()
+        public void pop<State>() where State : TezInputState, new()
         {
             if (m_Stack.Count == 0)
             {
                 throw new ArgumentOutOfRangeException("InputController >> Input State Should Be Not Empty");
+            }
+
+            if (m_Current != Handler<State>.state)
+            {
+                throw new InvalidCastException(string.Format("InputController >> {0} To {1}",
+                    m_Current.name,
+                    Handler<State>.state.name));
             }
 
             m_Current.onExit();

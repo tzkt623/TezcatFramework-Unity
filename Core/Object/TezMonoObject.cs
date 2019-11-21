@@ -80,7 +80,7 @@ namespace tezcat.Framework.Core
 
         private void OnDestroy()
         {
-            this.clear();
+            this.onClose();
         }
 
         public void refresh()
@@ -125,9 +125,9 @@ namespace tezcat.Framework.Core
         public abstract void reset();
 
         /// <summary>
-        /// 
+        /// 关闭组件
         /// </summary>
-        protected abstract void clear();
+        protected abstract void onClose();
 
         public void show()
         {
