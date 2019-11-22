@@ -1,13 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
 using tezcat.Framework.Core;
+using tezcat.Framework.Extension;
 using tezcat.Framework.Utility;
-using UnityEngine;
 
 namespace tezcat.Framework.InputSystem
 {
     public class TezInputController : ITezService
     {
+        static void onDefault(TezInputState state) { }
+        static void onDefault(TezInputState from, TezInputState to) { }
+
+        TezEventExtension.Action<TezInputState> m_OnPop = onDefault;
+        TezEventExtension.Action<TezInputState> m_OnPush = onDefault;
+        TezEventExtension.Action<TezInputState> m_OnClear = onDefault;
+        TezEventExtension.Action<TezInputState, TezInputState> m_OnTo = onDefault;
+
         TezInputState m_Current = null;
         Stack<TezInputState> m_Stack = new Stack<TezInputState>();
 
@@ -21,6 +29,18 @@ namespace tezcat.Framework.InputSystem
             return m_Current.blocked;
         }
 
+        public void setListeners(
+            TezEventExtension.Action<TezInputState> on_pop,
+            TezEventExtension.Action<TezInputState> on_push,
+            TezEventExtension.Action<TezInputState> on_clear,
+            TezEventExtension.Action<TezInputState, TezInputState> on_to)
+        {
+            m_OnPop = on_pop;
+            m_OnPush = on_push;
+            m_OnClear = on_clear;
+            m_OnTo = on_to;
+        }
+
         public void clear<State>(ITezTuple extra_data = null) where State : TezInputState, new()
         {
             while (m_Stack.Count > 0)
@@ -32,7 +52,7 @@ namespace tezcat.Framework.InputSystem
             m_Current = Handler<State>.state;
             m_Current.onEnter();
             m_Current.setExtraData(extra_data);
-            Debug.Log(string.Format("InputController >> Stack {0}", m_Stack.Count));
+            m_OnClear(m_Current);
         }
 
         /// <summary>
@@ -40,11 +60,12 @@ namespace tezcat.Framework.InputSystem
         /// </summary>
         public void to<State>(ITezTuple extra_data = null) where State : TezInputState, new()
         {
+            var old = m_Current;
             m_Current?.onExit();
             m_Current = Handler<State>.state;
             m_Current.onEnter();
             m_Current.setExtraData(extra_data);
-            Debug.Log(string.Format("InputController >> Stack {0}", m_Stack.Count));
+            m_OnTo(old, m_Current);
         }
 
         /// <summary>
@@ -58,27 +79,7 @@ namespace tezcat.Framework.InputSystem
             m_Current = Handler<State>.state;
             m_Current.onEnter();
             m_Current.setExtraData(extra_data);
-            Debug.Log(string.Format("InputController >> Stack {0}", m_Stack.Count));
-        }
-
-        /// <summary>
-        /// 如果与当前压入的状态参数不同
-        /// 则压入当前状态
-        /// 否则不变
-        /// </summary>
-        public void pushIfNot<State>(ITezTuple extra_data = null) where State : TezInputState, new()
-        {
-            if (m_Current != null)
-            {
-                if (m_Current != Handler<State>.state)
-                {
-                    this.push<State>(extra_data);
-                }
-            }
-            else
-            {
-                this.push<State>(extra_data);
-            }
+            m_OnPush(m_Current);
         }
 
         public void pop<State>() where State : TezInputState, new()
@@ -95,10 +96,10 @@ namespace tezcat.Framework.InputSystem
                     Handler<State>.state.name));
             }
 
+            m_OnPop(m_Current);
             m_Current.onExit();
             m_Current = m_Stack.Pop();
             m_Current.onEnter();
-            Debug.Log(string.Format("InputController >> Stack {0}", m_Stack.Count));
         }
 
         public void update()
@@ -110,6 +111,11 @@ namespace tezcat.Framework.InputSystem
         {
             m_Stack.Clear();
             m_Stack = null;
+
+            m_OnClear = null;
+            m_OnPop = null;
+            m_OnPush = null;
+            m_OnTo = null;
         }
     }
 }
