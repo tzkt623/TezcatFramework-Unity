@@ -133,7 +133,7 @@ namespace tezcat.Framework.Core
 
         public virtual void close()
         {
-
+            this.descriptor = null;
         }
 
         public static bool operator ==(TezValueWrapper a, TezValueWrapper b)
