@@ -48,12 +48,12 @@ namespace tezcat.Framework.Core
         }
 
 
-        private void Awake()
+        protected void Awake()
         {
             this.preInit();
         }
 
-        private void Start()
+        protected void Start()
         {
             this.initObject();
             this.linkEvent();
@@ -61,7 +61,7 @@ namespace tezcat.Framework.Core
             m_Init = true;
         }
 
-        private void OnEnable()
+        protected void OnEnable()
         {
             if (m_Init)
             {
@@ -70,7 +70,7 @@ namespace tezcat.Framework.Core
             }
         }
 
-        private void OnDisable()
+        protected void OnDisable()
         {
             if (m_Init)
             {
@@ -78,9 +78,9 @@ namespace tezcat.Framework.Core
             }
         }
 
-        private void OnDestroy()
+        protected void OnDestroy()
         {
-            this.onClose();
+
         }
 
         public void refresh()
@@ -144,6 +144,7 @@ namespace tezcat.Framework.Core
         /// </summary>
         public void close()
         {
+            this.onClose();
             Destroy(this.gameObject);
         }
     }

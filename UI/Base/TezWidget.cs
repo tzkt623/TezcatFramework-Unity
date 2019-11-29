@@ -135,10 +135,6 @@ namespace tezcat.Framework.UI
         protected sealed override void OnDestroy()
         {
             base.OnDestroy();
-            if (m_Init)
-            {
-                this.onClose();
-            }
         }
 
         protected virtual void onInteractable(bool value)
@@ -213,6 +209,11 @@ namespace tezcat.Framework.UI
                     break;
                 default:
                     break;
+            }
+
+            if (m_Init)
+            {
+                this.onClose();
             }
 
             Destroy(this.gameObject);
