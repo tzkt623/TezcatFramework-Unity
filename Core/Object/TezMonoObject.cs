@@ -1,4 +1,5 @@
 ﻿using tezcat.Framework.Database;
+using tezcat.Framework.Utility;
 using UnityEngine;
 
 namespace tezcat.Framework.Core
@@ -8,7 +9,12 @@ namespace tezcat.Framework.Core
         , ITezRefresher
         , ITezPrefab
     {
-        bool m_Init = false;
+        class ControlMask
+        {
+            public const byte Init = 1;
+            public const byte Closed = 1 << 1;
+        }
+        TezBitMask_byte m_Mask = new TezBitMask_byte();
 
         byte m_DirtyCount = 0;
         TezRefreshPhase m_DirtyMask = 0;
@@ -58,12 +64,12 @@ namespace tezcat.Framework.Core
             this.initObject();
             this.linkEvent();
             this.refreshPhase = TezRefreshPhase.P_OnInit;
-            m_Init = true;
+            m_Mask.set(ControlMask.Init);
         }
 
         protected void OnEnable()
         {
-            if (m_Init)
+            if (m_Mask.test(ControlMask.Init))
             {
                 this.linkEvent();
                 this.refreshPhase = TezRefreshPhase.P_OnEnable;
@@ -72,7 +78,7 @@ namespace tezcat.Framework.Core
 
         protected void OnDisable()
         {
-            if (m_Init)
+            if (m_Mask.test(ControlMask.Init))
             {
                 this.unLinkEvent();
             }
@@ -80,7 +86,11 @@ namespace tezcat.Framework.Core
 
         protected void OnDestroy()
         {
-
+            ///如果没有清理过
+            if (!m_Mask.test(ControlMask.Closed))
+            {
+                this.onClose();
+            }
         }
 
         public void refresh()
@@ -144,6 +154,7 @@ namespace tezcat.Framework.Core
         /// </summary>
         public void close()
         {
+            m_Mask.set(ControlMask.Closed);
             this.onClose();
             Destroy(this.gameObject);
         }

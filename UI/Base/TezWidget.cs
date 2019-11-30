@@ -1,4 +1,5 @@
 ﻿using tezcat.Framework.Core;
+using tezcat.Framework.Utility;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -20,8 +21,14 @@ namespace tezcat.Framework.UI
     {
         public TezWidgetLifeState lifeState { get; set; } = TezWidgetLifeState.Normal;
 
-        bool m_Init = false;
         bool m_Interactable = true;
+
+        class ControlMask
+        {
+            public const byte Init = 1;
+            public const byte Closed = 1 << 1;
+        }
+        TezBitMask_byte m_Mask = new TezBitMask_byte();
 
         TezRefreshPhase m_DirtyMask = 0;
         byte m_DirtyCount = 0;
@@ -98,7 +105,7 @@ namespace tezcat.Framework.UI
         protected sealed override void OnEnable()
         {
             base.OnEnable();
-            if (m_Init)
+            if (m_Mask.test(ControlMask.Init))
             {
                 this.linkEvent();
                 this.refreshPhase = TezRefreshPhase.P_OnEnable;
@@ -117,15 +124,14 @@ namespace tezcat.Framework.UI
             this.linkEvent();
             this.initWidget();
             this.refreshPhase = TezRefreshPhase.P_OnInit;
-            m_Init = true;
-
+            m_Mask.set(ControlMask.Init);
         }
         #endregion
 
         protected sealed override void OnDisable()
         {
             base.OnDisable();
-            if (m_Init)
+            if (m_Mask.test(ControlMask.Init))
             {
                 this.onHide();
                 this.unLinkEvent();
@@ -135,6 +141,10 @@ namespace tezcat.Framework.UI
         protected sealed override void OnDestroy()
         {
             base.OnDestroy();
+            if (!m_Mask.test(ControlMask.Closed))
+            {
+                this.onClose();
+            }
         }
 
         protected virtual void onInteractable(bool value)
@@ -211,11 +221,9 @@ namespace tezcat.Framework.UI
                     break;
             }
 
-            if (m_Init)
-            {
-                this.onClose();
-            }
 
+            m_Mask.set(ControlMask.Closed);
+            this.onClose();
             Destroy(this.gameObject);
         }
 

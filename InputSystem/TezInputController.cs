@@ -91,7 +91,7 @@ namespace tezcat.Framework.InputSystem
 
             if (m_Current != Handler<State>.state)
             {
-                throw new InvalidCastException(string.Format("InputController >> {0} To {1}",
+                throw new InvalidCastException(string.Format("InputController >> Current : {0} | You want : {1}",
                     m_Current.name,
                     Handler<State>.state.name));
             }
