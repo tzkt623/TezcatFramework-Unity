@@ -15,7 +15,7 @@ namespace tezcat.Framework.UI
      */
     public class TezTip
         : TezUIWidget
-        , ITezPrefab
+        , ITezSinglePrefab
     {
         RectTransform m_RectTransform = null;
         [SerializeField]

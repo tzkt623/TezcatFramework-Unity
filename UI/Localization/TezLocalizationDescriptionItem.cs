@@ -11,7 +11,7 @@ namespace tezcat.Framework.UI
         , IPointerEnterHandler
         , IPointerExitHandler
         , ITezClickableWidget
-        , ITezPrefab
+        , ITezSinglePrefab
     {
         [SerializeField]
         TezImageButton m_Edit = null;

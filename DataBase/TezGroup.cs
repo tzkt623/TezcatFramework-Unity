@@ -95,13 +95,13 @@ namespace tezcat.Framework.Database
 
             if (m_List[id] == null)
             {
-                var info = new Linker()
+                var linker = new Linker()
                 {
                     group = group
                 };
-                info.register(enumWithName, enumArray);
-                m_List[id] = info;
-                m_Dic.Add(group.toName, info);
+                linker.register(enumWithName, enumArray);
+                m_List[id] = linker;
+                m_Dic.Add(group.toName, linker);
             }
         }
     }
@@ -117,7 +117,7 @@ namespace tezcat.Framework.Database
     {
         protected TezGroup(TValue value) : base(value)
         {
-//            TezGroupManager.registerGroup(this);
+
         }
 
         public bool Equals(ITezGroup other)

@@ -8,7 +8,7 @@ namespace tezcat.Framework.UI
     public class TezLocalizationNameItem
         : TezToolWidget
         , ITezClickableWidget
-        , ITezPrefab
+        , ITezSinglePrefab
     {
         [SerializeField]
         Text m_KeyName = null;

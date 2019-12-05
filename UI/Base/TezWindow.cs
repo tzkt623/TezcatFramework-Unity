@@ -12,7 +12,7 @@ namespace tezcat.Framework.UI
     /// </summary>
     public abstract class TezWindow
         : TezWidget
-        , ITezPrefab
+        , ITezSinglePrefab
     {
         TezLayer m_Layer = null;
         public TezLayer layer

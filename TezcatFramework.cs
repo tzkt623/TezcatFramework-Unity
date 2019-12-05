@@ -188,7 +188,6 @@ namespace tezcat.Framework
             TezService.register(new TezDatabase());
             TezService.register(new TezFastDatabase());
             TezService.register(new TezTipController());
-            TezService.register(new TezDragDropManager());
         }
 
 
@@ -231,7 +230,8 @@ namespace tezcat.Framework
         #endregion
 
         #region Renderer
-        public Renderer createRenderer<Renderer>(Transform parent) where Renderer : TezRenderer
+        public Renderer createRenderer<Renderer>(Transform parent)
+            where Renderer : TezRenderer, ITezSinglePrefab
         {
             var prefab = TezService.get<TezPrefabDatabase>().get<Renderer>();
             var go = MonoBehaviour.Instantiate(prefab, parent);
@@ -239,7 +239,17 @@ namespace tezcat.Framework
             return go;
         }
 
-        public GameMonoObject createGMO<GameMonoObject>(Transform parent) where GameMonoObject : TezGameMonoObject
+        public Renderer createRenderer<Renderer>(Transform parent, string prefab_name)
+            where Renderer : TezRenderer, ITezMultiPrefab
+        {
+            var prefab = TezService.get<TezPrefabDatabase>().get<Renderer>(prefab_name);
+            var go = MonoBehaviour.Instantiate(prefab, parent);
+            go.name = typeof(Renderer).Name;
+            return go;
+        }
+
+        public GameMonoObject createGMO<GameMonoObject>(Transform parent)
+            where GameMonoObject : TezGameMonoObject, ITezSinglePrefab
         {
             var prefab = TezService.get<TezPrefabDatabase>().get<GameMonoObject>();
             var go = MonoBehaviour.Instantiate(prefab, parent);
@@ -269,7 +279,7 @@ namespace tezcat.Framework
             return id;
         }
 
-        public Widget getTypeOnlyWidget<Widget>() where Widget : TezWidget, ITezPrefab
+        public Widget getTypeOnlyWidget<Widget>() where Widget : TezWidget, ITezSinglePrefab
         {
             TezWidget widget = null;
             m_WidgetWithType.TryGetValue(typeof(Widget), out widget);
@@ -307,7 +317,7 @@ namespace tezcat.Framework
             return widget;
         }
 
-        public Widget createWidget<Widget>(string name, RectTransform parent, TezWidgetLifeState life_form = TezWidgetLifeState.Normal) where Widget : TezWidget, ITezPrefab
+        public Widget createWidget<Widget>(string name, RectTransform parent, TezWidgetLifeState life_form = TezWidgetLifeState.Normal) where Widget : TezWidget, ITezSinglePrefab
         {
             return (Widget)this.createWidget(TezService.get<TezPrefabDatabase>().get<Widget>(), name, parent, life_form);
         }
@@ -319,12 +329,12 @@ namespace tezcat.Framework
         /// <param name="parent">控件的父级</param>
         /// <param name="type_only">这类控件是否只能有一个</param>
         /// <returns></returns>
-        public Widget createWidget<Widget>(RectTransform parent, TezWidgetLifeState life_form = TezWidgetLifeState.Normal) where Widget : TezWidget, ITezPrefab
+        public Widget createWidget<Widget>(RectTransform parent, TezWidgetLifeState life_form = TezWidgetLifeState.Normal) where Widget : TezWidget, ITezSinglePrefab
         {
             return this.createWidget<Widget>(typeof(Widget).Name, parent, life_form);
         }
 
-        public Widget createWidget<Widget>(TezLayer layer, TezWidgetLifeState life_form = TezWidgetLifeState.Normal) where Widget : TezWidget, ITezPrefab
+        public Widget createWidget<Widget>(TezLayer layer, TezWidgetLifeState life_form = TezWidgetLifeState.Normal) where Widget : TezWidget, ITezSinglePrefab
         {
             return this.createWidget<Widget>(typeof(Widget).Name, layer.rectTransform, life_form);
         }
@@ -332,7 +342,7 @@ namespace tezcat.Framework
         private Window createWindow<Window>(Window prefab
             , string name
             , TezLayer layer
-            , TezWidgetLifeState life_form) where Window : TezWindow, ITezPrefab
+            , TezWidgetLifeState life_form) where Window : TezWindow, ITezSinglePrefab
         {
             TezWindow window = null;
 
@@ -370,7 +380,7 @@ namespace tezcat.Framework
             return (Window)window;
         }
 
-        public Window createWindow<Window>(string name, TezLayer layer, TezWidgetLifeState life_form = TezWidgetLifeState.Normal) where Window : TezWindow, ITezPrefab
+        public Window createWindow<Window>(string name, TezLayer layer, TezWidgetLifeState life_form = TezWidgetLifeState.Normal) where Window : TezWindow, ITezSinglePrefab
         {
             return this.createWindow(TezService.get<TezPrefabDatabase>().get<Window>(), name, layer, life_form);
         }
@@ -380,7 +390,7 @@ namespace tezcat.Framework
             return this.createWindow(prefab, prefab.GetType().Name, layer, life_form);
         }
 
-        public Window createWindow<Window>(TezLayer layer, TezWidgetLifeState life_form = TezWidgetLifeState.Normal) where Window : TezWindow, ITezPrefab
+        public Window createWindow<Window>(TezLayer layer, TezWidgetLifeState life_form = TezWidgetLifeState.Normal) where Window : TezWindow, ITezSinglePrefab
         {
             return this.createWindow<Window>(typeof(Window).Name, layer, life_form);
         }

@@ -1,6 +1,5 @@
 ﻿using tezcat.Framework.Core;
 using tezcat.Framework.Database;
-using tezcat.Framework.Utility;
 using UnityEngine;
 
 namespace tezcat.Framework.UI
@@ -118,17 +117,17 @@ namespace tezcat.Framework.UI
                 var properties = m_Item.properties;
                 for (int i = 0; i < properties.count; i++)
                 {
-                    var property = properties.get(i);
+                    var property = properties[i];
                     switch (property.valueType)
                     {
                         case TezValueType.Type:
-                            this.createPE_Type(property);
+                            this.createPE_Type((TezValueWrapper)property);
                             break;
                         case TezValueType.Int:
                         case TezValueType.Float:
                         case TezValueType.String:
                         case TezValueType.StaticString:
-                            this.createPE_IFS(property);
+                            this.createPE_IFS((TezValueWrapper)property);
                             break;
                         default:
                             break;

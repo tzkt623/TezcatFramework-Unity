@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Reflection;
 using tezcat.Framework.Core;
-using tezcat.Framework.Extension;
 using tezcat.Framework.TypeTraits;
 using UnityEngine;
 
@@ -13,26 +12,36 @@ namespace tezcat.Framework.Database
         Type GetType();
     }
 
+    public interface ITezMultiPrefab : ITezPrefab
+    {
+
+    }
+
+    public interface ITezSinglePrefab : ITezPrefab
+    {
+
+    }
+
     public sealed class TezPrefabID : ITezCloseable
     {
-        public ITezPrefab prefab { get; private set; } = null;
+        public ITezSinglePrefab prefab { get; private set; } = null;
         public int ID { get; }
 
         /// <summary>
         /// 不要单独调用此构造函数
         /// </summary>
-        public TezPrefabID(int id, ITezPrefab prefab)
+        public TezPrefabID(int id, ITezSinglePrefab prefab)
         {
             this.ID = id;
             this.prefab = prefab;
         }
 
-        public T convertTo<T>() where T : ITezPrefab
+        public T convertTo<T>() where T : ITezSinglePrefab
         {
             return (T)prefab;
         }
 
-        public void setPrefab(ITezPrefab prefab)
+        public void setPrefab(ITezSinglePrefab prefab)
         {
             this.prefab = prefab;
         }
@@ -45,13 +54,13 @@ namespace tezcat.Framework.Database
 
     public class TezPrefabDatabase : ITezService
     {
-        List<ITezPrefab> m_List = new List<ITezPrefab>();
+        Dictionary<string, ITezMultiPrefab> m_MultiDic = new Dictionary<string, ITezMultiPrefab>();
 
         public int count { get; private set; } = 0;
 
-        class StaticContainer<Prefab> where Prefab : class, ITezPrefab
+        class SinglePrefabContainer<Prefab> where Prefab : class, ITezSinglePrefab
         {
-            public static ITezPrefab prefab = null;
+            public static ITezSinglePrefab prefab = null;
             public static int ID { get; private set; } = -1;
             public static void setID(int id)
             {
@@ -59,28 +68,27 @@ namespace tezcat.Framework.Database
             }
         }
 
-        public void foreachPrefab(TezEventExtension.Action<TezPrefabID> action)
-        {
-
-        }
-
         public void register(GameObject go)
         {
             var prefab = go.GetComponent<ITezPrefab>();
-            if (prefab != null)
+            if (prefab is ITezSinglePrefab)
             {
-                this.register(prefab);
-//                Debug.Log(prefab.GetType().Name);
+                this.register((ITezSinglePrefab)prefab);
+                return;
             }
-            else
+
+            if (prefab is ITezMultiPrefab)
             {
-                Debug.LogWarning(string.Format("{0}`s Prefab Not Found", go.name));
+                m_MultiDic.Add(go.name, (ITezMultiPrefab)prefab);
+                return;
             }
+
+            Debug.LogWarning(string.Format("{0}`s Prefab Not Found", go.name));
         }
 
-        private void register(ITezPrefab prefab)
+        private void register(ITezSinglePrefab prefab)
         {
-            Type type = typeof(StaticContainer<>);
+            Type type = typeof(SinglePrefabContainer<>);
             type = type.MakeGenericType(prefab.GetType());
             type.InvokeMember("prefab"
                 , BindingFlags.Public | BindingFlags.Static | BindingFlags.SetField
@@ -88,7 +96,7 @@ namespace tezcat.Framework.Database
                 , null
                 , new object[] { prefab });
 
-//            Debug.Log(string.Format("{0}/{1}", prefab.GetType().Name, count));
+            //            Debug.Log(string.Format("{0}/{1}", prefab.GetType().Name, count));
 
             type.InvokeMember("setID"
                 , BindingFlags.Public | BindingFlags.Static | BindingFlags.InvokeMethod
@@ -98,26 +106,31 @@ namespace tezcat.Framework.Database
 
         }
 
-        public void register<T>(ITezPrefab prefab) where T : class, ITezPrefab
+        public void register<T>(ITezSinglePrefab prefab) where T : class, ITezSinglePrefab
         {
-            switch (StaticContainer<T>.ID)
+            switch (SinglePrefabContainer<T>.ID)
             {
                 case TezTypeInfo.ErrorID:
-                    StaticContainer<T>.setID(count++);
+                    SinglePrefabContainer<T>.setID(count++);
                     break;
             }
 
-            StaticContainer<T>.prefab = prefab;
+            SinglePrefabContainer<T>.prefab = prefab;
         }
 
-        public int getID<T>() where T : class, ITezPrefab
+        public int getID<T>() where T : class, ITezSinglePrefab
         {
-            return StaticContainer<T>.ID;
+            return SinglePrefabContainer<T>.ID;
         }
 
-        public T get<T>() where T : class, ITezPrefab
+        public T get<T>() where T : class, ITezSinglePrefab
         {
-            return (T)StaticContainer<T>.prefab;
+            return (T)SinglePrefabContainer<T>.prefab;
+        }
+
+        public T get<T>(string multi_name) where T : class, ITezMultiPrefab
+        {
+            return (T)m_MultiDic[multi_name];
         }
 
         public void close()

@@ -5,36 +5,14 @@ namespace tezcat.Framework.Extension
 {
     public static class TezValueWrapperExtension
     {
-        public static void writePropertyCollection(TezWriter writer, ITezPropertyCollection collection, string name)
+        public static void writePropertyCollection(TezWriter writer, TezPropertySortList collection, string name)
         {
-            writer.beginObject(name);
-            collection.foreachProperty((TezValueWrapper wrapper) =>
-            {
-                switch (wrapper.valueType)
-                {
-                    case TezValueType.Int:
-                        var iv = (TezValueWrapper<int>)wrapper;
-                        writer.write(iv.name, iv.value);
-                        break;
-                    default:
-                        break;
-                }
-            });
-            writer.endObject(name);
+
         }
 
-        public static void readPropertyCollection<Descriptor>(TezReader reader, ITezPropertyCollection collection, string name)
+        public static void readPropertyCollection<Descriptor>(TezReader reader, TezPropertySortList collection, string name)
         {
-            reader.beginObject(name);
-            var keys = reader.getKeys();
-            foreach (var key in keys)
-            {
-                collection.register(new TezValueWrapper<int>(TezValueDescriptor<Descriptor>.get(key))
-                {
-                    value = reader.readInt(key)
-                });
-            }
-            reader.endObject(name);
+
         }
 
         public static void writeProperty(this TezWriter writer, TezValueWrapper vw)

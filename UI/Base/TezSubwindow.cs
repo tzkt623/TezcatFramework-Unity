@@ -12,7 +12,7 @@ namespace tezcat.Framework.UI
     public abstract class TezSubwindow
         : TezWidget
         , ITezFocusableWidget
-        , ITezPrefab
+        , ITezSinglePrefab
     {
 //        [SerializeField]
         private int m_SubwindowID = -1;

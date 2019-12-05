@@ -33,23 +33,6 @@ namespace tezcat.Framework.UI
         protected override void initWidget()
         {
             base.initWidget();
-
-            TezService.get<TezPrefabDatabase>().foreachPrefab((TezPrefabID prefab) =>
-            {
-                var editor = prefab.prefab as TezBasicItemEditor;
-                if (editor)
-                {
-                    foreach (var category in editor.supportCategory)
-                    {
-                        while(m_EditorDic.Count <= category)
-                        {
-                            m_EditorDic.Add(null);
-                        }
-
-                        m_EditorDic[category] = editor;
-                    }
-                }
-            });
         }
 
         public void createItemEditor(int category)

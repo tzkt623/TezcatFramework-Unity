@@ -150,7 +150,7 @@ namespace tezcat.Framework.Database
         /// <summary>
         /// 属性
         /// </summary>
-        public ITezPropertyCollection properties { get; private set; } = new TezPropertyList();
+        public TezPropertySortList properties { get; private set; } = new TezPropertySortList();
 
         public List<string> TAGS { get; private set; } = new List<string>();
 
@@ -163,7 +163,7 @@ namespace tezcat.Framework.Database
         {
             this.CID = null;
 
-            this.properties.close();
+            this.properties.clear();
             this.properties = null;
 
             this.TAGS.Clear();
@@ -229,7 +229,7 @@ namespace tezcat.Framework.Database
             return go ? this.group.Equals(go.group) && this.subgroup.Equals(go.subgroup) : false;
         }
 
-        protected virtual void registerProperty(ITezPropertyCollection collection) { }
+        protected virtual void registerProperty(TezPropertySortList collection) { }
 
         /// <summary>
         /// 数据库回调函数

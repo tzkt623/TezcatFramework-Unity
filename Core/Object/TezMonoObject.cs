@@ -1,5 +1,4 @@
-﻿using tezcat.Framework.Database;
-using tezcat.Framework.Utility;
+﻿using tezcat.Framework.Utility;
 using UnityEngine;
 
 namespace tezcat.Framework.Core
@@ -7,7 +6,6 @@ namespace tezcat.Framework.Core
     public abstract class TezMonoObject
         : MonoBehaviour
         , ITezRefresher
-        , ITezPrefab
     {
         class ControlMask
         {

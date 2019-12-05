@@ -8,7 +8,7 @@ namespace tezcat.Framework.UI
 {
     public class TezLocalizationDescriptionEditor
         : TezToolWidget
-        , ITezPrefab
+        , ITezSinglePrefab
     {
         [SerializeField]
         InputField m_KeyInput = null;

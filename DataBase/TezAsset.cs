@@ -15,7 +15,7 @@ namespace tezcat.Framework.Database
         public Sprite sprite_2 { get; set; }
         public Sprite sprite_3 { get; set; }
 
-        public ITezPrefab prefab { get; set; }
+        public ITezSinglePrefab prefab { get; set; }
 
         public void clear()
         {
