@@ -239,7 +239,7 @@ namespace tezcat.Framework.ECS
         /// </summary>
         public override void close()
         {
-            this.definitionPath.close();
+            this.definitionPath?.close();
             this.TAG.close();
             m_RID?.close();
 
