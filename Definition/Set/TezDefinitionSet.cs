@@ -55,7 +55,13 @@ namespace tezcat.Framework.Definition
 
         public static Element getPrimary(string name)
         {
-            return m_PrimaryElementsWithName[name];
+            Element element = null;
+            if (!m_PrimaryElementsWithName.TryGetValue(name, out element))
+            {
+                throw new Exception(string.Format("TezDefinitionSet : Primary name [{0}] not exist", name));
+            }
+
+            return element;
         }
 
         public static Element getPrimary(int index)
@@ -81,7 +87,13 @@ namespace tezcat.Framework.Definition
 
         public static Element getSecondary(string name)
         {
-            return m_SecondaryElementsWithName[name];
+            Element element = null;
+            if (!m_SecondaryElementsWithName.TryGetValue(name, out element))
+            {
+                throw new Exception(string.Format("TezDefinitionSet : Secondary name [{0}] not exist", name));
+            }
+
+            return element;
         }
 
         public static Element getSecondary(int index)
