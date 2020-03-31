@@ -5,25 +5,33 @@ namespace tezcat.Framework.Utility
 {
     public class TezNoise
     {
-        static TezEventExtension.Function<float, Vector3, float>[] m_Functions = new TezEventExtension.Function<float, Vector3, float>[]
+        static TezEventExtension.Function<float, float, float>[] m_F1Ds = new TezEventExtension.Function<float, float, float>[]
         {
             value1D,
-            value2D,
-            value3D,
             perlin1D,
-            perlin2D,
+        };
+
+        static TezEventExtension.Function<float, Vector2, float>[] m_F2Ds = new TezEventExtension.Function<float, Vector2, float>[]
+        {
+            value2D,
+            perlin2D
+        };
+
+        static TezEventExtension.Function<float, Vector3, float>[] m_F3Ds = new TezEventExtension.Function<float, Vector3, float>[]
+        {
+            value3D,
             perlin3D
         };
 
         public enum Function
         {
             Error = -1,
-            Value1D,
-            Value2D,
-            Value3D,
-            Perlin1D,
-            Perlin2D,
-            Perlin3D,
+            Value1D = 0,
+            Perlin1D = 1,
+            Value2D = 0,
+            Perlin2D = 1,
+            Value3D = 0,
+            Perlin3D = 1,
         }
 
         #region 工具
@@ -406,9 +414,43 @@ namespace tezcat.Framework.Utility
         /// <param name="lacunarity"></param>
         /// <param name="persistence"></param>
         /// <returns></returns>
-        public static float sum(Function method, Vector3 point, float frequency, int octaves, float lacunarity, float persistence)
+        public static float sum1D(Function method, float point, float frequency, int octaves, float lacunarity, float persistence)
         {
-            var function = m_Functions[(int)method];
+            var function = m_F1Ds[(int)method];
+
+            float sum = function(point, frequency);
+            float amplitude = 1f;
+            float range = 1f;
+            for (int o = 1; o < octaves; o++)
+            {
+                frequency *= lacunarity;
+                amplitude *= persistence;
+                range += amplitude;
+                sum += function(point, frequency) * amplitude;
+            }
+            return sum / range;
+        }
+
+        public static float sum2D(Function method, Vector2 point, float frequency, int octaves, float lacunarity, float persistence)
+        {
+            var function = m_F2Ds[(int)method];
+
+            float sum = function(point, frequency);
+            float amplitude = 1f;
+            float range = 1f;
+            for (int o = 1; o < octaves; o++)
+            {
+                frequency *= lacunarity;
+                amplitude *= persistence;
+                range += amplitude;
+                sum += function(point, frequency) * amplitude;
+            }
+            return sum / range;
+        }
+
+        public static float sum3D(Function method, Vector3 point, float frequency, int octaves, float lacunarity, float persistence)
+        {
+            var function = m_F3Ds[(int)method];
 
             float sum = function(point, frequency);
             float amplitude = 1f;

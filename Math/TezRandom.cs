@@ -25,8 +25,13 @@ namespace tezcat.Framework.Math
     public class TezRandom : ITezRandom
     {
         private const uint MAX_MASK_UINT = int.MaxValue;
-        //        private const float MAX_MASK_FLOAT = 2.14748365E+09f;
-        private const float MAX_MASK_FLOAT = MAX_MASK_UINT + 1000;
+        /// <summary>
+        /// 因为flota精度问题 有效数字只有7位
+        /// 所以int最大值 2147483647 用float表示应该为 2.147483E+09
+        /// 那么要算出0-1之间的值 必须超过这个值 所以+1000 变成2.147484E+09
+        /// 这样就保证可以算出0-0.99999x之间的数了
+        /// </summary>
+        private const float MAX_MASK_FLOAT = int.MaxValue + 1000f;
         private const uint factor = 16807;
 
         private uint m_Seed;

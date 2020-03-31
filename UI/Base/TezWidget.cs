@@ -25,8 +25,9 @@ namespace tezcat.Framework.UI
 
         class ControlMask
         {
-            public const byte Init = 1;
+            public const byte Inited = 1;
             public const byte Closed = 1 << 1;
+            public const byte Disabled = 1 << 2;
         }
         TezBitMask_byte m_Mask = new TezBitMask_byte();
 
@@ -68,7 +69,7 @@ namespace tezcat.Framework.UI
         {
             set
             {
-                if (this.gameObject.activeSelf)
+                if (this.gameObject.activeSelf && m_Mask.test(ControlMask.Inited))
                 {
                     if ((m_DirtyMask & value) == 0)
                     {
@@ -105,7 +106,7 @@ namespace tezcat.Framework.UI
         protected sealed override void OnEnable()
         {
             base.OnEnable();
-            if (m_Mask.test(ControlMask.Init))
+            if (m_Mask.test(ControlMask.Inited))
             {
                 this.linkEvent();
                 this.refreshPhase = TezRefreshPhase.P_OnEnable;
@@ -123,15 +124,15 @@ namespace tezcat.Framework.UI
             base.Start();
             this.linkEvent();
             this.initWidget();
+            m_Mask.set(ControlMask.Inited);
             this.refreshPhase = TezRefreshPhase.P_OnInit;
-            m_Mask.set(ControlMask.Init);
         }
         #endregion
 
         protected sealed override void OnDisable()
         {
             base.OnDisable();
-            if (m_Mask.test(ControlMask.Init))
+            if (m_Mask.test(ControlMask.Inited))
             {
                 this.onHide();
                 this.unLinkEvent();

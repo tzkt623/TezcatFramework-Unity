@@ -126,5 +126,21 @@ namespace tezcat.Framework.Extension
                 list.Insert(insert_position(list.Count), item);
             }
         }
+
+        public static T randomGet<T>(this List<T> list, TezEventExtension.Function<int, int> insert_position)
+        {
+            var index = insert_position(list.Count);
+            var result = list[index];
+
+            var last = list.Count - 1;
+            if (index != last)
+            {
+                list[index] = list[last];
+            }
+
+            list.RemoveAt(last);
+
+            return result;
+        }
     }
 }
