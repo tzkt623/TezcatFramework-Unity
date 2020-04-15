@@ -1,13 +1,41 @@
 ﻿using LitJson;
+using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Text;
 
 namespace tezcat.Framework.Database
 {
     public class TezJsonReader : TezReader
     {
+        private class Data
+        {
+            public int index = -1;
+            public string name = string.Empty;
+            public JsonData jsonData;
+
+            public Data(JsonData data, string name)
+            {
+                this.name = name;
+                this.jsonData = data;
+            }
+
+            public Data(JsonData data, int index)
+            {
+                this.index = index;
+                this.jsonData = data;
+            }
+
+            public void close()
+            {
+                this.name = null;
+                this.jsonData = null;
+            }
+        }
+
         private JsonData m_Current = null;
-        private Stack<JsonData> m_PreRoot = new Stack<JsonData>();
+        private Stack<Data> m_PreRoot = new Stack<Data>();
+        private string m_Path;
 
         public ICollection<string> keys
         {
@@ -32,12 +60,13 @@ namespace tezcat.Framework.Database
                 return false;
             }
 
+            m_Path = path;
             bool result = false;
             m_PreRoot.Clear();
             string content = null;
             try
             {
-                content = File.ReadAllText(path);
+                content = File.ReadAllText(m_Path);
                 result = true;
             }
             catch
@@ -53,24 +82,71 @@ namespace tezcat.Framework.Database
             return result;
         }
 
+        private string throwInfo(string function_name, string position)
+        {
+            StringBuilder content = new StringBuilder();
+            content.AppendLine(string.Format("{0}:{1} Error", function_name, position));
+            if (m_PreRoot.Count > 0)
+            {
+                content.AppendLine("From This Path:");
+                foreach (var data in m_PreRoot)
+                {
+                    var json = data.jsonData;
+                    if (json.IsObject)
+                    {
+                        content.AppendLine(data.name);
+                    }
+                    else if (json.IsArray)
+                    {
+                        content.AppendLine(data.index.ToString());
+                    }
+                }
+            }
+            content.AppendLine(m_Path);
+
+            return content.ToString();
+        }
+
+        private JsonData readAny(int key, string function_name)
+        {
+            JsonData data = null;
+            if (m_Current.tryGet(key, out data))
+            {
+                return data;
+            }
+
+            throw new Exception(this.throwInfo(function_name, key.ToString()));
+        }
+
+        private JsonData readAny(string key, string function_name)
+        {
+            JsonData data = null;
+            if (m_Current.tryGet(key, out data))
+            {
+                return data;
+            }
+
+            throw new Exception(this.throwInfo(function_name, key.ToString()));
+        }
+
         public override bool readBool(int key)
         {
-            return (bool)m_Current[key];
+            return (bool)this.readAny(key, "readBool");
         }
 
         public override int readInt(int key)
         {
-            return (int)m_Current[key];
+            return (int)this.readAny(key, "readInt");
         }
 
         public override float readFloat(int key)
         {
-            return (float)m_Current[key];
+            return (float)this.readAny(key, "readFloat");
         }
 
         public override string readString(int key)
         {
-            return (string)m_Current[key];
+            return (string)this.readAny(key, "readString");
         }
 
         public JsonType getType(int index)
@@ -80,22 +156,22 @@ namespace tezcat.Framework.Database
 
         public override bool readBool(string key)
         {
-            return (bool)m_Current[key];
+            return (bool)this.readAny(key, "readBool");
         }
 
         public override float readFloat(string key)
         {
-            return (float)m_Current[key];
+            return (float)this.readAny(key, "readFloat");
         }
 
         public override int readInt(string key)
         {
-            return (int)m_Current[key];
+            return (int)this.readAny(key, "readInt");
         }
 
         public override string readString(string key)
         {
-            return (string)m_Current[key];
+            return (string)this.readAny(key, "readString");
         }
 
         public JsonType getType(string name)
@@ -119,7 +195,7 @@ namespace tezcat.Framework.Database
             var temp = m_Current[key];
             if (temp.IsArray)
             {
-                m_PreRoot.Push(m_Current);
+                m_PreRoot.Push(new Data(m_Current, key));
                 m_Current = temp;
             }
             else
@@ -135,7 +211,9 @@ namespace tezcat.Framework.Database
                 throw new System.ArgumentException(string.Format("This End Array : {0}", key));
             }
 
-            m_Current = m_PreRoot.Pop();
+            var data = m_PreRoot.Pop();
+            m_Current = data.jsonData;
+            data.close();
         }
 
         protected override bool hasArray(string key)
@@ -154,7 +232,7 @@ namespace tezcat.Framework.Database
             var temp = m_Current[key];
             if (temp.IsArray)
             {
-                m_PreRoot.Push(m_Current);
+                m_PreRoot.Push(new Data(m_Current, key));
                 m_Current = temp;
             }
             else
@@ -170,7 +248,9 @@ namespace tezcat.Framework.Database
                 throw new System.ArgumentException(string.Format("Error End Array : {0}", key));
             }
 
-            m_Current = m_PreRoot.Pop();
+            var data = m_PreRoot.Pop();
+            m_Current = data.jsonData;
+            data.close();
         }
 
         protected override bool hasObject(int key)
@@ -189,7 +269,7 @@ namespace tezcat.Framework.Database
             var temp = m_Current[key];
             if (temp.IsObject)
             {
-                m_PreRoot.Push(m_Current);
+                m_PreRoot.Push(new Data(m_Current, key));
                 m_Current = temp;
             }
             else
@@ -205,7 +285,10 @@ namespace tezcat.Framework.Database
                 throw new System.ArgumentException(string.Format("Error End Object : {0}", key));
             }
 
-            m_Current = m_PreRoot.Pop();
+
+            var data = m_PreRoot.Pop();
+            m_Current = data.jsonData;
+            data.close();
         }
 
         protected override bool hasObject(string key)
@@ -224,7 +307,7 @@ namespace tezcat.Framework.Database
             var temp = m_Current[key];
             if (temp.IsObject)
             {
-                m_PreRoot.Push(m_Current);
+                m_PreRoot.Push(new Data(m_Current, key));
                 m_Current = temp;
             }
             else
@@ -240,7 +323,9 @@ namespace tezcat.Framework.Database
                 throw new System.ArgumentException(string.Format("Error End Object : {0}", key));
             }
 
-            m_Current = m_PreRoot.Pop();
+            var data = m_PreRoot.Pop();
+            m_Current = data.jsonData;
+            data.close();
         }
 
         public override bool tryRead(int key, out bool result)
