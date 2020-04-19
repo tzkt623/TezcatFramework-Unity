@@ -30,7 +30,6 @@ namespace tezcat.Framework.UI
 
         protected override void initWidget()
         {
-            base.initWidget();
             m_RectTransform = this.GetComponent<RectTransform>();
         }
 
@@ -41,7 +40,6 @@ namespace tezcat.Framework.UI
 
         protected override void onHide()
         {
-            base.onHide();
             foreach (var widget in m_Widgets)
             {
                 widget.close();

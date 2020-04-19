@@ -20,30 +20,10 @@ namespace tezcat.Framework.UI
             m_Icon = this.GetComponent<Image>();
         }
 
-        protected override void initWidget()
-        {
-
-        }
-
-        protected override void linkEvent()
-        {
-
-        }
-
-        protected override void unLinkEvent()
-        {
-
-        }
-
         protected override void onHide()
         {
             this.singleItem = null;
             m_Icon.color = Color.gray;
-        }
-
-        public override void reset()
-        {
-
         }
 
         public void onSelect(TezGameObject item)
@@ -55,11 +35,6 @@ namespace tezcat.Framework.UI
         public void onComplete()
         {
             this.hide();
-        }
-
-        protected override void onClose()
-        {
-
         }
 
         public void Update()

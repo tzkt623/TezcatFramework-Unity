@@ -54,7 +54,6 @@ namespace tezcat.Framework.UI
 
         protected override void preInit()
         {
-            base.preInit();
             if (listener == null)
             {
                 listener = m_DefaultListener;

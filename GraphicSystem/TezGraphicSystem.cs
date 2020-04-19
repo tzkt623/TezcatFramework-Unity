@@ -13,6 +13,11 @@ namespace tezcat.Framework.GraphicSystem
 
         List<TezRenderCommand> m_CMDs = new List<TezRenderCommand>();
 
+        public Material drawLineMat { get; set; }
+        public Material drawCircleMat { get; set; }
+        public Material drawEllipseeMat { get; set; }
+        public Material drawRectMat { get; set; }
+
         public TezGraphicSystem()
         {
             m_Pool.Capacity = 1000;
@@ -87,41 +92,12 @@ namespace tezcat.Framework.GraphicSystem
 
         public void drawCircle(Vector3 center, float radius, int fragment, Color color)
         {
-            this.drawCircle(center, radius, fragment, color, m_Root, new Material(Shader.Find("Particles/Standard Unlit")));
-        }
-
-        public void drawEllipse(Vector3 center, float width, float height, int fragment, float offset_angle, Color color, Transform parent)
-        {
-            var offset_radian = Mathf.Deg2Rad * offset_angle;
-            var sin_offset_angle = Mathf.Sin(offset_radian);
-            var cos_offset_angle = Mathf.Cos(offset_radian);
-
-            float per = 360.0f / fragment;
-            var vertex = new Vector3[fragment];
-
-            for (int i = 0; i < fragment; i++)
-            {
-                var r = (i * per) * Mathf.Deg2Rad;
-                ///求椭圆坐标
-                var x = width * Mathf.Sin(r);
-                var z = height * Mathf.Cos(r);
-
-                ///求偏移坐标
-                var x1 = x * cos_offset_angle - z * sin_offset_angle;
-                var z1 = x * sin_offset_angle + z * cos_offset_angle;
-                vertex[i] = new Vector3(x1, 0, z1);
-            }
-
-            var cmd = new TezDrawEllipse(this.giveID());
-            cmd.graphicObject.transform.position = center;
-            cmd.draw(vertex, color, parent, new Material(Shader.Find("Particles/Standard Unlit")));
-
-            this.add(cmd);
+            this.drawCircle(center, radius, fragment, color, m_Root, this.drawCircleMat);
         }
 
         public void drawEllipse(Vector3 center, float width, float height, int fragment, Color color, Transform parent)
         {
-            this.drawEllipse(center, width, height, fragment, color, parent, new Material(Shader.Find("Particles/Standard Unlit")));
+            this.drawEllipse(center, width, height, fragment, color, parent, this.drawEllipseeMat);
         }
 
         public void drawEllipse(Vector3 center, float width, float height, int fragment, Color color, Transform parent, Material material)
@@ -162,7 +138,7 @@ namespace tezcat.Framework.GraphicSystem
 
         public void drawRect(Vector3 center, float width, float height, Color color)
         {
-            this.drawRect(center, width, height, color, m_Root, new Material(Shader.Find("Particles/Standard Unlit")));
+            this.drawRect(center, width, height, color, m_Root, this.drawRectMat);
         }
 
         public void drawLine(Vector3 from, Vector3 to, Color color, Transform parent, Material material)
@@ -184,7 +160,7 @@ namespace tezcat.Framework.GraphicSystem
 
         public void drawLine(Vector3 from, Vector3 to, Color color)
         {
-            this.drawLine(from, to, color, m_Root, new Material(Shader.Find("Particles/Additive")));
+            this.drawLine(from, to, color, m_Root, this.drawLineMat);
         }
         #endregion
 

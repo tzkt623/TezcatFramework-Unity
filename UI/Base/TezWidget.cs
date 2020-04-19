@@ -20,6 +20,7 @@ namespace tezcat.Framework.UI
         , ITezWidget
     {
         public TezWidgetLifeState lifeState { get; set; } = TezWidgetLifeState.Normal;
+        public RectTransform rectTransform => (RectTransform)this.transform;
 
         bool m_Interactable = true;
 
@@ -266,8 +267,6 @@ namespace tezcat.Framework.UI
     /// </summary>
     public abstract class TezUIWidget : TezWidget
     {
-        public RectTransform rectTransform => (RectTransform)this.transform;
-
         protected override void onClose()
         {
 
