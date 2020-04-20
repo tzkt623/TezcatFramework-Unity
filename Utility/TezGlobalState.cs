@@ -1,85 +1,52 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace tezcat.Framework.Utility
 {
     public class TezGlobalState
     {
-        static BitArray m_Mask = new BitArray(32);
-        static Dictionary<string, int> m_StateWithName = new Dictionary<string, int>();
+        static Dictionary<string, uint> m_StateWithName = new Dictionary<string, uint>(32);
+        static uint m_Mask = 0;
 
-        static TezGlobalState()
+        public static uint createOrGet(string name)
         {
-            m_Mask.SetAll(false);
-        }
-
-        static public int createState(string name)
-        {
-            int state;
-            if(!m_StateWithName.TryGetValue(name, out state))
+            uint state;
+            if (!m_StateWithName.TryGetValue(name, out state))
             {
-                state = m_StateWithName.Count;
+                state = 1u << m_StateWithName.Count;
                 m_StateWithName.Add(name, state);
-                if(m_StateWithName.Count > m_Mask.Length)
-                {
-                    m_Mask.Length += 32;
-                }
             }
+
             return state;
         }
 
-        static public void set(int state)
+        public static void set(uint state_s)
         {
-            m_Mask.Set(state, true);
+            m_Mask |= state_s;
         }
 
-        static public void clear(int state)
+        public static void clear(uint state_s)
         {
-            m_Mask.Set(state, false);
+            m_Mask &= ~state_s;
         }
 
-        static public bool anyOf(params int[] state_array)
+        public static bool anyOf(uint state_s)
         {
-            foreach (var index in state_array)
-            {
-                if(m_Mask.Get(index))
-                {
-                    return true;
-                }
-            }
-
-            return false;
+            return (m_Mask & state_s) > 0;
         }
 
-        static public bool noneOf(params int[] state_array)
+        public static bool noneOf(uint state_s)
         {
-            foreach (var index in state_array)
-            {
-                if (m_Mask.Get(index))
-                {
-                    return false;
-                }
-            }
-
-            return true;
+            return (m_Mask & state_s) == 0;
         }
 
-        static public bool allOf(params int[] state_array)
+        public static bool allOf(uint state_s)
         {
-            foreach (var index in state_array)
-            {
-                if (!m_Mask.Get(index))
-                {
-                    return false;
-                }
-            }
-
-            return true;
+            return (m_Mask & state_s) == state_s;
         }
 
-        static public bool has(int state)
+        public static void reset()
         {
-            return m_Mask.Get(state);
+            m_Mask = 0;
         }
     }
 }

@@ -122,12 +122,12 @@ namespace tezcat.Framework.GraphicSystem
         public void drawRect(Vector3 center, float width, float height, Color color, Transform parent, Material material)
         {
             var vertex = new Vector3[4]
-{
+            {
                 new Vector3(-width / 2, 0, height / 2),
                 new Vector3(width / 2, 0, height / 2),
                 new Vector3(width / 2, 0, -height / 2),
                 new Vector3(-width / 2, 0, -height / 2)
-};
+            };
 
             var cmd = new TezDrawRect(this.giveID());
             cmd.graphicObject.transform.position = center;
