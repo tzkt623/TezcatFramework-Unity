@@ -36,6 +36,17 @@ namespace tezcat.Framework.InputSystem
         public virtual void onExit()
         {
             Debug.Log(string.Format("InputState >> Exit {0}", name));
+            this.name = null;
+        }
+
+        public virtual void onPause()
+        {
+            Debug.Log(string.Format("InputState >> Pause {0}", name));
+        }
+
+        public virtual void onResume()
+        {
+            Debug.Log(string.Format("InputState >> Resume {0}", name));
         }
 
         public virtual void setExtraData(ITezTuple data)

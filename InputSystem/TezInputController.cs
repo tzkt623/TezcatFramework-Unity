@@ -49,7 +49,7 @@ namespace tezcat.Framework.InputSystem
             }
 
             m_Current?.onExit();
-            m_Current = Handler<State>.state;
+            m_Current = new State();
             m_Current.onEnter();
             m_Current.setExtraData(extra_data);
             m_OnClear(m_Current);
@@ -62,7 +62,7 @@ namespace tezcat.Framework.InputSystem
         {
             var old = m_Current;
             m_Current?.onExit();
-            m_Current = Handler<State>.state;
+            m_Current = new State();
             m_Current.onEnter();
             m_Current.setExtraData(extra_data);
             m_OnTo(old, m_Current);
@@ -73,10 +73,13 @@ namespace tezcat.Framework.InputSystem
         /// </summary>
         public void push<State>(ITezTuple extra_data = null) where State : TezInputState, new()
         {
-            m_Stack.Push(m_Current);
+            if (m_Current != null)
+            {
+                m_Stack.Push(m_Current);
+                m_Current.onPause();
+            }
 
-            m_Current?.onExit();
-            m_Current = Handler<State>.state;
+            m_Current = new State();
             m_Current.onEnter();
             m_Current.setExtraData(extra_data);
             m_OnPush(m_Current);
@@ -89,7 +92,7 @@ namespace tezcat.Framework.InputSystem
                 throw new ArgumentOutOfRangeException("InputController >> Input State Should Be Not Empty");
             }
 
-            if (m_Current != Handler<State>.state)
+            if (m_Current.GetType() != typeof(State))
             {
                 throw new InvalidCastException(string.Format("InputController >> Current : {0} | You want : {1}",
                     m_Current.name,
@@ -99,7 +102,7 @@ namespace tezcat.Framework.InputSystem
             m_OnPop(m_Current);
             m_Current.onExit();
             m_Current = m_Stack.Pop();
-            m_Current.onEnter();
+            m_Current.onResume();
         }
 
         public void update()
