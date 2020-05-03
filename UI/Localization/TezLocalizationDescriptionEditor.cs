@@ -16,9 +16,9 @@ namespace tezcat.Framework.UI
         InputField m_DescriptionInput = null;
 
         [SerializeField]
-        TezLabelButtonWithBG m_Confirm = null;
+        TezButton m_Confirm = null;
         [SerializeField]
-        TezLabelButtonWithBG m_Cancel = null;
+        TezButton m_Cancel = null;
 
         public TezLocalizationDescriptionList listArea { get; set; }
 

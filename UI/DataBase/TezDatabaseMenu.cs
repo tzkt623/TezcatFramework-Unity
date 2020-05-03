@@ -7,16 +7,16 @@ namespace tezcat.Framework.UI
     public class TezDatabaseMenu : TezSubwindow
     {
         [SerializeField]
-        TezLabelButtonWithBG m_AddItem = null;
+        TezButton m_AddItem = null;
         [SerializeField]
-        TezLabelButtonWithBG m_RemoveItem = null;
+        TezButton m_RemoveItem = null;
         [SerializeField]
-        TezLabelButtonWithBG m_EditItem = null;
+        TezButton m_EditItem = null;
 
         [SerializeField]
-        TezLabelButtonWithBG m_Save = null;
+        TezButton m_Save = null;
         [SerializeField]
-        TezLabelButtonWithBG m_RefreshDataBase = null;
+        TezButton m_RefreshDataBase = null;
 
         TezDatabaseGroup m_Group = null;
         new TezDatabaseWindow window

@@ -9,9 +9,9 @@ namespace tezcat.Framework.UI
     public class TezLocalizationMenu : TezSubwindow
     {
         [SerializeField]
-        TezLabelButtonWithBG m_Refresh = null;
+        TezButton m_Refresh = null;
         [SerializeField]
-        TezLabelButtonWithBG m_Save = null;
+        TezButton m_Save = null;
 
         public TezLocalizationNameList nameList { get; set; }
         public TezLocalizationDescriptionList descriptionList { get; set; }

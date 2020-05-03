@@ -15,7 +15,7 @@ namespace tezcat.Framework.UI
         [SerializeField]
         Text m_LocalizationName = null;
         [SerializeField]
-        TezImageButton m_Edit = null;
+        TezButton m_Edit = null;
 
         public TezLocalizationNameList listArea { get; set; }
         public string key

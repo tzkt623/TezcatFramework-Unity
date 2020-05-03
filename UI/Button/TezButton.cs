@@ -21,44 +21,6 @@ namespace tezcat.Framework.UI
     {
         public event TezEventExtension.Action<TezButton, PointerEventData> onClick;
         public abstract Graphic graphicController { get; }
-        public ITezButtonListener listener { get; set; } = null;
-
-        class DefaultListener : ITezButtonListener
-        {
-            void ITezButtonListener.onInteract(TezButton button, bool value)
-            {
-
-            }
-
-            void ITezButtonListener.OnPointerDown(TezButton button, PointerEventData eventData)
-            {
-
-            }
-
-            void ITezButtonListener.onPointerEnter(TezButton button, PointerEventData eventData)
-            {
-
-            }
-
-            void ITezButtonListener.OnPointerExit(TezButton button, PointerEventData eventData)
-            {
-
-            }
-
-            void ITezButtonListener.OnPointerUp(TezButton button, PointerEventData eventData)
-            {
-
-            }
-        }
-        static DefaultListener m_DefaultListener = new DefaultListener();
-
-        protected override void preInit()
-        {
-            if (listener == null)
-            {
-                listener = m_DefaultListener;
-            }
-        }
 
         protected override void onRefresh(TezRefreshPhase phase)
         {
@@ -67,21 +29,19 @@ namespace tezcat.Framework.UI
 
         protected override void onClose()
         {
-            listener = null;
             onClick = null;
         }
 
         protected override void onInteractable(bool value)
         {
             graphicController.raycastTarget = value;
-            listener.onInteract(this, value);
         }
 
         public void OnPointerEnter(PointerEventData eventData)
         {
             if (this.interactable)
             {
-                listener.onPointerEnter(this, eventData);
+                this.onPointerEnter(this, eventData);
             }
         }
 
@@ -89,7 +49,7 @@ namespace tezcat.Framework.UI
         {
             if (this.interactable)
             {
-                listener.OnPointerExit(this, eventData);
+                this.onPointerExit(this, eventData);
             }
         }
 
@@ -97,7 +57,7 @@ namespace tezcat.Framework.UI
         {
             if (this.interactable)
             {
-                listener.OnPointerDown(this, eventData);
+                this.onPointerDown(this, eventData);
             }
         }
 
@@ -105,9 +65,14 @@ namespace tezcat.Framework.UI
         {
             if (this.interactable)
             {
-                listener.OnPointerUp(this, eventData);
+                this.onPointerUp(this, eventData);
                 this.onClick?.Invoke(this, eventData);
             }
         }
+
+        protected abstract void onPointerEnter(TezButton button, PointerEventData eventData);
+        protected abstract void onPointerExit(TezButton button, PointerEventData eventData);
+        protected abstract void onPointerDown(TezButton button, PointerEventData eventData);
+        protected abstract void onPointerUp(TezButton button, PointerEventData eventData);
     }
 }

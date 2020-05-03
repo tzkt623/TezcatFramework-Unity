@@ -14,7 +14,7 @@ namespace tezcat.Framework.UI
         , ITezSinglePrefab
     {
         [SerializeField]
-        TezImageButton m_Edit = null;
+        TezButton m_Edit = null;
 
         public TezLocalizationDescriptionList listArea { get; set; }
 

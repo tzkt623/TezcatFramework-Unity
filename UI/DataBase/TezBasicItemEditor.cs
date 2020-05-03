@@ -10,11 +10,11 @@ namespace tezcat.Framework.UI
     {
         [Header("Menu")]
         [SerializeField]
-        TezLabelButtonWithBG m_Confirm = null;
+        TezButton m_Confirm = null;
         [SerializeField]
-        TezLabelButtonWithBG m_Save = null;
+        TezButton m_Save = null;
         [SerializeField]
-        TezLabelButtonWithBG m_Cancel = null;
+        TezButton m_Cancel = null;
 
         public event TezEventExtension.Action onEventClose;
 

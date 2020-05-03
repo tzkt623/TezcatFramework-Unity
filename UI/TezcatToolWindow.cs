@@ -8,13 +8,13 @@ namespace tezcat.Framework.UI
     {
         [Header("Menu")]
         [SerializeField]
-        TezLabelButtonWithBG m_DatabaseButton;
+        TezButton m_DatabaseButton;
         [SerializeField]
-        TezLabelButtonWithBG m_LocalizationButton;
+        TezButton m_LocalizationButton;
         [SerializeField]
-        TezLabelButtonWithBG m_OptionButton;
+        TezButton m_OptionButton;
         [SerializeField]
-        TezLabelButtonWithBG m_CloseButton;
+        TezButton m_CloseButton;
 
         protected override void preInit()
         {

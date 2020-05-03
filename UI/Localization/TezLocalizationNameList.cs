@@ -18,21 +18,21 @@ namespace tezcat.Framework.UI
 
         [Header("Load Property")]
         [SerializeField]
-        TezLabelButtonWithBG m_LoadProperty = null;
+        TezButton m_LoadProperty = null;
         [SerializeField]
-        TezLabelButtonWithBG m_LoadPropertySingal = null;
+        TezButton m_LoadPropertySingal = null;
 
         [Header("Add And Remove")]
         [SerializeField]
-        TezLabelButtonWithBG m_Add = null;
+        TezButton m_Add = null;
         [SerializeField]
-        TezLabelButtonWithBG m_Remove = null;
+        TezButton m_Remove = null;
 
         [Header("Search")]
         [SerializeField]
-        TezLabelButtonWithBG m_Search = null;
+        TezButton m_Search = null;
         [SerializeField]
-        TezLabelButtonWithBG m_ClearSearch = null;
+        TezButton m_ClearSearch = null;
         [SerializeField]
         InputField m_SearchKey = null;
 
@@ -42,9 +42,9 @@ namespace tezcat.Framework.UI
         [SerializeField]
         int m_CountPerPage = 20;
         [SerializeField]
-        TezImageButton m_PageUp = null;
+        TezButton m_PageUp = null;
         [SerializeField]
-        TezImageButton m_PageDown = null;
+        TezButton m_PageDown = null;
         [SerializeField]
         InputField m_Page = null;
         [SerializeField]

@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using tezcat.Framework.Core;
-using UnityEngine;
 
 namespace tezcat.Framework.UI
 {
@@ -50,11 +48,6 @@ namespace tezcat.Framework.UI
         #endregion
 
         public int ID { get; private set; } = -1;
-
-        public RectTransform rectTransform
-        {
-            get { return (RectTransform)this.transform; }
-        }
 
         protected override void preInit()
         {

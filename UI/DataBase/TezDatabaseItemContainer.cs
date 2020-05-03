@@ -21,9 +21,9 @@ namespace tezcat.Framework.UI
         [SerializeField]
         int m_CountPerPage = 100;
         [SerializeField]
-        TezImageButton m_PageUp = null;
+        TezButton m_PageUp = null;
         [SerializeField]
-        TezImageButton m_PageDown = null;
+        TezButton m_PageDown = null;
         [SerializeField]
         InputField m_Page = null;
         [SerializeField]

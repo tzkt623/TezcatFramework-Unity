@@ -17,7 +17,6 @@ namespace tezcat.Framework.UI
         : TezUIWidget
         , ITezSinglePrefab
     {
-        RectTransform m_RectTransform = null;
         [SerializeField]
         protected RectTransform m_Content = null;
         [SerializeField]
@@ -25,6 +24,7 @@ namespace tezcat.Framework.UI
         [SerializeField]
         Vector2 m_TopRight = new Vector2(32, 8);
 
+        RectTransform m_RectTransform = null;
         Vector2 m_Pivot = new Vector2(0, 1);
         List<ITezWidget> m_Widgets = new List<ITezWidget>();
 

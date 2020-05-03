@@ -18,7 +18,7 @@ namespace tezcat.Framework.UI
         [SerializeField]
         InputField m_SaveName = null;
         [SerializeField]
-        TezLabelButtonWithBG m_SaveAndClose = null;
+        TezButton m_SaveAndClose = null;
 
         protected override void preInit()
         {
