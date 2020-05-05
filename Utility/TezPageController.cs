@@ -4,12 +4,22 @@ using UnityEngine;
 
 namespace tezcat.Framework.Utility
 {
+    /// <summary>
+    /// 分页器
+    /// </summary>
     public class TezPageController : ITezCloseable
     {
         TezEventExtension.Action<int, int> m_OnPageChanged;
         TezEventExtension.Action m_OnPageEmpty;
 
+        /// <summary>
+        /// 当前页码
+        /// </summary>
         public int currentPage { get; private set; } = 1;
+
+        /// <summary>
+        /// 最大页码
+        /// </summary>
         public int maxPage { get; private set; } = 0;
 
         /// <summary>
@@ -17,15 +27,32 @@ namespace tezcat.Framework.Utility
         /// </summary>
         public int pageCapacity { get; set; } = 10;
 
+        /// <summary>
+        /// 每页开始的位置
+        /// </summary>
         int m_CurrentPageBegin;
-        int m_CurrentPageEnd;
-        int m_TotalCount;
+
+        int m_Count;
+        /// <summary>
+        /// 总数量
+        /// 设置总数量以计算总页面
+        /// </summary>
+        public int count
+        {
+            get { return m_Count; }
+            set
+            {
+                m_Count = value;
+                this.maxPage = Mathf.CeilToInt(m_Count / (float)this.pageCapacity);
+            }
+        }
 
         /// <summary>
-        /// 页面变化时的通知
-        /// <para>begin 当前页面Item开始位置</para> 
-        /// <para>end 当前页面Item结束位置的后一位</para>
+        /// 当页面变化时
+        /// on_page_changed(页面开始位置,页面容量)
         /// </summary>
+        /// <param name="on_page_changed"></param>
+        /// <param name="on_page_empty"></param>
         public void setListener(TezEventExtension.Action<int, int> on_page_changed, TezEventExtension.Action on_page_empty)
         {
             m_OnPageChanged = on_page_changed;
@@ -33,84 +60,65 @@ namespace tezcat.Framework.Utility
         }
 
         /// <summary>
-        /// 计算最大页数
-        /// </summary>
-        public void calculateMaxPage(int total_count)
-        {
-            m_TotalCount = total_count;
-            this.maxPage = Mathf.CeilToInt(m_TotalCount / (float)pageCapacity);
-        }
-
-        public int isInPage(int index)
-        {
-            if(m_CurrentPageEnd > index)
-            {
-                return index - m_CurrentPageBegin;
-            }
-
-            return -1;
-        }
-
-        /// <summary>
-        /// 不会低于第一页
+        /// 上一页
         /// </summary>
         public void pageUp()
         {
-            if (currentPage <= 1)
+            if (m_Count == 0)
             {
-                currentPage = 1;
+                m_OnPageEmpty();
+                return;
+            }
+
+            ///不会低于第一页
+            if (this.currentPage == 1)
+            {
                 return;
             }
 
             this.currentPage -= 1;
-
-            if (this.calculateCurrentPage())
-            {
-                m_OnPageChanged(this.m_CurrentPageBegin, this.m_CurrentPageEnd);
-            }
-            else
-            {
-                m_OnPageEmpty();
-            }
+            this.refresh();
         }
 
         /// <summary>
-        /// 不会超过最大页数
+        /// 下一页
         /// </summary>
         public void pageDown()
         {
-            if (currentPage >= maxPage)
+            if (m_Count == 0)
             {
-                currentPage = maxPage;
+                m_OnPageEmpty();
+                return;
+            }
+
+            ///不会超过最大页数
+            if (this.currentPage == maxPage)
+            {
                 return;
             }
 
             this.currentPage += 1;
-
-            if (this.calculateCurrentPage())
-            {
-                m_OnPageChanged(this.m_CurrentPageBegin, this.m_CurrentPageEnd);
-            }
-            else
-            {
-                m_OnPageEmpty();
-            }
+            this.refresh();
         }
 
+        /// <summary>
+        /// 设定页码
+        /// </summary>
         public void setPage(int page)
         {
-            if(this.maxPage == 0)
+            ///如果没有数量用于分页
+            if (m_Count == 0)
             {
-                this.currentPage = 1;
+                this.currentPage = 0;
                 m_OnPageEmpty();
                 return;
             }
 
-            if(page < 1)
+            if (page < 1)
             {
                 this.currentPage = 1;
             }
-            else if(page > maxPage)
+            else if (page > maxPage)
             {
                 currentPage = maxPage;
             }
@@ -119,26 +127,19 @@ namespace tezcat.Framework.Utility
                 this.currentPage = page;
             }
 
-            if(this.calculateCurrentPage())
-            {
-                m_OnPageChanged(this.m_CurrentPageBegin, this.m_CurrentPageEnd);
-            }
-            else
-            {
-                m_OnPageEmpty();
-            }
+            this.refresh();
         }
 
-        private bool calculateCurrentPage()
+        private void refresh()
         {
-            m_CurrentPageBegin = (currentPage - 1) * pageCapacity;
-            m_CurrentPageEnd = Mathf.Min(m_CurrentPageBegin + pageCapacity, m_TotalCount);
-            return m_CurrentPageBegin >= 0 && m_CurrentPageEnd > 0;
+            m_CurrentPageBegin = (this.currentPage - 1) * pageCapacity;
+            m_OnPageChanged(m_CurrentPageBegin, this.pageCapacity);
         }
 
         public void close()
         {
             m_OnPageChanged = null;
+            m_OnPageEmpty = null;
         }
     }
 }

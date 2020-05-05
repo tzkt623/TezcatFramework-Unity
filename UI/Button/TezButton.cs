@@ -20,6 +20,9 @@ namespace tezcat.Framework.UI
         , ITezClickableWidget
     {
         public event TezEventExtension.Action<TezButton, PointerEventData> onClick;
+        /// <summary>
+        /// 控制按钮碰撞检测的对象
+        /// </summary>
         public abstract Graphic graphicController { get; }
 
         protected override void onRefresh(TezRefreshPhase phase)

@@ -5,15 +5,10 @@ using UnityEngine;
 
 namespace tezcat.Framework.UI
 {
-    /*
-     * (0, 1080)-------------(1920, 1080)
-     * 
-     * 
-     * 
-     * 
-     * (0,    0)-------------(1920, 0)
-     */
-    public class TezTip
+     /// <summary>
+     /// 浮动Tip
+     /// </summary>
+    public class TezFloatingTip
         : TezUIWidget
         , ITezSinglePrefab
     {
@@ -26,6 +21,7 @@ namespace tezcat.Framework.UI
 
         RectTransform m_RectTransform = null;
         Vector2 m_Pivot = new Vector2(0, 1);
+
         List<ITezWidget> m_Widgets = new List<ITezWidget>();
 
         protected override void initWidget()
@@ -33,7 +29,10 @@ namespace tezcat.Framework.UI
             m_RectTransform = this.GetComponent<RectTransform>();
         }
 
-        public void addWidget(ITezWidget widget)
+        /// <summary>
+        /// 添加一个控件
+        /// </summary>
+        public virtual void addWidget(ITezWidget widget)
         {
             m_Widgets.Add(widget);
         }
@@ -64,6 +63,14 @@ namespace tezcat.Framework.UI
 
         private void Update()
         {
+            /*
+             * (0, 1080)-------------(1920, 1080)
+             * 
+             * 
+             * 
+             * 
+             * (0,    0)-------------(1920, 0)
+             */
             this.calculatePosition();
         }
 

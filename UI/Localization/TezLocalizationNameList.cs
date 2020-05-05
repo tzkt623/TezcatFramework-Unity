@@ -105,7 +105,7 @@ namespace tezcat.Framework.UI
 
         private void refreshData()
         {
-            m_PageController.calculateMaxPage(TezService.get<TezTranslator>().nameCount);
+            m_PageController.count = TezService.get<TezTranslator>().nameCount;
             m_PageController.setPage(m_PageController.currentPage);
         }
 

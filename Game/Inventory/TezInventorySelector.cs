@@ -30,22 +30,22 @@ namespace tezcat.Framework.Game.Inventory
             m_VisualSelector = visual_selector;
         }
 
-        public void selectedSlot(TezInventorySlot slot)
+        public void setSlot(TezInventorySlot slot)
         {
             this.sourceSlot = slot;
-            this.sourceInventory = slot.owner;
+            this.sourceInventory = slot.inventory;
             m_VisualSelector.onSelect(slot.item);
         }
 
-        public void putToTarget(int count)
+        public void putToTarget(int count = 1)
         {
             ((TezInventory<Object>)this.targetInventory).add((Object)sourceSlot.item, count);
-            ((TezInventory<Object>)this.sourceInventory).remove(sourceSlot.slotIndex, count);
+            ((TezInventory<Object>)this.sourceInventory).remove(sourceSlot.index, count);
         }
 
-        public void removeFromSource(int count)
+        public void removeFromSource(int count = 1)
         {
-            ((TezInventory<Object>)this.sourceInventory).remove(sourceSlot.slotIndex, count);
+            ((TezInventory<Object>)this.sourceInventory).remove(sourceSlot.index, count);
         }
 
         public void complete()

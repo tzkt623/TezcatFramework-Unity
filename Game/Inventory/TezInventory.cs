@@ -11,8 +11,9 @@ namespace tezcat.Framework.Game.Inventory
         event TezEventExtension.Action<TezInventorySlot> onItemRemoved;
 
         int slotCount { get; }
-        TezInventorySlot getItem(int index);
-        void foreachCargo(int begin, int end, TezEventExtension.Action<int, TezInventorySlot> action);
+        TezInventorySlot this[int index] { get; }
+        void clearEvents();
+        void paging(int begin, int end, TezEventExtension.Action<int, TezInventorySlot> action);
     }
 
     public class TezInventory<Object>
@@ -24,19 +25,22 @@ namespace tezcat.Framework.Game.Inventory
 
         public int slotCount
         {
-            get { return m_Slot.Count; }
+            get { return m_Slots.Count; }
         }
 
-        List<TezInventorySlot> m_Slot = new List<TezInventorySlot>();
+        List<TezInventorySlot> m_Slots = new List<TezInventorySlot>();
 
         public TezInventorySlot this[int index]
         {
-            get { return m_Slot[index]; }
-        }
-
-        public TezInventorySlot getItem(int index)
-        {
-            return m_Slot[index];
+            get
+            {
+                while (index >= m_Slots.Count)
+                {
+                    var slot = new TezInventorySlot(this, m_Slots.Count);
+                    m_Slots.Add(slot);
+                }
+                return m_Slots[index];
+            }
         }
 
         public void add(Object game_object, int count)
@@ -44,9 +48,9 @@ namespace tezcat.Framework.Game.Inventory
             var stackable = game_object.itemConfig.stackable;
 
             TezInventorySlot result = null;
-            for (int i = 0; i < m_Slot.Count; i++)
+            for (int i = 0; i < m_Slots.Count; i++)
             {
-                var slot = m_Slot[i];
+                var slot = m_Slots[i];
 
                 if (stackable)
                 {
@@ -94,19 +98,18 @@ namespace tezcat.Framework.Game.Inventory
             }
             else
             {
-                result = new TezInventorySlot(this);
-                result.slotIndex = m_Slot.Count;
+                result = new TezInventorySlot(this, m_Slots.Count);
                 result.count = count;
                 result.item = game_object;
 
-                m_Slot.Add(result);
+                m_Slots.Add(result);
                 onItemAdded?.Invoke(result);
             }
         }
 
         public void add(int slot_id, Object game_object, int count)
         {
-            var slot = m_Slot[slot_id];
+            var slot = m_Slots[slot_id];
             slot.item = game_object;
             slot.count = count;
             if (slot.isBound)
@@ -117,7 +120,7 @@ namespace tezcat.Framework.Game.Inventory
 
         public void remove(int slot_id, int count)
         {
-            var slot = m_Slot[slot_id];
+            var slot = m_Slots[slot_id];
             slot.count -= count;
             if (slot.count == 0)
             {
@@ -132,7 +135,7 @@ namespace tezcat.Framework.Game.Inventory
 
         public bool remove(Object game_object, int count)
         {
-            var index = m_Slot.FindIndex((TezInventorySlot slot) =>
+            var index = m_Slots.FindIndex((TezInventorySlot slot) =>
             {
                 return slot.item != null && slot.item.sameAs(game_object);
             });
@@ -146,22 +149,28 @@ namespace tezcat.Framework.Game.Inventory
             return false;
         }
 
-        public void foreachCargo(int begin, int end, TezEventExtension.Action<int, TezInventorySlot> action)
+        public void paging(int begin, int end, TezEventExtension.Action<int, TezInventorySlot> action)
         {
             for (int i = begin; i < end; i++)
             {
-                action(i, m_Slot[i]);
+                action(i, m_Slots[i]);
             }
+        }
+
+        public void clearEvents()
+        {
+            onItemAdded = null;
+            onItemRemoved = null;
         }
 
         public virtual void close()
         {
-            for (int i = 0; i < m_Slot.Count; i++)
+            for (int i = 0; i < m_Slots.Count; i++)
             {
-                m_Slot[i].close();
+                m_Slots[i].close();
             }
-            m_Slot.Clear();
-            m_Slot = null;
+            m_Slots.Clear();
+            m_Slots = null;
 
             onItemAdded = null;
             onItemRemoved = null;
