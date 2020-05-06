@@ -20,13 +20,13 @@ namespace tezcat.Framework.UI
             m_Menu.descriptionList = m_DescriptionList;
         }
 
-        protected override void onClose()
+        protected override void onClose(bool self_close = true)
         {
             m_Menu = null;
             m_NameList = null;
             m_DescriptionList = null;
 
-            base.onClose();
+            base.onClose(self_close);
             TezService.get<TezcatFramework>().createWindow<TezcatToolWindow>("TezcatToolWindow", TezLayer.last).open();
         }
     }

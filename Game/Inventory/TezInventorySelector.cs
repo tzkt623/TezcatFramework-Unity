@@ -3,12 +3,18 @@ using tezcat.Framework.ECS;
 
 namespace tezcat.Framework.Game.Inventory
 {
+    /// <summary>
+    /// 物品虚拟选择接口
+    /// </summary>
     public interface ITezInventoryVisualSelector
     {
         void onSelect(TezGameObject game_object);
         void onComplete();
     }
 
+    /// <summary>
+    /// 物品选择器
+    /// </summary>
     public class TezInventorySelector<Object>
         : ITezService
         where Object : TezGameObject, ITezInventoryItem
@@ -56,7 +62,7 @@ namespace tezcat.Framework.Game.Inventory
             this.sourceSlot = null;
         }
 
-        public virtual void close()
+        public virtual void close(bool self_close = true)
         {
             this.sourceInventory = null;
             this.targetInventory = null;

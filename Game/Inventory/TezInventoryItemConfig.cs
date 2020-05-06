@@ -15,7 +15,7 @@ namespace tezcat.Framework.Game.Inventory
             this.stackCount = stack_count;
         }
 
-        public virtual void close()
+        public virtual void close(bool self_close = true)
         {
 
         }

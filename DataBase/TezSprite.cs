@@ -24,7 +24,7 @@ namespace tezcat.Framework.Database
             this.name = name;
         }
 
-        public override void close()
+        public override void close(bool self_close = true)
         {
             m_Sprite = null;
         }

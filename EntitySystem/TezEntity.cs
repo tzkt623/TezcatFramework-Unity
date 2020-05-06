@@ -40,7 +40,7 @@ namespace tezcat.Framework.ECS
             m_FreeEntity.Add(entity);
         }
 
-        public void close()
+        public void close(bool self_close = true)
         {
             m_FreeEntity.Clear();
             m_FreeEntity = null;
@@ -204,7 +204,7 @@ namespace tezcat.Framework.ECS
             }
         }
 
-        public void close()
+        public void close(bool self_close = true)
         {
             for (int i = 0; i < m_Components.Length; i++)
             {
@@ -214,7 +214,7 @@ namespace tezcat.Framework.ECS
                 {
                     m_Components[i] = null;
                     com.onRemove(this);
-                    com.close();
+                    com.close(false);
                 }
             }
 

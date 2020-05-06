@@ -26,7 +26,7 @@ namespace tezcat.Framework.Game.Inventory
             this.index = index;
         }
 
-        public virtual void close()
+        public virtual void close(bool self_close = true)
         {
             this.item = null;
             this.inventory = null;

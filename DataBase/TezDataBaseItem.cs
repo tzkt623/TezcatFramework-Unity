@@ -36,7 +36,7 @@ namespace tezcat.Framework.Database
             this.NID = reader.readString(TezReadOnlyString.NID);
         }
 
-        public abstract void close();
+        public abstract void close(bool self_close = true);
 
         #region 重载
         public override bool Equals(object other)
@@ -159,7 +159,7 @@ namespace tezcat.Framework.Database
             this.registerProperty(this.properties);
         }
 
-        public override void close()
+        public override void close(bool self_close = true)
         {
             this.CID = null;
 

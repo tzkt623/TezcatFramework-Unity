@@ -33,14 +33,14 @@ namespace tezcat.Framework.UI
             m_Cancel.onClick += cancel;
         }
 
-        protected override void onClose()
+        protected override void onClose(bool self_close = true)
         {
             m_Confirm.onClick -= confirm;
             m_Save.onClick -= save;
             m_Cancel.onClick -= cancel;
 
             onEventClose = null;
-            base.onClose();
+            base.onClose(self_close);
         }
 
         private void confirm(TezButton button, PointerEventData eventData)

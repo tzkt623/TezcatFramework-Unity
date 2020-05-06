@@ -396,7 +396,7 @@ namespace tezcat.Framework.Core
         }
         #endregion
 
-        public void close()
+        public void close(bool self_close = true)
         {
             m_Name.close();
             m_Description.close();

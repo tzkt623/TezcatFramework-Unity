@@ -49,14 +49,14 @@ namespace tezcat.Framework.UI
 
         }
 
-        protected override void onClose()
+        protected override void onClose(bool self_close = true)
         {
             m_DatabaseButton.onClick -= onDatabaseButtonClick;
             m_LocalizationButton.onClick -= onLocalizationButtonClick;
             m_OptionButton.onClick -= onOptionButtonClick;
             m_CloseButton.onClick -= onCloseButtonClick;
 
-            base.onClose();
+            base.onClose(self_close);
         }
 
         private void onCloseButtonClick(TezButton button, PointerEventData eventData)

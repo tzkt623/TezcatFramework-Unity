@@ -35,7 +35,7 @@ namespace tezcat.Framework.Definition
         public abstract void onRegisterObject(ITezDefinitionPathObject path_with_object);
         public abstract void onUnregisterObject(ITezDefinitionPathObject path_with_object);
 
-        public virtual void close()
+        public virtual void close(bool self_close = true)
         {
             m_ChildrenWithID.Clear();
             m_ActivedChildren.Clear();

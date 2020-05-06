@@ -5,6 +5,9 @@ using tezcat.Framework.Extension;
 
 namespace tezcat.Framework.Game.Inventory
 {
+    /// <summary>
+    /// 背包系统接口
+    /// </summary>
     public interface ITezInventory : ITezCloseable
     {
         event TezEventExtension.Action<TezInventorySlot> onItemAdded;
@@ -16,6 +19,9 @@ namespace tezcat.Framework.Game.Inventory
         void paging(int begin, int end, TezEventExtension.Action<int, TezInventorySlot> action);
     }
 
+    /// <summary>
+    /// 背包系统
+    /// </summary>
     public class TezInventory<Object>
         : ITezInventory
         where Object : TezGameObject, ITezInventoryItem
@@ -163,11 +169,11 @@ namespace tezcat.Framework.Game.Inventory
             onItemRemoved = null;
         }
 
-        public virtual void close()
+        public virtual void close(bool self_close = true)
         {
             for (int i = 0; i < m_Slots.Count; i++)
             {
-                m_Slots[i].close();
+                m_Slots[i].close(false);
             }
             m_Slots.Clear();
             m_Slots = null;

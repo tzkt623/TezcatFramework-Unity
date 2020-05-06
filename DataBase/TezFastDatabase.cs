@@ -68,7 +68,7 @@ namespace tezcat.Framework.Database
             return m_GroupList[class_id].get<TItem>(subclass_id, name);
         }
 
-        public void close()
+        public void close(bool self_close = true)
         {
 
         }

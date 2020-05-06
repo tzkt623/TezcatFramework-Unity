@@ -31,7 +31,7 @@ namespace tezcat.Framework.Definition
                 return tokenID.GetHashCode();
             }
 
-            public void close()
+            public void close(bool self_close = true)
             {
 
             }
@@ -283,16 +283,16 @@ namespace tezcat.Framework.Definition
         /// <summary>
         /// 关闭
         /// </summary>
-        public virtual void close()
+        public virtual void close(bool self_close = true)
         {
             for (int i = 0; i < m_PrimaryNodes.Count; i++)
             {
-                m_PrimaryNodes[i]?.close();
+                m_PrimaryNodes[i]?.close(false);
             }
 
             for (int i = 0; i < m_SecondaryNodes.Count; i++)
             {
-                m_SecondaryNodes[i]?.close();
+                m_SecondaryNodes[i]?.close(false);
             }
 
             m_PrimaryNodes.Clear();
@@ -318,7 +318,7 @@ namespace tezcat.Framework.Definition
         public abstract void onRegisterObject(ITezDefinitionPathObject path_with_object);
         public abstract void onUnregisterObject(ITezDefinitionPathObject path_with_object);
 
-        public virtual void close()
+        public virtual void close(bool self_close = true)
         {
             this.definitionSet = null;
         }
@@ -352,10 +352,10 @@ namespace tezcat.Framework.Definition
             return this.definitionSet.getSecondaryNode(id);
         }
 
-        public override void close()
+        public override void close(bool self_close = true)
         {
-            base.close();
-            m_Children.close();
+            base.close(self_close);
+            m_Children.close(false);
             m_Children = null;
         }
     }

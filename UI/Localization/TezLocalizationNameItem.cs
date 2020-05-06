@@ -53,7 +53,7 @@ namespace tezcat.Framework.UI
 
         }
 
-        protected override void onClose()
+        protected override void onClose(bool self_close = true)
         {
             m_Edit.onClick -= onEditClick;
             m_KeyName = null;

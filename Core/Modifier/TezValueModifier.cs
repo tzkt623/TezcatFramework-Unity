@@ -52,10 +52,10 @@ namespace tezcat.Framework.Core
                 , definition.ToString());
         }
 
-        public override void close()
+        public override void close(bool self_close = true)
         {
-            base.close();
-            this.definition.close();
+            base.close(self_close);
+            this.definition.close(self_close);
 
             this.source = null;
             this.definition = null;

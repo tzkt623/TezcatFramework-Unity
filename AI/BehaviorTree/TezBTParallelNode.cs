@@ -34,9 +34,9 @@ namespace tezcat.Framework.AI
 
         TezArray<TezBTNode<Data>> m_Nodes = new TezArray<TezBTNode<Data>>(0);
 
-        public override void close()
+        public override void close(bool self_close = true)
         {
-            m_Nodes.close();
+            m_Nodes.close(false);
             m_Nodes = null;
         }
 

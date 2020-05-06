@@ -75,7 +75,7 @@ namespace tezcat.Framework.UI
             this.name = "Layer_" + ID;
         }
 
-        protected override void onClose()
+        protected override void onClose(bool self_close = true)
         {
 
         }

@@ -11,6 +11,6 @@ namespace tezcat.Framework.UI
     /// </summary>
     public abstract class TezUIWrapper : ITezCloseable
     {
-        public abstract void close();
+        public abstract void close(bool self_close = true);
     }
 }

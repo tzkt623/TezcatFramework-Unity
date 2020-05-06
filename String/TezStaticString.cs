@@ -123,7 +123,7 @@ namespace tezcat.Framework.String
             m_ID = 0;
         }
 
-        public override void close()
+        public override void close(bool self_close = true)
         {
             m_ID = -1;
         }

@@ -7,6 +7,6 @@
         public abstract void onRegisterObject(ITezDefinitionPathObject path_object);
         public abstract void onUnregisterObject(ITezDefinitionPathObject path_object);
 
-        public abstract void close();
+        public abstract void close(bool self_close = true);
     }
 }

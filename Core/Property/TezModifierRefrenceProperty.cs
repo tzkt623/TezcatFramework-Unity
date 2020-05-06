@@ -22,11 +22,11 @@
 
         public abstract void createRefrence(ITezValueDescriptor descriptor, TezValueModifierDefinition definition, object source);
 
-        public override void close()
+        public override void close(bool self_close = true)
         {
-            base.close();
+            base.close(self_close);
 
-            this.modifierRefrence.close();
+            this.modifierRefrence.close(false);
             this.modifierRefrence = null;
         }
     }
@@ -45,11 +45,11 @@
 
         public abstract void createRefrence(ITezValueDescriptor descriptor, TezValueModifierDefinition definition, object source);
 
-        public override void close()
+        public override void close(bool self_close = true)
         {
-            base.close();
+            base.close(self_close);
 
-            this.modifierRefrence.close();
+            this.modifierRefrence.close(false);
             this.modifierRefrence = null;
         }
     }

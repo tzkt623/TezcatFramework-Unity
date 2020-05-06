@@ -81,7 +81,7 @@ namespace tezcat.Framework.Database
             return m_Missing;
         }
 
-        public void close()
+        public void close(bool self_close = true)
         {
             foreach (var pair in m_SpriteDic)
             {

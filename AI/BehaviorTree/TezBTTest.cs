@@ -6,7 +6,7 @@ namespace tezcat.Framework.AI
 {
     public class TezBTTestData : ITezBTData
     {
-        public void close()
+        public void close(bool self_close = true)
         {
 
         }
@@ -48,7 +48,7 @@ namespace tezcat.Framework.AI
     {
         TezRandom random = new TezRandom();
 
-        public override void close()
+        public override void close(bool self_close = true)
         {
 
         }

@@ -81,7 +81,7 @@ namespace tezcat.Framework.Utility
             return (m_Data & other.m_Data) == other.m_Data;
         }
 
-        public void close()
+        public void close(bool self_close = true)
         {
             this.m_Data = 0u;
         }
@@ -201,7 +201,7 @@ namespace tezcat.Framework.Utility
             return (m_Data & other.m_Data) == other.m_Data;
         }
 
-        public void close()
+        public void close(bool self_close = true)
         {
             this.m_Data = 0UL;
         }

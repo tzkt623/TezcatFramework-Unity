@@ -17,7 +17,7 @@
     {
         public object source { get; set; }
         public abstract TezBufferType bufferType { get; }
-        public virtual void close()
+        public virtual void close(bool self_close = true)
         {
             this.source = null;
         }

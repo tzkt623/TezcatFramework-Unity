@@ -95,9 +95,8 @@ namespace tezcat.Framework.UI
             m_CurrentEditor = null;
         }
 
-        protected override void onClose()
+        protected override void onClose(bool self_close = true)
         {
-            base.onClose();
             TezService.get<TezcatFramework>().createWindow<TezcatToolWindow>("TezcatToolWindow", TezLayer.last).open();
         }
     }

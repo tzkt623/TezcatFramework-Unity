@@ -46,7 +46,7 @@ namespace tezcat.Framework.Database
             this.prefab = prefab;
         }
 
-        public void close()
+        public void close(bool self_close = true)
         {
             this.prefab = null;
         }
@@ -133,7 +133,7 @@ namespace tezcat.Framework.Database
             return (T)m_MultiDic[multi_name];
         }
 
-        public void close()
+        public void close(bool self_close = true)
         {
 
         }

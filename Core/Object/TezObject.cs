@@ -14,7 +14,7 @@
         /// <summary>
         /// 删除Object时调用
         /// </summary>
-        public abstract void close();
+        public abstract void close(bool self_close = true);
 
 
         #region 重载操作

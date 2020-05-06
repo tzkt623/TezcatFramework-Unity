@@ -13,9 +13,9 @@
         public Assemble assemble { get; set; } = Assemble.SumBase;
         public ITezValueDescriptor target { get; set; } = null;
 
-        public override void close()
+        public override void close(bool self_close = true)
         {
-            base.close();
+            base.close(self_close);
 
             this.target = null;
         }

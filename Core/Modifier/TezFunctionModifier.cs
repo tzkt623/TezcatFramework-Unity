@@ -6,6 +6,6 @@
         public TezModifierDefinition definition { get; set; } = null;
         public object source { get; set; }
 
-        public abstract void close();
+        public abstract void close(bool self_close = true);
     }
 }

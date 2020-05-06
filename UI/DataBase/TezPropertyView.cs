@@ -23,7 +23,7 @@ namespace tezcat.Framework.UI
             m_PorpertyValue.setGetter(value);
         }
 
-        protected override void onClose()
+        protected override void onClose(bool self_close = true)
         {
             m_PropertyName = null;
             m_PorpertyValue = null;

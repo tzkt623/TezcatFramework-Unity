@@ -299,7 +299,7 @@ namespace tezcat.Framework.Core
             return result;
         }
 
-        public void close()
+        public void close(bool self_close = true)
         {
             m_Builder.Clear();
             m_Builder = null;

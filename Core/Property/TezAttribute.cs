@@ -38,9 +38,9 @@ namespace tezcat.Framework.Core
 
         }
 
-        public override void close()
+        public override void close(bool self_close = true)
         {
-            base.close();
+            base.close(self_close);
             onValueChanged = null;
             m_Buffers.Clear();
             m_Buffers = null;

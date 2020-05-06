@@ -92,7 +92,7 @@ namespace tezcat.Framework.Math
             return min + (max - min) * this.nextFloat();
         }
 
-        public void close()
+        public void close(bool self_close = true)
         {
 
         }

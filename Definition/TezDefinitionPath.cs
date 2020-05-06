@@ -149,7 +149,7 @@ namespace tezcat.Framework.Definition
                 , secondary);
         }
 
-        public void close()
+        public void close(bool self_close = true)
         {
             m_MainToken = null;
             m_PrimaryPath = null;

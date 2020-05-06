@@ -234,7 +234,7 @@ namespace tezcat.Framework.Core
             }
         }
 
-        public void close()
+        public void close(bool self_close = true)
         {
 
         }

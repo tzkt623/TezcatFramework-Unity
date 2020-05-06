@@ -6,9 +6,9 @@ namespace tezcat.Framework.Core
     {
         public TezDefinitionPath definitionPath { get; set; } = null;
 
-        public virtual void close()
+        public virtual void close(bool self_close = true)
         {
-            this.definitionPath?.close();
+            this.definitionPath?.close(self_close);
             this.definitionPath = null;
         }
 

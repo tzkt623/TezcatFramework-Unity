@@ -7,7 +7,7 @@
 
         }
 
-        protected override void onClose()
+        protected override void onClose(bool self_close = true)
         {
 
         }

@@ -10,7 +10,7 @@ namespace tezcat.Framework.AI
         public abstract TezBTNodeType nodeType { get; }
 
         public abstract TezBTResult execute(Data data);
-        public abstract void close();
+        public abstract void close(bool self_close = true);
 
         public static bool operator true(TezBTNode<Data> obj)
         {

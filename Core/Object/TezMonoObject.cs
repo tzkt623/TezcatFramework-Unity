@@ -84,10 +84,9 @@ namespace tezcat.Framework.Core
 
         protected void OnDestroy()
         {
-            ///如果没有清理过
             if (!m_Mask.test(ControlMask.Closed))
             {
-                this.onClose();
+                this.onClose(false);
             }
         }
 
@@ -135,7 +134,7 @@ namespace tezcat.Framework.Core
         /// <summary>
         /// 关闭组件
         /// </summary>
-        protected abstract void onClose();
+        protected abstract void onClose(bool self_close);
 
         public void show()
         {
@@ -150,10 +149,10 @@ namespace tezcat.Framework.Core
         /// <summary>
         /// 
         /// </summary>
-        public void close()
+        public void close(bool self_close = true)
         {
             m_Mask.set(ControlMask.Closed);
-            this.onClose();
+            this.onClose(self_close);
             Destroy(this.gameObject);
         }
     }

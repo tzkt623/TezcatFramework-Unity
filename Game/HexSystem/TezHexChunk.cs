@@ -87,11 +87,11 @@ namespace tezcat.Framework.Game
             }
         }
 
-        public virtual void close()
+        public virtual void close(bool self_close = true)
         {
             foreach (var block in m_BlockArray)
             {
-                block?.close();
+                block?.close(false);
             }
             m_BlockArray = null;
         }

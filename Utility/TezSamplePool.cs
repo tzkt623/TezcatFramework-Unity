@@ -38,7 +38,7 @@ namespace tezcat.Framework.Utility
             m_Pool.Push(obj);
         }
 
-        public void close()
+        public void close(bool self_close = true)
         {
             m_Pool.Clear();
             m_Pool = null;

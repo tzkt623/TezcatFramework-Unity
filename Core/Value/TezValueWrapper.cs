@@ -131,7 +131,7 @@ namespace tezcat.Framework.Core
             return this.descriptor.GetHashCode();
         }
 
-        public virtual void close()
+        public virtual void close(bool self_close = true)
         {
             this.descriptor = null;
         }
@@ -192,10 +192,10 @@ namespace tezcat.Framework.Core
             this.value = wrapper.value;
         }
 
-        public override void close()
+        public override void close(bool self_close = true)
         {
             this.value = default(T);
-            base.close();
+            base.close(self_close);
         }
 
         public static implicit operator T(TezValueWrapper<T> property)

@@ -56,7 +56,7 @@ namespace tezcat.Framework.GraphicSystem
             m_CMDs.Add(cmd);
         }
 
-        public void close()
+        public void close(bool self_close = true)
         {
             foreach (var item in m_Pool)
             {

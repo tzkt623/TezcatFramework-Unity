@@ -152,26 +152,26 @@ namespace tezcat.Framework.UI
 
         public override bool checkForClose()
         {
-            bool result = true;
-            List<TezEventExtension.Action> close_function_list = new List<TezEventExtension.Action>(m_SubwindowList.Count);
-
-            foreach (var area in m_SubwindowList)
-            {
-                result &= area.checkForClose();
-                if (result)
-                {
-                    close_function_list.Add(area.close);
-                }
-                else
-                {
-                    return false;
-                }
-            }
-
-            foreach (var function in close_function_list)
-            {
-                function();
-            }
+//             bool result = true;
+//             List<TezEventExtension.Action<bool>> close_function_list = new List<TezEventExtension.Action<bool>>(m_SubwindowList.Count);
+// 
+//             foreach (var area in m_SubwindowList)
+//             {
+//                 result &= area.checkForClose();
+//                 if (result)
+//                 {
+//                     close_function_list.Add(area.close);
+//                 }
+//                 else
+//                 {
+//                     return false;
+//                 }
+//             }
+// 
+//             foreach (var function in close_function_list)
+//             {
+//                 function();
+//             }
 
             return true;
         }
@@ -184,13 +184,13 @@ namespace tezcat.Framework.UI
             }
         }
 
-        protected override void onClose()
+        protected override void onClose(bool self_close = true)
         {
             overlay = null;
 
             for (int i = 0; i < m_SubwindowList.Count; i++)
             {
-                m_SubwindowList[i].close();
+                m_SubwindowList[i].close(false);
             }
             m_SubwindowList.Clear();
             m_SubwindowList = null;

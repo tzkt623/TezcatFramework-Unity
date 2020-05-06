@@ -6,7 +6,7 @@ namespace tezcat.Framework.Game
     {
         public TezHexCubeCoordinate coordinate { get; set; }
 
-        public virtual void close()
+        public virtual void close(bool self_close = true)
         {
 
         }

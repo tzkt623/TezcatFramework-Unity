@@ -55,9 +55,9 @@ namespace tezcat.Framework.Core
             this.notifyValueChanged(this, old);
         }
 
-        public override void close()
+        public override void close(bool self_close = true)
         {
-            base.close();
+            base.close(self_close);
             m_Property.onValueChanged -= onRefValueChanged;
             m_Property = null;
         }

@@ -237,10 +237,10 @@ namespace tezcat.Framework.ECS
         /// <summary>
         /// 删除Object
         /// </summary>
-        public override void close()
+        public override void close(bool self_close = true)
         {
-            this.definitionPath?.close();
-            this.TAG.close();
+            this.definitionPath?.close(false);
+            this.TAG.close(false);
             m_RID?.close();
 
             this.TAG = null;

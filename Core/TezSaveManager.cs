@@ -128,7 +128,7 @@ namespace tezcat.Framework.Core
             m_Dic.Clear();
         }
 
-        public void close()
+        public void close(bool self_close = true)
         {
             m_Factory = null;
         }

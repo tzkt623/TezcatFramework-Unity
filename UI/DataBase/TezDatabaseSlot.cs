@@ -46,7 +46,7 @@ namespace tezcat.Framework.UI
 
         }
 
-        protected override void onClose()
+        protected override void onClose(bool self_close = true)
         {
 //             m_Wrapper?.close();
 //             m_Wrapper = null;

@@ -140,12 +140,18 @@ namespace tezcat.Framework.UI
             }
         }
 
+        /// <summary>
+        /// 控件自行销毁时
+        /// </summary>
         protected sealed override void OnDestroy()
         {
             base.OnDestroy();
-            if (!m_Mask.test(ControlMask.Closed))
+            ///如果此控件没有设置关闭位
+            ///说明没有手动销毁他
+            ///他一定是被父级带动销毁的
+            if(!m_Mask.test(ControlMask.Closed))
             {
-                this.onClose();
+                this.onClose(false);
             }
         }
 
@@ -207,12 +213,12 @@ namespace tezcat.Framework.UI
         /// <summary>
         /// 在这里清理所有的托管资源
         /// </summary>
-        protected abstract void onClose();
+        protected abstract void onClose(bool self_close);
 
         /// <summary>
         /// 关闭并销毁控件
         /// </summary>
-        public void close()
+        public void close(bool self_close = true)
         {
             switch (lifeState)
             {
@@ -223,9 +229,11 @@ namespace tezcat.Framework.UI
                     break;
             }
 
-
+            ///设置关闭位
+            ///这样是为了让控件可以立即释放资源
+            ///而不是等到Destroy执行导致时间不确定
             m_Mask.set(ControlMask.Closed);
-            this.onClose();
+            this.onClose(self_close);
             Destroy(this.gameObject);
         }
 
@@ -267,7 +275,7 @@ namespace tezcat.Framework.UI
     /// </summary>
     public abstract class TezUIWidget : TezWidget
     {
-        protected override void onClose()
+        protected override void onClose(bool self_close)
         {
 
         }
@@ -308,7 +316,7 @@ namespace tezcat.Framework.UI
     /// </summary>
     public abstract class TezFunctionWidget : TezWidget
     {
-        protected override void onClose()
+        protected override void onClose(bool self_close = true)
         {
 
         }

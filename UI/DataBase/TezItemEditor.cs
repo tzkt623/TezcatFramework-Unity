@@ -19,7 +19,8 @@ namespace tezcat.Framework.UI
         [SerializeField]
         RectTransform m_Content = null;
 
-        public override int[] supportCategory      {
+        public override int[] supportCategory
+        {
             get { return new int[0]; }
         }
 
@@ -40,11 +41,11 @@ namespace tezcat.Framework.UI
             this.refreshPhase = TezRefreshPhase.P_Custom1;
         }
 
-//         public override void bind(TezItem item)
-//         {
-//             m_Item = item;
-//             this.dirty = true;
-//         }
+        //         public override void bind(TezItem item)
+        //         {
+        //             m_Item = item;
+        //             this.dirty = true;
+        //         }
 
         private TezPropertyView createPV(string name, string value)
         {
@@ -102,7 +103,7 @@ namespace tezcat.Framework.UI
             if (m_Item != null)
             {
                 var view = Instantiate(m_PrefabPE_View, m_Content, false);
-//                view.set(() => TezService.get<TezTranslator>().translateName(TezReadOnlyString.Database.OID, TezReadOnlyString.Database.OID), () => m_Item.OID.ToString());
+                //                view.set(() => TezService.get<TezTranslator>().translateName(TezReadOnlyString.Database.OID, TezReadOnlyString.Database.OID), () => m_Item.OID.ToString());
                 view.open();
 
                 view = Instantiate(m_PrefabPE_View, m_Content, false);

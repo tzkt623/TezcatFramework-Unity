@@ -59,10 +59,10 @@ namespace tezcat.Framework.Core
 
         public abstract void update();
 
-        public override void close()
+        public override void close(bool self_close)
         {
-            base.close();
-            m_ModifierCache.close();
+            base.close(self_close);
+            m_ModifierCache.close(!self_close);
 
             this.onValueChanged = null;
             m_ModifierCache = null;

@@ -34,9 +34,9 @@ namespace tezcat.Framework.UI
             m_Tree.onSelectNode += onSelectNode;
         }
 
-        protected override void onClose()
+        protected override void onClose(bool self_close = true)
         {
-            base.onClose();
+            base.onClose(self_close);
             m_Tree.onSelectNode -= onSelectNode;
         }
 

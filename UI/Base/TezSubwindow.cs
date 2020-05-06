@@ -95,11 +95,11 @@ namespace tezcat.Framework.UI
 //             }
         }
 
-        protected override void onClose()
+        protected override void onClose(bool self_close = true)
         {
             foreach (var child in m_Children)
             {
-                child?.close();
+                child?.close(false);
             }
             m_Children.Clear();
             m_Children = null;

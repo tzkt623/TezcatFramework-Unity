@@ -41,7 +41,7 @@ namespace tezcat.Framework.Database
             return m_List[index].clone();
         }
 
-        public virtual void close()
+        public virtual void close(bool self_close = true)
         {
             m_Dic.Clear();
             m_List.Clear();
