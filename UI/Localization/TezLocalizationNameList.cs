@@ -154,11 +154,11 @@ namespace tezcat.Framework.UI
         {
             if (eventData.button == PointerEventData.InputButton.Left)
             {
-                var editor = TezService.get<TezcatFramework>().createWidget<TezLocalizationNameEditor>("NameEditor", this.window.overlay);
-                editor.listArea = this;
-                editor.transform.SetAsLastSibling();
-                editor.newItem();
-                editor.open();
+//                 var editor = TezService.get<TezcatFramework>().createWidget<TezLocalizationNameEditor>("NameEditor", this.window.overlay);
+//                 editor.listArea = this;
+//                 editor.transform.SetAsLastSibling();
+//                 editor.newItem();
+//                 editor.open();
             }
         }
 
@@ -260,11 +260,11 @@ namespace tezcat.Framework.UI
 
         public void edit(string key)
         {
-            var editor = TezService.get<TezcatFramework>().createWidget<TezLocalizationNameEditor>("NameEditor", this.window.overlay);
-            editor.listArea = this;
-            editor.transform.SetAsLastSibling();
-            editor.set(key);
-            editor.open();
+//             var editor = TezService.get<TezcatFramework>().createWidget<TezLocalizationNameEditor>("NameEditor", this.window.overlay);
+//             editor.listArea = this;
+//             editor.transform.SetAsLastSibling();
+//             editor.set(key);
+//             editor.open();
         }
 
         private void createItem(string key, string value)

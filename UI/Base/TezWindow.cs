@@ -87,12 +87,6 @@ namespace tezcat.Framework.UI
             }
         }
 
-
-        /// <summary>
-        /// 当前窗口的覆盖层
-        /// </summary>
-        public RectTransform overlay { get; private set; }
-
         /// <summary>
         /// Area
         /// </summary>
@@ -115,14 +109,6 @@ namespace tezcat.Framework.UI
                     m_SubwindowList[id].open();
                 }
             });
-
-            GameObject go = new GameObject();
-            overlay = go.AddComponent<RectTransform>();
-            overlay.SetParent(this.transform);
-            overlay.localPosition = Vector3.zero;
-            overlay.name = "WindowOverlay";
-            overlay.setLayoutZeroRect();
-            overlay.SetAsLastSibling();
         }
 
         protected override void initWidget()
@@ -186,8 +172,6 @@ namespace tezcat.Framework.UI
 
         protected override void onClose(bool self_close = true)
         {
-            overlay = null;
-
             for (int i = 0; i < m_SubwindowList.Count; i++)
             {
                 m_SubwindowList[i].close(false);

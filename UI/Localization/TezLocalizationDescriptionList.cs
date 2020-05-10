@@ -152,10 +152,10 @@ namespace tezcat.Framework.UI
 
         private void onAddClick(TezButton button, PointerEventData eventData)
         {
-            var editor = TezService.get<TezcatFramework>().createWidget<TezLocalizationDescriptionEditor>("DescriptionEditor", this.window.overlay);
-            editor.listArea = this;
-            editor.newItem();
-            editor.open();
+//             var editor = TezService.get<TezcatFramework>().createWidget<TezLocalizationDescriptionEditor>("DescriptionEditor", this.window.overlay);
+//             editor.listArea = this;
+//             editor.newItem();
+//             editor.open();
         }
 
         private void onRemoveClick(TezButton button, PointerEventData eventData)
@@ -252,10 +252,10 @@ namespace tezcat.Framework.UI
 
         public void editItem(string key)
         {
-            var editor = TezService.get<TezcatFramework>().createWidget<TezLocalizationDescriptionEditor>("DescriptionEditor", this.window.overlay);
-            editor.listArea = this;
-            editor.set(key);
-            editor.open();
+//             var editor = TezService.get<TezcatFramework>().createWidget<TezLocalizationDescriptionEditor>("DescriptionEditor", this.window.overlay);
+//             editor.listArea = this;
+//             editor.set(key);
+//             editor.open();
         }
 
         public void onFocus(TezLocalizationDescriptionItem item)
