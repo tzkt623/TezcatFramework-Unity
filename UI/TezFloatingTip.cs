@@ -1,13 +1,12 @@
 ﻿using System.Collections.Generic;
-using tezcat.Framework.Core;
 using tezcat.Framework.Database;
 using UnityEngine;
 
 namespace tezcat.Framework.UI
 {
-     /// <summary>
-     /// 浮动Tip
-     /// </summary>
+    /// <summary>
+    /// 浮动Tip
+    /// </summary>
     public class TezFloatingTip
         : TezUIWidget
         , ITezSinglePrefab
@@ -27,6 +26,7 @@ namespace tezcat.Framework.UI
         protected override void initWidget()
         {
             m_RectTransform = this.GetComponent<RectTransform>();
+            this.gameObject.SetActive(false);
         }
 
         /// <summary>
@@ -46,22 +46,17 @@ namespace tezcat.Framework.UI
             m_Widgets.Clear();
         }
 
-        protected override void onRefresh(TezRefreshPhase phase)
+        protected override void onShow()
         {
-            switch (phase)
-            {
-                case TezRefreshPhase.P_OnInit:
-                    this.gameObject.SetActive(false);
-                    break;
-                case TezRefreshPhase.P_OnEnable:
-                    this.calculatePosition();
-                    break;
-                default:
-                    break;
-            }
+            this.calculatePosition();
         }
 
         private void Update()
+        {
+            this.calculatePosition();
+        }
+
+        private void calculatePosition()
         {
             /*
              * (0, 1080)-------------(1920, 1080)
@@ -71,11 +66,6 @@ namespace tezcat.Framework.UI
              * 
              * (0,    0)-------------(1920, 0)
              */
-            this.calculatePosition();
-        }
-
-        private void calculatePosition()
-        {
             var position = Input.mousePosition;
 
             var rect = m_RectTransform.rect;

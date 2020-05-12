@@ -22,17 +22,7 @@ namespace tezcat.Framework.UI
 
         protected override void initWidget()
         {
-
-        }
-
-        protected override void linkEvent()
-        {
             m_DropDown.onValueChanged.AddListener(this.onValueChanged);
-        }
-
-        protected override void unLinkEvent()
-        {
-            m_DropDown.onValueChanged.RemoveListener(this.onValueChanged);
         }
 
         public override void reset()
@@ -42,32 +32,14 @@ namespace tezcat.Framework.UI
 
         protected override void onClose(bool self_close = true)
         {
+            m_DropDown.onValueChanged.RemoveListener(this.onValueChanged);
             m_Types.Clear();
             m_Types = null;
         }
 
-        protected override void onRefresh(TezRefreshPhase phase)
+        protected override void onRefresh()
         {
-            switch (phase)
-            {
-                case TezRefreshPhase.P_OnInit:
-                    this.refreshData();
-                    break;
-                case TezRefreshPhase.P_OnEnable:
-                    break;
-                case TezRefreshPhase.P_Custom1:
-                    break;
-                case TezRefreshPhase.P_Custom2:
-                    break;
-                case TezRefreshPhase.P_Custom3:
-                    break;
-                case TezRefreshPhase.P_Custom4:
-                    break;
-                case TezRefreshPhase.P_Custom5:
-                    break;
-                default:
-                    break;
-            }
+            this.refreshData();
         }
 
         private void refreshData()

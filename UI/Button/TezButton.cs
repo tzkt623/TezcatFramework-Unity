@@ -25,11 +25,6 @@ namespace tezcat.Framework.UI
         /// </summary>
         public abstract Graphic graphicController { get; }
 
-        protected override void onRefresh(TezRefreshPhase phase)
-        {
-
-        }
-
         protected override void onClose(bool self_close = true)
         {
             onClick = null;

@@ -99,8 +99,6 @@ namespace tezcat.Framework
         #endregion
 
         #region Engine
-        List<TezRenderer> m_ObjectMBList = new List<TezRenderer>();
-
         protected override void preInit()
         {
             this.register();
@@ -120,26 +118,9 @@ namespace tezcat.Framework
             TezLayer.sortLayers();
         }
 
-        protected override void onRefresh(TezRefreshPhase phase)
+        protected override void onRefresh()
         {
-            switch (phase)
-            {
-                case TezRefreshPhase.P_OnInit:
-                    StartCoroutine(loadResources());
-                    break;
-                default:
-                    break;
-            }
-        }
-
-        protected override void linkEvent()
-        {
-
-        }
-
-        protected override void unLinkEvent()
-        {
-
+            StartCoroutine(loadResources());
         }
 
         protected override void onHide()
@@ -148,11 +129,6 @@ namespace tezcat.Framework
         }
 
         public override void reset()
-        {
-
-        }
-
-        private void OnApplicationQuit()
         {
 
         }
@@ -262,7 +238,7 @@ namespace tezcat.Framework
         List<TezWindow> m_WindowList = new List<TezWindow>();
         Queue<int> m_FreeWindowID = new Queue<int>();
 
-        Dictionary<Type, TezWidget> m_WidgetWithType = new Dictionary<Type, TezWidget>();
+        Dictionary<Type, TezBaseWidget> m_WidgetWithType = new Dictionary<Type, TezBaseWidget>();
 
         private int giveID()
         {
@@ -279,22 +255,22 @@ namespace tezcat.Framework
             return id;
         }
 
-        public Widget getTypeOnlyWidget<Widget>() where Widget : TezWidget, ITezSinglePrefab
+        public Widget getTypeOnlyWidget<Widget>() where Widget : TezBaseWidget, ITezSinglePrefab
         {
-            TezWidget widget = null;
+            TezBaseWidget widget = null;
             m_WidgetWithType.TryGetValue(typeof(Widget), out widget);
             return (Widget)widget;
         }
 
-        public TezWidget createWidget(TezWidget prefab, string name, RectTransform parent, TezWidgetLifeState life_form)
+        public TezBaseWidget createWidget(TezBaseWidget prefab, RectTransform parent, TezWidgetLife life_form)
         {
-            TezWidget widget = null;
+            TezBaseWidget widget = null;
             switch (life_form)
             {
-                case TezWidgetLifeState.Normal:
+                case TezWidgetLife.Normal:
                     widget = Instantiate(prefab, parent, false);
                     break;
-                case TezWidgetLifeState.TypeOnly:
+                case TezWidgetLife.TypeOnly:
                     var type = prefab.GetType();
                     if (m_WidgetWithType.TryGetValue(type, out widget))
                     {
@@ -312,47 +288,34 @@ namespace tezcat.Framework
             }
 
             widget.transform.localPosition = Vector3.zero;
-            widget.lifeState = life_form;
-            widget.name = name;
+            widget.life = life_form;
             return widget;
         }
 
-        public Widget createWidget<Widget>(string name, RectTransform parent, TezWidgetLifeState life_form = TezWidgetLifeState.Normal) where Widget : TezWidget, ITezSinglePrefab
+        public Widget createWidget<Widget>(RectTransform parent, TezWidgetLife life_form = TezWidgetLife.Normal) where Widget : TezBaseWidget, ITezSinglePrefab
         {
-            return (Widget)this.createWidget(TezService.get<TezPrefabDatabase>().get<Widget>(), name, parent, life_form);
+            return (Widget)this.createWidget(TezService.get<TezPrefabDatabase>().get<Widget>(), parent, life_form);
         }
 
-        /// <summary>
-        /// 创建一个控件
-        /// </summary>
-        /// <typeparam name="Widget">控件类型</typeparam>
-        /// <param name="parent">控件的父级</param>
-        /// <param name="type_only">这类控件是否只能有一个</param>
-        /// <returns></returns>
-        public Widget createWidget<Widget>(RectTransform parent, TezWidgetLifeState life_form = TezWidgetLifeState.Normal) where Widget : TezWidget, ITezSinglePrefab
+        public Widget createWidget<Widget>(TezLayer layer, TezWidgetLife life_form = TezWidgetLife.Normal) where Widget : TezBaseWidget, ITezSinglePrefab
         {
-            return this.createWidget<Widget>(typeof(Widget).Name, parent, life_form);
-        }
-
-        public Widget createWidget<Widget>(TezLayer layer, TezWidgetLifeState life_form = TezWidgetLifeState.Normal) where Widget : TezWidget, ITezSinglePrefab
-        {
-            return this.createWidget<Widget>(typeof(Widget).Name, layer.rectTransform, life_form);
+            return this.createWidget<Widget>(layer.rectTransform, life_form);
         }
 
         private Window createWindow<Window>(Window prefab
             , string name
             , TezLayer layer
-            , TezWidgetLifeState life_form) where Window : TezWindow, ITezSinglePrefab
+            , TezWidgetLife life_form) where Window : TezWindow, ITezSinglePrefab
         {
             TezWindow window = null;
 
             switch (life_form)
             {
-                case TezWidgetLifeState.Normal:
+                case TezWidgetLife.Normal:
                     window = Instantiate(prefab, layer.transform, false);
                     break;
-                case TezWidgetLifeState.TypeOnly:
-                    TezWidget widget = null;
+                case TezWidgetLife.TypeOnly:
+                    TezBaseWidget widget = null;
                     var type = typeof(Window);
                     if (m_WidgetWithType.TryGetValue(type, out widget))
                     {
@@ -374,23 +337,23 @@ namespace tezcat.Framework
             window.windowName = name;
             window.layer = layer;
             window.transform.localPosition = Vector3.zero;
-            window.lifeState = life_form;
+            window.life = life_form;
 
             m_WindowList[id] = window;
             return (Window)window;
         }
 
-        public Window createWindow<Window>(string name, TezLayer layer, TezWidgetLifeState life_form = TezWidgetLifeState.Normal) where Window : TezWindow, ITezSinglePrefab
+        public Window createWindow<Window>(string name, TezLayer layer, TezWidgetLife life_form = TezWidgetLife.Normal) where Window : TezWindow, ITezSinglePrefab
         {
             return this.createWindow(TezService.get<TezPrefabDatabase>().get<Window>(), name, layer, life_form);
         }
 
-        public TezWindow createWindow(TezWindow prefab, TezLayer layer, TezWidgetLifeState life_form = TezWidgetLifeState.Normal)
+        public TezWindow createWindow(TezWindow prefab, TezLayer layer, TezWidgetLife life_form = TezWidgetLife.Normal)
         {
             return this.createWindow(prefab, prefab.GetType().Name, layer, life_form);
         }
 
-        public Window createWindow<Window>(TezLayer layer, TezWidgetLifeState life_form = TezWidgetLifeState.Normal) where Window : TezWindow, ITezSinglePrefab
+        public Window createWindow<Window>(TezLayer layer, TezWidgetLife life_form = TezWidgetLife.Normal) where Window : TezWindow, ITezSinglePrefab
         {
             return this.createWindow<Window>(typeof(Window).Name, layer, life_form);
         }
@@ -401,7 +364,7 @@ namespace tezcat.Framework
             m_WindowList[window.windowID] = null;
         }
 
-        public void removeTypeOnlyWidget(TezWidget widget)
+        public void removeTypeOnlyWidget(TezBaseWidget widget)
         {
             m_WidgetWithType.Remove(widget.GetType());
         }
@@ -414,16 +377,18 @@ namespace tezcat.Framework
 
         public void pushRefresher(ITezRefresher refresher)
         {
-            if (m_Root == null)
-            {
-                m_Root = refresher;
-                m_Current = refresher;
-            }
-            else
-            {
-                m_Current.next = refresher;
-                m_Current = refresher;
-            }
+            //             if (m_Root == null)
+            //             {
+            //                 m_Root = refresher;
+            //                 m_Current = refresher;
+            //             }
+            //             else
+            //             {
+            //                 m_Current.next = refresher;
+            //                 m_Current = refresher;
+            //             }
+
+            m_RefreshQueue.Enqueue(refresher);
         }
         #endregion
 
@@ -431,16 +396,21 @@ namespace tezcat.Framework
 
         protected virtual void LateUpdate()
         {
-            if (m_Root != null)
+            while (m_RefreshQueue.Count > 0)
             {
-                //                Debug.Log("刷新中......");
-                while (m_Root != null)
-                {
-                    m_Root.refresh();
-                    m_Root = m_Root.next;
-                }
-                //                Debug.Log("刷新结束!");
+                m_RefreshQueue.Dequeue().refresh();
             }
+
+            //             if (m_Root != null)
+            //             {
+            //                 //                Debug.Log("刷新中......");
+            //                 while (m_Root != null)
+            //                 {
+            //                     m_Root.refresh();
+            //                     m_Root = m_Root.next;
+            //                 }
+            //                 //                Debug.Log("刷新结束!");
+            //             }
         }
     }
 }

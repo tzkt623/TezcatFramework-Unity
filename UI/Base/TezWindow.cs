@@ -11,7 +11,7 @@ namespace tezcat.Framework.UI
     /// 用于划分其中的显示区域
     /// </summary>
     public abstract class TezWindow
-        : TezWidget
+        : TezUIWidget
         , ITezSinglePrefab
     {
         TezLayer m_Layer = null;
@@ -121,45 +121,9 @@ namespace tezcat.Framework.UI
             }
         }
 
-        protected override void linkEvent()
-        {
-
-        }
-
-        protected override void unLinkEvent()
-        {
-
-        }
-
         protected override void onHide()
         {
 
-        }
-
-        public override bool checkForClose()
-        {
-//             bool result = true;
-//             List<TezEventExtension.Action<bool>> close_function_list = new List<TezEventExtension.Action<bool>>(m_SubwindowList.Count);
-// 
-//             foreach (var area in m_SubwindowList)
-//             {
-//                 result &= area.checkForClose();
-//                 if (result)
-//                 {
-//                     close_function_list.Add(area.close);
-//                 }
-//                 else
-//                 {
-//                     return false;
-//                 }
-//             }
-// 
-//             foreach (var function in close_function_list)
-//             {
-//                 function();
-//             }
-
-            return true;
         }
 
         public override void reset()
@@ -185,11 +149,11 @@ namespace tezcat.Framework.UI
             TezService.get<TezcatFramework>().removeWindow(this);
         }
 
-        protected override void onRefresh(TezRefreshPhase phase)
+        protected override void onRefresh()
         {
             foreach (var sub in m_SubwindowList)
             {
-                sub.refreshPhase = phase;
+                sub.refreshPhase = TezRefreshPhase.Refresh;
             }
         }
 

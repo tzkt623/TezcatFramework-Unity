@@ -18,22 +18,12 @@ namespace tezcat.Framework.UI
 
         protected override void initWidget()
         {
-
-        }
-
-        protected override void linkEvent()
-        {
             m_Input.onEndEdit.AddListener(this.onValueSet);
-        }
-
-        protected override void unLinkEvent()
-        {
-            m_Input.onEndEdit.RemoveListener(this.onValueSet);
         }
 
         protected override void onHide()
         {
-
+            m_Input.onEndEdit.RemoveListener(this.onValueSet);
         }
 
         public override void reset()
@@ -60,18 +50,9 @@ namespace tezcat.Framework.UI
             }
         }
 
-        protected override void onRefresh(TezRefreshPhase phase)
+        protected override void onRefresh()
         {
-            switch (phase)
-            {
-                case TezRefreshPhase.P_OnInit:
-                    this.refreshData();
-                    break;
-                case TezRefreshPhase.P_OnEnable:
-                    break;
-                default:
-                    break;
-            }
+            this.refreshData();
         }
 
         private void refreshData()

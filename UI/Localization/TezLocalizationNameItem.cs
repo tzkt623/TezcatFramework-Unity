@@ -33,16 +33,6 @@ namespace tezcat.Framework.UI
 
         }
 
-        protected override void linkEvent()
-        {
-
-        }
-
-        protected override void unLinkEvent()
-        {
-
-        }
-
         protected override void onHide()
         {
 
@@ -74,11 +64,6 @@ namespace tezcat.Framework.UI
             }
         }
 
-        protected override void onRefresh(TezRefreshPhase phase)
-        {
-
-        }
-
         private void onEditClick(TezButton button, PointerEventData eventData)
         {
             if (eventData.button == PointerEventData.InputButton.Left)
@@ -90,7 +75,7 @@ namespace tezcat.Framework.UI
         public void set(string key)
         {
             m_KeyName.text = key;
-            this.refreshPhase = TezRefreshPhase.P_Custom3;
+            this.refreshPhase = TezRefreshPhase.Refresh;
         }
 
         public void set(string key, string value)

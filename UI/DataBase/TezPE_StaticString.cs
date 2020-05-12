@@ -22,34 +22,12 @@ namespace tezcat.Framework.UI
 
         protected override void initWidget()
         {
-        }
-
-        protected override void linkEvent()
-        {
             m_Input.onEndEdit.AddListener(this.set);
-        }
-
-        protected override void unLinkEvent()
-        {
-            m_Input.onEndEdit.RemoveListener(this.set);
-        }
-
-        protected override void onRefresh(TezRefreshPhase phase)
-        {
-            switch (phase)
-            {
-                case TezRefreshPhase.P_OnInit:
-                    break;
-                case TezRefreshPhase.P_OnEnable:
-                    break;
-                default:
-                    break;
-            }
         }
 
         protected override void onHide()
         {
-
+            m_Input.onEndEdit.RemoveListener(this.set);
         }
 
         public override void reset()

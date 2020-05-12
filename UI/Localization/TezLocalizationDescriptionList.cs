@@ -89,20 +89,10 @@ namespace tezcat.Framework.UI
 
         }
 
-        protected override void onRefresh(TezRefreshPhase phase)
+        protected override void onRefresh()
         {
-            base.onRefresh(phase);
-
-            switch (phase)
-            {
-                case TezRefreshPhase.P_OnInit:
-                    this.refreshData();
-                    break;
-                case TezRefreshPhase.P_OnEnable:
-                    break;
-                default:
-                    break;
-            }
+            base.onRefresh();
+            this.refreshData();
         }
 
         private void refreshData()
@@ -152,10 +142,10 @@ namespace tezcat.Framework.UI
 
         private void onAddClick(TezButton button, PointerEventData eventData)
         {
-//             var editor = TezService.get<TezcatFramework>().createWidget<TezLocalizationDescriptionEditor>("DescriptionEditor", this.window.overlay);
-//             editor.listArea = this;
-//             editor.newItem();
-//             editor.open();
+            //             var editor = TezService.get<TezcatFramework>().createWidget<TezLocalizationDescriptionEditor>("DescriptionEditor", this.window.overlay);
+            //             editor.listArea = this;
+            //             editor.newItem();
+            //             editor.open();
         }
 
         private void onRemoveClick(TezButton button, PointerEventData eventData)
@@ -163,7 +153,7 @@ namespace tezcat.Framework.UI
             TezService.get<TezTranslator>().removeDescription(m_SelectItem.key);
             m_Vernier.SetParent(this.transform, false);
             m_Vernier.gameObject.SetActive(false);
-            this.refreshPhase = TezRefreshPhase.P_Custom3;
+            this.refreshPhase = TezRefreshPhase.Refresh;
         }
 
         private void onClearSearchClick(TezButton button, PointerEventData eventData)
@@ -200,7 +190,7 @@ namespace tezcat.Framework.UI
                     }
                     else
                     {
-                        m_SearchResult = TezService.get<TezcatFramework>().createWidget<TezLocalizationDescriptionItem>("DescriptionItem", m_Content);
+                        m_SearchResult = TezService.get<TezcatFramework>().createWidget<TezLocalizationDescriptionItem>(m_Content);
                         m_SearchResult.listArea = this;
                         m_SearchResult.set(key);
                         m_SearchResult.open();
@@ -216,12 +206,12 @@ namespace tezcat.Framework.UI
         {
             if (eventData.button == PointerEventData.InputButton.Left)
             {
-//                 TezValueDescriptor.foreachName((ITezValueDescriptor name) =>
-//                 {
-//                     TezService.get<TezTranslator>().tryAddDescription(name.name, name.name);
-//                 });
+                //                 TezValueDescriptor.foreachName((ITezValueDescriptor name) =>
+                //                 {
+                //                     TezService.get<TezTranslator>().tryAddDescription(name.name, name.name);
+                //                 });
 
-                this.refreshPhase = TezRefreshPhase.P_Custom3;
+                this.refreshPhase = TezRefreshPhase.Refresh;
             }
         }
 
@@ -243,7 +233,7 @@ namespace tezcat.Framework.UI
 
         private void createItem(string key, string value)
         {
-            var item = TezService.get<TezcatFramework>().createWidget<TezLocalizationDescriptionItem>("DescriptionItem", m_Content);
+            var item = TezService.get<TezcatFramework>().createWidget<TezLocalizationDescriptionItem>(m_Content);
             item.set(key);
             item.listArea = this;
             item.open();
@@ -252,10 +242,10 @@ namespace tezcat.Framework.UI
 
         public void editItem(string key)
         {
-//             var editor = TezService.get<TezcatFramework>().createWidget<TezLocalizationDescriptionEditor>("DescriptionEditor", this.window.overlay);
-//             editor.listArea = this;
-//             editor.set(key);
-//             editor.open();
+            //             var editor = TezService.get<TezcatFramework>().createWidget<TezLocalizationDescriptionEditor>("DescriptionEditor", this.window.overlay);
+            //             editor.listArea = this;
+            //             editor.set(key);
+            //             editor.open();
         }
 
         public void onFocus(TezLocalizationDescriptionItem item)

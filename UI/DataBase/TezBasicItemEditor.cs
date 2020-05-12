@@ -66,7 +66,7 @@ namespace tezcat.Framework.UI
                 if (!this.getItem().NID.isNullOrEmpty())
                 {
 
-                    this.refreshPhase = TezRefreshPhase.P_Custom1;
+                    this.refreshPhase = TezRefreshPhase.Refresh;
                 }
                 else
                 {

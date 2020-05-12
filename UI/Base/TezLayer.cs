@@ -1,9 +1,8 @@
 ﻿using System.Collections.Generic;
-using tezcat.Framework.Core;
 
 namespace tezcat.Framework.UI
 {
-    public class TezLayer : TezWidget
+    public class TezLayer : TezBaseWidget
     {
         #region Manater
         static List<TezLayer> Manager = new List<TezLayer>();
@@ -49,51 +48,10 @@ namespace tezcat.Framework.UI
 
         public int ID { get; private set; } = -1;
 
-        protected override void preInit()
-        {
-
-        }
-
-        protected override void initWidget()
-        {
-
-        }
-
-        protected override void linkEvent()
-        {
-
-        }
-
-        protected override void unLinkEvent()
-        {
-
-        }
-
         protected virtual void sort()
         {
             this.transform.SetSiblingIndex(ID);
             this.name = "Layer_" + ID;
         }
-
-        protected override void onClose(bool self_close = true)
-        {
-
-        }
-
-        protected override void onHide()
-        {
-
-        }
-
-        public override void reset()
-        {
-
-        }
-
-        protected override void onRefresh(TezRefreshPhase phase)
-        {
-
-        }
-
     }
 }

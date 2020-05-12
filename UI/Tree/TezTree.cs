@@ -7,7 +7,7 @@ using UnityEngine.UI;
 namespace tezcat.Framework.UI
 {
     [RequireComponent(typeof(ScrollRect))]
-    public class TezTree : TezWidget
+    public class TezTree : TezUIWidget
     {
         public event TezEventExtension.Action<TezTreeNode> onSelectNode;
 
@@ -60,16 +60,6 @@ namespace tezcat.Framework.UI
                 child.close();
             }
             m_Children.Clear();
-        }
-
-        protected override void linkEvent()
-        {
-
-        }
-
-        protected override void unLinkEvent()
-        {
-
         }
 
         public bool tryGet(ITezTreeData data, out TezTreeNode node)
@@ -151,11 +141,6 @@ namespace tezcat.Framework.UI
         public void selectNode(TezTreeNode node)
         {
             onSelectNode?.Invoke(node);
-        }
-
-        protected override void onRefresh(TezRefreshPhase phase)
-        {
-
         }
 
         protected override void onHide()

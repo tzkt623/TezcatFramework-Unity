@@ -38,27 +38,12 @@ namespace tezcat.Framework.UI
 
         }
 
-        protected override void linkEvent()
-        {
-
-        }
-
-        protected override void unLinkEvent()
-        {
-
-        }
-
         protected override void onHide()
         {
 
         }
 
         public override void reset()
-        {
-
-        }
-
-        protected override void onRefresh(TezRefreshPhase phase)
         {
 
         }

@@ -1,5 +1,4 @@
-﻿using tezcat.Framework.Utility;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace tezcat.Framework.Core
 {
@@ -7,45 +6,67 @@ namespace tezcat.Framework.Core
         : MonoBehaviour
         , ITezRefresher
     {
-        class ControlMask
-        {
-            public const byte Init = 1;
-            public const byte Closed = 1 << 1;
-        }
-        TezBitMask_byte m_Mask = new TezBitMask_byte();
+        bool m_Inited = false;
+        bool m_Closed = false;
 
-        byte m_DirtyCount = 0;
-        TezRefreshPhase m_DirtyMask = 0;
-        TezRefreshPhase[] m_RefreshPhaseArray = new TezRefreshPhase[8];
-        ITezRefresher m_NextRefresher = null;
-        ITezRefresher ITezRefresher.next
-        {
-            get
-            {
-                var temp = m_NextRefresher;
-                m_NextRefresher = null;
-                return temp;
-            }
-            set
-            {
-                m_NextRefresher = value;
-            }
-        }
+        //         byte m_DirtyCount = 0;
+        //         TezRefreshPhase m_DirtyMask = 0;
+        //         TezRefreshPhase[] m_RefreshPhaseArray = new TezRefreshPhase[8];
+        //         ITezRefresher m_NextRefresher = null;
+        //         ITezRefresher ITezRefresher.next
+        //         {
+        //             get
+        //             {
+        //                 var temp = m_NextRefresher;
+        //                 m_NextRefresher = null;
+        //                 return temp;
+        //             }
+        //             set
+        //             {
+        //                 m_NextRefresher = value;
+        //             }
+        //         }
+
+        TezRefreshPhase m_RefreshPhase = TezRefreshPhase.Ready;
         public TezRefreshPhase refreshPhase
         {
             set
             {
-                if (this.gameObject.activeSelf)
+                if (this.gameObject.activeInHierarchy && m_Inited)
                 {
-                    if ((m_DirtyMask & value) == 0)
-                    {
-                        if (m_DirtyCount == 0)
-                        {
-                            TezService.get<TezcatFramework>().pushRefresher(this);
-                        }
+                    //                     if ((m_DirtyMask & value) == 0)
+                    //                     {
+                    //                         if (m_DirtyCount == 0)
+                    //                         {
+                    //                             TezService.get<TezcatFramework>().pushRefresher(this);
+                    //                         }
+                    // 
+                    //                         m_DirtyMask |= value;
+                    //                         m_RefreshPhaseArray[m_DirtyCount++] = value;
+                    //                     }
 
-                        m_DirtyMask |= value;
-                        m_RefreshPhaseArray[m_DirtyCount++] = value;
+                    //                    switch (value)
+                    //                     {
+                    //                         case TezRefreshPhase.P_Immediately:
+                    //                             this.onRefreshImmediately();
+                    //                             break;
+                    //                         case TezRefreshPhase.P_Delayed:
+                    //                             if (m_RefreshPhase == TezRefreshPhase.P_Empty)
+                    //                             {
+                    //                                 TezService.get<TezcatFramework>().pushRefresher(this);
+                    //                                 m_RefreshPhase = value;
+                    //                             }
+                    //                             break;
+                    //                     }
+
+                    switch (m_RefreshPhase)
+                    {
+                        case TezRefreshPhase.Ready:
+                            TezService.get<TezcatFramework>().pushRefresher(this);
+                            m_RefreshPhase = value;
+                            break;
+                        default:
+                            break;
                     }
                 }
             }
@@ -60,31 +81,30 @@ namespace tezcat.Framework.Core
         protected void Start()
         {
             this.initObject();
-            this.linkEvent();
-            this.refreshPhase = TezRefreshPhase.P_OnInit;
-            m_Mask.set(ControlMask.Init);
+            m_Inited = true;
+            this.refreshPhase = TezRefreshPhase.Refresh;
         }
 
         protected void OnEnable()
         {
-            if (m_Mask.test(ControlMask.Init))
+            if (m_Inited)
             {
-                this.linkEvent();
-                this.refreshPhase = TezRefreshPhase.P_OnEnable;
+                this.onShow();
+                this.refreshPhase = TezRefreshPhase.Refresh;
             }
         }
 
         protected void OnDisable()
         {
-            if (m_Mask.test(ControlMask.Init))
+            if (m_Inited)
             {
-                this.unLinkEvent();
+                this.onHide();
             }
         }
 
         protected void OnDestroy()
         {
-            if (!m_Mask.test(ControlMask.Closed))
+            if (!m_Closed)
             {
                 this.onClose(false);
             }
@@ -92,13 +112,16 @@ namespace tezcat.Framework.Core
 
         public void refresh()
         {
-            for (int i = 0; i < m_DirtyCount; i++)
-            {
-                this.onRefresh(m_RefreshPhaseArray[i]);
-            }
+            //             for (int i = 0; i < m_DirtyCount; i++)
+            //             {
+            //                 this.onRefresh(m_RefreshPhaseArray[i]);
+            //             }
+            // 
+            //             m_DirtyCount = 0;
+            //             m_DirtyMask = 0;
 
-            m_DirtyCount = 0;
-            m_DirtyMask = 0;
+            this.onRefresh();
+            m_RefreshPhase = TezRefreshPhase.Ready;
         }
 
         /// <summary>
@@ -112,19 +135,10 @@ namespace tezcat.Framework.Core
         protected abstract void initObject();
 
         /// <summary>
-        /// 在这里连接你的所有事件通知
+        /// 初始化刷新阶段
         /// </summary>
-        protected abstract void linkEvent();
+        protected virtual void onRefresh() { }
 
-        /// <summary>
-        /// 在这里断开你的所有事件通知
-        /// </summary>
-        protected abstract void unLinkEvent();
-
-        /// <summary>
-        /// 自定义情况下刷新数据
-        /// </summary>
-        protected abstract void onRefresh(TezRefreshPhase phase);
 
         /// <summary>
         /// 重置你的MB
@@ -136,11 +150,27 @@ namespace tezcat.Framework.Core
         /// </summary>
         protected abstract void onClose(bool self_close);
 
+        /// <summary>
+        /// 在显示时调用
+        /// </summary>
+        protected abstract void onShow();
+
+        /// <summary>
+        /// 隐藏时调用
+        /// </summary>
+        protected abstract void onHide();
+
+        /// <summary>
+        /// 显示此对象
+        /// </summary>
         public void show()
         {
             this.gameObject.SetActive(true);
         }
 
+        /// <summary>
+        /// 隐藏此对象
+        /// </summary>
         public void hide()
         {
             this.gameObject.SetActive(false);
@@ -151,7 +181,7 @@ namespace tezcat.Framework.Core
         /// </summary>
         public void close(bool self_close = true)
         {
-            m_Mask.set(ControlMask.Closed);
+            m_Closed = true;
             this.onClose(self_close);
             Destroy(this.gameObject);
         }

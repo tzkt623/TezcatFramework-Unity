@@ -7,7 +7,7 @@ using UnityEngine.UI;
 namespace tezcat.Framework.UI
 {
     public class TezTreeNode
-        : TezWidget
+        : TezUIWidget
         , IPointerDownHandler
         , IPointerUpHandler
     {
@@ -58,16 +58,6 @@ namespace tezcat.Framework.UI
         }
 
         protected override void initWidget()
-        {
-
-        }
-
-        protected override void linkEvent()
-        {
-
-        }
-
-        protected override void unLinkEvent()
         {
 
         }
@@ -200,11 +190,6 @@ namespace tezcat.Framework.UI
         protected override void onHide()
         {
  
-        }
-
-        protected override void onRefresh(TezRefreshPhase phase)
-        {
-
         }
     }
 }

@@ -17,22 +17,17 @@
 
         }
 
-        protected override void linkEvent()
-        {
-
-        }
-
-        protected override void onRefresh(TezRefreshPhase phase)
-        {
-
-        }
-
         protected override void preInit()
         {
 
         }
 
-        protected override void unLinkEvent()
+        protected override void onHide()
+        {
+
+        }
+
+        protected override void onShow()
         {
 
         }

@@ -29,27 +29,12 @@ namespace tezcat.Framework.UI
             m_PorpertyValue = null;
         }
 
-        protected override void onRefresh(TezRefreshPhase phase)
-        {
-
-        }
-
         protected override void preInit()
         {
 
         }
 
         protected override void initWidget()
-        {
-
-        }
-
-        protected override void linkEvent()
-        {
-
-        }
-
-        protected override void unLinkEvent()
         {
 
         }

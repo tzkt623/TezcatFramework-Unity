@@ -5,7 +5,7 @@ using UnityEngine.UI;
 
 namespace tezcat.Framework.UI
 {
-    public class TezIconLabel : TezWidget
+    public class TezIconLabel : TezUIWidget
     {
         [SerializeField]
         Image m_Icon = null;
@@ -22,11 +22,6 @@ namespace tezcat.Framework.UI
         {
             get { return m_Label.text; }
             set { m_Label.text = value; }
-        }
-
-        protected override void onRefresh(TezRefreshPhase phase)
-        {
-
         }
 
         protected override void onClose(bool self_close = true)
@@ -46,16 +41,6 @@ namespace tezcat.Framework.UI
         }
 
         protected override void initWidget()
-        {
-
-        }
-
-        protected override void linkEvent()
-        {
-
-        }
-
-        protected override void unLinkEvent()
         {
 
         }

@@ -37,8 +37,8 @@ namespace tezcat.Framework.UI
         {
             if (eventData.button == PointerEventData.InputButton.Left)
             {
-                this.nameList.refreshPhase = TezRefreshPhase.P_Custom3;
-                this.descriptionList.refreshPhase = TezRefreshPhase.P_Custom3;
+                this.nameList.refreshPhase = TezRefreshPhase.Refresh;
+                this.descriptionList.refreshPhase = TezRefreshPhase.Refresh;
             }
         }
 

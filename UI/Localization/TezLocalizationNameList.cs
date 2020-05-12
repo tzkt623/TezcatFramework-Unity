@@ -154,11 +154,11 @@ namespace tezcat.Framework.UI
         {
             if (eventData.button == PointerEventData.InputButton.Left)
             {
-//                 var editor = TezService.get<TezcatFramework>().createWidget<TezLocalizationNameEditor>("NameEditor", this.window.overlay);
-//                 editor.listArea = this;
-//                 editor.transform.SetAsLastSibling();
-//                 editor.newItem();
-//                 editor.open();
+                //                 var editor = TezService.get<TezcatFramework>().createWidget<TezLocalizationNameEditor>("NameEditor", this.window.overlay);
+                //                 editor.listArea = this;
+                //                 editor.transform.SetAsLastSibling();
+                //                 editor.newItem();
+                //                 editor.open();
             }
         }
 
@@ -170,7 +170,7 @@ namespace tezcat.Framework.UI
                 {
                     m_Vernier.SetParent(this.transform, false);
                     m_Vernier.gameObject.SetActive(false);
-                    this.refreshPhase = TezRefreshPhase.P_Custom3;
+                    this.refreshPhase = TezRefreshPhase.Refresh;
                 }
             }
         }
@@ -201,7 +201,7 @@ namespace tezcat.Framework.UI
                     }
                     else
                     {
-                        m_SearchResult = TezService.get<TezcatFramework>().createWidget<TezLocalizationNameItem>("NameItem", m_Content);
+                        m_SearchResult = TezService.get<TezcatFramework>().createWidget<TezLocalizationNameItem>(m_Content);
                         m_SearchResult.listArea = this;
                         m_SearchResult.set(key, value);
                         m_SearchResult.open();
@@ -225,12 +225,12 @@ namespace tezcat.Framework.UI
         {
             if (eventData.button == PointerEventData.InputButton.Left)
             {
-//                 TezValueDescriptor.foreachName((ITezValueDescriptor name) =>
-//                 {
-//                     TezService.get<TezTranslator>().tryAddName(name.name, name.name);
-//                 });
+                //                 TezValueDescriptor.foreachName((ITezValueDescriptor name) =>
+                //                 {
+                //                     TezService.get<TezTranslator>().tryAddName(name.name, name.name);
+                //                 });
 
-                this.refreshPhase = TezRefreshPhase.P_Custom3;
+                this.refreshPhase = TezRefreshPhase.Refresh;
             }
         }
 
@@ -260,16 +260,16 @@ namespace tezcat.Framework.UI
 
         public void edit(string key)
         {
-//             var editor = TezService.get<TezcatFramework>().createWidget<TezLocalizationNameEditor>("NameEditor", this.window.overlay);
-//             editor.listArea = this;
-//             editor.transform.SetAsLastSibling();
-//             editor.set(key);
-//             editor.open();
+            //             var editor = TezService.get<TezcatFramework>().createWidget<TezLocalizationNameEditor>("NameEditor", this.window.overlay);
+            //             editor.listArea = this;
+            //             editor.transform.SetAsLastSibling();
+            //             editor.set(key);
+            //             editor.open();
         }
 
         private void createItem(string key, string value)
         {
-            var item = TezService.get<TezcatFramework>().createWidget<TezLocalizationNameItem>("NameItem", m_Content);
+            var item = TezService.get<TezcatFramework>().createWidget<TezLocalizationNameItem>(m_Content);
             item.listArea = this;
             item.set(key, value);
             item.open();

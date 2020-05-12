@@ -29,16 +29,6 @@ namespace tezcat.Framework.UI
             TezcatFramework.checkNeedFile();
         }
 
-        protected override void linkEvent() 
-        {
-
-        }
-
-        protected override void unLinkEvent()
-        {
-
-        }
-
         protected override void onHide()
         {
 

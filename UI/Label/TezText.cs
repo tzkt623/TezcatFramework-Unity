@@ -8,7 +8,7 @@ using UnityEngine.UI;
 namespace tezcat.Framework.UI
 {
     [RequireComponent(typeof(Text))]
-    public class TezText : TezWidget
+    public class TezText : TezUIWidget
     {
         #region Manager
         static LinkedList<TezText> m_Actived = new LinkedList<TezText>();
@@ -78,36 +78,15 @@ namespace tezcat.Framework.UI
             add(this);
         }
 
-        protected override void linkEvent()
-        {
-
-        }
-
-        protected override void unLinkEvent()
-        {
-
-        }
-
         public void setGetter(TezEventExtension.Function<string> getter)
         {
             m_Getter = getter;
-            this.refreshPhase = TezRefreshPhase.P_Custom1;
+            this.refreshPhase = TezRefreshPhase.Refresh;
         }
 
-        protected override void onRefresh(TezRefreshPhase phase)
+        protected override void onRefresh()
         {
-            switch (phase)
-            {
-                case TezRefreshPhase.P_OnInit:
-                    this.refreshData();
-                    break;
-                case TezRefreshPhase.P_OnEnable:
-                    TezText.add(this);
-                    this.refreshData();
-                    break;
-                default:
-                    break;
-            }
+            this.refreshData();
         }
 
         private void refreshData()
@@ -120,6 +99,11 @@ namespace tezcat.Framework.UI
             m_Getter = null;
             handler = null;
             m_Node = null;
+        }
+
+        protected override void onShow()
+        {
+            TezText.add(this);
         }
 
         protected override void onHide()

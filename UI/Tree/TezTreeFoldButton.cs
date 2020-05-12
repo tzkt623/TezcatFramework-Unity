@@ -5,7 +5,7 @@ using UnityEngine.UI;
 namespace tezcat.Framework.UI
 {
     public class TezTreeFoldButton
-        : TezWidget
+        : TezUIWidget
         , ITezClickableWidget
     {
         Image m_Flag = null;
@@ -26,16 +26,6 @@ namespace tezcat.Framework.UI
             {
                 m_Flag.gameObject.SetActive(false);
             }
-        }
-
-        protected override void linkEvent()
-        {
-
-        }
-
-        protected override void unLinkEvent()
-        {
-
         }
 
         protected override void onHide()
@@ -71,25 +61,6 @@ namespace tezcat.Framework.UI
                 {
                     m_Flag.sprite = m_Node.tree.flagOff;
                 }
-            }
-        }
-
-        protected override void onRefresh(TezRefreshPhase phase)
-        {
-            switch (phase)
-            {
-                case TezRefreshPhase.P_Custom1:
-                    break;
-                case TezRefreshPhase.P_Custom2:
-                    break;
-                case TezRefreshPhase.P_Custom3:
-                    break;
-                case TezRefreshPhase.P_Custom4:
-                    break;
-                case TezRefreshPhase.P_Custom5:
-                    break;
-                default:
-                    break;
             }
         }
     }

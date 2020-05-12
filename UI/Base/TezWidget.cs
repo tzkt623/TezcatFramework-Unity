@@ -1,56 +1,27 @@
 ﻿using tezcat.Framework.Core;
-using tezcat.Framework.Utility;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
 namespace tezcat.Framework.UI
 {
-    public enum TezWidgetLifeState
+    public enum TezWidgetLife
     {
         Normal,
         TypeOnly
     }
 
-    /// <summary>
-    /// Widget组件基类
-    /// </summary>
-    public abstract class TezWidget
+    public abstract class TezBaseWidget
         : UIBehaviour
-        , ITezRefresher
         , ITezWidget
     {
-        public TezWidgetLifeState lifeState { get; set; } = TezWidgetLifeState.Normal;
         public RectTransform rectTransform => (RectTransform)this.transform;
+        public TezWidgetLife life { get; set; } = TezWidgetLife.Normal;
 
         bool m_Interactable = true;
 
-        class ControlMask
-        {
-            public const byte Inited = 1;
-            public const byte Closed = 1 << 1;
-            public const byte Disabled = 1 << 2;
-        }
-        TezBitMask_byte m_Mask = new TezBitMask_byte();
-
-        TezRefreshPhase m_DirtyMask = 0;
-        byte m_DirtyCount = 0;
-        TezRefreshPhase[] m_RefreshPhaseArray = new TezRefreshPhase[8];
-        ITezRefresher m_NextRefresher = null;
-        ITezRefresher ITezRefresher.next
-        {
-            get
-            {
-                ///清空当前刷新链表里的下一个缓存
-                var temp = m_NextRefresher;
-                m_NextRefresher = null;
-                return temp;
-            }
-            set
-            {
-                m_NextRefresher = value;
-            }
-        }
-
+        /// <summary>
+        /// 是否允许交互
+        /// </summary>
         public bool interactable
         {
             get { return m_Interactable; }
@@ -66,77 +37,158 @@ namespace tezcat.Framework.UI
             }
         }
 
-        public TezRefreshPhase refreshPhase
-        {
-            set
-            {
-                if (this.gameObject.activeSelf && m_Mask.test(ControlMask.Inited))
-                {
-                    if ((m_DirtyMask & value) == 0)
-                    {
-                        if (m_DirtyCount == 0)
-                        {
-                            TezService.get<TezcatFramework>().pushRefresher(this);
-                        }
-
-                        m_DirtyMask |= value;
-                        m_RefreshPhaseArray[m_DirtyCount++] = value;
-                    }
-                }
-            }
-        }
-
-        #region 启动流程
-        /// <summary>
-        /// 第一步 Awake
-        /// </summary>
         protected sealed override void Awake()
         {
             base.Awake();
             this.preInit();
         }
 
-        /// <summary>
-        /// 第二步 OnEnable
-        /// 由于init参数的限制
-        /// 并不会在此步执行事件连接函数和触发刷新动作
-        /// 所以在类disable之后再enable时
-        /// 会触发OnEnable状态下的刷新动作
-        /// 使类的数据自动被刷新
-        /// </summary>
-        protected sealed override void OnEnable()
+        protected override void Start()
         {
-            base.OnEnable();
-            if (m_Mask.test(ControlMask.Inited))
+            base.Start();
+            this.initWidget();
+        }
+
+        /// <summary>
+        /// 在Widget初始化之前调用
+        /// </summary>
+        protected virtual void preInit() { }
+
+        /// <summary>
+        /// 在这里初始化你的Widget
+        /// </summary>
+        protected virtual void initWidget() { }
+
+        /// <summary>
+        /// 关闭
+        /// </summary>
+        public virtual void close(bool self_close = true)
+        {
+            switch (life)
             {
-                this.linkEvent();
-                this.refreshPhase = TezRefreshPhase.P_OnEnable;
+                case TezWidgetLife.TypeOnly:
+                    TezService.get<TezcatFramework>().removeTypeOnlyWidget(this);
+                    break;
+                default:
+                    break;
+            }
+
+            Destroy(this.gameObject);
+        }
+
+        /// <summary>
+        /// 是否可以交互
+        /// </summary>
+        protected virtual void onInteractable(bool value) { }
+
+        /// <summary>
+        /// 重置
+        /// </summary>
+        public virtual void reset() { }
+
+        public void open()
+        {
+            this.gameObject.SetActive(true);
+        }
+
+        public void hide()
+        {
+            this.gameObject.SetActive(false);
+        }
+    }
+
+    /// <summary>
+    /// Widget组件基类
+    /// </summary>
+    public abstract class TezUIWidget
+        : TezBaseWidget
+        , ITezRefresher
+    {
+        bool m_Inited = false;
+        bool m_Closed = false;
+
+        TezRefreshPhase m_RefreshPhase = TezRefreshPhase.Ready;
+        public TezRefreshPhase refreshPhase
+        {
+            set
+            {
+                if (this.gameObject.activeInHierarchy && m_Inited)
+                {
+                    switch (m_RefreshPhase)
+                    {
+                        case TezRefreshPhase.Ready:
+                            TezService.get<TezcatFramework>().pushRefresher(this);
+                            m_RefreshPhase = value;
+                            break;
+                        default:
+                            break;
+                    }
+                }
             }
         }
 
         /// <summary>
-        /// 第三步 执行Start
-        /// 执行事件连接函数
-        /// 完成整个初始化步奏
-        /// 并且在OnInit状态下刷新数据
+        /// 在这里清理所有的托管资源
         /// </summary>
+        protected virtual void onClose(bool self_close) { }
+
+        /// <summary>
+        /// 关闭并销毁控件
+        /// </summary>
+        public sealed override void close(bool self_close = true)
+        {
+            switch (life)
+            {
+                case TezWidgetLife.TypeOnly:
+                    TezService.get<TezcatFramework>().removeTypeOnlyWidget(this);
+                    break;
+                default:
+                    break;
+            }
+
+            ///设置关闭位
+            ///这样是为了让控件可以立即释放资源
+            ///而不是等到Destroy执行导致时间不确定
+            m_Closed = true;
+            this.onClose(self_close);
+            Destroy(this.gameObject);
+        }
+
+        #region 规范流程
+        /*
+         * Awake(仅执行一次) -> OnEnable -> Start(仅执行一次)
+         * 
+         * 所以当脚本第一次执行时 没有设置Init位 只会执行Start刷新 所以OnEnable并不刷新
+         * Enable刷新必须在Disable之后才会执行 并且不再会执行Start刷新
+         * 
+         * 所以P_Init和P_OnEnable是相互不会冲突的两种刷新方式
+         * 
+         * 所以P_Custom刷新方式要确保不合前两种刷新方式冲突
+         */
+
+        protected sealed override void OnEnable()
+        {
+            base.OnEnable();
+            if (m_Inited)
+            {
+                this.onShow();
+                this.refreshPhase = TezRefreshPhase.Refresh;
+            }
+        }
+
         protected sealed override void Start()
         {
-            base.Start();
-            this.linkEvent();
             this.initWidget();
-            m_Mask.set(ControlMask.Inited);
-            this.refreshPhase = TezRefreshPhase.P_OnInit;
+            m_Inited = true;
+            this.refreshPhase = TezRefreshPhase.Refresh;
         }
-        #endregion
 
         protected sealed override void OnDisable()
         {
             base.OnDisable();
-            if (m_Mask.test(ControlMask.Inited))
+            if (m_Inited)
             {
                 this.onHide();
-                this.unLinkEvent();
             }
         }
 
@@ -149,121 +201,65 @@ namespace tezcat.Framework.UI
             ///如果此控件没有设置关闭位
             ///说明没有手动销毁他
             ///他一定是被父级带动销毁的
-            if(!m_Mask.test(ControlMask.Closed))
+            if (!m_Closed)
             {
                 this.onClose(false);
             }
         }
 
-        protected virtual void onInteractable(bool value)
-        {
+        #endregion
 
-        }
-
-        /// <summary>
-        /// 在Widget初始化之前调用
-        /// </summary>
-        protected abstract void preInit();
-
-        /// <summary>
-        /// 在这里初始化你的Widget
-        /// </summary>
-        protected abstract void initWidget();
-
-        /// <summary>
-        /// 在这里连接你的所有事件通知
-        /// </summary>
-        protected abstract void linkEvent();
-
-        /// <summary>
-        /// 在这里断开你的所有事件通知
-        /// </summary>
-        protected abstract void unLinkEvent();
-
+        #region 刷新流程
         /// <summary>
         /// 刷新
         /// </summary>
         public void refresh()
         {
-            for (byte i = 0; i < m_DirtyCount; i++)
-            {
-                this.onRefresh(m_RefreshPhaseArray[i]);
-            }
+            //             for (byte i = 0; i < m_DirtyCount; i++)
+            //             {
+            //                 this.onRefresh(m_RefreshPhaseArray[i]);
+            //             }
+            // 
+            //             m_DirtyCount = 0;
+            //             m_DirtyMask = 0;
 
-            m_DirtyCount = 0;
-            m_DirtyMask = 0;
+            this.onRefresh();
+            m_RefreshPhase = TezRefreshPhase.Ready;
         }
 
         /// <summary>
-        /// 自定义刷新数据
+        /// 立即刷新阶段
         /// </summary>
-        protected abstract void onRefresh(TezRefreshPhase phase);
-
-        /// <summary>
-        /// 
-        /// </summary>
-        protected abstract void onHide();
+        protected virtual void onRefresh() { }
 
 
         /// <summary>
-        /// 重置你的Widget
+        /// 显示控件时调用
+        /// 立即调用
+        /// 未初始化完成不会调用
         /// </summary>
-        public abstract void reset();
+        protected virtual void onShow() { }
 
         /// <summary>
-        /// 在这里清理所有的托管资源
+        /// 隐藏控件时调用
+        /// 立即调用
+        /// 未初始化完成不会调用
         /// </summary>
-        protected abstract void onClose(bool self_close);
+        protected virtual void onHide() { }
 
-        /// <summary>
-        /// 关闭并销毁控件
-        /// </summary>
-        public void close(bool self_close = true)
-        {
-            switch (lifeState)
-            {
-                case TezWidgetLifeState.TypeOnly:
-                    TezService.get<TezcatFramework>().removeTypeOnlyWidget(this);
-                    break;
-                default:
-                    break;
-            }
-
-            ///设置关闭位
-            ///这样是为了让控件可以立即释放资源
-            ///而不是等到Destroy执行导致时间不确定
-            m_Mask.set(ControlMask.Closed);
-            this.onClose(self_close);
-            Destroy(this.gameObject);
-        }
-
-        public virtual bool checkForClose()
-        {
-            return true;
-        }
-
-        public void open()
-        {
-            this.gameObject.SetActive(true);
-        }
-
-        public void hide()
-        {
-            this.gameObject.SetActive(false);
-        }
-
+        #endregion
         #region 重载操作
-        public static bool operator true(TezWidget obj)
+        public static bool operator true(TezUIWidget obj)
         {
             return !object.ReferenceEquals(obj, null);
         }
 
-        public static bool operator false(TezWidget obj)
+        public static bool operator false(TezUIWidget obj)
         {
             return object.ReferenceEquals(obj, null);
         }
 
-        public static bool operator !(TezWidget obj)
+        public static bool operator !(TezUIWidget obj)
         {
             return object.ReferenceEquals(obj, null);
         }
@@ -271,91 +267,9 @@ namespace tezcat.Framework.UI
     }
 
     /// <summary>
-    /// 游戏UI类组件基类
-    /// </summary>
-    public abstract class TezUIWidget : TezWidget
-    {
-        protected override void onClose(bool self_close)
-        {
-
-        }
-
-        public override void reset()
-        {
-
-        }
-
-        protected override void initWidget()
-        {
-
-        }
-
-        protected override void linkEvent()
-        {
-
-        }
-
-        protected override void onHide()
-        {
-
-        }
-
-        protected override void preInit()
-        {
-
-        }
-
-        protected override void unLinkEvent()
-        {
-
-        }
-    }
-
-    /// <summary>
-    /// 功能性组件基类
-    /// </summary>
-    public abstract class TezFunctionWidget : TezWidget
-    {
-        protected override void onClose(bool self_close = true)
-        {
-
-        }
-
-        public override void reset()
-        {
-
-        }
-
-        protected override void initWidget()
-        {
-
-        }
-
-        protected override void linkEvent()
-        {
-
-        }
-
-        protected override void onHide()
-        {
-
-        }
-
-        protected override void preInit()
-        {
-
-        }
-
-        protected override void unLinkEvent()
-        {
-
-        }
-    }
-
-    /// <summary>
     /// 工具性组件基类
     /// </summary>
-    public abstract class TezToolWidget : TezWidget
+    public abstract class TezToolWidget : TezUIWidget
     {
 
     }

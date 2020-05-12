@@ -26,16 +26,6 @@ namespace tezcat.Framework.UI
 
         }
 
-        protected override void linkEvent()
-        {
-
-        }
-
-        protected override void unLinkEvent()
-        {
-
-        }
-
         protected override void onHide()
         {
 
@@ -52,18 +42,9 @@ namespace tezcat.Framework.UI
 //             m_Wrapper = null;
         }
 
-        protected override void onRefresh(TezRefreshPhase phase)
+        protected override void onRefresh()
         {
-            switch (phase)
-            {
-                case TezRefreshPhase.P_OnInit:
-                    this.refreshData();
-                    break;
-                case TezRefreshPhase.P_OnEnable:
-                    break;
-                default:
-                    break;
-            }
+            this.refreshData();
         }
 
         private void refreshData()
@@ -111,7 +92,7 @@ namespace tezcat.Framework.UI
 //             TezService.DB.unregisterItem(m_Wrapper.myItem);
 //             m_Wrapper.close();
 //             m_Wrapper = null;
-            this.refreshPhase = TezRefreshPhase.P_Custom1;
+            this.refreshPhase = TezRefreshPhase.Refresh;
         }
 
         void IPointerDownHandler.OnPointerDown(PointerEventData eventData)

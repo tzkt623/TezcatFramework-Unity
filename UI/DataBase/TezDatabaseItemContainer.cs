@@ -74,18 +74,6 @@ namespace tezcat.Framework.UI
             base.onClose(self_close);
         }
 
-        protected override void linkEvent()
-        {
-            base.linkEvent();
-//            TezDatabase.onRegsiterItem.add(this.onAdd);
-        }
-
-        protected override void unLinkEvent()
-        {
-            base.unLinkEvent();
-//            TezDatabase.onRegsiterItem.remove(this.onAdd);
-        }
-
         public void removeItem()
         {
             if(m_CurrentSlot)
@@ -165,19 +153,10 @@ namespace tezcat.Framework.UI
         }
 #endif
 
-        protected override void onRefresh(TezRefreshPhase phase)
+
+        protected override void onRefresh()
         {
-            base.onRefresh(phase);
-            switch (phase)
-            {
-                case TezRefreshPhase.P_OnInit:
-                    m_PageController.setPage(m_PageController.currentPage);
-                    break;
-                case TezRefreshPhase.P_OnEnable:
-                    break;
-                default:
-                    break;
-            }
+            m_PageController.setPage(m_PageController.currentPage);
         }
 
 

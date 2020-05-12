@@ -26,11 +26,6 @@ namespace tezcat.Framework.UI
             }
         }
 
-        protected override void onRefresh(TezRefreshPhase phase)
-        {
-
-        }
-
         void IBeginDragHandler.OnBeginDrag(PointerEventData eventData)
         {
             if (!m_Pin && eventData.button == PointerEventData.InputButton.Left)

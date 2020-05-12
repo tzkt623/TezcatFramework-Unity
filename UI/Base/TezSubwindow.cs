@@ -10,7 +10,7 @@ namespace tezcat.Framework.UI
     /// Subwindow用于同一个Window下多个功能区域的设计
     /// </summary>
     public abstract class TezSubwindow
-        : TezWidget
+        : TezUIWidget
         , ITezFocusableWidget
         , ITezSinglePrefab
     {
@@ -67,22 +67,7 @@ namespace tezcat.Framework.UI
             this.window.addSubwindow(this);
         }
 
-        protected override void linkEvent()
-        {
-
-        }
-
-        protected override void unLinkEvent()
-        {
-
-        }
-
         protected override void onHide()
-        {
-
-        }
-
-        protected override void onRefresh(TezRefreshPhase phase)
         {
 
         }

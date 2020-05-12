@@ -40,19 +40,9 @@ namespace tezcat.Framework.UI
             m_Tree.onSelectNode -= onSelectNode;
         }
 
-        protected override void onRefresh(TezRefreshPhase phase)
+        protected override void onRefresh()
         {
-            base.onRefresh(phase);
-            switch (phase)
-            {
-                case TezRefreshPhase.P_OnInit:
-                    this.refreshData();
-                    break;
-                case TezRefreshPhase.P_OnEnable:
-                    break;
-                default:
-                    break;
-            }
+            this.refreshData();
         }
 
         private void refreshData()
@@ -120,7 +110,7 @@ namespace tezcat.Framework.UI
 
             }
 
-            m_Container.refreshPhase = TezRefreshPhase.P_Custom1;
+            m_Container.refreshPhase = TezRefreshPhase.Refresh;
         }
 
         protected override void onHide()

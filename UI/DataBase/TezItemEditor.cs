@@ -38,7 +38,7 @@ namespace tezcat.Framework.UI
 
         public override void bind(int category)
         {
-            this.refreshPhase = TezRefreshPhase.P_Custom1;
+            this.refreshPhase = TezRefreshPhase.Refresh;
         }
 
         //         public override void bind(TezItem item)
@@ -68,29 +68,11 @@ namespace tezcat.Framework.UI
             pro.open();
         }
 
-        protected override void onRefresh(TezRefreshPhase phase)
+        protected override void onRefresh()
         {
-            base.onRefresh(phase);
-            switch (phase)
-            {
-                case TezRefreshPhase.P_OnInit:
-                    this.refreshInit();
-                    break;
-                case TezRefreshPhase.P_OnEnable:
-                    break;
-                case TezRefreshPhase.P_Custom1:
-                    break;
-                case TezRefreshPhase.P_Custom2:
-                    break;
-                case TezRefreshPhase.P_Custom3:
-                    break;
-                case TezRefreshPhase.P_Custom4:
-                    break;
-                case TezRefreshPhase.P_Custom5:
-                    break;
-                default:
-                    break;
-            }
+            base.onRefresh();
+            this.refreshInit();
+
         }
 
         private void refreshInit()

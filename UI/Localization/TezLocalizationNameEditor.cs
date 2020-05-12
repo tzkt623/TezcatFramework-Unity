@@ -35,16 +35,6 @@ namespace tezcat.Framework.UI
 
         }
 
-        protected override void linkEvent()
-        {
-
-        }
-
-        protected override void unLinkEvent()
-        {
-
-        }
-
         private void refreshData()
         {
             string value;
@@ -91,27 +81,12 @@ namespace tezcat.Framework.UI
         {
             m_KeyInput.readOnly = true;
             m_KeyInput.text = key;
-            this.refreshPhase = TezRefreshPhase.P_Custom1;
+            this.refreshPhase = TezRefreshPhase.Refresh;
         }
 
-        protected override void onRefresh(TezRefreshPhase phase)
+        protected override void onRefresh()
         {
-            switch (phase)
-            {
-                case TezRefreshPhase.P_Custom1:
-                    this.refreshData();
-                    break;
-                case TezRefreshPhase.P_Custom2:
-                    break;
-                case TezRefreshPhase.P_Custom3:
-                    break;
-                case TezRefreshPhase.P_Custom4:
-                    break;
-                case TezRefreshPhase.P_Custom5:
-                    break;
-                default:
-                    break;
-            }
+            this.refreshData();
         }
 
         public void newItem()
@@ -132,7 +107,7 @@ namespace tezcat.Framework.UI
             if (eventData.button == PointerEventData.InputButton.Left)
             {
                 TezService.get<TezTranslator>().saveName(m_KeyInput.text, m_LocalizationInput.text);
-                listArea.refreshPhase = TezRefreshPhase.P_Custom3;
+                listArea.refreshPhase = TezRefreshPhase.Refresh;
                 this.close();
             }
         }
