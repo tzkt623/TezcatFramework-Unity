@@ -8,10 +8,10 @@ namespace tezcat.Framework.Extension
         /// <summary>
         /// 用Item数据创建一个
         /// </summary>
-        public static ObjectCom create<ObjectCom>(TezDatabaseGameItem item, bool copy = false) where ObjectCom : TezGameObject, new()
+        public static ObjectCom create<ObjectCom>(TezDatabaseGameItem item) where ObjectCom : TezGameObject, new()
         {
             ObjectCom data = new ObjectCom();
-            data.initWithData(item, copy);
+            data.initWithData(item);
 
             var entity = TezEntity.create();
             entity.addComponent(data);
@@ -22,10 +22,10 @@ namespace tezcat.Framework.Extension
         /// <summary>
         /// 用Item数据创建一个 并且构建DefinitionPath
         /// </summary>
-        public static ObjectCom createWithDefinitionPath<ObjectCom>(TezDatabaseGameItem item, bool copy = false) where ObjectCom : TezGameObject, new()
+        public static ObjectCom createWithDefinitionPath<ObjectCom>(TezDatabaseGameItem item) where ObjectCom : TezGameObject, new()
         {
             ObjectCom data = new ObjectCom();
-            data.initWithData(item, copy);
+            data.initWithData(item);
             data.buildDefinitionPath();
 
             var entity = TezEntity.create();

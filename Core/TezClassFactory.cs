@@ -44,7 +44,6 @@ namespace tezcat.Framework.Core
 
         public T create<T>(string name) where T : class
         {
-#if UNITY_EDITOR
             Creator<object> creator = null;
             if (m_DicWithName.TryGetValue(name, out creator))
             {
@@ -54,9 +53,6 @@ namespace tezcat.Framework.Core
             {
                 throw new Exception(string.Format("{0} : this type is not registered", name));
             }
-#else
-            return (T)m_DicWithName[name]();
-#endif
         }
 
         public T create<T>() where T : class

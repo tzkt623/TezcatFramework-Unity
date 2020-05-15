@@ -41,6 +41,14 @@ namespace tezcat.Framework.InputSystem
             m_OnTo = on_to;
         }
 
+        public void resetListeners()
+        {
+            m_OnPop = onDefault;
+            m_OnPush = onDefault;
+            m_OnClear = onDefault;
+            m_OnTo = onDefault;
+        }
+
         public void clear<State>(ITezTuple extra_data = null) where State : TezInputState, new()
         {
             while (m_Stack.Count > 0)
@@ -119,6 +127,17 @@ namespace tezcat.Framework.InputSystem
             m_OnPop = null;
             m_OnPush = null;
             m_OnTo = null;
+        }
+
+
+        public Stack<TezInputState> dump()
+        {
+            Stack<TezInputState> dump = new Stack<TezInputState>(m_Stack);
+            if(m_Current != null)
+            {
+                dump.Push(m_Current);
+            }
+            return dump;
         }
     }
 }

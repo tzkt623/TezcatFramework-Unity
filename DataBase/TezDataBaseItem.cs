@@ -10,21 +10,17 @@ namespace tezcat.Framework.Database
         , ITezSerializableItem
         , ITezCloseable
     {
-        public enum Category
-        {
-            AssetItem,
-            GameItem
-        }
-
         /// <summary>
         /// Name ID
         /// </summary>
         public string NID { get; set; } = null;
 
-        /// <summary>
-        /// 类型
-        /// </summary>
-        public abstract Category itemCategory { get; }
+        public TezDBID DBID { get; private set; }
+
+        public void onRegister(int db_id, int item_id)
+        {
+            this.DBID = new TezDBID(db_id, item_id);
+        }
 
         public virtual void serialize(TezWriter writer)
         {
@@ -36,7 +32,11 @@ namespace tezcat.Framework.Database
             this.NID = reader.readString(TezReadOnlyString.NID);
         }
 
-        public abstract void close(bool self_close = true);
+        public virtual void close(bool self_close = true)
+        {
+            DBID.close();
+            DBID = null;
+        }
 
         #region 重载
         public override bool Equals(object other)
@@ -44,7 +44,10 @@ namespace tezcat.Framework.Database
             return this.Equals((TezDatabaseItem)other);
         }
 
-        public abstract bool Equals(TezDatabaseItem other);
+        public bool Equals(TezDatabaseItem other)
+        {
+            return other ? DBID.sameAs(other.DBID) : false;
+        }
 
         public override int GetHashCode()
         {
@@ -107,15 +110,7 @@ namespace tezcat.Framework.Database
     /// </summary>
     public abstract class TezDataBaseAssetItem : TezDatabaseItem
     {
-        public override Category itemCategory
-        {
-            get { return Category.AssetItem; }
-        }
 
-        public override bool Equals(TezDatabaseItem other)
-        {
-            return this.NID == other.NID;
-        }
     }
 
     /// <summary>
@@ -124,59 +119,59 @@ namespace tezcat.Framework.Database
     public abstract class TezDatabaseGameItem : TezDatabaseItem
     {
         /// <summary>
-        /// 类型
-        /// </summary>
-        public override Category itemCategory
-        {
-            get { return Category.GameItem; }
-        }
-
-        /// <summary>
         /// Class ID
         /// </summary>
         public string CID { get; private set; }
 
-        public abstract ITezGroup group { get; }
 
-        public abstract ITezSubgroup subgroup { get; }
-
-        public ulong itemID
-        {
-            get { return this.RID.itemID; }
-        }
-
-        public TezRID RID { get; private set; } = null;
+        public TezCategory category { get; protected set; } = new TezCategory();
 
         /// <summary>
-        /// 属性
+        /// 允许堆叠的数量
         /// </summary>
-        public TezPropertySortList properties { get; private set; } = new TezPropertySortList();
+        public int stackCount { get; protected set; } = 0;
+
 
         public List<string> TAGS { get; private set; } = new List<string>();
 
+        /// <summary>
+        /// 建立Item的分类
+        /// </summary>
+        private List<ITezCategoryToken> buildCategory
+        {
+            get
+            {
+                List<ITezCategoryToken> list = new List<ITezCategoryToken>(4);
+                this.onBuildCategory(ref list);
+                return list;
+            }
+        }
+
+        /// <summary>
+        /// 使用Category系统
+        /// 建立Item的分类路径
+        /// </summary>
+        protected abstract void onBuildCategory(ref List<ITezCategoryToken> list);
+
         public TezDatabaseGameItem()
         {
-            this.registerProperty(this.properties);
+            this.category.setToken(buildCategory);
         }
 
         public override void close(bool self_close = true)
         {
-            this.CID = null;
+            base.close(self_close);
 
-            this.properties.clear();
-            this.properties = null;
+            this.CID = null;
 
             this.TAGS.Clear();
             this.TAGS = null;
-
-            this.RID.close();
-            this.RID = null;
         }
 
-        public TezEntity createObject(bool copy = false)
+        public TezEntity createObject()
         {
             var obj = this.onCreateObject();
-            obj.initWithData(this, copy);
+            obj.initWithData(this);
 
             var entity = TezEntity.create();
             entity.addComponent(obj);
@@ -190,16 +185,6 @@ namespace tezcat.Framework.Database
             writer.write(TezReadOnlyString.NID, this.NID);
         }
 
-        protected void serializeTag(TezWriter writer)
-        {
-            writer.beginArray(TezReadOnlyString.TAG);
-            for (int i = 0; i < TAGS.Count; i++)
-            {
-                writer.write(TAGS[i]);
-            }
-            writer.endArray(TezReadOnlyString.TAG);
-        }
-
         public override void deserialize(TezReader reader)
         {
             base.deserialize(reader);
@@ -207,43 +192,9 @@ namespace tezcat.Framework.Database
             this.NID = reader.readString(TezReadOnlyString.NID);
         }
 
-        protected void deserializeTag(TezReader reader)
-        {
-            reader.beginArray(TezReadOnlyString.TAG);
-            var count = reader.count;
-            for (int i = 0; i < count; i++)
-            {
-                TAGS.Add(reader.readString(i));
-            }
-            reader.endArray(TezReadOnlyString.TAG);
-        }
-
         protected virtual TezGameObject onCreateObject()
         {
             throw new Exception(string.Format("Please override this method for {0}", this.GetType().Name));
-        }
-
-        public override bool Equals(TezDatabaseItem other)
-        {
-            var go = other as TezDatabaseGameItem;
-            return go ? this.group.Equals(go.group) && this.subgroup.Equals(go.subgroup) : false;
-        }
-
-        protected virtual void registerProperty(TezPropertySortList collection) { }
-
-        /// <summary>
-        /// 数据库回调函数
-        /// 不要手动调用
-        /// </summary>
-        /// <param name="db_id"></param>
-        public void onAddToDB(int db_id)
-        {
-            if (this.RID != null)
-            {
-                throw new ArgumentException("RID");
-            }
-
-            this.RID = new TezRID(group, subgroup, db_id);
         }
     }
 }

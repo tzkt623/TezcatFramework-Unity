@@ -97,25 +97,25 @@ namespace tezcat.Framework.UI
                 editor.bind(() => TezService.get<TezTranslator>().translateName(TezReadOnlyString.NID, TezReadOnlyString.NID), m_Item.NID);
                 editor.open();
 
-                var properties = m_Item.properties;
-                for (int i = 0; i < properties.count; i++)
-                {
-                    var property = properties[i];
-                    switch (property.valueType)
-                    {
-                        case TezValueType.Type:
-                            this.createPE_Type((TezValueWrapper)property);
-                            break;
-                        case TezValueType.Int:
-                        case TezValueType.Float:
-                        case TezValueType.String:
-                        case TezValueType.StaticString:
-                            this.createPE_IFS((TezValueWrapper)property);
-                            break;
-                        default:
-                            break;
-                    }
-                }
+//                 var properties = m_Item.properties;
+//                 for (int i = 0; i < properties.count; i++)
+//                 {
+//                     var property = properties[i];
+//                     switch (property.valueType)
+//                     {
+//                         case TezValueType.Type:
+//                             this.createPE_Type((TezValueWrapper)property);
+//                             break;
+//                         case TezValueType.Int:
+//                         case TezValueType.Float:
+//                         case TezValueType.String:
+//                         case TezValueType.StaticString:
+//                             this.createPE_IFS((TezValueWrapper)property);
+//                             break;
+//                         default:
+//                             break;
+//                     }
+//                 }
             }
         }
 

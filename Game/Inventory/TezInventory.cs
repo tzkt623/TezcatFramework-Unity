@@ -24,7 +24,7 @@ namespace tezcat.Framework.Game.Inventory
     /// </summary>
     public class TezInventory<Object>
         : ITezInventory
-        where Object : TezGameObject, ITezInventoryItem
+        where Object : TezGameObject
     {
         public event TezEventExtension.Action<TezInventorySlot> onItemAdded;
         public event TezEventExtension.Action<TezInventorySlot> onItemRemoved;
@@ -51,7 +51,7 @@ namespace tezcat.Framework.Game.Inventory
 
         public void add(Object game_object, int count)
         {
-            var stackable = game_object.itemConfig.stackable;
+            var stackable = game_object.templateItem.stackCount > 0;
 
             TezInventorySlot result = null;
             for (int i = 0; i < m_Slots.Count; i++)
@@ -67,7 +67,9 @@ namespace tezcat.Framework.Game.Inventory
                     }
 
                     ///找相同格子
-                    if (slot.item != null && slot.item.sameAs(game_object))
+                    ///可堆叠的物品
+                    ///他们的模板相同
+                    if (slot.item != null && slot.item.templateAs(game_object))
                     {
                         result = slot;
                         break;
@@ -90,6 +92,13 @@ namespace tezcat.Framework.Game.Inventory
                 if (result.item != null)
                 {
                     result.count += count;
+                    ///如果是可堆叠物品
+                    ///并且已有存在的物品
+                    ///计数+1并删除自己
+                    if(stackable)
+                    {
+                        game_object.close();
+                    }
                 }
                 else
                 {

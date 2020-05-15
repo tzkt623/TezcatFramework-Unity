@@ -32,27 +32,18 @@ namespace tezcat.Framework.Definition
             get { return m_SecondaryPath.Length; }
         }
 
-        ITezDefinitionToken m_MainToken = null;
         ITezDefinitionToken[] m_PrimaryPath = null;
         ITezDefinitionToken[] m_SecondaryPath = null;
 
-        public TezDefinitionPath(ITezDefinitionToken main_token, ITezDefinitionToken[] primary_path = null, ITezDefinitionToken[] secondary_path = null)
-        {
-            m_MainToken = main_token;
-            m_PrimaryPath = primary_path == null ? m_DefaultPrimaryPath : primary_path;
-            m_SecondaryPath = secondary_path == null ? m_DefaultSecondaryPath : secondary_path;
-        }
-
         public TezDefinitionPath(ITezDefinitionToken[] primary_path = null, ITezDefinitionToken[] secondary_path = null)
         {
-            m_MainToken = null;
             m_PrimaryPath = primary_path == null ? m_DefaultPrimaryPath : primary_path;
             m_SecondaryPath = secondary_path == null ? m_DefaultSecondaryPath : secondary_path;
         }
 
         public TezDefinitionPath clone()
         {
-            return new TezDefinitionPath(m_MainToken, m_PrimaryPath, m_SecondaryPath);
+            return new TezDefinitionPath(m_PrimaryPath, m_SecondaryPath);
         }
 
         /// <summary>
@@ -86,16 +77,6 @@ namespace tezcat.Framework.Definition
             }
 
             return false;
-        }
-
-        /// <summary>
-        /// MainToken
-        /// 可以用于多种分类
-        /// </summary>
-        /// <returns></returns>
-        public ITezDefinitionToken getMainToken()
-        {
-            return m_MainToken;
         }
 
         /// <summary>
@@ -143,15 +124,11 @@ namespace tezcat.Framework.Definition
                 }
             }
 
-            return string.Format("Main:{0}\nPrimary:{1}\nSecondary:{2}"
-                , m_MainToken.tokenName
-                , primary
-                , secondary);
+            return string.Format("Primary:{0}\nSecondary:{1}", primary, secondary);
         }
 
         public void close(bool self_close = true)
         {
-            m_MainToken = null;
             m_PrimaryPath = null;
             m_SecondaryPath = null;
         }

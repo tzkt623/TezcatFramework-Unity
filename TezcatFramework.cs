@@ -161,8 +161,6 @@ namespace tezcat.Framework
             TezService.register(new TezRandom());
             TezService.register(new TezTextureDatabase());
             TezService.register(new TezPrefabDatabase());
-            TezService.register(new TezDatabase());
-            TezService.register(new TezFastDatabase());
             TezService.register(new TezTipController());
         }
 

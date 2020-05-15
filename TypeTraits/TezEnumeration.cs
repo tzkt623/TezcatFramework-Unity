@@ -350,10 +350,7 @@ namespace tezcat.Framework.TypeTraits
         }
         #endregion
 
-        public Type systemType
-        {
-            get { return typeof(TEnumeration); }
-        }
+        public Type systemType { get; } = typeof(TEnumeration);
 
         public string toName
         {

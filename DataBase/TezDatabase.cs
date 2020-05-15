@@ -1,280 +1,125 @@
 ﻿using System;
 using System.Collections.Generic;
 using tezcat.Framework.Core;
-using tezcat.Framework.Extension;
-using UnityEngine.Assertions;
 
 namespace tezcat.Framework.Database
 {
-    public sealed class TezDatabase : ITezService
+    /// <summary>
+    /// 数据库基础
+    /// </summary>
+    public abstract class TezDatabase : ITezService
     {
-        class Subgroup
-        {
-            public string NID { get; set; }
-            public int SGID { get; set; }
+        public int ID { get; }
+        int m_ItemID = 0;
 
+        protected TezDatabase(int ID)
+        {
+            this.ID = ID;
+        }
+
+        /// <summary>
+        /// 注册Item
+        /// </summary>
+        public virtual void register(TezDatabaseItem item)
+        {
+            item.onRegister(this.ID, m_ItemID++);
+        }
+
+        public abstract void close(bool self_close = true);
+    }
+
+    /// <summary>
+    /// GameItem数据库基础类
+    /// </summary>
+    public abstract class TezItemDatabase : TezDatabase
+    {
+        class Slot
+        {
             Dictionary<string, TezDatabaseGameItem> m_Dic = new Dictionary<string, TezDatabaseGameItem>();
             List<TezDatabaseGameItem> m_List = new List<TezDatabaseGameItem>();
 
             public void add(TezDatabaseGameItem item)
             {
-                Assert.IsFalse(m_Dic.ContainsKey(item.NID), string.Format("DataBase Item : {0} is added", item.NID));
-                item.onAddToDB(m_List.Count);
-
-                m_List.Add(item);
                 m_Dic.Add(item.NID, item);
+                m_List.Add(item);
             }
 
-            public TezDatabaseGameItem get(int item_id)
-            {
-                Assert.IsFalse(item_id > m_List.Count, string.Format("Database : [M : get(int item_id)] {0} out of index", item_id));
-                return m_List[item_id];
-            }
-
-            public TezDatabaseGameItem get(string item_name)
+            public TezDatabaseGameItem get(string name)
             {
                 TezDatabaseGameItem item = null;
-                if (m_Dic.TryGetValue(item_name, out item))
+                if (m_Dic.TryGetValue(name, out item))
                 {
                     return item;
                 }
-                else
-                {
-                    throw new Exception(string.Format("This item[{0}/{1}] is not in DB!", this.NID, item_name));
-                }
+
+                throw new Exception(string.Format("{0} : Item[{1}] No Registered", this.GetType().Name, name));
             }
 
-            public void foreachItem(TezEventExtension.Action<TezDatabaseGameItem> for_item)
+            public TezDatabaseGameItem get(int index)
+            {
+                return m_List[index];
+            }
+
+            internal void close()
             {
                 for (int i = 0; i < m_List.Count; i++)
                 {
-                    for_item(m_List[i]);
-                }
-            }
-
-            public int getItemCount()
-            {
-                return m_List.Count;
-            }
-
-            public List<TezDatabaseGameItem> getAllItem()
-            {
-                return m_List;
-            }
-
-            public void close()
-            {
-                m_Dic.Clear();
-                m_List.Clear();
-
-                m_Dic = null;
-                m_List = null;
-            }
-        }
-
-        class Group
-        {
-            public string NID { get; set; }
-            public int GID { get; set; }
-
-            Dictionary<string, Subgroup> m_Dic = new Dictionary<string, Subgroup>();
-            List<Subgroup> m_List = new List<Subgroup>();
-
-            public void add(TezDatabaseGameItem item)
-            {
-                var sgid = item.subgroup.toID;
-                Subgroup sub;
-                if (!m_Dic.TryGetValue(item.subgroup.toName, out sub))
-                {
-                    sub = new Subgroup() { NID = item.subgroup.toName, SGID = sgid };
-                    m_Dic.Add(item.subgroup.toName, sub);
-
-                    while (m_List.Count <= sgid)
-                    {
-                        m_List.Add(null);
-                    }
-
-                    m_List[sgid] = sub;
+                    m_List[i].close();
                 }
 
-                sub.add(item);
-            }
-
-            public void remove(string name)
-            {
-
-            }
-
-            public TezDatabaseGameItem get(string sub_name, string item_name)
-            {
-                Subgroup subgroup = null;
-                if (m_Dic.TryGetValue(sub_name, out subgroup))
-                {
-                    return subgroup.get(item_name);
-                }
-                else
-                {
-                    throw new Exception(string.Format("This subgroup[{0}/{1}] is not in DB!", this.NID, sub_name));
-                }
-            }
-
-            public TezDatabaseGameItem get(int sub_id, int item_id)
-            {
-                return m_List[sub_id].get(item_id);
-            }
-
-            public TezDatabaseGameItem get(int sub_id, string item_name)
-            {
-                return m_List[sub_id].get(item_name);
-            }
-
-            public void close()
-            {
-                foreach (var item in m_List)
-                {
-                    item.close();
-                }
                 m_List.Clear();
                 m_Dic.Clear();
 
                 m_Dic = null;
                 m_List = null;
             }
+        }
 
-            public void foreachSubgroup(TezEventExtension.Action<string, int> for_subgroup, TezEventExtension.Action<TezDatabaseGameItem> for_item)
+        List<Slot> m_Slots = new List<Slot>();
+
+        protected TezItemDatabase(int ID) : base(ID)
+        {
+
+        }
+
+        public override void register(TezDatabaseItem item)
+        {
+            base.register(item);
+            this.createSlot((TezDatabaseGameItem)item);
+        }
+
+        private void createSlot(TezDatabaseGameItem item)
+        {
+            var index = item.category.finalToken.index;
+            while (m_Slots.Count <= index)
             {
-                foreach (var subgroup in m_List)
-                {
-                    for_subgroup(subgroup.NID, subgroup.SGID);
-                    subgroup.foreachItem(for_item);
-                }
+                m_Slots.Add(new Slot());
             }
 
-            public int getItemCount(int sub_id)
+            m_Slots[index].add(item);
+        }
+
+        public TezDatabaseGameItem get(ITezCategoryFinalToken final_token, string name)
+        {
+            var slot = m_Slots[final_token.index];
+            return slot.get(name);
+        }
+
+        public TezDatabaseGameItem get(ITezCategoryFinalToken final_token, int index)
+        {
+            var slot = m_Slots[final_token.index];
+            return slot.get(index);
+        }
+
+        public override void close(bool self_close = true)
+        {
+            for (int i = 0; i < m_Slots.Count; i++)
             {
-                return m_List[sub_id].getItemCount();
+                m_Slots[i].close();
             }
 
-            public int getSubGroupCount()
-            {
-                return m_List.Count;
-            }
-
-            public List<TezDatabaseGameItem> getAllItem()
-            {
-                List<TezDatabaseGameItem> list = new List<TezDatabaseGameItem>();
-
-                foreach (var sub in m_List)
-                {
-                    if (sub != null)
-                    {
-                        list.AddRange(sub.getAllItem());
-                    }
-                }
-
-                return list;
-            }
-        }
-
-        Dictionary<string, Group> m_GroupDic = new Dictionary<string, Group>();
-        List<Group> m_GroupList = new List<Group>();
-
-        public void add(TezDatabaseGameItem item)
-        {
-            var gid = item.group.toID;
-
-            Group group = null;
-            if (!m_GroupDic.TryGetValue(item.group.toName, out group))
-            {
-                group = new Group() { NID = item.group.toName, GID = gid };
-                m_GroupDic.Add(item.group.toName, group);
-
-                while (m_GroupList.Count <= gid)
-                {
-                    m_GroupList.Add(null);
-                }
-
-                m_GroupList[gid] = group;
-            }
-
-            group.add(item);
-        }
-
-        public T get<T>(string group_name, string sub_name, string item_name) where T : TezDatabaseGameItem
-        {
-            return (T)this.get(group_name, sub_name, item_name);
-        }
-
-        public T get<T>(int group_id, int sub_id, int item_id = 0) where T : TezDatabaseGameItem
-        {
-            return (T)this.get(group_id, sub_id, item_id);
-        }
-
-        public T get<T>(int group_id, int sub_id, string item_name) where T : TezDatabaseGameItem
-        {
-            return (T)m_GroupList[group_id].get(sub_id, item_name);
-        }
-
-        public T get<T>(int group_id, string sub_name, string item_name) where T : TezDatabaseGameItem
-        {
-            return (T)m_GroupList[group_id].get(sub_name, item_name);
-        }
-
-        public TezDatabaseGameItem get(int group_id, int sub_id, int item_id)
-        {
-            return m_GroupList[group_id].get(sub_id, item_id);
-        }
-
-        public TezDatabaseGameItem get(string group_name, string sub_name, string item_name)
-        {
-            return m_GroupDic[group_name].get(sub_name, item_name);
-        }
-
-        public int getGroupCount()
-        {
-            return m_GroupList.Count;
-        }
-
-        public int getSubGroupCount(int group_id)
-        {
-            return m_GroupList[group_id].getSubGroupCount();
-        }
-
-        public int getItemCount(int group_id, int sub_id)
-        {
-            return m_GroupList[group_id].getItemCount(sub_id);
-        }
-
-        public void foreachDataBase(
-            TezEventExtension.Action<string, int> for_group,
-            TezEventExtension.Action<string, int> for_subgroup,
-            TezEventExtension.Action<TezDatabaseGameItem> for_item)
-        {
-            for (int i = 0; i < m_GroupList.Count; i++)
-            {
-                var group = m_GroupList[i];
-                for_group(group.NID, group.GID);
-                group.foreachSubgroup(for_subgroup, for_item);
-            }
-        }
-
-        public List<TezDatabaseGameItem> get(int group_id)
-        {
-            return m_GroupList[group_id].getAllItem();
-        }
-
-        public void close(bool self_close = true)
-        {
-            foreach (var group in m_GroupList)
-            {
-                group?.close();
-            }
-
-            m_GroupList.Clear();
-            m_GroupDic.Clear();
-
-            m_GroupList = null;
-            m_GroupDic = null;
+            m_Slots.Clear();
+            m_Slots = null;
         }
     }
 }
