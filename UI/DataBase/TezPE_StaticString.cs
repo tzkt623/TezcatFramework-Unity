@@ -1,6 +1,5 @@
-﻿using tezcat.Framework.Core;
-using tezcat.Framework.Extension;
-using tezcat.Framework.String;
+﻿using tezcat.Framework.Extension;
+using tezcat.Framework.Utility;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -13,7 +12,7 @@ namespace tezcat.Framework.UI
         [SerializeField]
         InputField m_Input = null;
 
-        TezStaticString m_String = null;
+        TezIDString m_String = null;
 
         protected override void preInit()
         {
@@ -45,7 +44,7 @@ namespace tezcat.Framework.UI
             m_String.replace(content);
         }
 
-        public void bind(TezEventExtension.Function<string> function, TezStaticString str)
+        public void bind(TezEventExtension.Function<string> function, TezIDString str)
         {
             m_PropertyName.setGetter(function);
             m_String = str;

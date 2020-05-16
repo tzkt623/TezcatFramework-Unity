@@ -2,9 +2,13 @@
 
 namespace tezcat.Framework.Core
 {
+    /// <summary>
+    /// 非ECS系统基础Object
+    /// </summary>
     public abstract class TezMonoObject
         : MonoBehaviour
-        , ITezRefresher
+        , ITezRefreshHandler
+        , ITezCloseable
     {
         bool m_Inited = false;
         bool m_Closed = false;
@@ -62,7 +66,7 @@ namespace tezcat.Framework.Core
                     switch (m_RefreshPhase)
                     {
                         case TezRefreshPhase.Ready:
-                            TezService.get<TezcatFramework>().pushRefresher(this);
+                            TezService.get<TezcatFramework>().pushRefreshHandler(this);
                             m_RefreshPhase = value;
                             break;
                         default:

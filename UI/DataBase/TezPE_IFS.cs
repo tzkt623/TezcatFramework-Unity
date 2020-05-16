@@ -1,5 +1,6 @@
 ﻿using tezcat.Framework.Core;
-using tezcat.Framework.String;
+using tezcat.Framework.Game;
+using tezcat.Framework.Utility;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -45,7 +46,7 @@ namespace tezcat.Framework.UI
                     (m_Property as TezValueWrapper<string>).value = value;
                     break;
                 case TezValueType.StaticString:
-                    (m_Property as TezValueWrapper<TezStaticString>).value = value;
+                    (m_Property as TezValueWrapper<TezIDString>).value = value;
                     break;
             }
         }
@@ -74,7 +75,7 @@ namespace tezcat.Framework.UI
                     break;
                 case TezValueType.StaticString:
                     m_Input.contentType = InputField.ContentType.Standard;
-                    m_Input.text = (m_Property as TezValueWrapper<TezStaticString>).value;
+                    m_Input.text = (m_Property as TezValueWrapper<TezIDString>).value;
                     break;
             }
         }

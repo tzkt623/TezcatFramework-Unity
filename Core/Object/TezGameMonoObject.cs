@@ -1,5 +1,9 @@
 ﻿namespace tezcat.Framework.Core
 {
+    /// <summary>
+    /// 偷懒类
+    /// 继承即可
+    /// </summary>
     public abstract class TezGameMonoObject : TezMonoObject
     {
         public override void reset()

@@ -1,5 +1,8 @@
 ﻿namespace tezcat.Framework.Core
 {
+    /// <summary>
+    /// 刷新阶段
+    /// </summary>
     public enum TezRefreshPhase : byte
     {
         /// <summary>
@@ -11,13 +14,19 @@
         Refresh
     }
 
-    public interface ITezRefresher
+    /// <summary>
+    /// 刷新者
+    /// </summary>
+    public interface ITezRefreshHandler
     {
         TezRefreshPhase refreshPhase { set; }
         //        ITezRefresher next { get; set; }
         void refresh();
     }
 
+    /// <summary>
+    /// 刷新标志
+    /// </summary>
     public class TezRefreshMask
     {
         public const byte Inited = 1;

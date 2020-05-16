@@ -13,25 +13,22 @@
         public const string NID = "NID";
 
         /// <summary>
-        /// Group ID
-        /// </summary>
-        public const string GID = "GID";
-
-        /// <summary>
-        /// Detailed Group ID
-        /// </summary>
-        public const string DGID = "DGID";
-
-        /// <summary>
-        /// Item ID
-        /// </summary>
-        public const string IID = "IID";
-
-        /// <summary>
         /// Tag
         /// </summary>
         public const string TAG = "TAG";
 
+        /// <summary>
+        /// Category系统
+        /// MainToken
+        /// </summary>
+        public const string MainToken = "MT";
+
+
+        /// <summary>
+        /// Category系统
+        /// FinalToken
+        /// </summary>
+        public const string FinalToken = "FT";
 
     }
 }

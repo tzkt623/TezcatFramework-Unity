@@ -36,7 +36,7 @@ namespace tezcat.Framework.Core
 
         public static TezTag get(int id)
         {
-            if(m_List.Count > id)
+            if (m_List.Count > id)
             {
                 return m_List[id];
             }
@@ -47,7 +47,7 @@ namespace tezcat.Framework.Core
         public static TezTag get(string name)
         {
             int id = -1;
-            if(m_Dic.TryGetValue(name, out id))
+            if (m_Dic.TryGetValue(name, out id))
             {
                 return m_List[id];
             }
@@ -71,18 +71,13 @@ namespace tezcat.Framework.Core
 
         public override bool Equals(object obj)
         {
-            var check = obj as TezTag;
-            if (check)
-            {
-                return check.ID == this.ID;
-            }
-
-            return false;
+            var check = (TezTag)obj;
+            return check.ID == this.ID;
         }
 
         bool IEquatable<TezTag>.Equals(TezTag other)
         {
-            return other == null ? false : this.ID == other.ID;
+            return this.Equals(other);
         }
 
         int IComparable<TezTag>.CompareTo(TezTag other)
@@ -122,38 +117,22 @@ namespace tezcat.Framework.Core
 
         public void add(string name)
         {
-            var tag = TezTag.get(name);
-            if(tag)
-            {
-                m_Set.Add(tag.ID);
-            }
+            this.add(TezTag.get(name));
         }
 
         public void remove(string name)
         {
-            var tag = TezTag.get(name);
-            if(tag)
-            {
-                m_Set.Remove(tag.ID);
-            }
+            this.remove(TezTag.get(name));
         }
 
         public void add(int id)
         {
-            var tag = TezTag.get(id);
-            if(tag)
-            {
-                m_Set.Add(tag.ID);
-            }
+            this.add(TezTag.get(id));
         }
 
         public void remove(int id)
         {
-            var tag = TezTag.get(id);
-            if(tag)
-            {
-                m_Set.Remove(tag.ID);
-            }
+            this.remove(TezTag.get(id));
         }
 
         public void add(TezTag tag)
@@ -172,20 +151,48 @@ namespace tezcat.Framework.Core
             m_Set = null;
         }
 
-        public bool check(TezTag tag)
+        public bool oneOf(TezTag tag)
         {
             return m_Set.Contains(tag.ID);
         }
 
-        public bool check(params TezTag[] tags)
+        public bool allOf(params TezTag[] tags)
         {
-            bool result = true;
             foreach (var tag in tags)
             {
-                result &= m_Set.Contains(tag.ID);
+                if (!m_Set.Contains(tag.ID))
+                {
+                    return false;
+                }
             }
 
-            return result;
+            return true; ;
+        }
+
+        public bool anyOf(params TezTag[] tags)
+        {
+            foreach (var tag in tags)
+            {
+                if (m_Set.Contains(tag.ID))
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        public bool noneOf(params TezTag[] tags)
+        {
+            foreach (var tag in tags)
+            {
+                if (m_Set.Contains(tag.ID))
+                {
+                    return false;
+                }
+            }
+
+            return true;
         }
 
         public void foreachTag(TezEventExtension.Action<TezTag> action)

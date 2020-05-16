@@ -1,4 +1,6 @@
-﻿namespace tezcat.Framework.Core
+﻿using tezcat.Framework.Core;
+
+namespace tezcat.Framework.Game
 {
     public enum TezBufferType
     {

@@ -2,11 +2,6 @@
 
 namespace tezcat.Framework.Core
 {
-    public interface ITezModifierCache
-    {
-
-    }
-
     public abstract class TezValueModifierBaseCache : ITezCloseable
     {
         public bool dirty { get; set; } = false;

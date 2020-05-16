@@ -1,4 +1,5 @@
-﻿using tezcat.Framework.Extension;
+﻿using tezcat.Framework.Definition;
+using tezcat.Framework.Extension;
 
 namespace tezcat.Framework.Core
 {
@@ -8,11 +9,12 @@ namespace tezcat.Framework.Core
         Function
     }
 
-    public interface ITezModifier : ITezCloseable
+    public interface ITezModifier
+        : ITezCloseable
+        , ITezDefinitionObject
     {
         TezModifierType modifierType { get; }
         object source { get; set; }
-        TezModifierDefinition definition { get; }
     }
 
     public interface ITezValueModifier

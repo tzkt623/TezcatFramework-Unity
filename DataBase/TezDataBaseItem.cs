@@ -5,6 +5,9 @@ using tezcat.Framework.ECS;
 
 namespace tezcat.Framework.Database
 {
+    /// <summary>
+    /// 基础数据库Item类
+    /// </summary>
     public abstract class TezDatabaseItem
         : IEquatable<TezDatabaseItem>
         , ITezSerializableItem

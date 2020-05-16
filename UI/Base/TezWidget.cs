@@ -102,7 +102,7 @@ namespace tezcat.Framework.UI
     /// </summary>
     public abstract class TezUIWidget
         : TezBaseWidget
-        , ITezRefresher
+        , ITezRefreshHandler
     {
         bool m_Inited = false;
         bool m_Closed = false;
@@ -117,7 +117,7 @@ namespace tezcat.Framework.UI
                     switch (m_RefreshPhase)
                     {
                         case TezRefreshPhase.Ready:
-                            TezService.get<TezcatFramework>().pushRefresher(this);
+                            TezService.get<TezcatFramework>().pushRefreshHandler(this);
                             m_RefreshPhase = value;
                             break;
                         default:

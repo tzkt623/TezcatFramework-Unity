@@ -7,6 +7,7 @@ using tezcat.Framework.Database;
 using tezcat.Framework.ECS;
 using tezcat.Framework.Event;
 using tezcat.Framework.Extension;
+using tezcat.Framework.Game;
 using tezcat.Framework.GraphicSystem;
 using tezcat.Framework.InputSystem;
 using tezcat.Framework.Math;
@@ -150,7 +151,6 @@ namespace tezcat.Framework
             TezService.register(new TezThread());
             TezService.register(new TezTranslator());
 
-            TezService.register(new TezDebug());
             TezService.register(new TezGraphicSystem());
             TezService.register(new TezEventDispatcher());
             TezService.register(new TezInputController());
@@ -192,14 +192,6 @@ namespace tezcat.Framework
         public void addLayer(TezLayer layer)
         {
             TezLayer.register(layer);
-
-            //                 while (m_LayerList.Count <= layer.ID)
-            //                 {
-            //                     m_LayerList.Add(null);
-            //                 }
-            // 
-            //                 m_LayerDic.Add(layer.name, layer.ID);
-            //                 m_LayerList[layer.ID] = layer;
         }
         #endregion
 
@@ -209,7 +201,6 @@ namespace tezcat.Framework
         {
             var prefab = TezService.get<TezPrefabDatabase>().get<Renderer>();
             var go = MonoBehaviour.Instantiate(prefab, parent);
-            go.name = typeof(Renderer).Name;
             return go;
         }
 
@@ -218,7 +209,6 @@ namespace tezcat.Framework
         {
             var prefab = TezService.get<TezPrefabDatabase>().get<Renderer>(prefab_name);
             var go = MonoBehaviour.Instantiate(prefab, parent);
-            go.name = typeof(Renderer).Name;
             return go;
         }
 
@@ -227,7 +217,6 @@ namespace tezcat.Framework
         {
             var prefab = TezService.get<TezPrefabDatabase>().get<GameMonoObject>();
             var go = MonoBehaviour.Instantiate(prefab, parent);
-            go.name = typeof(GameMonoObject).Name;
             return go;
         }
         #endregion
@@ -368,25 +357,12 @@ namespace tezcat.Framework
         }
         #endregion
 
-        #region Refresher
-        Queue<ITezRefresher> m_RefreshQueue = new Queue<ITezRefresher>();
-        ITezRefresher m_Root = null;
-        ITezRefresher m_Current = null;
+        #region Refresh
+        Queue<ITezRefreshHandler> m_RefreshQueue = new Queue<ITezRefreshHandler>();
 
-        public void pushRefresher(ITezRefresher refresher)
+        public void pushRefreshHandler(ITezRefreshHandler handler)
         {
-            //             if (m_Root == null)
-            //             {
-            //                 m_Root = refresher;
-            //                 m_Current = refresher;
-            //             }
-            //             else
-            //             {
-            //                 m_Current.next = refresher;
-            //                 m_Current = refresher;
-            //             }
-
-            m_RefreshQueue.Enqueue(refresher);
+            m_RefreshQueue.Enqueue(handler);
         }
         #endregion
 
@@ -398,17 +374,6 @@ namespace tezcat.Framework
             {
                 m_RefreshQueue.Dequeue().refresh();
             }
-
-            //             if (m_Root != null)
-            //             {
-            //                 //                Debug.Log("刷新中......");
-            //                 while (m_Root != null)
-            //                 {
-            //                     m_Root.refresh();
-            //                     m_Root = m_Root.next;
-            //                 }
-            //                 //                Debug.Log("刷新结束!");
-            //             }
         }
     }
 }

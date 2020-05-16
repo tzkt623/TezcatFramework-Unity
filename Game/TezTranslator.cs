@@ -1,10 +1,14 @@
 ﻿using System.Collections.Generic;
+using tezcat.Framework.Core;
 using tezcat.Framework.Database;
 using tezcat.Framework.Extension;
 using UnityEngine;
 
-namespace tezcat.Framework.Core
+namespace tezcat.Framework.Game
 {
+    /// <summary>
+    /// 翻译机
+    /// </summary>
     public sealed class TezTranslator : ITezService
     {
         class Text

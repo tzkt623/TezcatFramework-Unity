@@ -8,7 +8,7 @@ namespace tezcat.Framework.ECS
     public abstract class TezGameObject
         : TezDataObject
         , ITezTagSet
-        , ITezDefinitionPathObject
+        , ITezDefinitionObjectAndHandler
         , ITezGameObjectComparer
     {
         private TezUID m_UID = new TezUID();
@@ -39,7 +39,7 @@ namespace tezcat.Framework.ECS
         /// 属性定义路径
         /// 用于属性系统
         /// </summary>
-        public TezDefinitionPath definitionPath { get; private set; } = null;
+        public TezDefinition definition { get; private set; } = null;
 
         protected virtual bool buildPrimaryToken { get; } = true;
         protected virtual bool buildSecondaryToken { get; } = true;
@@ -138,7 +138,7 @@ namespace tezcat.Framework.ECS
         /// </summary>
         public void buildDefinitionPath()
         {
-            this.definitionPath = new TezDefinitionPath((this.buildPrimaryToken && this.primaryTokens.Count > 0) ? this.primaryTokens.ToArray() : null,(this.buildSecondaryToken && this.secondaryTokens.Count > 0) ? this.secondaryTokens.ToArray() : null);
+            this.definition = new TezDefinition((this.buildPrimaryToken && this.primaryTokens.Count > 0) ? this.primaryTokens.ToArray() : null,(this.buildSecondaryToken && this.secondaryTokens.Count > 0) ? this.secondaryTokens.ToArray() : null);
 
             this.onBuildDefinitionPath();
         }
@@ -200,7 +200,7 @@ namespace tezcat.Framework.ECS
         /// </summary>
         public override void close(bool self_close = true)
         {
-            this.definitionPath?.close(false);
+            this.definition?.close(false);
             this.TAG.close(false);
             m_UID.close();
 
@@ -220,6 +220,9 @@ namespace tezcat.Framework.ECS
         {
             this.NID = manager.readString(TezReadOnlyString.NID);
         }
+
+        public virtual void addDefinitionObject(ITezDefinitionObject def_object) { }
+        public virtual void removeDefinitionObject(ITezDefinitionObject def_object) { }
     }
 }
 

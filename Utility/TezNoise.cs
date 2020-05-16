@@ -3,6 +3,9 @@ using UnityEngine;
 
 namespace tezcat.Framework.Utility
 {
+    /// <summary>
+    /// 噪声
+    /// </summary>
     public class TezNoise
     {
         static TezEventExtension.Function<float, float, float>[] m_F1Ds = new TezEventExtension.Function<float, float, float>[]

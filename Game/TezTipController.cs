@@ -1,8 +1,9 @@
 ﻿using System.Text;
-using tezcat.Framework.String;
+using tezcat.Framework.Core;
+using tezcat.Framework.Utility;
 using UnityEngine;
 
-namespace tezcat.Framework.Core
+namespace tezcat.Framework.Game
 {
     public interface ITezTip
     {
@@ -258,7 +259,7 @@ namespace tezcat.Framework.Core
                 case TezValueType.Class:
                     break;
                 case TezValueType.StaticString:
-                    this.pushAttribute(TezService.get<TezTranslator>().translateName(property.name), ((TezValueWrapper<TezStaticString>)property).value);
+                    this.pushAttribute(TezService.get<TezTranslator>().translateName(property.name), ((TezValueWrapper<TezIDString>)property).value);
                     break;
                 case TezValueType.Type:
                     this.pushAttribute(TezService.get<TezTranslator>().translateName(property.name), TezService.get<TezTranslator>().translateName(((TezPV_Type)property).baseValue.name));

@@ -56,7 +56,7 @@ namespace tezcat.Framework.TypeTraits
         protected TezTypeInfo() { }
     }
 
-    public sealed class TezTypeInfoManager
+    public sealed class TezTypeInfoID
     {
         static int m_ID = 0;
 
@@ -70,7 +70,7 @@ namespace tezcat.Framework.TypeTraits
     /// 在Tez管理器下的类型ID
     /// </summary>
     /// <typeparam name="Type"></typeparam>
-    public sealed class TezTypeOf<Type> : TezTypeInfo<Type, TezTypeInfoManager>
+    public sealed class TezTypeOf<Type> : TezTypeInfo<Type, TezTypeInfoID>
     {
         /// <summary>
         /// 全局类型ID
@@ -82,7 +82,7 @@ namespace tezcat.Framework.TypeTraits
                 switch (m_ID)
                 {
                     case TezTypeInfo.ErrorID:
-                        m_ID = TezTypeInfoManager.giveID();
+                        m_ID = TezTypeInfoID.giveID();
                         break;
                 }
 

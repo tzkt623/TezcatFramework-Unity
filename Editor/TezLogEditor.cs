@@ -54,102 +54,15 @@ namespace tezcat.TEditor
             m_Fliter = (InfoType)EditorGUILayout.EnumPopup("过滤", m_Fliter);
             if(GUILayout.Button("清空"))
             {
-                TezService.get<TezDebug>().clear();
+
             }
             EditorGUILayout.EndHorizontal();
             EditorGUILayout.Space();
 
             m_ScrollPos = EditorGUILayout.BeginScrollView(m_ScrollPos, new GUILayoutOption[0]);
-            this.drawLabel();
             EditorGUILayout.EndScrollView();
 
             this.Repaint();
-        }
-
-        private void drawLabel()
-        {
-            foreach (var content in TezService.get<TezDebug>().infoQueue)
-            {
-                switch (m_Fliter)
-                {
-                    case InfoType.All:
-                        this.drawAll(content);
-                        break;
-                    case InfoType.Info:
-                        this.drawInfo(content);
-                        break;
-                    case InfoType.Waring:
-                        this.drawWaring(content);
-                        break;
-                    case InfoType.Error:
-                        this.drawError(content);
-                        break;
-                    case InfoType.Assert:
-                        this.drawAssert(content);
-                        break;
-                    default:
-                        break;
-                }
-            }
-        }
-
-        private void drawAll(TezDebugInfo content)
-        {
-            switch (content.type)
-            {
-                case TezDebugType.Info:
-                    EditorGUILayout.LabelField(content.content, m_Info);
-                    break;
-                case TezDebugType.Waring:
-                    EditorGUILayout.LabelField(content.content, m_Waring);
-                    break;
-                case TezDebugType.Error:
-                    EditorGUILayout.LabelField(content.content, m_Error);
-                    break;
-                case TezDebugType.Assert:
-                    EditorGUILayout.LabelField(content.content, m_Assert);
-                    break;
-            }
-        }
-
-        private void drawInfo(TezDebugInfo content)
-        {
-            switch (content.type)
-            {
-                case TezDebugType.Info:
-                    EditorGUILayout.LabelField(content.content, m_Info);
-                    break;
-            }
-        }
-
-        private void drawWaring(TezDebugInfo content)
-        {
-            switch (content.type)
-            {
-                case TezDebugType.Waring:
-                    EditorGUILayout.LabelField(content.content, m_Waring);
-                    break;
-            }
-        }
-
-        private void drawError(TezDebugInfo content)
-        {
-            switch (content.type)
-            {
-                case TezDebugType.Error:
-                    EditorGUILayout.LabelField(content.content, m_Error);
-                    break;
-            }
-        }
-
-        private void drawAssert(TezDebugInfo content)
-        {
-            switch (content.type)
-            {
-                case TezDebugType.Assert:
-                    EditorGUILayout.LabelField(content.content, m_Assert);
-                    break;
-            }
         }
     }
 }

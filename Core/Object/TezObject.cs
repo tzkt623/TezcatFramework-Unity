@@ -3,8 +3,7 @@
     /// <summary>
     /// 基础Object
     /// </summary>
-    public abstract class TezObject
-        : ITezCloseable
+    public abstract class TezObject : ITezCloseable
     {
         public string CID
         {

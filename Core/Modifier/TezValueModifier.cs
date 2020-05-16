@@ -1,4 +1,5 @@
-﻿using tezcat.Framework.Extension;
+﻿using tezcat.Framework.Definition;
+using tezcat.Framework.Extension;
 
 namespace tezcat.Framework.Core
 {
@@ -7,7 +8,7 @@ namespace tezcat.Framework.Core
         , ITezValueModifier
     {
         public object source { get; set; }
-        public TezModifierDefinition definition { get; protected set; }
+        public TezDefinition definition { get; protected set; }
         public TezModifierType modifierType { get; } = TezModifierType.Value;
 
         /// <summary>

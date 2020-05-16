@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using tezcat.Framework.Extension;
-using tezcat.Framework.String;
 using tezcat.Framework.TypeTraits;
+using tezcat.Framework.Utility;
 
 namespace tezcat.Framework.Core
 {
@@ -54,7 +54,7 @@ namespace tezcat.Framework.Core
             {typeof(float), TezValueType.Float },
             {typeof(double), TezValueType.Double },
             {typeof(string), TezValueType.String },
-            {typeof(TezStaticString), TezValueType.StaticString },
+            {typeof(TezIDString), TezValueType.StaticString },
         };
 
         protected class WrapperID<Value> : TezTypeInfo<Value, TezValueWrapper>

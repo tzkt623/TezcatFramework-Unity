@@ -14,7 +14,7 @@
             get { return m_ID; }
         }
 
-        public static int create()
+        public static int next()
         {
             return m_ID++;
         }

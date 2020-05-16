@@ -1,136 +1,58 @@
-﻿using tezcat.Framework.Core;
-using tezcat.Framework.Extension;
+﻿using tezcat.Framework.Utility;
 
 namespace tezcat.Framework.Definition
 {
-    /// <summary>
-    /// <para>类型分类信息</para>
-    /// <para>包括对象 属性 Modifier等</para>
-    /// <para>主分类为线性分类,有且只有一条主路径信息</para>
-    /// <para>次分类为离散分类(依托在MainToken分类信息下),可以有多条次路径信息</para>
-    /// </summary>
-    public sealed class TezDefinitionPath : ITezCloseable
+    public abstract class TezDefinitionPath : TezDefinitionNode
     {
-        static readonly ITezDefinitionToken[] m_DefaultPrimaryPath = new ITezDefinitionToken[0];
-        static readonly ITezDefinitionToken[] m_DefaultSecondaryPath = new ITezDefinitionToken[0];
-
-        /// <summary>
-        /// 先判断有没有
-        /// 在做处理
-        /// </summary>
-        public int primaryLength
+        public sealed override TezDefinitionNodeType nodeType { get; } = TezDefinitionNodeType.Path;
+        public int childCount
         {
-            get { return m_PrimaryPath.Length; }
+            get { return m_Children.count; }
+        }
+        TezArray<int> m_Children = new TezArray<int>(1);
+
+        protected TezDefinitionPath(int id, TezDefinitionSystem set) : base(id, set)
+        {
         }
 
-        /// <summary>
-        /// 先判断有没有
-        /// 在做处理
-        /// </summary>
-        public int secondaryLength
+        public void addChild(int id)
         {
-            get { return m_SecondaryPath.Length; }
+            m_Children.add(id);
         }
 
-        ITezDefinitionToken[] m_PrimaryPath = null;
-        ITezDefinitionToken[] m_SecondaryPath = null;
-
-        public TezDefinitionPath(ITezDefinitionToken[] primary_path = null, ITezDefinitionToken[] secondary_path = null)
+        public TezDefinitionNode getPrimaryNode(int id)
         {
-            m_PrimaryPath = primary_path == null ? m_DefaultPrimaryPath : primary_path;
-            m_SecondaryPath = secondary_path == null ? m_DefaultSecondaryPath : secondary_path;
+            return this.system.getPrimaryNode(id);
         }
 
-        public TezDefinitionPath clone()
+        public TezDefinitionLeaf getSecondaryNode(int id)
         {
-            return new TezDefinitionPath(m_PrimaryPath, m_SecondaryPath);
+            return this.system.getSecondaryNode(id);
         }
 
-        /// <summary>
-        /// 单独设置主路径
-        /// </summary>
-        public void setPrimaryPath(ITezDefinitionToken[] path)
+        protected override void onAddCustomData(ITezDefinitionObject def_object)
         {
-            m_PrimaryPath = path;
-        }
-
-        /// <summary>
-        /// 单独设置副路径
-        /// </summary>
-        public void setSecondaryPath(ITezDefinitionToken[] path)
-        {
-            m_SecondaryPath = path;
-        }
-
-        /// <summary>
-        /// 替换SecondaryPath中的某个Token
-        /// </summary>
-        public bool replaceSecondaryPathToken(ITezDefinitionToken new_token, TezEventExtension.Function<bool, ITezDefinitionToken> finder)
-        {
-            for (int i = 0; i < m_SecondaryPath.Length; i++)
+            for (int i = 0; i < this.childCount; i++)
             {
-                if (finder(m_SecondaryPath[i]))
-                {
-                    m_SecondaryPath[i] = new_token;
-                    return true;
-                }
+                var handler = this.getPrimaryNode(i);
+                handler.addDefinitionObject(def_object);
             }
-
-            return false;
         }
 
-        /// <summary>
-        /// 主分类路径信息
-        /// </summary>
-        public ITezDefinitionToken getPrimaryPathToken(int index)
+        protected override void onRemoveCustomData(ITezDefinitionObject def_object)
         {
-            return m_PrimaryPath[index];
-        }
-
-        /// <summary>
-        /// 次分类的所有信息应该都不是主分类路径上的信息
-        /// </summary>
-        public ITezDefinitionToken getSecondaryPathToken(int index)
-        {
-            return m_SecondaryPath[index];
-        }
-
-        public override string ToString()
-        {
-            string primary = "Null", secondary = "Null";
-            if (this.primaryLength > 0)
+            for (int i = 0; i < this.childCount; i++)
             {
-                primary = null;
-                for (int i = 0; i < m_PrimaryPath.Length; i++)
-                {
-                    primary += m_PrimaryPath[i].tokenName;
-                    if (i != m_PrimaryPath.Length - 1)
-                    {
-                        primary += "-";
-                    }
-                }
+                var handler = this.getPrimaryNode(i);
+                handler.removeDefinitionObject(def_object);
             }
-
-            if (this.secondaryLength > 0)
-            {
-                secondary = null;
-                for (int i = 0; i < m_SecondaryPath.Length; i++)
-                {
-                    secondary += m_PrimaryPath[i].tokenName;
-                    if (i != m_PrimaryPath.Length - 1)
-                    {
-                        secondary += "-";
-                    }
-                }
-            }
-
-            return string.Format("Primary:{0}\nSecondary:{1}", primary, secondary);
         }
 
-        public void close(bool self_close = true)
+        public override void close(bool self_close = true)
         {
-            m_PrimaryPath = null;
-            m_SecondaryPath = null;
+            base.close(self_close);
+            m_Children.close(false);
+            m_Children = null;
         }
     }
 }

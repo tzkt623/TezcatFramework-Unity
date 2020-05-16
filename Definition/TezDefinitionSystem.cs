@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using tezcat.Framework.Core;
-using tezcat.Framework.Utility;
 
 namespace tezcat.Framework.Definition
 {
-    public abstract class TezDefinitionSet : ITezCloseable
+    public abstract class TezDefinitionSystem
+        : ITezCloseable
+        , ITezDefinitionHandler
     {
         #region Manager
         public class Element : ITezDefinitionToken
@@ -56,12 +57,12 @@ namespace tezcat.Framework.Definition
         public static Element getPrimary(string name)
         {
             Element element = null;
-            if (!m_PrimaryElementsWithName.TryGetValue(name, out element))
+            if (m_PrimaryElementsWithName.TryGetValue(name, out element))
             {
-                throw new Exception(string.Format("TezDefinitionSet : Primary name [{0}] not exist", name));
+                return element;
             }
 
-            return element;
+            throw new Exception(string.Format("TezDefinitionSet : Primary name [{0}] not exist", name));
         }
 
         public static Element getPrimary(int index)
@@ -88,12 +89,12 @@ namespace tezcat.Framework.Definition
         public static Element getSecondary(string name)
         {
             Element element = null;
-            if (!m_SecondaryElementsWithName.TryGetValue(name, out element))
+            if (m_SecondaryElementsWithName.TryGetValue(name, out element))
             {
-                throw new Exception(string.Format("TezDefinitionSet : Secondary name [{0}] not exist", name));
+                return element;
             }
 
-            return element;
+            throw new Exception(string.Format("TezDefinitionSet : Secondary name [{0}] not exist", name));
         }
 
         public static Element getSecondary(int index)
@@ -102,13 +103,13 @@ namespace tezcat.Framework.Definition
         }
         #endregion
 
-        List<TezDefinitionSetObject> m_PrimaryNodes = new List<TezDefinitionSetObject>();
-        List<TezDefinitionSetLeaf> m_SecondaryNodes = new List<TezDefinitionSetLeaf>();
+        List<TezDefinitionNode> m_PrimaryNodes = new List<TezDefinitionNode>();
+        List<TezDefinitionLeaf> m_SecondaryNodes = new List<TezDefinitionLeaf>();
 
-        protected abstract TezDefinitionSetObject onCreatePrimaryChild(ITezDefinitionToken token);
-        protected abstract TezDefinitionSetLeaf onCreateSecondaryChild(ITezDefinitionToken token);
+        protected abstract TezDefinitionNode onCreatePrimaryChild(ITezDefinitionToken token);
+        protected abstract TezDefinitionLeaf onCreateSecondaryChild(ITezDefinitionToken token);
 
-        protected TezDefinitionSetObject getOrCreatePrimaryNode(ITezDefinitionToken token, ref TezDefinitionSetPath pre_path_node)
+        protected TezDefinitionNode getOrCreatePrimaryNode(ITezDefinitionToken token, ref TezDefinitionPath pre_path_node)
         {
             var id = token.tokenID;
             while (m_PrimaryNodes.Count <= id)
@@ -126,23 +127,41 @@ namespace tezcat.Framework.Definition
 
             if (node.nodeType == TezDefinitionNodeType.Path)
             {
-                pre_path_node = (TezDefinitionSetPath)node;
+                pre_path_node = (TezDefinitionPath)node;
             }
 
             return node;
         }
 
-        public TezDefinitionSetObject getPrimaryNode(ITezDefinitionToken token)
+        protected TezDefinitionNode getOrCreatePrimaryNode(ITezDefinitionToken token)
+        {
+            var id = token.tokenID;
+            while (m_PrimaryNodes.Count <= id)
+            {
+                m_PrimaryNodes.Add(null);
+            }
+
+            var node = m_PrimaryNodes[id];
+            if (node == null)
+            {
+                node = this.onCreatePrimaryChild(token);
+                m_PrimaryNodes[id] = node;
+            }
+
+            return node;
+        }
+
+        public TezDefinitionNode getPrimaryNode(ITezDefinitionToken token)
         {
             return this.getPrimaryNode(token.tokenID);
         }
 
-        public TezDefinitionSetObject getPrimaryNode(int id)
+        public TezDefinitionNode getPrimaryNode(int id)
         {
             return m_PrimaryNodes[id];
         }
 
-        protected TezDefinitionSetLeaf getOrCreateSecondaryNode(ITezDefinitionToken token)
+        protected TezDefinitionLeaf getOrCreateSecondaryNode(ITezDefinitionToken token)
         {
             var id = token.tokenID;
             while (m_SecondaryNodes.Count <= id)
@@ -160,12 +179,12 @@ namespace tezcat.Framework.Definition
             return node;
         }
 
-        public TezDefinitionSetLeaf getSecondaryNode(ITezDefinitionToken token)
+        public TezDefinitionLeaf getSecondaryNode(ITezDefinitionToken token)
         {
             return this.getSecondaryNode(token.tokenID);
         }
 
-        public TezDefinitionSetLeaf getSecondaryNode(int id)
+        public TezDefinitionLeaf getSecondaryNode(int id)
         {
             return m_SecondaryNodes[id];
         }
@@ -173,111 +192,111 @@ namespace tezcat.Framework.Definition
         /// <summary>
         /// 注册Object
         /// </summary>
-        public void registerObject(ITezDefinitionPathObject path_with_object)
+        public void registerObject(ITezDefinitionObjectAndHandler handler)
         {
-            var definition_path = path_with_object.definitionPath;
+            var definition_path = handler.definition;
             var primary_length = definition_path.primaryLength;
-            TezDefinitionSetPath pre_path_node = null;
+            TezDefinitionPath pre_path_node = null;
             for (int i = 0; i < primary_length; i++)
             {
-                this.getOrCreatePrimaryNode(definition_path.getPrimaryPathToken(i), ref pre_path_node).onRegisterObject(path_with_object);
+                this.getOrCreatePrimaryNode(definition_path.getPrimaryPathToken(i), ref pre_path_node).onRegisterObject(handler);
             }
 
             var secondary_length = definition_path.secondaryLength;
             for (int i = 0; i < secondary_length; i++)
             {
-                this.getOrCreateSecondaryNode(definition_path.getSecondaryPathToken(i)).onRegisterObject(path_with_object);
+                this.getOrCreateSecondaryNode(definition_path.getSecondaryPathToken(i)).onRegisterObject(handler);
             }
         }
 
         /// <summary>
         /// 单独注册PrimaryPath
         /// </summary>
-        public void registerPrimaryPath(ITezDefinitionPathObject path_with_object)
+        public void registerPrimaryPath(ITezDefinitionObjectAndHandler handler)
         {
-            var definition_path = path_with_object.definitionPath;
+            var definition_path = handler.definition;
             var primary_length = definition_path.primaryLength;
-            TezDefinitionSetPath pre_path_node = null;
+            TezDefinitionPath pre_path_node = null;
             for (int i = 0; i < primary_length; i++)
             {
-                this.getOrCreatePrimaryNode(definition_path.getPrimaryPathToken(i), ref pre_path_node).onRegisterObject(path_with_object);
+                this.getOrCreatePrimaryNode(definition_path.getPrimaryPathToken(i), ref pre_path_node).onRegisterObject(handler);
             }
         }
 
         /// <summary>
         /// 单独注册SecondaryPath
         /// </summary>
-        public void registerSecondaryPath(ITezDefinitionPathObject path_with_object)
+        public void registerSecondaryPath(ITezDefinitionObjectAndHandler handler)
         {
-            var definition_path = path_with_object.definitionPath;
+            var definition_path = handler.definition;
             var secondary_length = definition_path.secondaryLength;
             for (int i = 0; i < secondary_length; i++)
             {
-                this.getOrCreateSecondaryNode(definition_path.getSecondaryPathToken(i)).onRegisterObject(path_with_object);
+                this.getOrCreateSecondaryNode(definition_path.getSecondaryPathToken(i)).onRegisterObject(handler);
             }
         }
 
         /// <summary>
         /// 单独注册一个SecondaryToken
         /// </summary>
-        /// <param name="path_with_object"></param>
-        public void registerSecondaryPath(ITezDefinitionPathObject path_with_object, ITezDefinitionToken token)
+        /// <param name="handler"></param>
+        public void registerSecondaryPath(ITezDefinitionObjectAndHandler handler, ITezDefinitionToken token)
         {
-            this.getOrCreateSecondaryNode(token).onRegisterObject(path_with_object);
+            this.getOrCreateSecondaryNode(token).onRegisterObject(handler);
         }
 
         /// <summary>
         /// 注销Object
         /// </summary>
-        public void unregisterObject(ITezDefinitionPathObject path_with_object)
+        public void unregisterObject(ITezDefinitionObjectAndHandler handler)
         {
-            var definition_path = path_with_object.definitionPath;
+            var definition_path = handler.definition;
             var primary_length = definition_path.primaryLength;
             for (int i = 0; i < primary_length; i++)
             {
-                this.getPrimaryNode(definition_path.getPrimaryPathToken(i)).onUnregisterObject(path_with_object);
+                this.getPrimaryNode(definition_path.getPrimaryPathToken(i)).onUnregisterObject(handler);
             }
 
             var secondary_length = definition_path.secondaryLength;
             for (int i = 0; i < secondary_length; i++)
             {
-                this.getSecondaryNode(definition_path.getSecondaryPathToken(i)).onUnregisterObject(path_with_object);
+                this.getSecondaryNode(definition_path.getSecondaryPathToken(i)).onUnregisterObject(handler);
             }
         }
 
         /// <summary>
         /// 单独注销PrimaryPath
         /// </summary>
-        public void unregisterPrimaryPath(ITezDefinitionPathObject path_with_object)
+        public void unregisterPrimaryPath(ITezDefinitionObjectAndHandler handler)
         {
-            var definition_path = path_with_object.definitionPath;
+            var definition_path = handler.definition;
             var primary_length = definition_path.primaryLength;
             for (int i = 0; i < primary_length; i++)
             {
-                this.getPrimaryNode(definition_path.getPrimaryPathToken(i)).onUnregisterObject(path_with_object);
+                this.getPrimaryNode(definition_path.getPrimaryPathToken(i)).onUnregisterObject(handler);
             }
         }
 
         /// <summary>
         /// 单独注销SecondaryPath
         /// </summary>
-        public void unregisterSecondaryPath(ITezDefinitionPathObject path_with_object)
+        public void unregisterSecondaryPath(ITezDefinitionObjectAndHandler handler)
         {
-            var definition_path = path_with_object.definitionPath;
+            var definition_path = handler.definition;
             var secondary_length = definition_path.secondaryLength;
             for (int i = 0; i < secondary_length; i++)
             {
-                this.getSecondaryNode(definition_path.getSecondaryPathToken(i)).onUnregisterObject(path_with_object);
+                this.getSecondaryNode(definition_path.getSecondaryPathToken(i)).onUnregisterObject(handler);
             }
         }
 
         /// <summary>
         /// 单独注销一个SecondaryToken
         /// </summary>
-        /// <param name="path_with_object"></param>
-        public void unregisterSecondaryPath(ITezDefinitionPathObject path_with_object, ITezDefinitionToken token)
+        /// <param name="handler"></param>
+        public void unregisterSecondaryPath(ITezDefinitionObjectAndHandler handler, ITezDefinitionToken token)
         {
-            this.getSecondaryNode(token).onUnregisterObject(path_with_object);
+            this.getSecondaryNode(token).onUnregisterObject(handler);
         }
 
         /// <summary>
@@ -301,72 +320,55 @@ namespace tezcat.Framework.Definition
             m_PrimaryNodes = null;
             m_SecondaryNodes = null;
         }
-    }
 
-    public abstract class TezDefinitionSetObject : ITezDefinitionNode
-    {
-        public int ID { get; }
-        public TezDefinitionSet definitionSet { get; private set; } = null;
-        public abstract TezDefinitionNodeType nodeType { get; }
-
-        protected TezDefinitionSetObject(int id, TezDefinitionSet set)
+        /// <summary>
+        /// 添加一个带定义的对象
+        /// 一般为各种Modifier
+        /// 用于属性加成等系统
+        /// </summary>
+        public void addDefinitionObject(ITezDefinitionObject def_object)
         {
-            this.ID = id;
-            this.definitionSet = set;
+            ///如果没有Object被注册到路径上
+            ///那么就算此Modifier加入了也不会造成仍和影响
+            ///
+            ///如果路径已经建立好了
+            ///Modifier加入时只需要直接加入他定义路径的最后的位置上即可
+            var definition = def_object.definition;
+            int length = definition.primaryLength;
+            if (length > 0)
+            {
+                var node = this.getOrCreatePrimaryNode(definition.getPrimaryPathToken(length - 1));
+                node.addDefinitionObject(def_object);
+            }
+            else
+            {
+                length = definition.secondaryLength;
+                for (int i = 0; i < length; i++)
+                {
+                    var node = this.getOrCreateSecondaryNode(definition.getSecondaryPathToken(i));
+                    node.addDefinitionObject(def_object);
+                }
+            }
         }
 
-        public abstract void onRegisterObject(ITezDefinitionPathObject path_with_object);
-        public abstract void onUnregisterObject(ITezDefinitionPathObject path_with_object);
-
-        public virtual void close(bool self_close = true)
+        public void removeDefinitionObject(ITezDefinitionObject def_object)
         {
-            this.definitionSet = null;
-        }
-    }
-
-    public abstract class TezDefinitionSetPath : TezDefinitionSetObject
-    {
-        public sealed override TezDefinitionNodeType nodeType { get; } = TezDefinitionNodeType.Path;
-        public int childCount
-        {
-            get { return m_Children.count; }
-        }
-        TezArray<int> m_Children = new TezArray<int>(1);
-
-        protected TezDefinitionSetPath(int id, TezDefinitionSet set) : base(id, set)
-        {
-        }
-
-        public void addChild(int id)
-        {
-            m_Children.add(id);
-        }
-
-        public TezDefinitionSetObject getPrimaryNode(int id)
-        {
-            return this.definitionSet.getPrimaryNode(id);
-        }
-
-        public TezDefinitionSetLeaf getSecondaryNode(int id)
-        {
-            return this.definitionSet.getSecondaryNode(id);
-        }
-
-        public override void close(bool self_close = true)
-        {
-            base.close(self_close);
-            m_Children.close(false);
-            m_Children = null;
-        }
-    }
-
-    public abstract class TezDefinitionSetLeaf : TezDefinitionSetObject
-    {
-        public sealed override TezDefinitionNodeType nodeType { get; } = TezDefinitionNodeType.Leaf;
-
-        protected TezDefinitionSetLeaf(int id, TezDefinitionSet set) : base(id, set)
-        {
-
+            var defition = def_object.definition;
+            int length = defition.primaryLength;
+            if (length > 0)
+            {
+                var node = this.getPrimaryNode(defition.getPrimaryPathToken(length - 1));
+                node.removeDefinitionObject(def_object);
+            }
+            else
+            {
+                length = defition.secondaryLength;
+                for (int i = 0; i < length; i++)
+                {
+                    var node = this.getSecondaryNode(defition.getSecondaryPathToken(i));
+                    node.removeDefinitionObject(def_object);
+                }
+            }
         }
     }
 }

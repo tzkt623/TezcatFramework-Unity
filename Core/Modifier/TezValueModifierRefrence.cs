@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace tezcat.Framework.Core
+﻿namespace tezcat.Framework.Core
 {
     /// <summary>
     /// 引用型的Modifier

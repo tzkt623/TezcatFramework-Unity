@@ -1,14 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
-using tezcat.Framework.Database;
+using tezcat.Framework.Core;
 using tezcat.Framework.ECS;
 using tezcat.Framework.Extension;
 
-namespace tezcat.Framework.Core
+namespace tezcat.Framework.Database
 {
     public class TezSaveManager : ITezService
     {
-        Dictionary<TezRID, int> m_Dic = new Dictionary<TezRID, int>();
         List<ITezSerializable> m_List = new List<ITezSerializable>();
 
         TezWriter m_Writer = new TezJsonWriter();
@@ -125,7 +124,6 @@ namespace tezcat.Framework.Core
         public void reset()
         {
             m_List.Clear();
-            m_Dic.Clear();
         }
 
         public void close(bool self_close = true)
