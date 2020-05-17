@@ -2,27 +2,13 @@
 
 namespace tezcat.Framework.Math
 {
-    public interface ITezRandom : ITezService
-    {
-        void setSeed(int seed);
-        int nextInt();
-        int nextInt(int min, int max);
-        float nextFloat();
-        float nextFloat(float min, float max);
-    }
-
-    public interface ITezMath : ITezRandom
-    {
-
-    }
-
     /// <summary>
     /// 
     /// 16807随机数发生器
     /// 分布率为63.xx%
     /// 
     /// </summary>
-    public class TezRandom : ITezRandom
+    public class TezRandom : ITezService
     {
         private const uint MAX_MASK_UINT = int.MaxValue;
         /// <summary>
@@ -50,6 +36,11 @@ namespace tezcat.Framework.Math
         public void setSeed(int seed)
         {
             m_Seed = (uint)seed;
+        }
+
+        public uint getSeed()
+        {
+            return m_Seed;
         }
 
         private uint gen()
@@ -90,6 +81,13 @@ namespace tezcat.Framework.Math
         public float nextFloat(float min, float max)
         {
             return min + (max - min) * this.nextFloat();
+        }
+
+        public bool nextBool()
+        {
+            ///0 2 4 6 8
+            ///1 3 5 7 9
+            return (this.nextInt(0, 10) & 1) == 0;
         }
 
         public void close(bool self_close = true)

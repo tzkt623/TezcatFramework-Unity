@@ -5,6 +5,15 @@ namespace tezcat.Framework.Extension
 {
     public static class TezEntityExtension
     {
+        public static ObjectCom createObject<ObjectCom>(this TezDatabaseGameItem item) where ObjectCom : TezGameObject
+        {
+            var entity = item.createObject();
+            var obj = entity.getComponent<TezDataObject, ObjectCom>();
+            obj.buildDefinition();
+
+            return obj;
+        }
+
         /// <summary>
         /// 用Item数据创建一个
         /// </summary>
@@ -26,7 +35,7 @@ namespace tezcat.Framework.Extension
         {
             ObjectCom data = new ObjectCom();
             data.initWithData(item);
-            data.buildDefinitionPath();
+            data.buildDefinition();
 
             var entity = TezEntity.create();
             entity.addComponent(data);
@@ -55,7 +64,7 @@ namespace tezcat.Framework.Extension
         {
             ObjectCom data = new ObjectCom();
             data.initNew();
-            data.buildDefinitionPath();
+            data.buildDefinition();
 
             var entity = TezEntity.create();
             entity.addComponent(data);

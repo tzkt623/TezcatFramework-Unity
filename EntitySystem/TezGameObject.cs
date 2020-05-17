@@ -136,17 +136,17 @@ namespace tezcat.Framework.ECS
         /// <summary>
         /// 建立类别路径
         /// </summary>
-        public void buildDefinitionPath()
+        public void buildDefinition()
         {
             this.definition = new TezDefinition((this.buildPrimaryToken && this.primaryTokens.Count > 0) ? this.primaryTokens.ToArray() : null,(this.buildSecondaryToken && this.secondaryTokens.Count > 0) ? this.secondaryTokens.ToArray() : null);
 
-            this.onBuildDefinitionPath();
+            this.onBuildDefinition();
         }
 
         /// <summary>
         /// 路径建立完成之后
         /// </summary>
-        protected virtual void onBuildDefinitionPath()
+        protected virtual void onBuildDefinition()
         {
 
         }
