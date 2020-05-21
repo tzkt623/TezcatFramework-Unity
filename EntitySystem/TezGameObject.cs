@@ -11,6 +11,9 @@ namespace tezcat.Framework.ECS
         , ITezDefinitionObjectAndHandler
         , ITezGameObjectComparer
     {
+        /// <summary>
+        /// UID
+        /// </summary>
         private TezUID m_UID = new TezUID();
 
         /// <summary>
@@ -93,11 +96,18 @@ namespace tezcat.Framework.ECS
             this.postInit();
         }
 
+        /// <summary>
+        /// 新建一个白板对象
+        /// 不依赖数据模板
+        /// </summary>
         protected virtual void onInitNew()
         {
 
         }
 
+        /// <summary>
+        /// 使用物品模板初始化对象
+        /// </summary>
         public void initWithData(ITezSerializableItem item)
         {
             var data_item = (TezDatabaseGameItem)item;
@@ -138,7 +148,7 @@ namespace tezcat.Framework.ECS
         /// </summary>
         public void buildDefinition()
         {
-            this.definition = new TezDefinition((this.buildPrimaryToken && this.primaryTokens.Count > 0) ? this.primaryTokens.ToArray() : null,(this.buildSecondaryToken && this.secondaryTokens.Count > 0) ? this.secondaryTokens.ToArray() : null);
+            this.definition = new TezDefinition((this.buildPrimaryToken && this.primaryTokens.Count > 0) ? this.primaryTokens.ToArray() : null, (this.buildSecondaryToken && this.secondaryTokens.Count > 0) ? this.secondaryTokens.ToArray() : null);
 
             this.onBuildDefinition();
         }
@@ -167,32 +177,12 @@ namespace tezcat.Framework.ECS
         /// </summary>
         public bool templateAs(TezGameObject other)
         {
+            if (m_UID.DBID == null || other.m_UID.DBID == null)
+            {
+                return false;
+            }
+
             return m_UID.DBID.sameAs(other.m_UID.DBID);
-        }
-
-        /// <summary>
-        /// 更新当前对象的资源ID
-        /// </summary>
-        public void updateRID()
-        {
-            //             if (m_RID != null)
-            //             {
-            //                 var g = m_RID.group;
-            //                 var sg = m_RID.subgroup;
-            //                 m_RID.close();
-            //                 m_RID = new TezRID(g, sg);
-            //             }
-            //             else
-            //             {
-            //                 m_RID = new TezRID(group, subgroup);
-            //             }
-            // 
-            //             m_RID.updateID();
-        }
-
-        public void debugRID()
-        {
-            //            Debug.Log(m_RID.ToString());
         }
 
         /// <summary>

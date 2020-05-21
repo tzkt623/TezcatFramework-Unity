@@ -1,37 +1,30 @@
-﻿using tezcat.Framework.Core;
+using tezcat.Framework.Core;
+using tezcat.Framework.Database;
 
 namespace tezcat.Framework.AI
 {
-    public abstract class TezBTNode<Data>
-        : ITezCloseable
-        where Data : ITezBTData
+    public abstract class TezBTNode : ITezCloseable
     {
-        public string name { get; set; }
-        public abstract TezBTNodeType nodeType { get; }
+        public enum Result
+        {
+            Success,
+            Fail,
+            Running
+        }
 
-        public abstract TezBTResult execute(Data data);
         public abstract void close(bool self_close = true);
 
-        public static bool operator true(TezBTNode<Data> obj)
-        {
-            return !object.ReferenceEquals(obj, null);
-        }
+        protected abstract void enter();
+        protected abstract void exit();
 
-        public static bool operator false(TezBTNode<Data> obj)
-        {
-            return object.ReferenceEquals(obj, null);
-        }
+        public abstract Result execute(ITezBTContext context);
 
-        public static bool operator !(TezBTNode<Data> obj)
+        public virtual void init(ITezBTContext context) { }
+
+        public virtual void loadConfig(TezReader reader)
         {
-            return object.ReferenceEquals(obj, null);
+
         }
     }
 
-    public abstract class TezBTCompositeNode<Data>
-        : TezBTNode<Data>
-        where Data : ITezBTData
-    {
-        public abstract void addNode(TezBTNode<Data> node);
-    }
 }

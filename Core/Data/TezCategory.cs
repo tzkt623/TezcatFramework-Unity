@@ -63,7 +63,7 @@ namespace tezcat.Framework.Core
         /// <summary>
         /// 检测Category是否包含此类型
         /// </summary>
-        public bool isInclude(ITezCategoryToken token)
+        public bool contains(ITezCategoryToken token)
         {
             if (token.layer < m_Tokens.Length)
             {

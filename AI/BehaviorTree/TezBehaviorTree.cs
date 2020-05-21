@@ -1,58 +1,80 @@
-﻿using System;
+﻿using tezcat.Framework.Core;
+using tezcat.Framework.Database;
+using System.Collections.Generic;
+using tezcat.Framework.Extension;
 
 namespace tezcat.Framework.AI
 {
-    public class TezBehaviorTree<Data> where Data : ITezBTData
+    public class TezBehaviorTree : ITezCloseable
     {
-        public TezBTResult state { get; private set; } = TezBTResult.Empty;
+        #region Factory
+        static Dictionary<string, TezEventExtension.Function<TezBTNode>> m_Creator = new Dictionary<string, TezEventExtension.Function<TezBTNode>>();
 
-        TezBTNode<Data> m_RootNode = null;
-
-        public void setNode(TezBTNode<Data> node)
+        public static void register<T>() where T : TezBTNode, new()
         {
-            m_RootNode = node;
+            register<T>(typeof(T).Name);
         }
 
-        public TezBTResult execute(Data data)
+        public static void register<T>(string name) where T : TezBTNode, new()
         {
-            state = m_RootNode.execute(data);
-            switch (state)
+            m_Creator.Add(name, () =>
             {
-                case TezBTResult.Fail:
-                    this.onFail(data);
-                    break;
-                case TezBTResult.Success:
-                    this.onSuccess(data);
-                    break;
-                case TezBTResult.Running:
-                    this.onRunning(data);
-                    break;
-                default:
-                    break;
-            }
-
-            return state;
+                return new T();
+            });
         }
 
-        public virtual void close()
+        public static TezBTNode create(string name)
         {
-            m_RootNode.close();
-            m_RootNode = null;
+            return m_Creator[name]();
         }
 
-        protected virtual void onSuccess(Data data)
+        public static T create<T>() where T : TezBTNode
         {
-            throw new NotImplementedException();
+            return (T)create(typeof(T).Name);
         }
 
-        protected virtual void onFail(Data data)
+        static TezBehaviorTree()
         {
-            throw new NotImplementedException();
+            register<TezBTParallel>("Parallel");
+            register<TezBTSequence>("Sequence");
+            register<TezBTSelector>("Selector");
+            register<TezBTRandomSelector>("RandomSelector");
+            register<TezBTForce>("Force");
+        }
+        #endregion
+
+        TezBTNode m_Root = null;
+        public ITezBTContext context { get; set; }
+
+        public void setRoot(TezBTNode root)
+        {
+            m_Root = root;
         }
 
-        protected virtual void onRunning(Data data)
+        public void init()
         {
-            throw new NotImplementedException();
+            m_Root.init(this.context);
+        }
+
+        public void close(bool self_close = true)
+        {
+            m_Root.close();
+            this.context.close();
+        }
+
+        public void addNode(TezBTCompositeNode composite, TezBTNode node)
+        {
+            composite.addNode(node);
+        }
+
+        public void execute()
+        {
+            m_Root.execute(this.context);
+        }
+
+        public void loadConfig(TezReader reader)
+        {
+
         }
     }
 }

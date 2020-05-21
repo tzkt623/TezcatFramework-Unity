@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using tezcat.Framework.Event;
 
 namespace tezcat.Framework.Extension
@@ -117,6 +118,7 @@ namespace tezcat.Framework.Extension
         /// <summary>
         /// 输入插入位置的随机函数
         /// </summary>
+        [Obsolete("不要在用这个菜鸡方法了,用shuffle")]
         public static void randomSort<T>(this List<T> list, TezEventExtension.Function<int, int> insert_position)
         {
             List<T> sorter = new List<T>(list);
@@ -124,6 +126,36 @@ namespace tezcat.Framework.Extension
             foreach (var item in sorter)
             {
                 list.Insert(insert_position(list.Count), item);
+            }
+        }
+
+        /// <summary>
+        /// 随机打乱数组
+        /// </summary>
+        public static void shuffle<T>(this List<T> list, TezEventExtension.Function<int, int> random)
+        {
+            var count = list.Count;
+            while (count > 1)
+            {
+                count--;
+                var index = random(count + 1);
+                var value = list[index];
+                list[index] = list[count];
+                list[count] = value;
+            }
+        }
+
+        public static void shuffle<T>(this List<T> list)
+        {
+            Random random = new Random();
+            var count = list.Count;
+            while (count > 1)
+            {
+                count--;
+                var index = random.Next(count + 1);
+                var value = list[index];
+                list[index] = list[count];
+                list[count] = value;
             }
         }
 

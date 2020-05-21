@@ -161,9 +161,6 @@ namespace tezcat.Framework.UI
          * 所以当脚本第一次执行时 没有设置Init位 只会执行Start刷新 所以OnEnable并不刷新
          * Enable刷新必须在Disable之后才会执行 并且不再会执行Start刷新
          * 
-         * 所以P_Init和P_OnEnable是相互不会冲突的两种刷新方式
-         * 
-         * 所以P_Custom刷新方式要确保不合前两种刷新方式冲突
          */
 
         protected sealed override void OnEnable()
