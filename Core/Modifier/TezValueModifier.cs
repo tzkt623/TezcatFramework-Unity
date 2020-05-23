@@ -40,6 +40,11 @@ namespace tezcat.Framework.Core
             this.definition = def;
         }
 
+        protected TezValueModifier(TezValueModifierDefinition def) : base()
+        {
+            this.definition = def;
+        }
+
         protected void notifyValueChanged(ITezValueModifier modifier, float old_value)
         {
             onValueChanged?.Invoke(modifier, old_value);

@@ -76,8 +76,7 @@ namespace tezcat.Framework.Database
 
             if (result)
             {
-                m_Current = JsonMapper.ToObject(content);
-                result = m_Current.IsArray | m_Current.IsObject;
+                result = this.loadContent(content);
             }
             return result;
         }
@@ -328,6 +327,10 @@ namespace tezcat.Framework.Database
             data.close();
         }
 
+        /// <summary>
+        /// 尝试读取bool
+        /// 失败则赋值为 false
+        /// </summary>
         public override bool tryRead(int key, out bool result)
         {
             JsonData data = null;
@@ -341,6 +344,10 @@ namespace tezcat.Framework.Database
             return false;
         }
 
+        /// <summary>
+        /// 尝试读取int
+        /// 失败则赋值为 int.MinValue
+        /// </summary>
         public override bool tryRead(int key, out int result)
         {
             JsonData data = null;
@@ -354,6 +361,10 @@ namespace tezcat.Framework.Database
             return false;
         }
 
+        /// <summary>
+        /// 尝试读取float
+        /// 失败则赋值为 float.MinValue
+        /// </summary>
         public override bool tryRead(int key, out float result)
         {
             JsonData data = null;
@@ -367,6 +378,10 @@ namespace tezcat.Framework.Database
             return false;
         }
 
+        /// <summary>
+        /// 尝试读取string
+        /// 失败则赋值为 string.Empty
+        /// </summary>
         public override bool tryRead(int key, out string result)
         {
             JsonData data = null;
@@ -376,10 +391,14 @@ namespace tezcat.Framework.Database
                 return true;
             }
 
-            result = null;
+            result = string.Empty;
             return false;
         }
 
+        /// <summary>
+        /// 尝试读取bool
+        /// 失败则赋值为 false
+        /// </summary>
         public override bool tryRead(string key, out bool result)
         {
             JsonData data = null;
@@ -393,6 +412,10 @@ namespace tezcat.Framework.Database
             return false;
         }
 
+        /// <summary>
+        /// 尝试读取int
+        /// 失败则赋值为 int.MinValue
+        /// </summary>
         public override bool tryRead(string key, out int result)
         {
             JsonData data = null;
@@ -406,6 +429,10 @@ namespace tezcat.Framework.Database
             return false;
         }
 
+        /// <summary>
+        /// 尝试读取float
+        /// 失败则赋值为 float.MinValue
+        /// </summary>
         public override bool tryRead(string key, out float result)
         {
             JsonData data = null;
@@ -419,6 +446,10 @@ namespace tezcat.Framework.Database
             return false;
         }
 
+        /// <summary>
+        /// 尝试读取string
+        /// 失败则赋值为 string.Empty
+        /// </summary>
         public override bool tryRead(string key, out string result)
         {
             JsonData data = null;
@@ -428,7 +459,7 @@ namespace tezcat.Framework.Database
                 return true;
             }
 
-            result = null;
+            result = string.Empty;
             return false;
         }
 

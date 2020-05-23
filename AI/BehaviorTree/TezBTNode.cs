@@ -7,24 +7,70 @@ namespace tezcat.Framework.AI
     {
         public enum Result
         {
+            Ignore,
             Success,
             Fail,
             Running
         }
 
-        public abstract void close(bool self_close = true);
+        public enum Category
+        {
+            Composite,
+            Action,
+            Condition,
+            Decorator
+        }
 
-        protected abstract void enter();
-        protected abstract void exit();
+        public abstract Category category { get; }
 
-        public abstract Result execute(ITezBTContext context);
+        TezBehaviorTree m_Tree = null;
+        public TezBehaviorTree tree
+        {
+            get { return m_Tree; }
+            set
+            {
+                m_Tree = value;
+                if (category == Category.Action)
+                {
+                    m_Tree.registerAction((TezBTActionNode)this);
+                }
+            }
+        }
 
-        public virtual void init(ITezBTContext context) { }
+        public TezBTNode parent { get; set; }
 
-        public virtual void loadConfig(TezReader reader)
+        public virtual void close(bool self_close = true)
+        {
+            this.tree = null;
+            this.parent = null;
+        }
+
+        /// <summary>
+        /// 非Action节点使用
+        /// </summary>
+        public abstract Result execute();
+
+        public abstract void init();
+        public abstract void reset();
+
+        protected void report(Result result)
+        {
+            if (this.parent != null)
+            {
+                this.parent.onReport(this, result);
+            }
+            else
+            {
+                this.tree.onReport(this, result);
+            }
+        }
+
+        protected virtual void onReport(TezBTNode node, Result result)
         {
 
         }
+
+        public abstract void loadConfig(TezReader reader);
     }
 
 }

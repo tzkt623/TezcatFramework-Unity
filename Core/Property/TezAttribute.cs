@@ -21,15 +21,16 @@ namespace tezcat.Framework.Core
 
         List<TezAttributeBuffer> m_Buffers = new List<TezAttributeBuffer>();
 
+        T m_Value;
         public override T value
         {
             get
             {
-                return base.value;
+                return m_Value;
             }
             set
             {
-                base.value = value;
+                m_Value = value;
                 this.onValueChanged?.Invoke(this);
             }
         }
@@ -38,6 +39,8 @@ namespace tezcat.Framework.Core
         {
 
         }
+
+        protected TezAttribute() : base() { }
 
         public override void close(bool self_close = true)
         {

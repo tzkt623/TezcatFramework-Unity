@@ -175,6 +175,8 @@ namespace tezcat.Framework.Core
 
         }
 
+        public TezValueWrapper() : base() { }
+
         public sealed override Type systemType
         {
             get { return typeof(T); }

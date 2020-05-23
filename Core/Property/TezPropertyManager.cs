@@ -1,13 +1,7 @@
-﻿using tezcat.Framework.Extension;
-
-namespace tezcat.Framework.Core
+﻿namespace tezcat.Framework.Core
 {
     public class TezPropertyManager : ITezCloseable
     {
-        static bool defaultCheck(ITezValueModifier modifier) { return true; }
-
-        TezEventExtension.Function<bool, ITezValueModifier> m_CheckForAdd = defaultCheck;
-
         TezPropertySortList m_Properties = null;
         public TezPropertySortList properties
         {
@@ -19,11 +13,6 @@ namespace tezcat.Framework.Core
                 }
                 return m_Properties;
             }
-        }
-
-        public void setCheckFuncion(TezEventExtension.Function<bool, ITezValueModifier> function)
-        {
-            m_CheckForAdd = function;
         }
 
         public void addModifier(ITezValueModifier modifier)
@@ -43,7 +32,7 @@ namespace tezcat.Framework.Core
         public T getOrCreate<T>(ITezValueDescriptor descriptor) where T : ITezProperty, new()
         {
             int index = 0;
-            if (this.properties.binarySearch(descriptor, out index))
+            if (this.properties.binaryFind(descriptor, out index))
             {
                 return (T)m_Properties[index];
             }
@@ -64,7 +53,7 @@ namespace tezcat.Framework.Core
         public bool remove(ITezValueDescriptor descriptor)
         {
             int index = 0;
-            if (this.properties.binarySearch(descriptor, out index))
+            if (this.properties.binaryFind(descriptor, out index))
             {
                 this.properties.removeAt(index);
                 return true;
@@ -73,7 +62,7 @@ namespace tezcat.Framework.Core
             return false;
         }
 
-        public void clearAllProperty()
+        public void clearAll()
         {
             if (m_Properties == null)
             {
@@ -90,9 +79,8 @@ namespace tezcat.Framework.Core
 
         public virtual void close(bool self_close = true)
         {
-            this.clearAllProperty();
+            this.clearAll();
             m_Properties = null;
-            m_CheckForAdd = null;
         }
     }
 }

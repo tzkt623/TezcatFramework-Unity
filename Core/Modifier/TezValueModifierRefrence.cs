@@ -38,6 +38,21 @@
             }
         }
 
+        public TezValueModifierRefrence(ITezProperty property, TezValueModifierDefinition def) : base(def)
+        {
+            m_Property = property;
+            m_Property.onValueChanged += onRefValueChanged;
+            switch (m_Property.valueType)
+            {
+                case TezValueType.Int:
+                    m_Value = ((TezPropertyInt)m_Property).value;
+                    break;
+                case TezValueType.Float:
+                    m_Value = ((TezPropertyFloat)m_Property).value;
+                    break;
+            }
+        }
+
         private void onRefValueChanged(ITezProperty property)
         {
             var old = m_Value;
@@ -60,5 +75,4 @@
             m_Property = null;
         }
     }
-
 }

@@ -2,53 +2,71 @@ using System.Collections.Generic;
 
 namespace tezcat.Framework.AI
 {
+    /// <summary>
+    /// 顺序节点
+    /// 顺序运行所有节点 所有节点Success 则返回Success
+    /// 否则返回Fail
+    /// </summary>
     public class TezBTSequence : TezBTCompositeNode
     {
         List<TezBTNode> m_List = new List<TezBTNode>();
         bool m_Running = true;
         int m_Index = 0;
 
-        public override void init(ITezBTContext context)
+        public override void init()
         {
+            m_List.TrimExcess();
             for (int i = 0; i < m_List.Count; i++)
             {
-                m_List[i].init(context);
+                m_List[i].init();
             }
         }
 
-        protected override void enter()
+        /// <summary>
+        /// 子节点向自己报告运行状态
+        /// </summary>
+        protected override void onReport(TezBTNode node, Result result)
         {
+            switch (result)
+            {
+                case Result.Success:
+                    m_Index++;
+                    if (m_Index >= m_List.Count)
+                    {
+                        this.reset();
+                        this.report(Result.Success);
+                    }
+                    else
+                    {
+                        m_List[m_Index].execute();
+                    }
 
+                    break;
+                case Result.Fail:
+                    this.reset();
+                    this.report(Result.Fail);
+                    break;
+                case Result.Running:
+                    break;
+                default:
+                    break;
+            }
         }
 
-        protected override void exit()
+        protected override void onExecute()
+        {
+            m_List[m_Index].execute();
+        }
+
+        public override void reset()
         {
             m_Index = 0;
         }
 
-        public override Result execute(ITezBTContext context)
-        {
-            int count = m_List.Count;
-            while (m_Index < count)
-            {
-                switch (m_List[m_Index].execute(context))
-                {
-                    case Result.Running:
-                        return Result.Running;
-                    case Result.Success:
-                        m_Index += 1;
-                        break;
-                    case Result.Fail:
-                        this.exit();
-                        return Result.Fail;
-                }
-            }
-
-            this.exit();
-            return Result.Success;
-        }
         public override void close(bool self_close = true)
         {
+            base.close(self_close);
+
             for (int i = 0; i < m_List.Count; i++)
             {
                 m_List[i].close();
@@ -59,8 +77,8 @@ namespace tezcat.Framework.AI
 
         public override void addNode(TezBTNode node)
         {
+            base.addNode(node);
             m_List.Add(node);
         }
-
     }
 }

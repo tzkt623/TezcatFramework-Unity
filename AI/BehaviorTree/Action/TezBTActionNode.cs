@@ -1,50 +1,52 @@
-using System;
-
 namespace tezcat.Framework.AI
 {
-    public abstract class TezBTActionNode : TezBTNode
+    /// <summary>
+    /// 行为节点
+    /// 行为节点是真正运行行为的地方
+    /// 整个树最终的运行行为就是由此节点来完成
+    /// </summary>
+    public abstract class TezBTActionNode
+        : TezBTNode
     {
-        bool m_Enter = false;
-        bool m_Init = false;
+        bool m_IsActive = false;
 
-        public sealed override Result execute(ITezBTContext context)
+        public override Category category => Category.Action;
+
+        /// <summary>
+        /// 任务index
+        /// </summary>
+        public int taskIndex { get; set; }
+
+        public sealed override Result execute()
         {
-            if (!m_Enter)
-            {
-                m_Enter = true;
-                this.enter();
-            }
-
-            var result = update(context);
+            var result = onExecute();
 
             switch (result)
             {
                 case Result.Running:
+                    if (!m_IsActive)
+                    {
+                        m_IsActive = true;
+                        this.tree.addTask(this);
+                    }
                     break;
                 default:
-                    this.exit();
+                    if (m_IsActive)
+                    {
+                        this.report(result);
+                    }
                     break;
             }
 
             return result;
         }
 
-        protected abstract Result update(ITezBTContext context);
+        protected abstract Result onExecute();
 
-        protected override void enter()
+
+        public override void reset()
         {
-
-        }
-
-        protected override void exit()
-        {
-            m_Enter = false;
-        }
-
-        public override void close(bool self_close = true)
-        {
-
+            m_IsActive = false;
         }
     }
-
 }
