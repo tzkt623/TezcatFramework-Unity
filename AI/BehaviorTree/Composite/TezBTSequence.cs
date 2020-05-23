@@ -31,7 +31,7 @@ namespace tezcat.Framework.AI
             {
                 case Result.Success:
                     m_Index++;
-                    if (m_Index >= m_List.Count)
+                    if (m_Index == m_List.Count)
                     {
                         this.reset();
                         this.report(Result.Success);
