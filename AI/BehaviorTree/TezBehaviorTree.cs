@@ -97,10 +97,16 @@ namespace tezcat.Framework.AI
             m_Observer.close(false);
             m_Root.close(false);
             this.context.close(false);
+
+            m_Observer = null;
+            m_Root = null;
+            this.context = null;
         }
 
         public void reset()
         {
+            m_DeleteActionList.Clear();
+
             for (int i = 0; i < m_ActionList.Count; i++)
             {
                 m_ActionList[i].reset();
@@ -121,9 +127,12 @@ namespace tezcat.Framework.AI
             ///执行当前任务
             if (m_ActionList.Count > 0)
             {
+                TezBTActionNode node = null;
                 for (int i = 0; i < m_ActionList.Count; i++)
                 {
-                    switch (m_ActionList[i].execute())
+                    node = m_ActionList[i];
+                    node.execute();
+                    switch (node.backupResult)
                     {
                         case TezBTNode.Result.Running:
                             break;
@@ -135,9 +144,12 @@ namespace tezcat.Framework.AI
 
                 if (m_DeleteActionList.Count > 0)
                 {
-                    for (int i = m_DeleteActionList.Count - 1; i >= 0; i--)
+                    if (m_ActionList.Count > 0)
                     {
-                        m_ActionList.RemoveAt(m_DeleteActionList[i]);
+                        for (int i = m_DeleteActionList.Count - 1; i >= 0; i--)
+                        {
+                            m_ActionList.RemoveAt(m_DeleteActionList[i]);
+                        }
                     }
 
                     m_DeleteActionList.Clear();

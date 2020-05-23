@@ -7,7 +7,6 @@ namespace tezcat.Framework.AI
     {
         public enum Result
         {
-            Ignore,
             Success,
             Fail,
             Running
@@ -48,7 +47,7 @@ namespace tezcat.Framework.AI
         /// <summary>
         /// 非Action节点使用
         /// </summary>
-        public abstract Result execute();
+        public abstract void execute();
 
         public abstract void init();
         public abstract void reset();

@@ -132,11 +132,17 @@ namespace tezcat.Framework.InputSystem
 
         public Stack<TezInputState> dump()
         {
-            Stack<TezInputState> dump = new Stack<TezInputState>(m_Stack);
-            if(m_Current != null)
+            Stack<TezInputState> dump = new Stack<TezInputState>();
+            if (m_Current != null)
             {
                 dump.Push(m_Current);
             }
+
+            foreach (var item in m_Stack)
+            {
+                dump.Push(item);
+            }
+
             return dump;
         }
     }

@@ -8,10 +8,9 @@
 	{
         public override Category category => Category.Condition;
 
-        public sealed override Result execute()
+        public sealed override void execute()
         {
             this.onExecute();
-            return Result.Ignore;
         }
 
         protected abstract void onExecute();

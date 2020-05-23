@@ -17,11 +17,13 @@ namespace tezcat.Framework.AI
         /// </summary>
         public int taskIndex { get; set; }
 
-        public sealed override Result execute()
-        {
-            var result = onExecute();
+        public Result backupResult { get; private set; } = Result.Running;
 
-            switch (result)
+        public sealed override void execute()
+        {
+            this.backupResult = onExecute();
+
+            switch (backupResult)
             {
                 case Result.Running:
                     if (!m_IsActive)
@@ -33,12 +35,11 @@ namespace tezcat.Framework.AI
                 default:
                     if (m_IsActive)
                     {
-                        this.report(result);
+                        this.reset();
+                        this.report(backupResult);
                     }
                     break;
             }
-
-            return result;
         }
 
         protected abstract Result onExecute();
