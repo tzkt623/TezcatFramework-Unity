@@ -1,4 +1,20 @@
 # TezcatFramework
+
+## Introduction
+This is a library for the indie game I'm working on
+
+I spent years learning and making them
+
+Although it is based on Unity
+
+But I made it into an API that didn't rely on Unity at all
+
+Because eventually I would move the framework to C++ for my own engine
+
+There are many aspects to the tool
+
+I'm focusing on my game development so I'm not going to write the details
+
 ## 简介
 这是我正在开发的独立游戏所使用的工具库
 
