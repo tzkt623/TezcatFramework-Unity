@@ -15,7 +15,7 @@ namespace tezcat.Framework.AI
         /// <summary>
         /// ÈÎÎñindex
         /// </summary>
-        public int taskIndex { get; set; }
+        public int actionIndex { get; set; }
 
         public Result backupResult { get; private set; } = Result.Running;
 
@@ -29,7 +29,7 @@ namespace tezcat.Framework.AI
                     if (!m_IsActive)
                     {
                         m_IsActive = true;
-                        this.tree.addTask(this);
+                        this.tree.addActionNode(this);
                     }
                     break;
                 default:

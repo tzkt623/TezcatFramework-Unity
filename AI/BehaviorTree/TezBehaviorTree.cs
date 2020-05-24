@@ -50,7 +50,7 @@ namespace tezcat.Framework.AI
         TezBTNode m_Root = null;
         TezBTObserver m_Observer = null;
 
-        int m_TaskIDGenerator = 0;
+        int m_ActionIDGenerator = 0;
         List<TezBTActionNode> m_ActionList = new List<TezBTActionNode>();
         List<int> m_DeleteActionList = new List<int>();
 
@@ -162,18 +162,18 @@ namespace tezcat.Framework.AI
             }
         }
 
-        public void addTask(TezBTActionNode node)
+        public void addActionNode(TezBTActionNode node)
         {
             m_ActionList.Add(node);
             m_ActionList.Sort((TezBTActionNode a, TezBTActionNode b) =>
             {
-                return a.taskIndex.CompareTo(b.taskIndex);
+                return a.actionIndex.CompareTo(b.actionIndex);
             });
         }
 
         public void registerAction(TezBTActionNode node)
         {
-            node.taskIndex = m_TaskIDGenerator++;
+            node.actionIndex = m_ActionIDGenerator++;
         }
 
         public void loadConfig(TezReader reader)
@@ -181,11 +181,6 @@ namespace tezcat.Framework.AI
             m_Root = create(reader.readString("CID"));
             m_Root.tree = this;
             m_Root.loadConfig(reader);
-        }
-
-        public void addActionNode(TezBTActionNode node)
-        {
-            m_ActionList.Add(node);
         }
 
         public void onReport(TezBTNode node, TezBTNode.Result result)
