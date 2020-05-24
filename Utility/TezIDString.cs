@@ -7,7 +7,7 @@ namespace tezcat.Framework.Utility
     /// 携带ID的String
     /// 用ID来代替字符串进行快速比较
     /// </summary>
-    public class TezIDString : TezObject
+    public class TezIDString : ITezCloseable
     {
         private static List<string> StringList = null;
         private static Dictionary<string, int> StringDic = null;
@@ -41,12 +41,7 @@ namespace tezcat.Framework.Utility
             }
             else
             {
-                int id = -1;
-                if (TezIDString.StringDic.TryGetValue(str, out id))
-                {
-                    m_ID = id;
-                }
-                else
+                if (!TezIDString.StringDic.TryGetValue(str, out m_ID))
                 {
                     m_ID = TezIDString.StringList.Count;
                     TezIDString.StringList.Add(str);
@@ -74,7 +69,7 @@ namespace tezcat.Framework.Utility
         public void replace(string content)
         {
             int id = -1;
-            if(StringDic.TryGetValue(content, out id))
+            if (StringDic.TryGetValue(content, out id))
             {
                 m_ID = id;
             }
@@ -95,22 +90,6 @@ namespace tezcat.Framework.Utility
             }
         }
 
-        public override bool Equals(object other)
-        {
-            var temp = other as TezIDString;
-            if (temp)
-            {
-                return temp.m_ID == m_ID;
-            }
-
-            return false;
-        }
-
-        public override int GetHashCode()
-        {
-            return m_ID;
-        }
-
         public string convertToString()
         {
             return TezIDString.StringList[m_ID];
@@ -126,9 +105,25 @@ namespace tezcat.Framework.Utility
             m_ID = 0;
         }
 
-        public override void close(bool self_close = true)
+        public void close(bool self_close = true)
         {
             m_ID = -1;
+        }
+
+        public override int GetHashCode()
+        {
+            return m_ID;
+        }
+
+        public override bool Equals(object other)
+        {
+            var temp = other as TezIDString;
+            if (temp != null)
+            {
+                return temp.m_ID == m_ID;
+            }
+
+            return false;
         }
 
         public static int getIDFromString(string str)
