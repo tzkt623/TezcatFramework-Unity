@@ -103,8 +103,11 @@ namespace tezcat.Framework.Definition
         }
         #endregion
 
-        List<TezDefinitionNode> m_PrimaryNodes = new List<TezDefinitionNode>();
-        List<TezDefinitionLeaf> m_SecondaryNodes = new List<TezDefinitionLeaf>();
+        //         List<TezDefinitionNode> m_PrimaryNodes = new List<TezDefinitionNode>();
+        //         List<TezDefinitionLeaf> m_SecondaryNodes = new List<TezDefinitionLeaf>();
+
+        Dictionary<int, TezDefinitionNode> m_PrimaryNodes = new Dictionary<int, TezDefinitionNode>();
+        Dictionary<int, TezDefinitionLeaf> m_SecondaryNodes = new Dictionary<int, TezDefinitionLeaf>();
 
         protected abstract TezDefinitionNode onCreatePrimaryChild(ITezDefinitionToken token);
         protected abstract TezDefinitionLeaf onCreateSecondaryChild(ITezDefinitionToken token);
@@ -112,16 +115,12 @@ namespace tezcat.Framework.Definition
         protected TezDefinitionNode getOrCreatePrimaryNode(ITezDefinitionToken token, ref TezDefinitionPath pre_path_node)
         {
             var id = token.tokenID;
-            while (m_PrimaryNodes.Count <= id)
-            {
-                m_PrimaryNodes.Add(null);
-            }
 
-            var node = m_PrimaryNodes[id];
-            if (node == null)
+            TezDefinitionNode node = null;
+            if (!m_PrimaryNodes.TryGetValue(id, out node))
             {
                 node = this.onCreatePrimaryChild(token);
-                m_PrimaryNodes[id] = node;
+                m_PrimaryNodes.Add(id, node);
                 pre_path_node?.addChild(id);
             }
 
@@ -136,16 +135,12 @@ namespace tezcat.Framework.Definition
         protected TezDefinitionNode getOrCreatePrimaryNode(ITezDefinitionToken token)
         {
             var id = token.tokenID;
-            while (m_PrimaryNodes.Count <= id)
-            {
-                m_PrimaryNodes.Add(null);
-            }
 
-            var node = m_PrimaryNodes[id];
-            if (node == null)
+            TezDefinitionNode node = null;
+            if (!m_PrimaryNodes.TryGetValue(id, out node))
             {
                 node = this.onCreatePrimaryChild(token);
-                m_PrimaryNodes[id] = node;
+                m_PrimaryNodes.Add(id, node);
             }
 
             return node;
@@ -158,22 +153,20 @@ namespace tezcat.Framework.Definition
 
         public TezDefinitionNode getPrimaryNode(int id)
         {
-            return m_PrimaryNodes[id];
+            TezDefinitionNode node = null;
+            m_PrimaryNodes.TryGetValue(id, out node);
+            return node;
         }
 
         protected TezDefinitionLeaf getOrCreateSecondaryNode(ITezDefinitionToken token)
         {
             var id = token.tokenID;
-            while (m_SecondaryNodes.Count <= id)
-            {
-                m_SecondaryNodes.Add(null);
-            }
 
-            var node = m_SecondaryNodes[id];
-            if (node == null)
+            TezDefinitionLeaf node = null;
+            if (!m_SecondaryNodes.TryGetValue(id, out node))
             {
                 node = this.onCreateSecondaryChild(token);
-                m_SecondaryNodes[id] = node;
+                m_SecondaryNodes.Add(id, node);
             }
 
             return node;
@@ -186,7 +179,9 @@ namespace tezcat.Framework.Definition
 
         public TezDefinitionLeaf getSecondaryNode(int id)
         {
-            return m_SecondaryNodes[id];
+            TezDefinitionLeaf node = null;
+            m_SecondaryNodes.TryGetValue(id, out node);
+            return node;
         }
 
         /// <summary>
@@ -197,7 +192,7 @@ namespace tezcat.Framework.Definition
             var definition_path = handler.definition;
             var primary_length = definition_path.primaryLength;
             TezDefinitionPath pre_path_node = null;
-            for (int i = 0; i < primary_length; i++)
+            for (int i = 1; i < primary_length; i++)
             {
                 this.getOrCreatePrimaryNode(definition_path.getPrimaryPathToken(i), ref pre_path_node).onRegisterObject(handler);
             }
@@ -217,7 +212,7 @@ namespace tezcat.Framework.Definition
             var definition_path = handler.definition;
             var primary_length = definition_path.primaryLength;
             TezDefinitionPath pre_path_node = null;
-            for (int i = 0; i < primary_length; i++)
+            for (int i = 1; i < primary_length; i++)
             {
                 this.getOrCreatePrimaryNode(definition_path.getPrimaryPathToken(i), ref pre_path_node).onRegisterObject(handler);
             }
@@ -252,7 +247,7 @@ namespace tezcat.Framework.Definition
         {
             var definition_path = handler.definition;
             var primary_length = definition_path.primaryLength;
-            for (int i = 0; i < primary_length; i++)
+            for (int i = 1; i < primary_length; i++)
             {
                 this.getPrimaryNode(definition_path.getPrimaryPathToken(i)).onUnregisterObject(handler);
             }
@@ -271,7 +266,7 @@ namespace tezcat.Framework.Definition
         {
             var definition_path = handler.definition;
             var primary_length = definition_path.primaryLength;
-            for (int i = 0; i < primary_length; i++)
+            for (int i = 1; i < primary_length; i++)
             {
                 this.getPrimaryNode(definition_path.getPrimaryPathToken(i)).onUnregisterObject(handler);
             }
@@ -304,14 +299,14 @@ namespace tezcat.Framework.Definition
         /// </summary>
         public virtual void close(bool self_close = true)
         {
-            for (int i = 0; i < m_PrimaryNodes.Count; i++)
+            foreach (var pair in m_PrimaryNodes)
             {
-                m_PrimaryNodes[i]?.close(false);
+                pair.Value.close(false);
             }
 
-            for (int i = 0; i < m_SecondaryNodes.Count; i++)
+            foreach (var pair in m_SecondaryNodes)
             {
-                m_SecondaryNodes[i]?.close(false);
+                pair.Value.close(false);
             }
 
             m_PrimaryNodes.Clear();

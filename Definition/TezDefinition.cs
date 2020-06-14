@@ -11,6 +11,12 @@ namespace tezcat.Framework.Definition
     /// </summary>
     public class TezDefinition : ITezCloseable
     {
+        public enum Path
+        {
+            Primary,
+            Secondary
+        }
+
         static readonly ITezDefinitionToken[] m_DefaultPrimaryPath = new ITezDefinitionToken[0];
         static readonly ITezDefinitionToken[] m_DefaultSecondaryPath = new ITezDefinitionToken[0];
 
@@ -32,13 +38,36 @@ namespace tezcat.Framework.Definition
             get { return m_SecondaryPath.Length; }
         }
 
-        ITezDefinitionToken[] m_PrimaryPath = null;
-        ITezDefinitionToken[] m_SecondaryPath = null;
+        ITezDefinitionToken[] m_PrimaryPath = m_DefaultPrimaryPath;
+        ITezDefinitionToken[] m_SecondaryPath = m_DefaultSecondaryPath;
 
-        public TezDefinition(ITezDefinitionToken[] primary_path = null, ITezDefinitionToken[] secondary_path = null)
+        public TezDefinition(ITezDefinitionToken[] primaryPath, ITezDefinitionToken[] secondaryPath)
         {
-            m_PrimaryPath = primary_path == null ? m_DefaultPrimaryPath : primary_path;
-            m_SecondaryPath = secondary_path == null ? m_DefaultSecondaryPath : secondary_path;
+            m_PrimaryPath = primaryPath ?? m_DefaultPrimaryPath;
+            m_SecondaryPath = secondaryPath ?? m_DefaultSecondaryPath;
+        }
+
+        /// <summary>
+        /// 建立一个Path路径
+        /// </summary>
+        /// <param name="mainToken">主分类</param>
+        /// <param name="path">路径类型</param>
+        /// <param name="otherPath">路径</param>
+        public TezDefinition(Path path, ITezDefinitionToken[] otherPath = null)
+        {
+            switch (path)
+            {
+                case Path.Primary:
+                    m_PrimaryPath = otherPath;
+                    m_SecondaryPath = m_DefaultSecondaryPath;
+                    break;
+                case Path.Secondary:
+                    m_PrimaryPath = m_DefaultPrimaryPath;
+                    m_SecondaryPath = otherPath;
+                    break;
+                default:
+                    break;
+            }
         }
 
         public TezDefinition clone()
@@ -77,6 +106,16 @@ namespace tezcat.Framework.Definition
             }
 
             return false;
+        }
+
+        /// <summary>
+        /// 获得主分类Token
+        /// 为PrimaryToken的第一个
+        /// </summary>
+        /// <returns></returns>
+        public ITezDefinitionToken getMainToken()
+        {
+            return m_PrimaryPath[0];
         }
 
         /// <summary>
@@ -127,6 +166,9 @@ namespace tezcat.Framework.Definition
             return string.Format("Primary:{0}\nSecondary:{1}", primary, secondary);
         }
 
+        /// <summary>
+        /// 关闭
+        /// </summary>
         public virtual void close(bool self_close = true)
         {
             m_PrimaryPath = null;

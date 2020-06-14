@@ -76,7 +76,7 @@ namespace tezcat.Framework.Extension
                 }
             }
 
-            result = default(T);
+            result = default;
             return false;
         }
 
