@@ -40,7 +40,7 @@ namespace tezcat.Framework.AI
 
         public virtual void close(bool self_close = true)
         {
-            this.tree = null;
+            m_Tree = null;
             this.parent = null;
         }
 
