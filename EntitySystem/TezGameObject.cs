@@ -47,7 +47,6 @@ namespace tezcat.Framework.ECS
         protected virtual bool buildPrimaryToken { get; } = true;
         protected virtual bool buildSecondaryToken { get; } = true;
 
-        protected virtual ITezDefinitionToken mainToken { get; } = null;
         protected List<ITezDefinitionToken> primaryTokens
         {
             get

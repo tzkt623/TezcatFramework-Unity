@@ -134,6 +134,38 @@ namespace tezcat.Framework.Definition
             return m_SecondaryPath[index];
         }
 
+        /// <summary>
+        /// 检验主路径包含
+        /// </summary>
+        public bool containsPrimary(ITezDefinitionToken token)
+        {
+            if (token.layer < m_PrimaryPath.Length)
+            {
+                return m_PrimaryPath[token.layer].tokenID == token.tokenID;
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// 检验副路径包含
+        /// </summary>
+        public bool containsSecondary(ITezDefinitionToken token)
+        {
+            if (m_SecondaryPath.Length > 0)
+            {
+                foreach (var item in m_SecondaryPath)
+                {
+                    if (item.tokenID == token.tokenID)
+                    {
+                        return true;
+                    }
+                }
+            }
+
+            return false;
+        }
+
         public override string ToString()
         {
             string primary = "Null", secondary = "Null";

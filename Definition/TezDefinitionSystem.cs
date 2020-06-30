@@ -15,11 +15,32 @@ namespace tezcat.Framework.Definition
             public string tokenName { get; }
             public TezDefinitionTokenType tokenType { get; }
 
+            /// <summary>
+            /// 层级
+            /// 只在Primary路径上生效
+            /// </summary>
+            public int layer { get; } = -1;
+
             public Element(int id, string name, TezDefinitionTokenType type)
             {
                 this.tokenID = id;
                 this.tokenName = name;
                 this.tokenType = type;
+            }
+
+            public Element(int id, string name, TezDefinitionTokenType type, ITezDefinitionToken parent)
+            {
+                this.tokenID = id;
+                this.tokenName = name;
+                this.tokenType = type;
+                if(parent != null)
+                {
+                    this.layer = parent.layer + 1;
+                }
+                else
+                {
+                    this.layer = 0;
+                }
             }
 
             public override bool Equals(object obj)
@@ -40,7 +61,7 @@ namespace tezcat.Framework.Definition
 
         static List<Element> m_PrimaryElements = new List<Element>();
         static Dictionary<string, Element> m_PrimaryElementsWithName = new Dictionary<string, Element>();
-        public static Element createPrimaryElement(string name, TezDefinitionTokenType type)
+        public static Element createPrimaryElement(string name, TezDefinitionTokenType type, ITezDefinitionToken parent)
         {
             if (m_PrimaryElementsWithName.ContainsKey(name))
             {
@@ -48,7 +69,7 @@ namespace tezcat.Framework.Definition
             }
 
             var id = m_PrimaryElements.Count;
-            var element = new Element(id, name, type);
+            var element = new Element(id, name, type, parent);
             m_PrimaryElements.Add(element);
             m_PrimaryElementsWithName.Add(name, element);
             return element;
