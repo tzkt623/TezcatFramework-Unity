@@ -52,7 +52,7 @@ namespace tezcat.Framework.Database
                     return item;
                 }
 
-                throw new Exception(string.Format("{0} : Item[{1}] No Registered", this.GetType().Name, name));
+                throw new Exception(string.Format("{0} : Item[{1}] Not Registered", this.GetType().Name, name));
             }
 
             public TezDatabaseGameItem get(int index)
