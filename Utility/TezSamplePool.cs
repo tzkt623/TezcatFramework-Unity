@@ -31,6 +31,11 @@ namespace tezcat.Framework.Utility
 
         public void release(T obj)
         {
+            if(obj == null)
+            {
+                return;
+            }
+
             if (m_AutoRelease)
             {
                 m_OnRelease(obj);
