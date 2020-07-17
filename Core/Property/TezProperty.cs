@@ -103,8 +103,8 @@ namespace tezcat.Framework.Core
             {
                 if (m_ModifierCache.dirty)
                 {
-                    m_ModifierCache.dirty = false;
                     this.nodifiyChanged();
+                    m_ModifierCache.dirty = false;
                 }
                 return m_Value;
             }
@@ -135,8 +135,8 @@ namespace tezcat.Framework.Core
         {
             if (m_ModifierCache.dirty)
             {
-                m_ModifierCache.dirty = false;
                 this.nodifiyChanged();
+                m_ModifierCache.dirty = false;
             }
         }
     }
@@ -156,8 +156,8 @@ namespace tezcat.Framework.Core
             {
                 if (m_ModifierCache.dirty)
                 {
-                    m_ModifierCache.dirty = false;
                     this.nodifiyChanged();
+                    m_ModifierCache.dirty = false;
                 }
                 return m_Value;
             }
@@ -188,8 +188,8 @@ namespace tezcat.Framework.Core
         {
             if (m_ModifierCache.dirty)
             {
-                m_ModifierCache.dirty = false;
                 this.nodifiyChanged();
+                m_ModifierCache.dirty = false;
             }
         }
     }

@@ -7,7 +7,7 @@
     /// </summary>
     public static class TezIDCreator<T>
     {
-        static int m_ID = -1;
+        static int m_ID = 0;
 
         public static int count
         {
@@ -21,7 +21,7 @@
 
         public static void reset()
         {
-            m_ID = -1;
+            m_ID = 0;
         }
     }
 }

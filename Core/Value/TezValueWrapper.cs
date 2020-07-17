@@ -14,7 +14,7 @@ namespace tezcat.Framework.Core
         Double,
         String,
         Class,
-        StaticString,
+        IDString,
         Type,
         Unknown
     }
@@ -54,7 +54,7 @@ namespace tezcat.Framework.Core
             {typeof(float), TezValueType.Float },
             {typeof(double), TezValueType.Double },
             {typeof(string), TezValueType.String },
-            {typeof(TezIDString), TezValueType.StaticString },
+            {typeof(TezIDString), TezValueType.IDString },
         };
 
         protected class WrapperID<Value> : TezTypeInfo<Value, TezValueWrapper>
@@ -63,9 +63,9 @@ namespace tezcat.Framework.Core
 
             static WrapperID()
             {
-                if (!Mapping.TryGetValue(typeof(Value), out valueType))
+                if (!Mapping.TryGetValue(systemType, out valueType))
                 {
-                    if (typeof(Value).IsClass)
+                    if (systemType.IsClass)
                     {
                         valueType = TezValueType.Class;
                     }
@@ -77,18 +77,10 @@ namespace tezcat.Framework.Core
             }
         }
 
-        public TezValueWrapper(ITezValueDescriptor name)
-        {
-            this.descriptor = name;
-        }
-
-        public TezValueWrapper()
-        {
-
-        }
-
         public abstract Type systemType { get; }
+
         public abstract TezValueType valueType { get; }
+
         public virtual TezWrapperType wrapperType
         {
             get { return TezWrapperType.Normal; }
@@ -109,6 +101,16 @@ namespace tezcat.Framework.Core
         int ITezBinarySearchItem.binaryWeight
         {
             get { return descriptor.ID; }
+        }
+
+        public TezValueWrapper(ITezValueDescriptor name)
+        {
+            this.descriptor = name;
+        }
+
+        public TezValueWrapper()
+        {
+
         }
 
         public bool Equals(TezValueWrapper other)
@@ -170,16 +172,9 @@ namespace tezcat.Framework.Core
 
     public class TezValueWrapper<T> : TezValueWrapper
     {
-        public TezValueWrapper(ITezValueDescriptor name) : base(name)
-        {
-
-        }
-
-        public TezValueWrapper() : base() { }
-
         public sealed override Type systemType
         {
-            get { return typeof(T); }
+            get { return WrapperID<T>.systemType; }
         }
 
         public override TezValueType valueType
@@ -189,6 +184,10 @@ namespace tezcat.Framework.Core
 
         public virtual T value { get; set; }
 
+        public TezValueWrapper(ITezValueDescriptor name) : base(name) { }
+
+        public TezValueWrapper() : base() { }
+
         public void assign(TezValueWrapper<T> wrapper)
         {
             this.value = wrapper.value;
@@ -196,8 +195,8 @@ namespace tezcat.Framework.Core
 
         public override void close(bool self_close = true)
         {
-            this.value = default(T);
             base.close(self_close);
+            this.value = default;
         }
 
         public static implicit operator T(TezValueWrapper<T> property)

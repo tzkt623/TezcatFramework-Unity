@@ -147,7 +147,11 @@ namespace tezcat.Framework.ECS
         /// </summary>
         public void buildDefinition()
         {
-            this.definition = new TezDefinition((this.buildPrimaryToken && this.primaryTokens.Count > 0) ? this.primaryTokens.ToArray() : null, (this.buildSecondaryToken && this.secondaryTokens.Count > 0) ? this.secondaryTokens.ToArray() : null);
+            this.definition = new TezDefinition()
+            {
+                primaryPath = (this.buildPrimaryToken && this.primaryTokens.Count > 0) ? this.primaryTokens.ToArray() : TezDefinition.DefaultPrimaryPath,
+                secondaryPath = (this.buildSecondaryToken && this.secondaryTokens.Count > 0) ? this.secondaryTokens.ToArray() : TezDefinition.DefaultSecondaryPath
+            };
 
             this.onBuildDefinition();
         }

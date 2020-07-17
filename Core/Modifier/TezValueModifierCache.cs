@@ -25,19 +25,19 @@ namespace tezcat.Framework.Core
 
         protected override void onModifierAdded(ITezValueModifier modifier)
         {
-            var def = (TezValueModifierDefinition)modifier.definition;
-            switch (def.assemble)
+            var config = modifier.modifierConfig;
+            switch (config.assemble)
             {
-                case TezValueModifierDefinition.Assemble.SumBase:
+                case TezValueModifierConfig.Assemble.SumBase:
                     m_SumBase += modifier.value;
                     break;
-                case TezValueModifierDefinition.Assemble.SumTotal:
+                case TezValueModifierConfig.Assemble.SumTotal:
                     m_SumTotal += modifier.value;
                     break;
-                case TezValueModifierDefinition.Assemble.MultBase:
+                case TezValueModifierConfig.Assemble.MultBase:
                     m_MultBase += modifier.value;
                     break;
-                case TezValueModifierDefinition.Assemble.MultTotal:
+                case TezValueModifierConfig.Assemble.MultTotal:
                     m_MultTotal += modifier.value;
                     break;
                 default:
@@ -47,19 +47,19 @@ namespace tezcat.Framework.Core
 
         protected override void onModifierRemoved(ITezValueModifier modifier)
         {
-            var def = (TezValueModifierDefinition)modifier.definition;
-            switch (def.assemble)
+            var config = modifier.modifierConfig;
+            switch (config.assemble)
             {
-                case TezValueModifierDefinition.Assemble.SumBase:
+                case TezValueModifierConfig.Assemble.SumBase:
                     m_SumBase -= modifier.value;
                     break;
-                case TezValueModifierDefinition.Assemble.SumTotal:
+                case TezValueModifierConfig.Assemble.SumTotal:
                     m_SumTotal -= modifier.value;
                     break;
-                case TezValueModifierDefinition.Assemble.MultBase:
+                case TezValueModifierConfig.Assemble.MultBase:
                     m_MultBase -= modifier.value;
                     break;
-                case TezValueModifierDefinition.Assemble.MultTotal:
+                case TezValueModifierConfig.Assemble.MultTotal:
                     m_MultTotal -= modifier.value;
                     break;
                 default:
@@ -69,19 +69,19 @@ namespace tezcat.Framework.Core
 
         protected override void onModifierChanged(ITezValueModifier modifier, float old_value)
         {
-            var def = (TezValueModifierDefinition)modifier.definition;
-            switch (def.assemble)
+            var config = modifier.modifierConfig;
+            switch (config.assemble)
             {
-                case TezValueModifierDefinition.Assemble.SumBase:
+                case TezValueModifierConfig.Assemble.SumBase:
                     m_SumBase = m_SumBase - old_value + modifier.value;
                     break;
-                case TezValueModifierDefinition.Assemble.SumTotal:
+                case TezValueModifierConfig.Assemble.SumTotal:
                     m_SumTotal = m_SumTotal - old_value + modifier.value;
                     break;
-                case TezValueModifierDefinition.Assemble.MultBase:
+                case TezValueModifierConfig.Assemble.MultBase:
                     m_MultBase = m_MultBase - old_value + modifier.value;
                     break;
-                case TezValueModifierDefinition.Assemble.MultTotal:
+                case TezValueModifierConfig.Assemble.MultTotal:
                     m_MultTotal = m_MultTotal - old_value + modifier.value;
                     break;
                 default:

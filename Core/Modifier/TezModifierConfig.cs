@@ -13,8 +13,8 @@ namespace tezcat.Framework.Core
         : ITezCloseable
         , ITezDefinitionObject
     {
-        TezModifierType modifierType { get; }
         object source { get; set; }
+        TezModifierType modifierType { get; }
     }
 
     public interface ITezValueModifier
@@ -22,6 +22,7 @@ namespace tezcat.Framework.Core
         , ITezValueWrapper
     {
         event TezEventExtension.Action<ITezValueModifier, float> onValueChanged;
+        TezValueModifierConfig modifierConfig { get; }
         float value { get; }
     }
 

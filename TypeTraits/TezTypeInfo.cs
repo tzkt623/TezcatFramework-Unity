@@ -32,6 +32,7 @@ namespace tezcat.Framework.TypeTraits
             get { return m_ID; }
         }
         public static string Name { get; } = typeof(Type).Name;
+        public static System.Type systemType { get; } = typeof(Type);
 
         public static Action onInit { get; set; }
 

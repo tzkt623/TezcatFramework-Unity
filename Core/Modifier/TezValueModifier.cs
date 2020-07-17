@@ -7,8 +7,27 @@ namespace tezcat.Framework.Core
         : TezValueWrapper<float>
         , ITezValueModifier
     {
+        /// <summary>
+        /// 加成来源
+        /// </summary>
         public object source { get; set; }
-        public TezDefinition definition { get; protected set; }
+
+        /// <summary>
+        /// 加成路径定义
+        /// </summary>
+        public TezDefinition definition { get; set; }
+
+        /// <summary>
+        /// 配置
+        /// </summary>
+        public TezValueModifierConfig modifierConfig { get; set; }
+
+        /// <summary>
+        /// 加成模式
+        /// 值模式
+        /// 或者
+        /// 功能模式
+        /// </summary>
         public TezModifierType modifierType { get; } = TezModifierType.Value;
 
         /// <summary>
@@ -35,14 +54,9 @@ namespace tezcat.Framework.Core
             }
         }
 
-        protected TezValueModifier(ITezValueDescriptor name, TezValueModifierDefinition def) : base(name)
+        protected TezValueModifier(ITezValueDescriptor name) : base(name)
         {
-            this.definition = def;
-        }
 
-        protected TezValueModifier(TezValueModifierDefinition def) : base()
-        {
-            this.definition = def;
         }
 
         protected void notifyValueChanged(ITezValueModifier modifier, float old_value)

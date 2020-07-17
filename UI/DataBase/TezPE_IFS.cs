@@ -45,7 +45,7 @@ namespace tezcat.Framework.UI
                 case TezValueType.String:
                     (m_Property as TezValueWrapper<string>).value = value;
                     break;
-                case TezValueType.StaticString:
+                case TezValueType.IDString:
                     (m_Property as TezValueWrapper<TezIDString>).value = value;
                     break;
             }
@@ -73,7 +73,7 @@ namespace tezcat.Framework.UI
                     m_Input.contentType = InputField.ContentType.Standard;
                     m_Input.text = (m_Property as TezValueWrapper<string>).value;
                     break;
-                case TezValueType.StaticString:
+                case TezValueType.IDString:
                     m_Input.contentType = InputField.ContentType.Standard;
                     m_Input.text = (m_Property as TezValueWrapper<TezIDString>).value;
                     break;

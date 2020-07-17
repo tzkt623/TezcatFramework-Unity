@@ -17,14 +17,14 @@
 
         public void addModifier(ITezValueModifier modifier)
         {
-            var target = ((TezValueModifierDefinition)modifier.definition).target;
+            var target = modifier.modifierConfig.target;
             var property = this.get<ITezProperty>(target);
             property?.addModifier(modifier);
         }
 
         public bool removeModifier(ITezValueModifier modifier)
         {
-            var target = ((TezValueModifierDefinition)modifier.definition).target;
+            var target = modifier.modifierConfig.target;
             var property = this.get<ITezProperty>(target);
             return (property != null) && property.removeModifier(modifier);
         }

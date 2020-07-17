@@ -55,7 +55,6 @@ namespace tezcat.Framework.Definition
 
             public void close(bool self_close = true)
             {
-
             }
         }
 

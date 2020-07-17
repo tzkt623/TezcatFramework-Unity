@@ -258,7 +258,7 @@ namespace tezcat.Framework.Game
                     break;
                 case TezValueType.Class:
                     break;
-                case TezValueType.StaticString:
+                case TezValueType.IDString:
                     this.pushAttribute(TezService.get<TezTranslator>().translateName(property.name), ((TezValueWrapper<TezIDString>)property).value);
                     break;
                 case TezValueType.Type:

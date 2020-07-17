@@ -17,8 +17,8 @@ namespace tezcat.Framework.Definition
             Secondary
         }
 
-        static readonly ITezDefinitionToken[] m_DefaultPrimaryPath = new ITezDefinitionToken[0];
-        static readonly ITezDefinitionToken[] m_DefaultSecondaryPath = new ITezDefinitionToken[0];
+        public static readonly ITezDefinitionToken[] DefaultPrimaryPath = new ITezDefinitionToken[0];
+        public static readonly ITezDefinitionToken[] DefaultSecondaryPath = new ITezDefinitionToken[0];
 
         /// <summary>
         /// 先判断有没有
@@ -38,13 +38,25 @@ namespace tezcat.Framework.Definition
             get { return m_SecondaryPath.Length; }
         }
 
-        ITezDefinitionToken[] m_PrimaryPath = m_DefaultPrimaryPath;
-        ITezDefinitionToken[] m_SecondaryPath = m_DefaultSecondaryPath;
+        public ITezDefinitionToken[] primaryPath
+        {
+            set { m_PrimaryPath = value; }
+        }
+
+        public ITezDefinitionToken[] secondaryPath
+        {
+            set { m_SecondaryPath = value; }
+        }
+
+        ITezDefinitionToken[] m_PrimaryPath = DefaultPrimaryPath;
+        ITezDefinitionToken[] m_SecondaryPath = DefaultSecondaryPath;
+
+        public TezDefinition() { }
 
         public TezDefinition(ITezDefinitionToken[] primaryPath, ITezDefinitionToken[] secondaryPath)
         {
-            m_PrimaryPath = primaryPath ?? m_DefaultPrimaryPath;
-            m_SecondaryPath = secondaryPath ?? m_DefaultSecondaryPath;
+            m_PrimaryPath = primaryPath ?? DefaultPrimaryPath;
+            m_SecondaryPath = secondaryPath ?? DefaultSecondaryPath;
         }
 
         /// <summary>
@@ -59,10 +71,10 @@ namespace tezcat.Framework.Definition
             {
                 case Path.Primary:
                     m_PrimaryPath = otherPath;
-                    m_SecondaryPath = m_DefaultSecondaryPath;
+                    m_SecondaryPath = DefaultSecondaryPath;
                     break;
                 case Path.Secondary:
-                    m_PrimaryPath = m_DefaultPrimaryPath;
+                    m_PrimaryPath = DefaultPrimaryPath;
                     m_SecondaryPath = otherPath;
                     break;
                 default:
@@ -72,23 +84,11 @@ namespace tezcat.Framework.Definition
 
         public TezDefinition clone()
         {
-            return new TezDefinition(m_PrimaryPath, m_SecondaryPath);
-        }
-
-        /// <summary>
-        /// 单独设置主路径
-        /// </summary>
-        public void setPrimaryPath(ITezDefinitionToken[] path)
-        {
-            m_PrimaryPath = path;
-        }
-
-        /// <summary>
-        /// 单独设置副路径
-        /// </summary>
-        public void setSecondaryPath(ITezDefinitionToken[] path)
-        {
-            m_SecondaryPath = path;
+            return new TezDefinition()
+            {
+                primaryPath = m_PrimaryPath,
+                secondaryPath = m_SecondaryPath
+            };
         }
 
         /// <summary>

@@ -15,7 +15,6 @@
             {
                 return m_Value;
             }
-
             set
             {
                 ///引用型Modifier不能被直接Set
@@ -23,7 +22,7 @@
             }
         }
 
-        public TezValueModifierRefrence(ITezProperty property, ITezValueDescriptor descriptor, TezValueModifierDefinition def) : base(descriptor, def)
+        public TezValueModifierRefrence(ITezProperty property, ITezValueDescriptor descriptor) : base(descriptor)
         {
             m_Property = property;
             m_Property.onValueChanged += onRefValueChanged;
@@ -38,7 +37,7 @@
             }
         }
 
-        public TezValueModifierRefrence(ITezProperty property, TezValueModifierDefinition def) : base(def)
+        public TezValueModifierRefrence(ITezProperty property) : base(property.descriptor)
         {
             m_Property = property;
             m_Property.onValueChanged += onRefValueChanged;
