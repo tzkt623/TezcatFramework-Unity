@@ -420,8 +420,5 @@ namespace tezcat.Framework.Game.Galaxy
 
             return 360.0f / time;                                   // Grad pro Jahr
         }
-
-
-
     }
 }
