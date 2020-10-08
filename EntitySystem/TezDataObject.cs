@@ -6,7 +6,6 @@ namespace tezcat.Framework.ECS
     public abstract class TezDataObject
         : TezObject
         , ITezComponent
-        , ITezSerializable
     {
         #region Component
         public static int StaticComID { get; private set; } = TezComponentManager.register<TezDataObject>();
@@ -43,10 +42,6 @@ namespace tezcat.Framework.ECS
         protected virtual void onOtherComponentAdded(ITezComponent com, int com_id) { }
 
         protected virtual void onOtherComponentRemoved(ITezComponent com, int com_id) { }
-
-        public virtual void serialize(TezSaveManager manager) { }
-
-        public virtual void deserialize(TezSaveManager manager) { }
         #endregion
     }
 }

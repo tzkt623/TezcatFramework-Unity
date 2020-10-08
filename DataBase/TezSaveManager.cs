@@ -110,7 +110,7 @@ namespace tezcat.Framework.Database
                         obj.initNew();
 
 //                        m_Dic.Add(obj.GUID, m_List.Count);
-                        m_List.Add(obj);
+//                        m_List.Add(obj);
                     }
                     else
                     {

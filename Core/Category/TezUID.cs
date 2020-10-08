@@ -17,6 +17,10 @@ namespace tezcat.Framework.Core
 
         static uint generateID()
         {
+            if(IDPool.Count > 0)
+            {
+                return IDPool.Dequeue();
+            }
             return TotalUID.value++;
         }
 
