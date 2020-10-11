@@ -5,15 +5,10 @@ namespace tezcat.Framework.Core
     public class TezUID : ITezCloseable
     {
         #region 统计
+        static Queue<uint> IDPool = new Queue<uint>();
 
         public static readonly TezBindable<uint> TotalUID = new TezBindable<uint>();
-
-        /// <summary>
-        /// 错误ID
-        /// </summary>
         public static readonly TezUID Error = new TezUID();
-
-        static Queue<uint> IDPool = new Queue<uint>();
 
         static uint generateID()
         {
@@ -21,6 +16,7 @@ namespace tezcat.Framework.Core
             {
                 return IDPool.Dequeue();
             }
+
             return TotalUID.value++;
         }
 
