@@ -12,6 +12,12 @@ namespace tezcat.Framework.Core
         void update();
     }
 
+    public interface ITezProperty<T> : ITezProperty
+    {
+        T baseValue { get; }
+        T value { get; }
+    }
+
     /// <summary>
     /// 
     /// Property
@@ -22,13 +28,17 @@ namespace tezcat.Framework.Core
     public abstract class TezProperty<T>
         : TezValueWrapper<T>
         , ITezProperty
+        , ITezProperty<T>
     {
         public event TezEventExtension.Action<ITezProperty> onValueChanged;
 
         protected T m_BaseValue = default(T);
         /// <summary>
         /// 基础数值
-        /// 可以更改 更改完毕后当前实际数值(value)会重新计算
+        /// 可以更改
+        /// 更改后此属性被标记为脏
+        /// 可以通过直接获得Value来获得最新数据
+        /// 也可以通过调用update来更新以及通知数据变化
         /// </summary>
         public virtual T baseValue
         {
@@ -38,8 +48,8 @@ namespace tezcat.Framework.Core
             }
             set
             {
+                m_ModifierCache.dirty = true;
                 m_BaseValue = value;
-                this.nodifiyChanged();
             }
         }
 
@@ -48,15 +58,40 @@ namespace tezcat.Framework.Core
         /// </summary>
         public T oldValue { get; protected set; }
 
-        protected TezValueModifierBaseCache m_ModifierCache = null;
+
+        private T m_Value;
+        /// <summary>
+        /// 实际数值
+        /// 根据basevalue和modifier所计算出的实际作用数值
+        /// 他不能被手动更改
+        /// 调用此函数不会通知更新
+        /// </summary>
+        public override T value
+        {
+            get
+            {
+                if (m_ModifierCache.dirty)
+                {
+                    m_ModifierCache.dirty = false;
+                    this.calculateValue();
+                }
+                return m_Value;
+            }
+            set
+            {
+                throw new Exception("TezProperty Can not Set [value], Maybe you want to Set [baseValue]");
+            }
+        }
+
+        protected TezValueModifierBaseCache<T> m_ModifierCache = null;
         public override TezWrapperType wrapperType => TezWrapperType.Property;
 
-        protected TezProperty(ITezValueDescriptor name, TezValueModifierBaseCache cache) : base(name)
+        protected TezProperty(ITezValueDescriptor name, TezValueModifierBaseCache<T> cache) : base(name)
         {
             m_ModifierCache = cache;
         }
 
-        protected TezProperty(TezValueModifierBaseCache cache) : base()
+        protected TezProperty(TezValueModifierBaseCache<T> cache) : base()
         {
             m_ModifierCache = cache;
         }
@@ -71,12 +106,26 @@ namespace tezcat.Framework.Core
             return m_ModifierCache.removeModifier(modifier);
         }
 
-        protected virtual void nodifiyChanged()
+        private void calculateValue()
         {
+            this.oldValue = m_Value;
+            m_Value = m_ModifierCache.calculate(this);
+        }
+
+        /// <summary>
+        /// 只有数据需要重新计算时,才会重新计算
+        /// 但一定会发出更新事件
+        /// </summary>
+        public void update()
+        {
+            if (m_ModifierCache.dirty)
+            {
+                m_ModifierCache.dirty = false;
+                this.calculateValue();
+            }
             this.onValueChanged?.Invoke(this);
         }
 
-        public abstract void update();
 
         public override void close(bool self_close)
         {
@@ -85,112 +134,6 @@ namespace tezcat.Framework.Core
 
             this.onValueChanged = null;
             m_ModifierCache = null;
-        }
-    }
-
-    public abstract class TezPropertyFloat : TezProperty<float>
-    {
-        protected float m_Value = 0;
-
-        /// <summary>
-        /// 实际数值
-        /// 根据basevalue和modifier所计算出的实际作用数值
-        /// 他不能被手动更改
-        /// </summary>
-        public override float value
-        {
-            get
-            {
-                if (m_ModifierCache.dirty)
-                {
-                    this.nodifiyChanged();
-                    m_ModifierCache.dirty = false;
-                }
-                return m_Value;
-            }
-            set
-            {
-                //                throw new Exception("TezProperty Can not Set [value], Maybe you want to Set [baseValue]");
-            }
-        }
-
-        protected TezPropertyFloat(ITezValueDescriptor name, TezValueModifierBaseCache cache) : base(name, cache)
-        {
-
-        }
-
-        protected TezPropertyFloat(TezValueModifierBaseCache cache) : base(cache)
-        {
-
-        }
-
-        protected override void nodifiyChanged()
-        {
-            this.oldValue = m_Value;
-            m_Value = m_ModifierCache.calculate(this);
-            base.nodifiyChanged();
-        }
-
-        public override void update()
-        {
-            if (m_ModifierCache.dirty)
-            {
-                this.nodifiyChanged();
-                m_ModifierCache.dirty = false;
-            }
-        }
-    }
-
-    public abstract class TezPropertyInt : TezProperty<int>
-    {
-        protected int m_Value = 0;
-
-        /// <summary>
-        /// 实际数值
-        /// 根据basevalue和modifier所计算出的实际作用数值
-        /// 他不能被手动更改
-        /// </summary>
-        public override int value
-        {
-            get
-            {
-                if (m_ModifierCache.dirty)
-                {
-                    this.nodifiyChanged();
-                    m_ModifierCache.dirty = false;
-                }
-                return m_Value;
-            }
-            set
-            {
-                //                throw new Exception("TezProperty Can not Set [value], Maybe you want to Set [baseValue]");
-            }
-        }
-
-        protected TezPropertyInt(ITezValueDescriptor name, TezValueModifierBaseCache cache) : base(name, cache)
-        {
-
-        }
-
-        protected TezPropertyInt(TezValueModifierBaseCache cache) : base(cache)
-        {
-
-        }
-
-        protected override void nodifiyChanged()
-        {
-            this.oldValue = m_Value;
-            m_Value = m_ModifierCache.calculate(this);
-            base.nodifiyChanged();
-        }
-
-        public override void update()
-        {
-            if (m_ModifierCache.dirty)
-            {
-                this.nodifiyChanged();
-                m_ModifierCache.dirty = false;
-            }
         }
     }
 }

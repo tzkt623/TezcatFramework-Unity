@@ -2,21 +2,14 @@
 
 namespace tezcat.Framework.Core
 {
-    public class TezValueModifierCache : TezValueModifierBaseCache
+    public class TezIntValueModifierCache : TezValueModifierBaseCache<int>
     {
         protected float m_SumBase = 0;
         protected float m_SumTotal = 0;
         protected float m_MultBase = 0;
         protected float m_MultTotal = 0;
 
-        public override float calculate(TezPropertyFloat property)
-        {
-            float result = property.baseValue + m_SumBase + property.baseValue * m_MultBase;
-            result = result + m_SumTotal + result * m_MultTotal;
-            return result;
-        }
-
-        public override int calculate(TezPropertyInt property)
+        public override int calculate(ITezProperty<int> property)
         {
             float result = property.baseValue + m_SumBase + property.baseValue * m_MultBase;
             result = result + m_SumTotal + result * m_MultTotal;

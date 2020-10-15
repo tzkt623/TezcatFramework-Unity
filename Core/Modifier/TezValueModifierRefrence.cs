@@ -29,10 +29,10 @@
             switch (m_Property.valueType)
             {
                 case TezValueType.Int:
-                    m_Value = ((TezPropertyInt)m_Property).value;
+                    m_Value = ((ITezProperty<int>)m_Property).value;
                     break;
                 case TezValueType.Float:
-                    m_Value = ((TezPropertyFloat)m_Property).value;
+                    m_Value = ((ITezProperty<float>)m_Property).value;
                     break;
             }
         }
@@ -44,10 +44,10 @@
             switch (m_Property.valueType)
             {
                 case TezValueType.Int:
-                    m_Value = ((TezPropertyInt)m_Property).value;
+                    m_Value = ((ITezProperty<int>)m_Property).value;
                     break;
                 case TezValueType.Float:
-                    m_Value = ((TezPropertyFloat)m_Property).value;
+                    m_Value = ((ITezProperty<float>)m_Property).value;
                     break;
             }
         }
@@ -58,10 +58,10 @@
             switch (m_Property.valueType)
             {
                 case TezValueType.Int:
-                    m_Value = ((TezPropertyInt)m_Property).value;
+                    m_Value = ((ITezProperty<int>)m_Property).value;
                     break;
                 case TezValueType.Float:
-                    m_Value = ((TezPropertyFloat)m_Property).value;
+                    m_Value = ((ITezProperty<float>)m_Property).value;
                     break;
             }
             this.notifyValueChanged(this, old);

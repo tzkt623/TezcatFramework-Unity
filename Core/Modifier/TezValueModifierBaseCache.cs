@@ -9,8 +9,8 @@ namespace tezcat.Framework.Core
 
         public void addModifier(ITezModifier modifier)
         {
-            this.onModifierAdded(modifier);
             this.dirty = true;
+            this.onModifierAdded(modifier);
             m_Modifiers.Add(modifier);
         }
 
@@ -35,9 +35,13 @@ namespace tezcat.Framework.Core
                 {
                     this.onModifierRemoved(m_Modifiers[i]);
                     m_Modifiers.RemoveAt(i);
-                    this.dirty = true;
                     flag = true;
                 }
+            }
+
+            if (flag)
+            {
+                this.dirty = flag;
             }
 
             return flag;
@@ -72,7 +76,7 @@ namespace tezcat.Framework.Core
 
     }
 
-    public abstract class TezValueModifierBaseCache : TezModifierBaseCache
+    public abstract class TezValueModifierBaseCache<T> : TezModifierBaseCache
     {
         protected sealed override void onModifierAdded(ITezModifier modifier)
         {
@@ -98,7 +102,6 @@ namespace tezcat.Framework.Core
         protected abstract void onModifierRemoved(ITezValueModifier modifier);
         protected abstract void onModifierChanged(ITezValueModifier modifier, float old_value);
 
-        public abstract float calculate(TezPropertyFloat property);
-        public abstract int calculate(TezPropertyInt property);
+        public abstract T calculate(ITezProperty<T> property);
     }
 }
