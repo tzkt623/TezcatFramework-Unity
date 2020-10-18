@@ -6,8 +6,9 @@ namespace tezcat.Framework.ECS
         : TezMonoObject
         , ITezComponent
     {
-        public static int StaticComID { get; private set; } = TezComponentManager.register<TezRenderer>();
-        public int ComID => StaticComID;
+        public static int ComUID { get; private set; } = TezComponentManager.register<TezRenderer>();
+
+        public int comID => ComUID;
 
         public TezEntity entity { get; private set; }
 

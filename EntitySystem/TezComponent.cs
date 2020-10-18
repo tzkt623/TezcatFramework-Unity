@@ -7,13 +7,16 @@ namespace tezcat.Framework.ECS
     public interface ITezComponent : ITezCloseable
     {
         TezEntity entity { get; }
-        int ComID { get; }
+        int comID { get; }
         void onAdd(TezEntity entity);
         void onRemove(TezEntity entity);
         void onOtherComponentAdded(ITezComponent component, int com_id);
         void onOtherComponentRemoved(ITezComponent component, int com_id);
     }
 
+    /// <summary>
+    /// Com的ID管理器
+    /// </summary>
     public struct TezComponentID<Component> where Component : ITezComponent
     {
         public static int ID { get; private set; } = TezTypeInfo.ErrorID;

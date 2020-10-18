@@ -12,12 +12,12 @@ namespace tezcat.Framework.Core
     /// <summary>
     /// 服务管理类
     /// </summary>
-    public sealed class TezService
+    public struct TezService
     {
-        sealed class ServiceID<T> : TezTypeInfo<T, TezService> where T : ITezService
+        class ServiceID<T> : TezTypeInfo<T, TezService> where T : ITezService
         {
             private ServiceID() { }
-            public static ITezService service;
+            public static T service;
         }
 
         static List<ITezService> m_List = new List<ITezService>();
@@ -50,7 +50,7 @@ namespace tezcat.Framework.Core
         public static IService get<IService>()
             where IService : ITezService
         {
-            return (IService)ServiceID<IService>.service;
+            return ServiceID<IService>.service;
         }
 
         /// <summary>

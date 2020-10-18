@@ -71,6 +71,7 @@ namespace tezcat.Framework.ECS
 
         private TezEntity()
         {
+
         }
 
         /// <summary>
@@ -121,7 +122,7 @@ namespace tezcat.Framework.ECS
         /// <param name="component">实际组件对象</param>
         public void addComponent(ITezComponent component)
         {
-            var id = component.ComID;
+            var id = component.comID;
             foreach (var item in m_Components)
             {
                 item?.onOtherComponentAdded(component, id);
@@ -137,7 +138,7 @@ namespace tezcat.Framework.ECS
         /// <param name="component"></param>
         public void replaceComponent(ITezComponent component, bool close_old = true)
         {
-            var id = component.ComID;
+            var id = component.comID;
 
             var old = m_Components[id];
             if (old != null)
@@ -193,7 +194,7 @@ namespace tezcat.Framework.ECS
 
         public void removeComponent(ITezComponent component)
         {
-            var id = component.ComID;
+            var id = component.comID;
             var temp = m_Components[id];
             m_Components[id] = null;
             temp.onRemove(this);

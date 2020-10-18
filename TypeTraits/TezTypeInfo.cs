@@ -24,7 +24,7 @@ namespace tezcat.Framework.TypeTraits
     /// 此类负责分配ID(一个类型可能存在于多个归属类中 在每个归属类中的ID都有可能不同)
     /// Belong类型也用于在编译时生成不同的类类型
     /// </typeparam>
-    public class TezTypeInfo<Type, Belong> : TezTypeInfo where Belong : class
+    public class TezTypeInfo<Type, Belong> : TezTypeInfo
     {
         protected static int m_ID = ErrorID;
         public static int ID
