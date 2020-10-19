@@ -15,6 +15,9 @@
             }
         }
 
+        /// <summary>
+        /// 加入一个Modifier
+        /// </summary>
         public void addModifier(ITezValueModifier modifier)
         {
             var target = modifier.modifierConfig.target;
@@ -22,10 +25,36 @@
             property?.addModifier(modifier);
         }
 
+        /// <summary>
+        /// 加入一个modifier
+        /// 并返回被操作的property
+        /// </summary>
+        public bool addModifier(ITezValueModifier modifier, out ITezProperty property)
+        {
+            var target = modifier.modifierConfig.target;
+            property = this.get<ITezProperty>(target);
+            property?.addModifier(modifier);
+            return property != null;
+        }
+
+        /// <summary>
+        /// 移除一个Modifier
+        /// </summary>
         public bool removeModifier(ITezValueModifier modifier)
         {
             var target = modifier.modifierConfig.target;
             var property = this.get<ITezProperty>(target);
+            return (property != null) && property.removeModifier(modifier);
+        }
+
+        /// <summary>
+        /// 移除一个Modifier
+        /// 并返回被操作的Property
+        /// </summary>
+        public bool removeModifier(ITezValueModifier modifier, out ITezProperty property)
+        {
+            var target = modifier.modifierConfig.target;
+            property = this.get<ITezProperty>(target);
             return (property != null) && property.removeModifier(modifier);
         }
 

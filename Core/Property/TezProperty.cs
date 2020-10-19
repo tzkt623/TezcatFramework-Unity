@@ -9,6 +9,11 @@ namespace tezcat.Framework.Core
 
         void addModifier(ITezValueModifier modifier);
         bool removeModifier(ITezValueModifier modifier);
+
+        /// <summary>
+        /// 只有数据需要重新计算时,才会重新计算
+        /// 但一定会发出更新事件
+        /// </summary>
         void update();
     }
 
@@ -99,12 +104,28 @@ namespace tezcat.Framework.Core
         public void addModifier(ITezValueModifier modifier)
         {
             m_ModifierCache.addModifier(modifier);
+            this.afterAddModifier(modifier);
         }
+
+        /// <summary>
+        /// 加入Modifier之后
+        /// </summary>
+        protected virtual void afterAddModifier(ITezValueModifier modifier) { }
 
         public bool removeModifier(ITezValueModifier modifier)
         {
-            return m_ModifierCache.removeModifier(modifier);
+            var flag = m_ModifierCache.removeModifier(modifier);
+            if (flag)
+            {
+                this.afterRemoveModifier(modifier);
+            }
+            return flag;
         }
+
+        /// <summary>
+        /// 成功删除modifier之后
+        /// </summary>
+        protected virtual void afterRemoveModifier(ITezValueModifier modifier) { }
 
         private void calculateValue()
         {
@@ -129,7 +150,10 @@ namespace tezcat.Framework.Core
 
         public override void close(bool self_close)
         {
-            base.close(self_close);
+            ///这里不适用基类方法是因为
+            ///在Property中
+            ///Value不可以被Set
+            this.descriptor = null;
             m_ModifierCache.close(!self_close);
 
             this.onValueChanged = null;

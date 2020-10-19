@@ -40,11 +40,6 @@ namespace tezcat.Framework.UI
         public TezTreeNode parent { get; private set; } = null;
         public ITezTreeData data { get; private set; } = null;
 
-        public RectTransform rectTransform
-        {
-            get { return (RectTransform)this.transform; }
-        }
-
         public float length
         {
             get { return this.rectTransform.rect.height; }
