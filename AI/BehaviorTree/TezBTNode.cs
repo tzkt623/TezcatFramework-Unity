@@ -1,4 +1,4 @@
-using tezcat.Framework.Core;
+锘縰sing tezcat.Framework.Core;
 using tezcat.Framework.Database;
 
 namespace tezcat.Framework.AI
@@ -45,7 +45,7 @@ namespace tezcat.Framework.AI
         }
 
         /// <summary>
-        /// 非Action节点使用
+        /// 闈濧ction鑺傜偣浣跨敤
         /// </summary>
         public abstract void execute();
 

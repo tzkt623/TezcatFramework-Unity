@@ -1,4 +1,4 @@
-using System;
+ï»¿using System;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -101,7 +101,7 @@ namespace tezcat.Framework.Utility
 
         IEnumerator<T> IEnumerable<T>.GetEnumerator()
         {
-            throw new Exception("ÓÐÎÊÌâ!!");
+            throw new Exception("æœ‰é—®é¢˜!!");
         }
 
         IEnumerator IEnumerable.GetEnumerator()

@@ -1,9 +1,9 @@
-namespace tezcat.Framework.AI
+ï»¿namespace tezcat.Framework.AI
 {
     /// <summary>
-    /// ĞĞÎª½Úµã
-    /// ĞĞÎª½ÚµãÊÇÕæÕıÔËĞĞĞĞÎªµÄµØ·½
-    /// Õû¸öÊ÷×îÖÕµÄÔËĞĞĞĞÎª¾ÍÊÇÓÉ´Ë½ÚµãÀ´Íê³É
+    /// è¡Œä¸ºèŠ‚ç‚¹
+    /// è¡Œä¸ºèŠ‚ç‚¹æ˜¯çœŸæ­£è¿è¡Œè¡Œä¸ºçš„åœ°æ–¹
+    /// æ•´ä¸ªæ ‘æœ€ç»ˆçš„è¿è¡Œè¡Œä¸ºå°±æ˜¯ç”±æ­¤èŠ‚ç‚¹æ¥å®Œæˆ
     /// </summary>
     public abstract class TezBTActionNode
         : TezBTNode
@@ -13,7 +13,7 @@ namespace tezcat.Framework.AI
         public override Category category => Category.Action;
 
         /// <summary>
-        /// ÈÎÎñindex
+        /// ä»»åŠ¡index
         /// </summary>
         public int actionIndex { get; set; }
 
