@@ -4,6 +4,16 @@ namespace tezcat.Framework.Database
 {
     public abstract class TezReader
     {
+        public enum ValueType
+        {
+            UnKown,
+            Byte,
+            Bool,
+            Int,
+            Float,
+            String,
+        }
+
         private Stack<string> m_CheckStringKey = new Stack<string>();
         private Stack<int> m_CheckIntKey = new Stack<int>();
 
@@ -195,6 +205,9 @@ namespace tezcat.Framework.Database
         public abstract bool tryRead(string key, out string result);
 
         public abstract ICollection<string> getKeys();
+
+        public abstract ValueType getValueType(string key);
+        public abstract ValueType getValueType(int index);
 
         public void close()
         {

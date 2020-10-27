@@ -473,5 +473,65 @@ namespace tezcat.Framework.Database
 
             return m_Current.Keys;
         }
+
+        public override ValueType getValueType(int index)
+        {
+            if (m_Current.tryGet(index, out JsonData data))
+            {
+                switch (data.GetJsonType())
+                {
+                    case JsonType.None:
+                        break;
+                    case JsonType.Object:
+                        break;
+                    case JsonType.Array:
+                        break;
+                    case JsonType.String:
+                        return ValueType.String;
+                    case JsonType.Int:
+                        return ValueType.Int;
+                    case JsonType.Long:
+                        return ValueType.Int;
+                    case JsonType.Double:
+                        return ValueType.Float;
+                    case JsonType.Boolean:
+                        return ValueType.Bool;
+                    default:
+                        break;
+                }
+            }
+
+            throw new Exception();
+        }
+
+        public override ValueType getValueType(string key)
+        {
+            if (m_Current.tryGet(key, out JsonData data))
+            {
+                switch (data.GetJsonType())
+                {
+                    case JsonType.None:
+                        break;
+                    case JsonType.Object:
+                        break;
+                    case JsonType.Array:
+                        break;
+                    case JsonType.String:
+                        return ValueType.String;
+                    case JsonType.Int:
+                        return ValueType.Int;
+                    case JsonType.Long:
+                        return ValueType.Int;
+                    case JsonType.Double:
+                        return ValueType.Float;
+                    case JsonType.Boolean:
+                        return ValueType.Bool;
+                    default:
+                        break;
+                }
+            }
+
+            throw new Exception();
+        }
     }
 }
