@@ -76,7 +76,9 @@ namespace tezcat.Framework.Core
         {
             base.close(self_close);
             this.definition.close(self_close);
+            this.modifierConfig.close(self_close);
 
+            this.modifierConfig = null;
             this.source = null;
             this.definition = null;
             onValueChanged = null;

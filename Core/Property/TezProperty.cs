@@ -32,7 +32,6 @@ namespace tezcat.Framework.Core
     /// </summary>
     public abstract class TezProperty<T>
         : TezValueWrapper<T>
-        , ITezProperty
         , ITezProperty<T>
     {
         public event TezEventExtension.Action<ITezProperty> onValueChanged;

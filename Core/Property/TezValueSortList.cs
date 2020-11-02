@@ -13,28 +13,25 @@ namespace tezcat.Framework.Core
 
         public void addValue(Value property)
         {
-            int index = 0;
-            if (!this.binaryFind(property.ID, out index))
+            if (!this.binaryFind(property.ID, out int index))
             {
                 this.insert(index, property);
+            }
+            else
+            {
+                throw new System.Exception(string.Format("{0} is existed", property.name));
             }
         }
 
         public bool removeValue(Value property)
         {
-            int index = 0;
-            if (this.binaryFind(property.ID, out index))
+            if (this.binaryFind(property.ID, out int index))
             {
                 this.removeAt(index);
                 return true;
             }
 
             return false;
-        }
-
-        public Value binaryFind(ITezValueDescriptor descriptor)
-        {
-            return this.binaryFind(descriptor.ID);
         }
 
         public Value binaryFind(int property_id)
@@ -60,11 +57,6 @@ namespace tezcat.Framework.Core
             }
 
             return default;
-        }
-
-        public bool binaryFind(ITezValueDescriptor descriptor, out int index)
-        {
-            return this.binaryFind(descriptor.ID, out index);
         }
 
         public bool binaryFind(int property_id, out int index)

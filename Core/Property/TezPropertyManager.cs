@@ -60,8 +60,7 @@
 
         public T getOrCreate<T>(ITezValueDescriptor descriptor) where T : ITezProperty, new()
         {
-            int index = 0;
-            if (this.properties.binaryFind(descriptor, out index))
+            if (this.properties.binaryFind(descriptor.ID, out int index))
             {
                 return (T)m_Properties[index];
             }
@@ -76,13 +75,12 @@
 
         public T get<T>(ITezValueDescriptor descriptor) where T : ITezProperty
         {
-            return (T)this.properties.binaryFind(descriptor);
+            return (T)this.properties.binaryFind(descriptor.ID);
         }
 
         public bool remove(ITezValueDescriptor descriptor)
         {
-            int index = 0;
-            if (this.properties.binaryFind(descriptor, out index))
+            if (this.properties.binaryFind(descriptor.ID, out int index))
             {
                 this.properties.removeAt(index);
                 return true;

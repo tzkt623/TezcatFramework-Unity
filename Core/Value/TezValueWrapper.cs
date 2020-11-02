@@ -8,13 +8,20 @@ namespace tezcat.Framework.Core
 {
     public enum TezValueType
     {
+        Byte,
+        SByte,
+        Short,
+        UShort,
         Bool,
         Int,
+        UInt,
+        Long,
+        ULong,
         Float,
         Double,
         String,
-        Class,
         IDString,
+        Class,
         Type,
         Unknown
     }
@@ -31,14 +38,67 @@ namespace tezcat.Framework.Core
         GetterSetter,
     }
 
-    public interface ITezValueWrapper : ITezCloseable
+    public interface ITezBaseValueWrapper : ITezCloseable
+    {
+        Type systemType { get; }
+        TezValueType valueType { get; }
+        TezWrapperType wrapperType { get; }
+    }
+
+    public interface ITezValueWrapper : ITezBaseValueWrapper
     {
         ITezValueDescriptor descriptor { get; set; }
         string name { get; }
         int ID { get; }
-        Type systemType { get; }
-        TezValueType valueType { get; }
-        TezWrapperType wrapperType { get; }
+    }
+
+    public abstract class TezBaseValueWrapper
+        : ITezBaseValueWrapper
+    {
+        protected class WrapperID<Value> : TezTypeInfo<Value, TezBaseValueWrapper>
+        {
+            public static readonly TezValueType valueType;
+
+            static WrapperID()
+            {
+                if (!Mapping.TryGetValue(systemType, out valueType))
+                {
+                    if (systemType.IsClass)
+                    {
+                        valueType = TezValueType.Class;
+                    }
+                    else
+                    {
+                        valueType = TezValueType.Unknown;
+                    }
+                }
+            }
+        }
+
+        static Dictionary<Type, TezValueType> Mapping = new Dictionary<Type, TezValueType>()
+        {
+            {typeof(sbyte), TezValueType.SByte },
+            {typeof(byte), TezValueType.Byte },
+            {typeof(short), TezValueType.Short },
+            {typeof(ushort), TezValueType.UShort },
+            {typeof(bool), TezValueType.Bool },
+            {typeof(int), TezValueType.Int },
+            {typeof(uint), TezValueType.UInt },
+            {typeof(long), TezValueType.Long },
+            {typeof(ulong), TezValueType.ULong },
+            {typeof(float), TezValueType.Float },
+            {typeof(double), TezValueType.Double },
+            {typeof(string), TezValueType.String },
+            {typeof(TezIDString), TezValueType.IDString },
+        };
+
+        public abstract Type systemType { get; }
+
+        public abstract TezValueType valueType { get; }
+
+        public abstract TezWrapperType wrapperType { get; }
+
+        public abstract void close(bool self_close = true);
     }
 
     public abstract class TezValueWrapper
@@ -49,8 +109,15 @@ namespace tezcat.Framework.Core
     {
         static Dictionary<Type, TezValueType> Mapping = new Dictionary<Type, TezValueType>()
         {
+            {typeof(sbyte), TezValueType.SByte },
+            {typeof(byte), TezValueType.Byte },
+            {typeof(short), TezValueType.Short },
+            {typeof(ushort), TezValueType.UShort },
             {typeof(bool), TezValueType.Bool },
             {typeof(int), TezValueType.Int },
+            {typeof(uint), TezValueType.UInt },
+            {typeof(long), TezValueType.Long },
+            {typeof(ulong), TezValueType.ULong },
             {typeof(float), TezValueType.Float },
             {typeof(double), TezValueType.Double },
             {typeof(string), TezValueType.String },
@@ -88,11 +155,17 @@ namespace tezcat.Framework.Core
 
         public virtual ITezValueDescriptor descriptor { get; set; } = null;
 
+        /// <summary>
+        /// Value的名称
+        /// </summary>
         public string name
         {
             get { return descriptor.name; }
         }
 
+        /// <summary>
+        /// Value的ID
+        /// </summary>
         public int ID
         {
             get { return descriptor.ID; }
@@ -113,19 +186,28 @@ namespace tezcat.Framework.Core
 
         }
 
+        /// <summary>
+        /// 直接比较内存地址是否为同一个
+        /// 比较ID请使用==或!=
+        /// </summary>
         public bool Equals(TezValueWrapper other)
         {
-            return other != null && this.descriptor.Equals(other.descriptor);
-        }
-
-        public override bool Equals(object obj)
-        {
-            return this.Equals((TezValueWrapper)obj);
+            return Object.ReferenceEquals(this, other);
+            //            return other != null && this.descriptor.Equals(other.descriptor);
         }
 
         public int CompareTo(TezValueWrapper other)
         {
             return this.descriptor.CompareTo(other.descriptor);
+        }
+
+        /// <summary>
+        /// 直接比较内存地址是否为同一个
+        /// 比较ID请使用==或!=
+        /// </summary>
+        public override bool Equals(object other)
+        {
+            return object.ReferenceEquals(this, other);
         }
 
         public override int GetHashCode()
@@ -138,6 +220,12 @@ namespace tezcat.Framework.Core
             this.descriptor = null;
         }
 
+        /// <summary>
+        /// 等于比较
+        /// 会比较两个Wrapper的descriptor的ID是否相同
+        /// 而不是直接比较内存
+        /// 比较内存请使用Equals
+        /// </summary>
         public static bool operator ==(TezValueWrapper a, TezValueWrapper b)
         {
             var flag_a = object.ReferenceEquals(a, null);
@@ -146,6 +234,12 @@ namespace tezcat.Framework.Core
             return (flag_a && flag_b) || (!flag_a && !flag_b && a.descriptor.Equals(b.descriptor));
         }
 
+        /// <summary>
+        /// 不等于比较
+        /// 会比较两个Wrapper的descriptor的ID是否相同
+        /// 而不是直接比较内存
+        /// 比较内存请使用Equals
+        /// </summary>
         public static bool operator !=(TezValueWrapper a, TezValueWrapper b)
         {
             var flag_a = object.ReferenceEquals(a, null);
@@ -160,11 +254,6 @@ namespace tezcat.Framework.Core
         }
 
         public static bool operator false(TezValueWrapper value)
-        {
-            return object.ReferenceEquals(value, null);
-        }
-
-        public static bool operator !(TezValueWrapper value)
         {
             return object.ReferenceEquals(value, null);
         }
@@ -197,11 +286,6 @@ namespace tezcat.Framework.Core
         {
             base.close(self_close);
             this.value = default;
-        }
-
-        public static implicit operator T(TezValueWrapper<T> property)
-        {
-            return property.value;
         }
 
         public override string ToString()

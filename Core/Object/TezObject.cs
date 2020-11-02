@@ -26,11 +26,6 @@
         {
             return object.ReferenceEquals(obj, null);
         }
-
-        public static bool operator !(TezObject obj)
-        {
-            return object.ReferenceEquals(obj, null);
-        }
         #endregion
     }
 }
