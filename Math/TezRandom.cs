@@ -90,7 +90,7 @@ namespace tezcat.Framework.Math
             return (this.nextInt(0, 10) & 1) == 0;
         }
 
-        public void close(bool self_close = true)
+        public void close()
         {
 
         }

@@ -35,7 +35,7 @@ namespace tezcat.Framework.Database
             this.NID = reader.readString(TezReadOnlyString.NID);
         }
 
-        public virtual void close(bool self_close = true)
+        public virtual void close()
         {
             DBID.close();
             DBID = null;
@@ -161,9 +161,9 @@ namespace tezcat.Framework.Database
             this.category.setToken(buildCategory);
         }
 
-        public override void close(bool self_close = true)
+        public override void close()
         {
-            base.close(self_close);
+            base.close();
 
             this.CID = null;
 

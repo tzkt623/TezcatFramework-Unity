@@ -12,7 +12,7 @@ namespace tezcat.Framework.UI
 
     public abstract class TezBaseWidget
         : UIBehaviour
-        , ITezWidget
+        , ITezBaseWidget
     {
         public RectTransform rectTransform => (RectTransform)this.transform;
         public TezWidgetLife life { get; set; } = TezWidgetLife.Normal;
@@ -62,7 +62,7 @@ namespace tezcat.Framework.UI
         /// <summary>
         /// 关闭
         /// </summary>
-        public virtual void close(bool self_close = true)
+        public virtual void close()
         {
             switch (life)
             {
@@ -102,12 +102,16 @@ namespace tezcat.Framework.UI
     /// </summary>
     public abstract class TezUIWidget
         : TezBaseWidget
-        , ITezRefreshHandler
+        , ITezUIWidget
     {
         bool m_Inited = false;
         bool m_Closed = false;
 
         TezRefreshPhase m_RefreshPhase = TezRefreshPhase.Ready;
+
+        /// <summary>
+        /// 通知UI刷新自己
+        /// </summary>
         public TezRefreshPhase refreshPhase
         {
             set
@@ -127,15 +131,20 @@ namespace tezcat.Framework.UI
             }
         }
 
+
         /// <summary>
-        /// 在这里清理所有的托管资源
+        /// 在这里清理所有资源
         /// </summary>
+        /// <param name="self_close">
+        /// true:自己主动关闭自己,资源由close函数释放
+        /// false:由其他对象带动进行的销毁,资源由Unity自身函数OnDestroy释放
+        /// </param>
         protected virtual void onClose(bool self_close) { }
 
         /// <summary>
         /// 关闭并销毁控件
         /// </summary>
-        public sealed override void close(bool self_close = true)
+        public sealed override void close()
         {
             switch (life)
             {
@@ -150,7 +159,7 @@ namespace tezcat.Framework.UI
             ///这样是为了让控件可以立即释放资源
             ///而不是等到Destroy执行导致时间不确定
             m_Closed = true;
-            this.onClose(self_close);
+            this.onClose(m_Closed);
             Destroy(this.gameObject);
         }
 
@@ -158,8 +167,8 @@ namespace tezcat.Framework.UI
         /*
          * Awake(仅执行一次) -> OnEnable -> Start(仅执行一次)
          * 
-         * 所以当脚本第一次执行时 没有设置Init位 只会执行Start刷新 所以OnEnable并不刷新
-         * Enable刷新必须在Disable之后才会执行 并且不再会执行Start刷新
+         * 当脚本第一次执行时 由于没有设置m_Inited 只会执行Start刷新 OnEnable中并不刷新
+         * Enable刷新必须在m_Inited之后才会执行 并且不再会执行Start刷新
          * 
          */
 
@@ -200,7 +209,7 @@ namespace tezcat.Framework.UI
             ///他一定是被父级带动销毁的
             if (!m_Closed)
             {
-                this.onClose(false);
+                this.onClose(m_Closed);
             }
         }
 

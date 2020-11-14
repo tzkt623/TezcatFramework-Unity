@@ -110,7 +110,7 @@ namespace tezcat.Framework.Definition
             m_Index = -1;
         }
 
-        public void close(bool self_close = true)
+        public void close()
         {
             this.definition.close();
 

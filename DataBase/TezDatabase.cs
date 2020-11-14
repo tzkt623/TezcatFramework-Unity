@@ -25,7 +25,7 @@ namespace tezcat.Framework.Database
             item.onRegister(this.ID, m_ItemID++);
         }
 
-        public abstract void close(bool self_close = true);
+        public abstract void close();
     }
 
     /// <summary>
@@ -111,7 +111,7 @@ namespace tezcat.Framework.Database
             return slot.get(index);
         }
 
-        public override void close(bool self_close = true)
+        public override void close()
         {
             for (int i = 0; i < m_Slots.Count; i++)
             {

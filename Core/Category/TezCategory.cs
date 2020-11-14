@@ -54,7 +54,7 @@ namespace tezcat.Framework.Core
             return m_Tokens[index].toID;
         }
 
-        public void close(bool self_close = true)
+        public void close()
         {
             m_Tokens = null;
             this.finalToken = null;

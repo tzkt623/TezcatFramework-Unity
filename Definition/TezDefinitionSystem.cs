@@ -53,7 +53,7 @@ namespace tezcat.Framework.Definition
                 return tokenID.GetHashCode();
             }
 
-            public void close(bool self_close = true)
+            public void close()
             {
             }
         }
@@ -317,16 +317,16 @@ namespace tezcat.Framework.Definition
         /// <summary>
         /// 关闭
         /// </summary>
-        public virtual void close(bool self_close = true)
+        public virtual void close()
         {
             foreach (var pair in m_PrimaryNodes)
             {
-                pair.Value.close(false);
+                pair.Value.close();
             }
 
             foreach (var pair in m_SecondaryNodes)
             {
-                pair.Value.close(false);
+                pair.Value.close();
             }
 
             m_PrimaryNodes.Clear();

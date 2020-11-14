@@ -118,7 +118,7 @@ namespace tezcat.Framework.InputSystem
             m_Current.update();
         }
 
-        public void close(bool self_close = true)
+        public void close()
         {
             m_Stack.Clear();
             m_Stack = null;

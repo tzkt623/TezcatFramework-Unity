@@ -42,9 +42,9 @@ namespace tezcat.Framework.Core
 
         protected TezAttribute() : base() { }
 
-        public override void close(bool self_close = true)
+        public override void close()
         {
-            base.close(self_close);
+            base.close();
             onValueChanged = null;
             m_Buffers.Clear();
             m_Buffers = null;

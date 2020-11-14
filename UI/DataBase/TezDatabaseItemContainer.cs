@@ -52,16 +52,16 @@ namespace tezcat.Framework.UI
             m_Page.onEndEdit.AddListener(this.onPageSet);
         }
 
-        protected override void onClose(bool self_close = true)
+        protected override void onClose(bool self_close)
         {
             foreach (var slot in m_SlotList)
             {
-                slot.close(false);
+                slot.close();
             }
             m_SlotList.Clear();
             m_SlotList = null;
 
-            m_PageController.close(false);
+            m_PageController.close();
             m_PageController = null;
             m_PageUp.onClick -= onPageUpClick;
             m_PageDown.onClick -= onPageDownClick;

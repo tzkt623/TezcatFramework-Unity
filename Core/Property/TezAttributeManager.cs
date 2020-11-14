@@ -55,13 +55,13 @@
 
             for (int i = 0; i < m_Attributes.count; i++)
             {
-                m_Attributes[i].close(false);
+                m_Attributes[i].close();
             }
 
             m_Attributes.clear();
         }
 
-        public virtual void close(bool self_close = true)
+        public virtual void close()
         {
             this.clearAll();
             m_Attributes = null;

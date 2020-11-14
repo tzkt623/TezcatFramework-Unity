@@ -65,12 +65,12 @@ namespace tezcat.Framework.AI
             this.changeState(m_PreviousState);
         }
 
-        public virtual void close(bool self_close = true)
+        public virtual void close()
         {
-            m_Data.close(false);
-            m_CurrentState?.close(false);
-            m_GlobalState?.close(false);
-            m_PreviousState?.close(false);
+            m_Data.close();
+            m_CurrentState?.close();
+            m_GlobalState?.close();
+            m_PreviousState?.close();
 
             m_Data = null;
             m_CurrentState = null;

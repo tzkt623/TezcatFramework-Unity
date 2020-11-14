@@ -46,7 +46,7 @@ namespace tezcat.Framework.UI
 
         }
 
-        protected override void onClose(bool self_close = true)
+        protected override void onClose(bool self_close)
         {
             m_Confirm.onClick -= onConfirmClick;
             m_Cancel.onClick -= onCancelClick;

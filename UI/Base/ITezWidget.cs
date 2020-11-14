@@ -1,4 +1,5 @@
 ﻿using tezcat.Framework.Core;
+using UnityEngine;
 using UnityEngine.EventSystems;
 
 namespace tezcat.Framework.UI
@@ -6,7 +7,16 @@ namespace tezcat.Framework.UI
     /// <summary>
     /// 基础控件
     /// </summary>
-    public interface ITezWidget : ITezCloseable
+    public interface ITezBaseWidget : ITezCloseable
+    {
+        RectTransform rectTransform { get; }
+        void open();
+        void hide();
+    }
+
+    public interface ITezUIWidget
+        : ITezBaseWidget
+        , ITezRefreshHandler
     {
 
     }

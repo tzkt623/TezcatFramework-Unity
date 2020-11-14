@@ -134,11 +134,11 @@ namespace tezcat.Framework.UI
             }
         }
 
-        protected override void onClose(bool self_close = true)
+        protected override void onClose(bool self_close)
         {
             for (int i = 0; i < m_SubwindowList.Count; i++)
             {
-                m_SubwindowList[i].close(false);
+                m_SubwindowList[i].close();
             }
             m_SubwindowList.Clear();
             m_SubwindowList = null;

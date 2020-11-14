@@ -57,7 +57,7 @@ namespace tezcat.Framework.Core
             this.dirty = true;
         }
 
-        public virtual void close(bool self_close = true)
+        public virtual void close()
         {
             foreach (var modifier in m_Modifiers)
             {

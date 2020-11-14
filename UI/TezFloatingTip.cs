@@ -21,7 +21,7 @@ namespace tezcat.Framework.UI
         RectTransform m_RectTransform = null;
         Vector2 m_Pivot = new Vector2(0, 1);
 
-        List<ITezWidget> m_Widgets = new List<ITezWidget>();
+        List<ITezBaseWidget> m_Widgets = new List<ITezBaseWidget>();
 
         protected override void initWidget()
         {
@@ -32,7 +32,7 @@ namespace tezcat.Framework.UI
         /// <summary>
         /// 添加一个控件
         /// </summary>
-        public virtual void addWidget(ITezWidget widget)
+        public virtual void addWidget(ITezBaseWidget widget)
         {
             m_Widgets.Add(widget);
         }

@@ -145,7 +145,7 @@ namespace tezcat.Framework.Core
             m_Set.Remove(tag.ID);
         }
 
-        public void close(bool self_close = true)
+        public void close()
         {
             m_Set.Clear();
             m_Set = null;

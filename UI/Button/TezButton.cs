@@ -25,7 +25,7 @@ namespace tezcat.Framework.UI
         /// </summary>
         public abstract Graphic graphicController { get; }
 
-        protected override void onClose(bool self_close = true)
+        protected override void onClose(bool self_close)
         {
             onClick = null;
         }

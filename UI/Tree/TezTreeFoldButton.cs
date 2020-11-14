@@ -33,7 +33,7 @@ namespace tezcat.Framework.UI
 
         }
 
-        protected override void onClose(bool self_close = true)
+        protected override void onClose(bool self_close)
         {
             m_Node = null;
         }

@@ -147,13 +147,13 @@ namespace tezcat.Framework.Core
         }
 
 
-        public override void close(bool self_close)
+        public override void close()
         {
             ///这里不适用基类方法是因为
             ///在Property中
             ///Value不可以被Set
             this.descriptor = null;
-            m_ModifierCache.close(!self_close);
+            m_ModifierCache.close();
 
             this.onValueChanged = null;
             m_ModifierCache = null;

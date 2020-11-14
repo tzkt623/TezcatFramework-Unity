@@ -24,7 +24,7 @@ namespace tezcat.Framework.UI
             set { m_Label.text = value; }
         }
 
-        protected override void onClose(bool self_close = true)
+        protected override void onClose(bool self_close)
         {
             m_Icon = null;
             m_Label = null;

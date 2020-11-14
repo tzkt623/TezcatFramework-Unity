@@ -48,10 +48,10 @@ namespace tezcat.Framework.Definition
             }
         }
 
-        public override void close(bool self_close = true)
+        public override void close()
         {
-            base.close(self_close);
-            m_Children.close(false);
+            base.close();
+            m_Children.close();
             m_Children = null;
         }
     }

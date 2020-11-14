@@ -19,7 +19,7 @@ namespace tezcat.Framework.Game
     {
         public object source { get; set; }
         public abstract TezBufferType bufferType { get; }
-        public virtual void close(bool self_close = true)
+        public virtual void close()
         {
             this.source = null;
         }

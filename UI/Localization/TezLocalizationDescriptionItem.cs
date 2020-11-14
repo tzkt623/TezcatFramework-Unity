@@ -54,7 +54,7 @@ namespace tezcat.Framework.UI
             m_KeyName.text = key;
         }
 
-        protected override void onClose(bool self_close = true)
+        protected override void onClose(bool self_close)
         {
             m_Flag = null;
             m_KeyName = null;

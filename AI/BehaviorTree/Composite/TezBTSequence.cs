@@ -63,9 +63,9 @@ namespace tezcat.Framework.AI
             m_Index = 0;
         }
 
-        public override void close(bool self_close = true)
+        public override void close()
         {
-            base.close(self_close);
+            base.close();
 
             for (int i = 0; i < m_List.Count; i++)
             {

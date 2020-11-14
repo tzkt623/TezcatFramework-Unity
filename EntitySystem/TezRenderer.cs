@@ -54,9 +54,8 @@ namespace tezcat.Framework.ECS
 
         }
 
-        protected override void onClose(bool self_close = true)
+        protected override void onClose(bool self_close)
         {
-           
         }
     }
 }

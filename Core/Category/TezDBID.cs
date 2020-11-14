@@ -26,7 +26,7 @@
             return this.dbID == other.dbID && this.itemID == other.itemID;
         }
 
-        public void close(bool self_close = true)
+        public void close()
         {
 
         }

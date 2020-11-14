@@ -67,7 +67,7 @@ namespace tezcat.Framework.Core
             }
         }
 
-        public void close(bool self_close = true)
+        public void close()
         {
             m_DicWithName.Clear();
             m_List.Clear();

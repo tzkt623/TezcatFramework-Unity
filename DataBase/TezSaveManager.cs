@@ -126,7 +126,7 @@ namespace tezcat.Framework.Database
             m_List.Clear();
         }
 
-        public void close(bool self_close = true)
+        public void close()
         {
             m_Factory = null;
         }

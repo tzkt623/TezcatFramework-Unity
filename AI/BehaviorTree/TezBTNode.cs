@@ -38,7 +38,7 @@ namespace tezcat.Framework.AI
 
         public TezBTNode parent { get; set; }
 
-        public virtual void close(bool self_close = true)
+        public virtual void close()
         {
             m_Tree = null;
             this.parent = null;

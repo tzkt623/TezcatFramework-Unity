@@ -13,7 +13,7 @@
         /// <summary>
         /// 删除Object时调用
         /// </summary>
-        public abstract void close(bool self_close = true);
+        public abstract void close();
 
 
         #region 重载操作

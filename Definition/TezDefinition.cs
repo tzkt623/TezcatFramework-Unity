@@ -201,7 +201,7 @@ namespace tezcat.Framework.Definition
         /// <summary>
         /// 关闭
         /// </summary>
-        public virtual void close(bool self_close = true)
+        public virtual void close()
         {
             m_PrimaryPath = null;
             m_SecondaryPath = null;

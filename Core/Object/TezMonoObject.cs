@@ -110,7 +110,7 @@ namespace tezcat.Framework.Core
         {
             if (!m_Closed)
             {
-                this.onClose(false);
+                this.onClose(m_Closed);
             }
         }
 
@@ -183,10 +183,10 @@ namespace tezcat.Framework.Core
         /// <summary>
         /// 
         /// </summary>
-        public void close(bool self_close = true)
+        public void close()
         {
             m_Closed = true;
-            this.onClose(self_close);
+            this.onClose(m_Closed);
             Destroy(this.gameObject);
         }
     }

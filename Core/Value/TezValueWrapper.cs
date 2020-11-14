@@ -98,7 +98,7 @@ namespace tezcat.Framework.Core
 
         public abstract TezWrapperType wrapperType { get; }
 
-        public abstract void close(bool self_close = true);
+        public abstract void close();
     }
 
     public abstract class TezValueWrapper
@@ -215,7 +215,7 @@ namespace tezcat.Framework.Core
             return this.descriptor.GetHashCode();
         }
 
-        public virtual void close(bool self_close = true)
+        public virtual void close()
         {
             this.descriptor = null;
         }
@@ -282,9 +282,9 @@ namespace tezcat.Framework.Core
             this.value = wrapper.value;
         }
 
-        public override void close(bool self_close = true)
+        public override void close()
         {
-            base.close(self_close);
+            base.close();
             this.value = default;
         }
 

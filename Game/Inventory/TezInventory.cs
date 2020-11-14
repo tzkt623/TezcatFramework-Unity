@@ -178,11 +178,11 @@ namespace tezcat.Framework.Game.Inventory
             onItemRemoved = null;
         }
 
-        public virtual void close(bool self_close = true)
+        public virtual void close()
         {
             for (int i = 0; i < m_Slots.Count; i++)
             {
-                m_Slots[i].close(false);
+                m_Slots[i].close();
             }
             m_Slots.Clear();
             m_Slots = null;

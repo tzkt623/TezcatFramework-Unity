@@ -33,7 +33,7 @@ namespace tezcat.Framework.UI
             m_Cancel.onClick += cancel;
         }
 
-        protected override void onClose(bool self_close = true)
+        protected override void onClose(bool self_close)
         {
             m_Confirm.onClick -= confirm;
             m_Save.onClick -= save;
@@ -50,7 +50,7 @@ namespace tezcat.Framework.UI
                 if (!this.getItem().NID.isNullOrEmpty())
                 {
 
-                    this.onClose();
+                    this.close();
                 }
                 else
                 {
@@ -79,7 +79,7 @@ namespace tezcat.Framework.UI
         {
             if (eventData.button == PointerEventData.InputButton.Left)
             {
-                this.onClose();
+                this.close();
             }
         }
 

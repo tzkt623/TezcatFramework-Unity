@@ -93,7 +93,7 @@ namespace tezcat.Framework.Utility
             return array;
         }
 
-        public void close(bool self_close = true)
+        public void close()
         {
             m_Array = null;
         }

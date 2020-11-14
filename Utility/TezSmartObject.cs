@@ -80,7 +80,7 @@ namespace tezcat.Framework.Utility
             m_Ref.retain();
         }
 
-        public void close(bool self_close = true)
+        public void close()
         {
             m_Ref.release();
             m_Ref = null;

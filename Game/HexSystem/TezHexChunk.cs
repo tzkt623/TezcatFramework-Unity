@@ -42,7 +42,6 @@ namespace tezcat.Framework.Game
 
         protected virtual void onBlockSetted(Block block)
         {
-
         }
 
         public Block get(int x, int y)
@@ -87,11 +86,11 @@ namespace tezcat.Framework.Game
             }
         }
 
-        public virtual void close(bool self_close = true)
+        public virtual void close()
         {
             foreach (var block in m_BlockArray)
             {
-                block?.close(false);
+                block?.close();
             }
             m_BlockArray = null;
         }

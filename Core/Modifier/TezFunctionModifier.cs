@@ -8,6 +8,6 @@ namespace tezcat.Framework.Core
         public TezDefinition definition { get; set; } = null;
         public object source { get; set; }
 
-        public abstract void close(bool self_close = true);
+        public abstract void close();
     }
 }

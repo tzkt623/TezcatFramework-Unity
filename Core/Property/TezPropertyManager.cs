@@ -98,13 +98,13 @@
 
             for (int i = 0; i < m_Properties.count; i++)
             {
-                m_Properties[i].close(false);
+                m_Properties[i].close();
             }
 
             m_Properties.clear();
         }
 
-        public virtual void close(bool self_close = true)
+        public virtual void close()
         {
             this.clearAll();
             m_Properties = null;

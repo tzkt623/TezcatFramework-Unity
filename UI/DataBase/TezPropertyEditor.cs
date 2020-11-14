@@ -12,7 +12,7 @@ namespace tezcat.Framework.UI
             this.refreshPhase = TezRefreshPhase.Refresh;
         }
 
-        protected override void onClose(bool self_close = true)
+        protected override void onClose(bool self_close)
         {
             m_Property = null;
         }

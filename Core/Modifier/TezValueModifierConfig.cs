@@ -37,7 +37,7 @@ namespace tezcat.Framework.Core
         /// </summary>
         public ITezValueDescriptor target { get; set; } = null;
 
-        public virtual void close(bool self_close = true)
+        public virtual void close()
         {
             this.target = null;
         }

@@ -37,7 +37,7 @@ namespace tezcat.Framework.Core
             this.RTID = generateID();
         }
 
-        public void close(bool self_close = true)
+        public void close()
         {
             this.DBID = null;
             IDPool.Enqueue(this.RTID);

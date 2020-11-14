@@ -58,7 +58,7 @@ namespace tezcat.Framework.Definition
 
         protected abstract void onRemoveCustomData(ITezDefinitionObject def_object);
 
-        public virtual void close(bool self_close = true)
+        public virtual void close()
         {
             m_ObjectList?.Clear();
             m_ObjectList = null;

@@ -85,7 +85,7 @@ namespace tezcat.Framework.UI
             throw new NotImplementedException();
         }
 
-        protected override void onClose(bool self_close = true)
+        protected override void onClose(bool self_close)
         {
             m_Add.onClick -= onAddClick;
             m_Remove.onClick -= onRemoveClick;

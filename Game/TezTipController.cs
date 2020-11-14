@@ -300,7 +300,7 @@ namespace tezcat.Framework.Game
             return result;
         }
 
-        public void close(bool self_close = true)
+        public void close()
         {
             m_Builder.Clear();
             m_Builder = null;

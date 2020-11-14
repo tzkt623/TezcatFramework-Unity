@@ -92,11 +92,11 @@ namespace tezcat.Framework.AI
             m_Observer.init();
         }
 
-        public void close(bool self_close = true)
+        public void close()
         {
-            m_Observer.close(false);
-            m_Root.close(false);
-            this.context.close(false);
+            m_Observer.close();
+            m_Root.close();
+            this.context.close();
 
             m_Observer = null;
             m_Root = null;

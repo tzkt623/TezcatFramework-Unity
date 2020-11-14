@@ -31,7 +31,7 @@ namespace tezcat.Framework.UI
 
         }
 
-        protected override void onClose(bool self_close = true)
+        protected override void onClose(bool self_close)
         {
             m_DropDown.onValueChanged.RemoveListener(this.onValueChanged);
             m_Types.Clear();

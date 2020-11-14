@@ -94,7 +94,7 @@ namespace tezcat.Framework.UI
             handler.text = m_Getter();
         }
 
-        protected override void onClose(bool self_close = true)
+        protected override void onClose(bool self_close)
         {
             m_Getter = null;
             handler = null;

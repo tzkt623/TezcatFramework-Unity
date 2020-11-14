@@ -67,9 +67,9 @@
             this.notifyValueChanged(this, old);
         }
 
-        public override void close(bool self_close = true)
+        public override void close()
         {
-            base.close(self_close);
+            base.close();
             m_Property.onValueChanged -= onRefValueChanged;
             m_Property = null;
         }

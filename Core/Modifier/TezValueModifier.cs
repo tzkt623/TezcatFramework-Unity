@@ -72,11 +72,11 @@ namespace tezcat.Framework.Core
                 , definition.ToString());
         }
 
-        public override void close(bool self_close = true)
+        public override void close()
         {
-            base.close(self_close);
-            this.definition.close(self_close);
-            this.modifierConfig.close(self_close);
+            base.close();
+            this.definition.close();
+            this.modifierConfig.close();
 
             this.modifierConfig = null;
             this.source = null;

@@ -400,7 +400,7 @@ namespace tezcat.Framework.Game
         }
         #endregion
 
-        public void close(bool self_close = true)
+        public void close()
         {
             m_Name.close();
             m_Description.close();

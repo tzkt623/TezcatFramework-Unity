@@ -122,11 +122,11 @@ namespace tezcat.Framework.Game
             }
         }
 
-        public virtual void close(bool self_close = true)
+        public virtual void close()
         {
             foreach (var chunk in m_ChunkArray)
             {
-                chunk?.close(false);
+                chunk?.close();
             }
             m_ChunkArray = null;
         }

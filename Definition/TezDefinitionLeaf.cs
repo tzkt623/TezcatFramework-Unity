@@ -41,9 +41,9 @@ namespace tezcat.Framework.Definition
             }
         }
 
-        public override void close(bool self_close = true)
+        public override void close()
         {
-            base.close(self_close);
+            base.close();
             m_Objects.Clear();
             m_Objects = null;
         }

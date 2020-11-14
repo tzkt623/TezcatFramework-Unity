@@ -22,11 +22,11 @@ namespace tezcat.Framework.Core
 
         }
 
-        public override void close(bool self_close = true)
+        public override void close()
         {
-            base.close(self_close);
+            base.close();
 
-            this.modifierRefrence.close(false);
+            this.modifierRefrence.close();
             this.modifierRefrence = null;
         }
 

@@ -126,7 +126,7 @@ namespace tezcat.Framework.ECS
         /// <summary>
         /// 删除Object
         /// </summary>
-        public override void close(bool self_close = true)
+        public override void close()
         {
             m_UID.close();
 

@@ -105,7 +105,7 @@ namespace tezcat.Framework.Utility
             m_ID = 0;
         }
 
-        public void close(bool self_close = true)
+        public void close()
         {
             m_ID = -1;
         }

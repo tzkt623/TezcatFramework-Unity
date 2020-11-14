@@ -33,7 +33,7 @@ namespace tezcat.Framework.Event
             public int ID;
             public ITezEventData data;
 
-            public void close(bool self_close = true)
+            public void close()
             {
                 data = null;
             }
@@ -128,7 +128,7 @@ namespace tezcat.Framework.Event
             }
         }
 
-        public void close(bool self_close = true)
+        public void close()
         {
             foreach (var listener in m_Listeners)
             {
