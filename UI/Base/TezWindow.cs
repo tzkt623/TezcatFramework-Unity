@@ -19,7 +19,7 @@ namespace tezcat.Framework.UI
         {
             get
             {
-                if (!m_Layer)
+                if (m_Layer == null)
                 {
                     var parent = this.transform.parent;
                     while (true)

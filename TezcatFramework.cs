@@ -242,17 +242,22 @@ namespace tezcat.Framework
             return id;
         }
 
+        /// <summary>
+        /// 获得一个类型唯一的控件
+        /// </summary>
         public Widget getTypeOnlyWidget<Widget>() where Widget : TezBaseWidget, ITezSinglePrefab
         {
-            TezBaseWidget widget = null;
-            m_WidgetWithType.TryGetValue(typeof(Widget), out widget);
+            m_WidgetWithType.TryGetValue(typeof(Widget), out TezBaseWidget widget);
             return (Widget)widget;
         }
 
-        public TezBaseWidget createWidget(TezBaseWidget prefab, RectTransform parent, TezWidgetLife life_form)
+        /// <summary>
+        /// 用Prefab创建一个Widget
+        /// </summary>
+        public TezBaseWidget createWidget(TezBaseWidget prefab, RectTransform parent, TezWidgetLife life)
         {
             TezBaseWidget widget = null;
-            switch (life_form)
+            switch (life)
             {
                 case TezWidgetLife.Normal:
                     widget = Instantiate(prefab, parent, false);
@@ -274,29 +279,35 @@ namespace tezcat.Framework
                     break;
             }
 
-            widget.transform.localPosition = Vector3.zero;
-            widget.life = life_form;
+            widget.life = life;
             return widget;
         }
 
-        public Widget createWidget<Widget>(RectTransform parent, TezWidgetLife life_form = TezWidgetLife.Normal) where Widget : TezBaseWidget, ITezSinglePrefab
+        /// <summary>
+        /// 创建一个Widget
+        /// </summary>
+        /// <typeparam name="Widget">类类型</typeparam>
+        /// <param name="parent">父级</param>
+        /// <param name="life">控件类型(普通类型,还是类型唯一类型)</param>
+        /// <returns></returns>
+        public Widget createWidget<Widget>(RectTransform parent, TezWidgetLife life = TezWidgetLife.Normal) where Widget : TezBaseWidget, ITezSinglePrefab
         {
-            return (Widget)this.createWidget(TezService.get<TezPrefabDatabase>().get<Widget>(), parent, life_form);
+            return (Widget)this.createWidget(TezService.get<TezPrefabDatabase>().get<Widget>(), parent, life);
         }
 
-        public Widget createWidget<Widget>(TezLayer layer, TezWidgetLife life_form = TezWidgetLife.Normal) where Widget : TezBaseWidget, ITezSinglePrefab
+        public Widget createWidget<Widget>(TezLayer layer, TezWidgetLife life = TezWidgetLife.Normal) where Widget : TezBaseWidget, ITezSinglePrefab
         {
-            return this.createWidget<Widget>(layer.rectTransform, life_form);
+            return this.createWidget<Widget>(layer.rectTransform, life);
         }
 
         private Window createWindow<Window>(Window prefab
             , string name
             , TezLayer layer
-            , TezWidgetLife life_form) where Window : TezWindow, ITezSinglePrefab
+            , TezWidgetLife life) where Window : TezWindow, ITezSinglePrefab
         {
             TezWindow window = null;
 
-            switch (life_form)
+            switch (life)
             {
                 case TezWidgetLife.Normal:
                     window = Instantiate(prefab, layer.transform, false);
@@ -323,26 +334,25 @@ namespace tezcat.Framework
             window.windowID = id;
             window.windowName = name;
             window.layer = layer;
-            window.transform.localPosition = Vector3.zero;
-            window.life = life_form;
+            window.life = life;
 
             m_WindowList[id] = window;
             return (Window)window;
         }
 
-        public Window createWindow<Window>(string name, TezLayer layer, TezWidgetLife life_form = TezWidgetLife.Normal) where Window : TezWindow, ITezSinglePrefab
+        public Window createWindow<Window>(string name, TezLayer layer, TezWidgetLife life = TezWidgetLife.Normal) where Window : TezWindow, ITezSinglePrefab
         {
-            return this.createWindow(TezService.get<TezPrefabDatabase>().get<Window>(), name, layer, life_form);
+            return this.createWindow(TezService.get<TezPrefabDatabase>().get<Window>(), name, layer, life);
         }
 
-        public TezWindow createWindow(TezWindow prefab, TezLayer layer, TezWidgetLife life_form = TezWidgetLife.Normal)
+        public TezWindow createWindow(TezWindow prefab, TezLayer layer, TezWidgetLife life = TezWidgetLife.Normal)
         {
-            return this.createWindow(prefab, prefab.GetType().Name, layer, life_form);
+            return this.createWindow(prefab, prefab.GetType().Name, layer, life);
         }
 
-        public Window createWindow<Window>(TezLayer layer, TezWidgetLife life_form = TezWidgetLife.Normal) where Window : TezWindow, ITezSinglePrefab
+        public Window createWindow<Window>(TezLayer layer, TezWidgetLife life = TezWidgetLife.Normal) where Window : TezWindow, ITezSinglePrefab
         {
-            return this.createWindow<Window>(typeof(Window).Name, layer, life_form);
+            return this.createWindow<Window>(typeof(Window).Name, layer, life);
         }
 
         public void removeWindow(TezWindow window)

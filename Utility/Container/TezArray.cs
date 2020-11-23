@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Generic;
 using tezcat.Framework.Core;
 
 namespace tezcat.Framework.Utility
@@ -12,8 +13,49 @@ namespace tezcat.Framework.Utility
     /// </summary>
     public class TezArray<T>
         : ITezCloseable
-        , IEnumerable
+        , IEnumerable<T>
     {
+        class Enumerator : IEnumerator<T>
+        {
+            public T Current { get; private set; }
+            object IEnumerator.Current => this.Current;
+
+            private int m_Index;
+            private TezArray<T> m_Array;
+
+            public Enumerator(TezArray<T> array)
+            {
+                m_Array = array;
+            }
+
+            public void Dispose()
+            {
+                this.Current = default;
+                m_Array = null;
+            }
+
+            public bool MoveNext()
+            {
+                if (m_Index < m_Array.count)
+                {
+                    this.Current = m_Array[m_Index];
+                    m_Index++;
+                    return true;
+                }
+                else
+                {
+                    this.Current = default;
+                    return false;
+                }
+            }
+
+            public void Reset()
+            {
+                m_Index = 0;
+                this.Current = default;
+            }
+        }
+
         public int count { get; private set; } = 0;
 
         /// <summary>
@@ -31,6 +73,12 @@ namespace tezcat.Framework.Utility
         {
             m_Array = new T[capacity];
             this.count = 0;
+        }
+
+        public TezArray(T[] array)
+        {
+            m_Array = array;
+            this.count = m_Array.Length;
         }
 
         public T this[int index]
@@ -75,12 +123,12 @@ namespace tezcat.Framework.Utility
 
             if (index == this.count - 1)
             {
-                m_Array[index] = default(T);
+                m_Array[index] = default;
             }
             else
             {
                 Array.Copy(m_Array, index + 1, m_Array, index, count - index - 1);
-                m_Array[count - 1] = default(T);
+                m_Array[count - 1] = default;
             }
 
             this.count--;
@@ -93,6 +141,22 @@ namespace tezcat.Framework.Utility
             return array;
         }
 
+        /// <summary>
+        /// 只清空数组内容
+        /// 并将Count设为0
+        /// 不会删除数组
+        /// 不会改变数组Capacity
+        /// </summary>
+        public void clear()
+        {
+            Array.Clear(m_Array, 0, m_Array.Length);
+            this.count = 0;
+        }
+
+        /// <summary>
+        /// 关闭
+        /// 会删除整个数组
+        /// </summary>
         public void close()
         {
             m_Array = null;
@@ -101,6 +165,11 @@ namespace tezcat.Framework.Utility
         IEnumerator IEnumerable.GetEnumerator()
         {
             return m_Array.GetEnumerator();
+        }
+
+        IEnumerator<T> IEnumerable<T>.GetEnumerator()
+        {
+            return new Enumerator(this);
         }
     }
 }

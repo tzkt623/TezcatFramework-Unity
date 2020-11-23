@@ -59,6 +59,11 @@ namespace tezcat.Framework.Core
             return default;
         }
 
+        /// <summary>
+        /// 查找一个Property
+        /// 如果没找到 返回的Index为此Property应该被插入的位置
+        /// 如果找到 返回的Index为此Property的位置
+        /// </summary>
         public bool binaryFind(int property_id, out int index)
         {
             int begin_pos = 0;
