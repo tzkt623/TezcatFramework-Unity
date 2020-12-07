@@ -152,11 +152,12 @@ namespace tezcat.Framework.Core
             ///这里不适用基类方法是因为
             ///在Property中
             ///Value不可以被Set
-            this.descriptor = null;
             m_ModifierCache.close();
+            m_Value = default;
 
             this.onValueChanged = null;
             m_ModifierCache = null;
+            this.descriptor = null;
         }
     }
 }

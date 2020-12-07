@@ -44,7 +44,8 @@ namespace tezcat.Framework.Core
 
         public override void close()
         {
-            base.close();
+            this.descriptor = null;
+            m_Value = default;
             onValueChanged = null;
             m_Buffers.Clear();
             m_Buffers = null;

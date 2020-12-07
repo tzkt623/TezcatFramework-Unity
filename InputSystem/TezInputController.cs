@@ -8,6 +8,10 @@ namespace tezcat.Framework.InputSystem
 {
     public class TezInputController : ITezService
     {
+        public const int POP_FAILED = 0;
+        public const int POP_OK = 1;
+        public const int POP_OK_BUT_CURRENT = 2;
+
         static void onDefault(TezInputState state) { }
         static void onDefault(TezInputState from, TezInputState to) { }
 
@@ -93,6 +97,10 @@ namespace tezcat.Framework.InputSystem
             m_OnPush(m_Current);
         }
 
+        /// <summary>
+        /// 弹出状态
+        /// </summary>
+        /// <typeparam name="State"></typeparam>
         public void pop<State>() where State : TezInputState, new()
         {
             if (m_Stack.Count == 0)
@@ -111,6 +119,51 @@ namespace tezcat.Framework.InputSystem
             m_Current.onExit();
             m_Current = m_Stack.Pop();
             m_Current.onResume();
+        }
+
+        /// <summary>
+        /// 弹出直到某个状态为止
+        /// 返回 POP_FAILED表示执行失败
+        /// 返回 POP_OK表示执行成功
+        /// 返回 POP_OK_BUT_CURRENT表示不用POP当前就是
+        /// </summary>
+        public int popUntil<State>() where State : TezInputState, new()
+        {
+            if (m_Current == null || m_Stack.Count == 0)
+            {
+                throw new ArgumentOutOfRangeException("InputController >> Input State Should Be Not Empty");
+            }
+
+            var temp_type = typeof(State);
+            if(m_Current.GetType() == temp_type)
+            {
+                return POP_OK_BUT_CURRENT;
+            }
+
+            while (true)
+            {
+                if (m_Current.GetType() != temp_type)
+                {
+                    m_OnPop(m_Current);
+                    m_Current.onExit();
+                    if (m_Stack.Count > 0)
+                    {
+                        m_Current = m_Stack.Pop();
+                    }
+                    else
+                    {
+                        m_Current = null;
+                        return POP_FAILED;
+                    }
+                }
+                else
+                {
+                    m_Current.onResume();
+                    break;
+                }
+            }
+
+            return POP_OK;
         }
 
         public void update()
