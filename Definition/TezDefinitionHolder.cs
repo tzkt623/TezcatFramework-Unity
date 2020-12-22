@@ -102,8 +102,8 @@ namespace tezcat.Framework.Definition
 
             this.definition = new TezDefinition()
             {
-                primaryPath = p.Count > 0 ? p.ToArray() : TezDefinition.DefaultPrimaryPath,
-                secondaryPath = s.Count > 0 ? s.ToArray() : TezDefinition.DefaultSecondaryPath
+                primaryPath = p.Count > 0 ? p.ToArray() : null,
+                secondaryPath = s.Count > 0 ? s.ToArray() : null
             };
 
             free(m_Index);

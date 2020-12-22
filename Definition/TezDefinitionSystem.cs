@@ -33,7 +33,7 @@ namespace tezcat.Framework.Definition
                 this.tokenID = id;
                 this.tokenName = name;
                 this.tokenType = type;
-                if(parent != null)
+                if (parent != null)
                 {
                     this.layer = parent.layer + 1;
                 }
@@ -126,8 +126,32 @@ namespace tezcat.Framework.Definition
         //         List<TezDefinitionNode> m_PrimaryNodes = new List<TezDefinitionNode>();
         //         List<TezDefinitionLeaf> m_SecondaryNodes = new List<TezDefinitionLeaf>();
 
+        const int PrimaryBegin = 0;
+
         Dictionary<int, TezDefinitionNode> m_PrimaryNodes = new Dictionary<int, TezDefinitionNode>();
         Dictionary<int, TezDefinitionLeaf> m_SecondaryNodes = new Dictionary<int, TezDefinitionLeaf>();
+
+        /// <summary>
+        /// 关闭
+        /// </summary>
+        public virtual void close()
+        {
+            foreach (var pair in m_PrimaryNodes)
+            {
+                pair.Value.close();
+            }
+
+            foreach (var pair in m_SecondaryNodes)
+            {
+                pair.Value.close();
+            }
+
+            m_PrimaryNodes.Clear();
+            m_SecondaryNodes.Clear();
+
+            m_PrimaryNodes = null;
+            m_SecondaryNodes = null;
+        }
 
         protected abstract TezDefinitionNode onCreatePrimaryChild(ITezDefinitionToken token);
         protected abstract TezDefinitionLeaf onCreateSecondaryChild(ITezDefinitionToken token);
@@ -212,7 +236,7 @@ namespace tezcat.Framework.Definition
             var definition_path = handler.definition;
             var primary_length = definition_path.primaryLength;
             TezDefinitionPath pre_path_node = null;
-            for (int i = 1; i < primary_length; i++)
+            for (int i = PrimaryBegin; i < primary_length; i++)
             {
                 this.getOrCreatePrimaryNode(definition_path.getPrimaryPathToken(i), ref pre_path_node).onRegisterObject(handler);
             }
@@ -232,7 +256,7 @@ namespace tezcat.Framework.Definition
             var definition_path = handler.definition;
             var primary_length = definition_path.primaryLength;
             TezDefinitionPath pre_path_node = null;
-            for (int i = 1; i < primary_length; i++)
+            for (int i = PrimaryBegin; i < primary_length; i++)
             {
                 this.getOrCreatePrimaryNode(definition_path.getPrimaryPathToken(i), ref pre_path_node).onRegisterObject(handler);
             }
@@ -267,7 +291,7 @@ namespace tezcat.Framework.Definition
         {
             var definition_path = handler.definition;
             var primary_length = definition_path.primaryLength;
-            for (int i = 1; i < primary_length; i++)
+            for (int i = PrimaryBegin; i < primary_length; i++)
             {
                 this.getPrimaryNode(definition_path.getPrimaryPathToken(i)).onUnregisterObject(handler);
             }
@@ -286,7 +310,7 @@ namespace tezcat.Framework.Definition
         {
             var definition_path = handler.definition;
             var primary_length = definition_path.primaryLength;
-            for (int i = 1; i < primary_length; i++)
+            for (int i = PrimaryBegin; i < primary_length; i++)
             {
                 this.getPrimaryNode(definition_path.getPrimaryPathToken(i)).onUnregisterObject(handler);
             }
@@ -312,28 +336,6 @@ namespace tezcat.Framework.Definition
         public void unregisterSecondaryPath(ITezDefinitionObjectAndHandler handler, ITezDefinitionToken token)
         {
             this.getSecondaryNode(token).onUnregisterObject(handler);
-        }
-
-        /// <summary>
-        /// 关闭
-        /// </summary>
-        public virtual void close()
-        {
-            foreach (var pair in m_PrimaryNodes)
-            {
-                pair.Value.close();
-            }
-
-            foreach (var pair in m_SecondaryNodes)
-            {
-                pair.Value.close();
-            }
-
-            m_PrimaryNodes.Clear();
-            m_SecondaryNodes.Clear();
-
-            m_PrimaryNodes = null;
-            m_SecondaryNodes = null;
         }
 
         /// <summary>

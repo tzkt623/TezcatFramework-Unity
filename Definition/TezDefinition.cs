@@ -17,8 +17,8 @@ namespace tezcat.Framework.Definition
             Secondary
         }
 
-        public static readonly ITezDefinitionToken[] DefaultPrimaryPath = new ITezDefinitionToken[0];
-        public static readonly ITezDefinitionToken[] DefaultSecondaryPath = new ITezDefinitionToken[0];
+        static ITezDefinitionToken[] DefaultPrimaryPath = new ITezDefinitionToken[0];
+        static ITezDefinitionToken[] DefaultSecondaryPath = new ITezDefinitionToken[0];
 
         /// <summary>
         /// 先判断有没有
@@ -40,24 +40,24 @@ namespace tezcat.Framework.Definition
 
         public ITezDefinitionToken[] primaryPath
         {
-            set { m_PrimaryPath = value; }
+            set
+            {
+                m_PrimaryPath = value ?? DefaultPrimaryPath;
+            }
         }
 
         public ITezDefinitionToken[] secondaryPath
         {
-            set { m_SecondaryPath = value; }
+            set
+            {
+                m_SecondaryPath = value ?? DefaultSecondaryPath;
+            }
         }
 
         ITezDefinitionToken[] m_PrimaryPath = DefaultPrimaryPath;
         ITezDefinitionToken[] m_SecondaryPath = DefaultSecondaryPath;
 
         public TezDefinition() { }
-
-        public TezDefinition(ITezDefinitionToken[] primaryPath, ITezDefinitionToken[] secondaryPath)
-        {
-            m_PrimaryPath = primaryPath ?? DefaultPrimaryPath;
-            m_SecondaryPath = secondaryPath ?? DefaultSecondaryPath;
-        }
 
         /// <summary>
         /// 建立一个Path路径

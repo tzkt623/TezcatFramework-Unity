@@ -47,21 +47,29 @@ namespace tezcat.Framework.Core
             return flag;
         }
 
+        /// <summary>
+        /// 清理cache到初始状态
+        /// </summary>
         public virtual void clear()
         {
             foreach (var modifier in m_Modifiers)
             {
-                this.onModifierRemoved(modifier);
+                this.onModifierClear(modifier);
             }
             m_Modifiers.Clear();
             this.dirty = true;
         }
 
+        /// <summary>
+        /// Modifier一定都来源于其他系统的加成
+        /// 所以Cache只负责记录
+        /// 不负责清理
+        /// </summary>
         public virtual void close()
         {
             foreach (var modifier in m_Modifiers)
             {
-                this.onModifierRemoved(modifier);
+                this.onModifierClear(modifier);
             }
             m_Modifiers.Clear();
             m_Modifiers = null;
@@ -69,6 +77,7 @@ namespace tezcat.Framework.Core
 
         protected abstract void onModifierAdded(ITezModifier modifier);
         protected abstract void onModifierRemoved(ITezModifier modifier);
+        protected abstract void onModifierClear(ITezModifier modifier);
     }
 
     public abstract class TezFunctionModifierBaseCache : TezModifierBaseCache
@@ -89,6 +98,12 @@ namespace tezcat.Framework.Core
         {
             ITezValueModifier vm = (ITezValueModifier)modifier;
             this.onModifierRemoved(vm);
+            vm.onValueChanged -= changeModifier;
+        }
+
+        protected override void onModifierClear(ITezModifier modifier)
+        {
+            ITezValueModifier vm = (ITezValueModifier)modifier;
             vm.onValueChanged -= changeModifier;
         }
 

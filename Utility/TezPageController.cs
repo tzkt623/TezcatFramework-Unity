@@ -14,6 +14,7 @@ namespace tezcat.Framework.Utility
 
         /// <summary>
         /// 当前页码
+        /// 不会低于1
         /// </summary>
         public int currentPage { get; private set; } = 1;
 
@@ -109,7 +110,7 @@ namespace tezcat.Framework.Utility
             ///如果没有数量用于分页
             if (m_Count == 0)
             {
-                this.currentPage = 0;
+                this.currentPage = 1;
                 m_OnPageEmpty();
                 return;
             }
