@@ -20,12 +20,12 @@ namespace tezcat.Framework.Definition
             m_Children.add(id);
         }
 
-        public TezDefinitionNode getPrimaryNode(int id)
+        protected TezDefinitionNode getPrimaryNode(int id)
         {
             return this.system.getPrimaryNode(id);
         }
 
-        public TezDefinitionLeaf getSecondaryNode(int id)
+        protected TezDefinitionLeaf getSecondaryNode(int id)
         {
             return this.system.getSecondaryNode(id);
         }
@@ -34,7 +34,7 @@ namespace tezcat.Framework.Definition
         {
             for (int i = 0; i < this.childCount; i++)
             {
-                var handler = this.getPrimaryNode(i);
+                var handler = this.getPrimaryNode(m_Children[i]);
                 handler.addDefinitionObject(def_object);
             }
         }
@@ -43,7 +43,7 @@ namespace tezcat.Framework.Definition
         {
             for (int i = 0; i < this.childCount; i++)
             {
-                var handler = this.getPrimaryNode(i);
+                var handler = this.getPrimaryNode(m_Children[i]);
                 handler.removeDefinitionObject(def_object);
             }
         }

@@ -346,7 +346,7 @@ namespace tezcat.Framework.Definition
         public void addDefinitionObject(ITezDefinitionObject def_object)
         {
             ///如果没有Object被注册到路径上
-            ///那么就算此Modifier加入了也不会造成仍和影响
+            ///那么就算此Modifier加入了也不会造成任何影响
             ///
             ///如果路径已经建立好了
             ///Modifier加入时只需要直接加入他定义路径的最后的位置上即可
