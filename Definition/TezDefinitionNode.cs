@@ -61,6 +61,9 @@ namespace tezcat.Framework.Definition
             }
         }
 
+        /// <summary>
+        /// 添加一个DefObject
+        /// </summary>
         public void addDefinitionObject(ITezDefinitionObject def_object)
         {
             if (m_DefinitionObjects == null)
@@ -68,16 +71,19 @@ namespace tezcat.Framework.Definition
                 m_DefinitionObjects = create();
             }
             m_DefinitionObjects.Add(def_object);
-            this.onAddCustomData(def_object);
+            this.addDefinitionObjectToChildren(def_object);
         }
 
-        protected abstract void onAddCustomData(ITezDefinitionObject def_object);
+        /// <summary>
+        /// 向子节点添加
+        /// </summary>
+        public abstract void addDefinitionObjectToChildren(ITezDefinitionObject def_object);
 
         public void removeDefinitionObject(ITezDefinitionObject def_object)
         {
             if (m_DefinitionObjects.Remove(def_object))
             {
-                this.onRemoveCustomData(def_object);
+                this.removeDefinitionObjectFromChildren(def_object);
             }
             else
             {
@@ -85,7 +91,10 @@ namespace tezcat.Framework.Definition
             }
         }
 
-        protected abstract void onRemoveCustomData(ITezDefinitionObject def_object);
+        /// <summary>
+        /// 从子节点移除
+        /// </summary>
+        public abstract void removeDefinitionObjectFromChildren(ITezDefinitionObject def_object);
 
         public virtual void close()
         {

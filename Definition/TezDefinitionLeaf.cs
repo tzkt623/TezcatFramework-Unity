@@ -25,7 +25,7 @@ namespace tezcat.Framework.Definition
             m_Objects.Remove(handler);
         }
 
-        protected override void onAddCustomData(ITezDefinitionObject def_object)
+        public override void addDefinitionObjectToChildren(ITezDefinitionObject def_object)
         {
             for (int i = 0; i < m_Objects.Count; i++)
             {
@@ -33,7 +33,7 @@ namespace tezcat.Framework.Definition
             }
         }
 
-        protected override void onRemoveCustomData(ITezDefinitionObject def_object)
+        public override void removeDefinitionObjectFromChildren(ITezDefinitionObject def_object)
         {
             for (int i = 0; i < m_Objects.Count; i++)
             {

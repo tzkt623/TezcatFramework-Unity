@@ -30,21 +30,21 @@ namespace tezcat.Framework.Definition
             return this.system.getSecondaryNode(id);
         }
 
-        protected override void onAddCustomData(ITezDefinitionObject def_object)
+        public override void addDefinitionObjectToChildren(ITezDefinitionObject def_object)
         {
             for (int i = 0; i < this.childCount; i++)
             {
                 var handler = this.getPrimaryNode(m_Children[i]);
-                handler.addDefinitionObject(def_object);
+                handler.addDefinitionObjectToChildren(def_object);
             }
         }
 
-        protected override void onRemoveCustomData(ITezDefinitionObject def_object)
+        public override void removeDefinitionObjectFromChildren(ITezDefinitionObject def_object)
         {
             for (int i = 0; i < this.childCount; i++)
             {
                 var handler = this.getPrimaryNode(m_Children[i]);
-                handler.removeDefinitionObject(def_object);
+                handler.removeDefinitionObjectFromChildren(def_object);
             }
         }
 
