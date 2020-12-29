@@ -204,6 +204,9 @@ namespace tezcat.Framework.Database
         public abstract bool tryRead(string key, out float result);
         public abstract bool tryRead(string key, out string result);
 
+        /// <summary>
+        /// 获得当前层级下所有的Key
+        /// </summary>
         public abstract ICollection<string> getKeys();
 
         public abstract ValueType getValueType(string key);

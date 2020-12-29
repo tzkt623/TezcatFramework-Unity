@@ -30,7 +30,6 @@ namespace tezcat.Framework.UI
             {
                 TezJsonWriter writer = new TezJsonWriter();
                 TezService.get<TezTranslator>().serialization(writer);
-                writer.save(TezcatFramework.localizationPath);
             }
         }
 

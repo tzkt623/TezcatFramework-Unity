@@ -15,9 +15,12 @@ namespace tezcat.Framework.Game.Inventory
         public TezGameObject item { get; set; } = null;
         public int count { get; set; } = -1;
 
+        /// <summary>
+        /// 转换Item
+        /// 转换失败返回Null
         public T getItem<T>() where T : TezGameObject
         {
-            return (T)this.item;
+            return this.item as T;
         }
 
         public TezInventorySlot(ITezInventory inventory, int index)

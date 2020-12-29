@@ -26,7 +26,7 @@ namespace tezcat.Framework.UI
 
         protected override void initWidget()
         {
-            TezcatFramework.checkNeedFile();
+
         }
 
         protected override void onHide()

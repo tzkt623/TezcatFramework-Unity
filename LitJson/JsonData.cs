@@ -382,6 +382,9 @@ namespace LitJson
             return false;
         }
 
+        /// <summary>
+        /// 查找是否有这个IndexKey
+        /// </summary>
         public bool contains(int obj_index)
         {
             if (type != JsonType.Array)
@@ -392,6 +395,9 @@ namespace LitJson
             return obj_index < inst_array.Count;
         }
 
+        /// <summary>
+        /// 查找是否有这个StringKey
+        /// </summary>
         public bool contains(string obj_name)
         {
             if (type != JsonType.Object)

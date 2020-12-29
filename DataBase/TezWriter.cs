@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace tezcat.Framework.Database
 {
@@ -8,80 +9,20 @@ namespace tezcat.Framework.Database
         {
             public string name = null;
             public int index = -1;
-            public System.Type type = null;
+
+            public void close()
+            {
+                this.name = null;
+            }
         }
         private Stack<Checker> m_Checker = new Stack<Checker>();
 
         public abstract void save(string path);
 
-#if false
-        public abstract class DataGroup
-        {
-            private Stack<string> m_CheckStringKey = null;
-            private Stack<int> m_CheckIntKey = null;
-
-            public DataGroup(TezWriter writer)
-            {
-                m_CheckStringKey = writer.m_CheckStringKey;
-                m_CheckIntKey = writer.m_CheckIntKey;
-            }
-
-            public void begin(string key)
-            {
-                m_CheckStringKey.Push(key);
-                this.onBegin(key);
-            }
-
-            protected abstract void onBegin(string key);
-
-            public void end(string key)
-            {
-                if (m_CheckStringKey.Peek() != key)
-                {
-                    throw new System.ArgumentException(string.Format("Error End Array : {0}", key));
-                }
-                else
-                {
-                    m_CheckStringKey.Pop();
-                    this.onEnd(key);
-                }
-            }
-
-            protected abstract void onEnd(string key);
-            //===============================================//
-
-
-            //===============================================//
-            public void begin(int key)
-            {
-                m_CheckIntKey.Push(key);
-                this.onBegin(key);
-            }
-
-            protected abstract void onBegin(int key);
-
-            public void end(int key)
-            {
-                if (m_CheckIntKey.Peek() != key)
-                {
-                    throw new System.ArgumentException(string.Format("Error End Array : {0}", key));
-                }
-                else
-                {
-                    m_CheckIntKey.Pop();
-                    this.onEnd(key);
-                }
-            }
-
-            protected abstract void onEnd(int key);
-        }
-
-        public abstract DataGroup myObject { get; }
-        public abstract DataGroup myArray { get; }
-        public abstract DataGroup myDic { get; }
-#endif
-
         #region Array
+        /// <summary>
+        /// 开始写入一个数组
+        /// </summary>
         public void beginArray(string key)
         {
             m_Checker.Push(new Checker() { name = key });
@@ -90,6 +31,9 @@ namespace tezcat.Framework.Database
 
         protected abstract void onBeginArray(string key);
 
+        /// <summary>
+        /// 结束当前数组的写入
+        /// </summary>
         public void endArray(string key)
         {
             var checker = m_Checker.Pop();
@@ -108,7 +52,9 @@ namespace tezcat.Framework.Database
 
         //===============================================//
 
-
+        /// <summary>
+        /// 开始写入一个数组
+        /// </summary>
         public void beginArray(int key)
         {
             m_Checker.Push(new Checker() { index = key });
@@ -117,6 +63,9 @@ namespace tezcat.Framework.Database
 
         protected abstract void onBeginArray(int key);
 
+        /// <summary>
+        /// 结束当前数组的写入
+        /// </summary>
         public void endArray(int key)
         {
             var checker = m_Checker.Pop();
@@ -134,6 +83,9 @@ namespace tezcat.Framework.Database
         #endregion
 
         #region Object
+        /// <summary>
+        /// 开始写入一个对象
+        /// </summary>
         public void beginObject(string key)
         {
             m_Checker.Push(new Checker() { name = key });
@@ -142,10 +94,13 @@ namespace tezcat.Framework.Database
 
         protected abstract void onBeginObject(string key);
 
+        /// <summary>
+        /// 结束当前对象的写入
+        /// </summary>
         public void endObject(string key)
         {
             var checker = m_Checker.Pop();
-            if (string.IsNullOrEmpty(key) && checker.name == key)
+            if (!string.IsNullOrEmpty(key) && checker.name == key)
             {
                 this.onEndObject(checker.name);
             }
@@ -159,6 +114,9 @@ namespace tezcat.Framework.Database
 
         //===============================================//
 
+        /// <summary>
+        /// 开始写入一个对象
+        /// </summary>
         public void beginObject(int key)
         {
             m_Checker.Push(new Checker() { index = key });
@@ -167,6 +125,9 @@ namespace tezcat.Framework.Database
 
         protected abstract void onBeginObject(int key);
 
+        /// <summary>
+        /// 结束当前对象的写入
+        /// </summary>
         public void endObject(int key)
         {
             var checker = m_Checker.Pop();
@@ -202,40 +163,13 @@ namespace tezcat.Framework.Database
 
         public void close()
         {
+            foreach (var checker in m_Checker)
+            {
+                checker.close();
+            }
             m_Checker.Clear();
             m_Checker = null;
         }
-
-
-//         Dictionary<System.Type, CustomWriter> m_Dic = new Dictionary<System.Type, CustomWriter>();
-// 
-//         public class CustomWriter
-//         {
-// 
-//         }
-// 
-//         public class CustomWriter<T> : CustomWriter
-//         {
-//             public delegate void Writer(string name, T value);
-//             public Writer writer { get; }
-// 
-//             public CustomWriter(Writer writer)
-//             {
-//                 this.writer = writer;
-//             }
-//         }
-// 
-//         public void register<T>(CustomWriter<T>.Writer writer) where T : CustomWriter, new()
-//         {
-//             m_Dic[typeof(T)] = new CustomWriter<T>(writer);
-//         }
-// 
-//         public void write<T>(string name, T value) where T : ITezSerializable
-//         {
-//             this.write("type", typeof(T).Name);
-//             ITezSerializable data = value as ITezSerializable;
-//             data.serialize(this);
-//         }
     }
 }
 

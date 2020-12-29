@@ -1,4 +1,5 @@
 ﻿using LitJson;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
@@ -18,12 +19,11 @@ namespace tezcat.Framework.Database
 
         public override void save(string path)
         {
-            File.WriteAllText(path, JsonMapper.ToJson(m_Root), Encoding.ASCII);
-        }
-
-        public TezJsonWriter()
-        {
-
+            if(m_PreRoot.Count > 0)
+            {
+                throw new Exception(m_PreRoot.Count.ToString());
+            }
+            File.WriteAllText(path, JsonMapper.ToJson(m_Root), Encoding.UTF8);
         }
 
         public override string ToString()
@@ -35,20 +35,13 @@ namespace tezcat.Framework.Database
         protected override void onBeginObject(int key)
         {
             m_PreRoot.Push(m_Root);
-            if (m_Root.Count > key)
+            while (m_Root.Count <= key)
             {
-                m_Root = m_Root[key];
+                m_Root.Add(new JsonData());
             }
-            else
-            {
-                while (m_Root.Count <= key)
-                {
-                    m_Root.Add(new JsonData());
-                }
 
-                m_Root[key].SetJsonType(JsonType.Object);
-                m_Root = m_Root[key];
-            }
+            m_Root = m_Root[key];
+            m_Root.SetJsonType(JsonType.Object);
         }
 
         protected override void onEndObject(int key)
@@ -64,18 +57,14 @@ namespace tezcat.Framework.Database
         protected override void onBeginObject(string key)
         {
             m_PreRoot.Push(m_Root);
-            if (m_Root.Keys.Contains(key))
-            {
-                m_Root = m_Root[key];
-            }
-            else
+            if (!m_Root.contains(key))
             {
                 var data = new JsonData();
                 data.SetJsonType(JsonType.Object);
                 m_Root[key] = data;
-
-                m_Root = data;
             }
+
+            m_Root = m_Root[key];
         }
 
         protected override void onEndObject(string key)
@@ -115,21 +104,13 @@ namespace tezcat.Framework.Database
         {
             m_PreRoot.Push(m_Root);
 
-            if (m_Root.Count > key)
+            while (m_Root.Count <= key)
             {
-                m_Root = m_Root[key];
+                m_Root.Add(new JsonData());
             }
-            else
-            {
-                while (m_Root.Count <= key)
-                {
-                    m_Root.Add(new JsonData());
-                }
 
-                m_Root[key].SetJsonType(JsonType.Array);
-
-                m_Root = m_Root[key];
-            }
+            m_Root = m_Root[key];
+            m_Root.SetJsonType(JsonType.Array);
         }
 
         protected override void onEndArray(int key)
@@ -145,18 +126,13 @@ namespace tezcat.Framework.Database
         protected override void onBeginArray(string key)
         {
             m_PreRoot.Push(m_Root);
-            if (m_Root.Keys.Contains(key))
-            {
-                m_Root = m_Root[key];
-            }
-            else
+            if (!m_Root.contains(key))
             {
                 var data = new JsonData();
                 data.SetJsonType(JsonType.Array);
                 m_Root[key] = data;
-
-                m_Root = data;
             }
+            m_Root = m_Root[key];
         }
 
         protected override void onEndArray(string key)

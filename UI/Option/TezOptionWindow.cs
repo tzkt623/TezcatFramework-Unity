@@ -46,7 +46,6 @@ namespace tezcat.Framework.UI
 
         private void refreshData()
         {
-            m_RootPath.text = TezcatFramework.dataPath;
 
 //             m_LocalizationName.text = TezcatFramework.localizationFile;
 //             m_DatabaseName.text = TezcatFramework.databaseFile;

@@ -8,6 +8,9 @@ namespace tezcat.Framework.Database
 {
     public class TezJsonReader : TezReader
     {
+        /// <summary>
+        /// 用于抛出错误
+        /// </summary>
         private class Data
         {
             public int index = -1;
