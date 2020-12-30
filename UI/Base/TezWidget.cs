@@ -254,6 +254,7 @@ namespace tezcat.Framework.UI
         protected virtual void onHide() { }
 
         #endregion
+
         #region 重载操作
         public static bool operator true(TezUIWidget obj)
         {
@@ -261,11 +262,6 @@ namespace tezcat.Framework.UI
         }
 
         public static bool operator false(TezUIWidget obj)
-        {
-            return object.ReferenceEquals(obj, null);
-        }
-
-        public static bool operator !(TezUIWidget obj)
         {
             return object.ReferenceEquals(obj, null);
         }
