@@ -27,7 +27,7 @@ namespace tezcat.Framework.Game.Inventory
         public ITezInventory sourceInventory { get; private set; }
         public ITezInventory targetInventory { get; set; }
 
-        public TezInventorySlot sourceSlot { get; private set; }
+        public TezInventoryItemSlot sourceSlot { get; private set; }
 
         ITezInventoryVisualSelector m_VisualSelector = null;
 
@@ -36,7 +36,7 @@ namespace tezcat.Framework.Game.Inventory
             m_VisualSelector = visual_selector;
         }
 
-        public void setSlot(TezInventorySlot slot)
+        public void setSlot(TezInventoryItemSlot slot)
         {
             this.sourceSlot = slot;
             this.sourceInventory = slot.inventory;

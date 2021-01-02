@@ -9,45 +9,40 @@ namespace tezcat.Framework.Game.Inventory
     /// <summary>
     /// 背包系统接口
     /// </summary>
-    public interface ITezInventory : ITezCloseable
+    public interface ITezInventory : ITezRefObject
     {
-        event TezEventExtension.Action<TezInventorySlot> onItemAdded;
-        event TezEventExtension.Action<TezInventorySlot> onItemRemoved;
+        /// <summary>
+        /// 过滤器
+        /// </summary>
+        TezInventoryFilter filter { get; }
 
-        int slotCount { get; }
+        /// <summary>
+        /// 物品数量
+        /// </summary>
+        int count { get; }
 
-        TezInventorySlot this[int index] { get; }
+
+        TezInventoryItemSlot this[int index] { get; }
+
         /// <summary>
         /// 用于过滤器的函数
         /// 没事不要搞他玩
         /// </summary>
-        void swapSlots(List<TezInventorySlot> slots);
-
-        /// <summary>
-        /// 清空所有事件
-        /// </summary>
-        void clearEvents();
-
-        /// <summary>
-        /// 分页
-        /// </summary>
-        void paging(int begin, int end, TezEventExtension.Action<int, TezInventorySlot> action);
+        void swapSlots(List<TezInventoryItemSlot> slots);
     }
 
     /// <summary>
     /// 背包系统
     /// </summary>
     public class TezInventory<Object>
-        : ITezInventory
+        : TezRefObject
+        , ITezInventory
         where Object : TezGameObject
     {
-        public event TezEventExtension.Action<TezInventorySlot> onItemAdded;
-        public event TezEventExtension.Action<TezInventorySlot> onItemRemoved;
-
         /// <summary>
-        /// 槽位数量
+        /// 物品数量
         /// </summary>
-        public int slotCount
+        public int count
         {
             get { return m_Slots.Count; }
         }
@@ -61,20 +56,21 @@ namespace tezcat.Framework.Game.Inventory
         {
             get
             {
-                if (m_Filter == null)
-                {
-                    m_Filter = new TezInventoryFilter(this, m_Slots);
-                }
                 return m_Filter;
             }
         }
 
-        List<TezInventorySlot> m_Slots = new List<TezInventorySlot>();
+        List<TezInventoryItemSlot> m_Slots = new List<TezInventoryItemSlot>();
+
+        public TezInventory()
+        {
+            m_Filter = new TezInventoryFilter(this, m_Slots);
+        }
 
         /// <summary>
         /// 获得一个Slot
         /// </summary>
-        public TezInventorySlot this[int index]
+        public TezInventoryItemSlot this[int index]
         {
             get
             {
@@ -82,29 +78,94 @@ namespace tezcat.Framework.Game.Inventory
             }
         }
 
-        public void add(Object game_object, int count)
+        public void add(Object gameObject, int count)
         {
-            var stackable = game_object.templateItem.stackCount > 0;
+            m_Filter.add(gameObject, count);
+        }
 
-            TezInventorySlot result = null;
+        /// <summary>
+        /// 向当前Slot中添加
+        /// </summary>
+        public void add(int slotIndex, Object gameObject, int count)
+        {
+            var slot = m_Slots[slotIndex];
+            slot.item = gameObject;
+            slot.count += count;
+
+            m_Filter.notifyItemChanged(slot);
+        }
+
+        /// <summary>
+        /// 从当前Slot中移除
+        /// </summary>
+        public void remove(int slotIndex, int count)
+        {
+            var slot = m_Slots[slotIndex];
+            slot.count -= count;
+            if (slot.count == 0)
+            {
+                slot.item = null;
+            }
+
+            m_Filter.notifyItemChanged(slot);
+        }
+
+        public bool remove(Object gameObject, int count)
+        {
+            if(m_Filter.remove(gameObject, count))
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        public virtual void close()
+        {
+            base.close();
+
             for (int i = 0; i < m_Slots.Count; i++)
             {
-                var slot = m_Slots[i];
+                m_Slots[i].close();
+            }
+            m_Slots.Clear();
+            m_Slots = null;
 
+            m_Filter.close();
+            m_Filter = null;
+        }
+
+        void ITezInventory.swapSlots(List<TezInventoryItemSlot> slots)
+        {
+            m_Slots = slots;
+        }
+    }
+
+    public static class TezInventoryHelper
+    {
+        public static TezInventoryItemSlot add(TezGameObject gameObject, int count, List<TezInventoryItemSlot> slotList, ITezInventory inventory)
+        {
+            var stackable = gameObject.templateItem.stackCount > 0;
+
+            int result_index = 0;
+            TezInventoryItemSlot result_slot = null;
+            while (result_index < slotList.Count)
+            {
+                var slot = slotList[result_index];
                 if (stackable)
                 {
                     ///找空格子
-                    if (result == null && slot.item == null)
+                    if (result_slot == null && slot.item == null)
                     {
-                        result = slot;
+                        result_slot = slot;
                     }
 
                     ///找相同格子
                     ///可堆叠的物品
                     ///他们的模板相同
-                    if (slot.item != null && slot.item.templateAs(game_object))
+                    if (slot.item != null && slot.item.templateAs(gameObject))
                     {
-                        result = slot;
+                        result_slot = slot;
                         break;
                     }
                 }
@@ -113,123 +174,78 @@ namespace tezcat.Framework.Game.Inventory
                     ///找空格子
                     if (slot.item == null)
                     {
-                        result = slot;
+                        result_slot = slot;
                         break;
                     }
                 }
+                result_index++;
             }
 
             ///如果有可以放下的格子
-            if (result != null)
+            ///记录数据
+            ///并回收临时格子
+            if (result_slot != null)
             {
-                if (result.item != null)
+                if (result_slot.item != null)
                 {
-                    result.count += count;
+                    result_slot.count += count;
                     ///如果是可堆叠物品
                     ///并且已有存在的物品
                     ///计数+1并删除自己
                     if (stackable)
                     {
-                        game_object.close();
+                        gameObject.close();
                     }
                 }
                 else
                 {
-                    result.item = game_object;
-                    result.count = count;
-                }
-
-                if (result.boundToUI)
-                {
-                    onItemAdded?.Invoke(result);
+                    result_slot.item = gameObject;
+                    result_slot.count = count;
                 }
             }
+            ///如果没有格子用
+            ///把当前格子变成现有格子
+            ///不回收
             else
             {
-                result = new TezInventorySlot(this, m_Slots.Count);
-                result.count = count;
-                result.item = game_object;
+                result_slot = new TezInventoryItemSlot(inventory)
+                {
+                    item = gameObject,
+                    count = count,
+                    index = slotList.Count
+                };
 
-                m_Slots.Add(result);
-                onItemAdded?.Invoke(result);
+                slotList.Add(result_slot);
             }
+
+            return result_slot;
         }
 
-        public void add(int slot_id, Object game_object, int count)
+        public static bool remove(TezGameObject gameObject, int count, List<TezInventoryItemSlot> slotList, out TezInventoryItemSlot resultSlot)
         {
-            var slot = m_Slots[slot_id];
-            slot.item = game_object;
-            slot.count = count;
-            if (slot.boundToUI)
+            var index = slotList.FindIndex((TezInventoryItemSlot slot) =>
             {
-                onItemAdded?.Invoke(slot);
-            }
-        }
-
-        public void remove(int slot_id, int count)
-        {
-            var slot = m_Slots[slot_id];
-            slot.count -= count;
-            if (slot.count == 0)
-            {
-                slot.item = null;
-            }
-
-            if (slot.boundToUI)
-            {
-                onItemRemoved?.Invoke(slot);
-            }
-        }
-
-        public bool remove(Object game_object, int count)
-        {
-            var index = m_Slots.FindIndex((TezInventorySlot slot) =>
-            {
-                return slot.item != null && slot.item.sameAs(game_object);
+                return slot.item != null && slot.item.sameAs(gameObject);
             });
 
             if (index >= 0)
             {
-                this.remove(index, count);
+                resultSlot = slotList[index];
+                resultSlot.count -= count;
+                if (resultSlot.count == 0)
+                {
+                    resultSlot.item = null;
+                    if (resultSlot.index == TezInventoryItemSlot.HideIndex)
+                    {
+                        slotList.RemoveAt(index);
+                    }
+                }
+
                 return true;
             }
 
+            resultSlot = null;
             return false;
-        }
-
-        public void paging(int begin, int end, TezEventExtension.Action<int, TezInventorySlot> action)
-        {
-            for (int i = begin; i < end; i++)
-            {
-                action(i, m_Slots[i]);
-            }
-        }
-
-        public void clearEvents()
-        {
-            onItemAdded = null;
-            onItemRemoved = null;
-        }
-
-        public virtual void close()
-        {
-            for (int i = 0; i < m_Slots.Count; i++)
-            {
-                m_Slots[i].close();
-            }
-            m_Slots.Clear();
-            m_Slots = null;
-
-            onItemAdded = null;
-            onItemRemoved = null;
-
-            m_Filter?.close();
-            m_Filter = null;
-        }
-
-        void ITezInventory.swapSlots(List<TezInventorySlot> slots)
-        {
-            m_Slots = slots;
         }
     }
 }

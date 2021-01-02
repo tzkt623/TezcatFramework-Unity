@@ -7,9 +7,9 @@ namespace tezcat.Framework.Utility
 {
     /// <summary>
     /// 轻量级Array
-    /// 用于小数量
-    /// 或者不常变化
-    /// 的对象管理 
+    /// 用于容量不常变化的对象管理
+    /// 添加元素超过容量时
+    /// 容量只会1个1个地增长
     /// </summary>
     public class TezArray<T>
         : ITezCloseable
@@ -36,7 +36,7 @@ namespace tezcat.Framework.Utility
 
             public bool MoveNext()
             {
-                if (m_Index < m_Array.count)
+                if (m_Index < m_Array.m_Count)
                 {
                     this.Current = m_Array[m_Index];
                     m_Index++;
@@ -56,7 +56,11 @@ namespace tezcat.Framework.Utility
             }
         }
 
-        public int count { get; private set; } = 0;
+        static T[] m_Default = new T[0];
+        T[] m_Array = m_Default;
+        int m_Count = 0;
+
+        public int count => m_Count;
 
         /// <summary>
         /// 内部数组长度
@@ -65,20 +69,23 @@ namespace tezcat.Framework.Utility
         public int capacity
         {
             get { return m_Array.Length; }
+            set
+            {
+                this.grow(value);
+            }
         }
 
-        T[] m_Array = null;
 
-        public TezArray(int capacity = 0)
+        public TezArray(int capacity = 4)
         {
             m_Array = new T[capacity];
-            this.count = 0;
+            m_Count = 0;
         }
 
         public TezArray(T[] array)
         {
             m_Array = array;
-            this.count = m_Array.Length;
+            m_Count = m_Array.Length;
         }
 
         public T this[int index]
@@ -87,22 +94,26 @@ namespace tezcat.Framework.Utility
             set { m_Array[index] = value; }
         }
 
+        private void grow(int count)
+        {
+            if (count > m_Array.Length)
+            {
+                T[] new_array = new T[count];
+                Array.Copy(m_Array, new_array, m_Count);
+                m_Array = new_array;
+            }
+        }
+
         public void add(T item)
         {
-            if (this.count == m_Array.Length)
-            {
-                T[] new_arrya = new T[this.count + 1];
-                Array.Copy(m_Array, new_arrya, m_Array.Length);
-                m_Array = new_arrya;
-            }
-
-            m_Array[count] = item;
-            this.count++;
+            this.grow(m_Count + 1);
+            m_Array[m_Count] = item;
+            m_Count++;
         }
 
         public bool remove(T item)
         {
-            for (int i = 0; i < this.count; i++)
+            for (int i = 0; i < this.m_Count; i++)
             {
                 if (object.Equals(item, m_Array[i]))
                 {
@@ -116,28 +127,27 @@ namespace tezcat.Framework.Utility
 
         public void removeAt(int index)
         {
-            if (index >= count || index < 0)
+            if (index >= m_Count || index < 0)
             {
-                throw new IndexOutOfRangeException(string.Format("{0} : Index[{1}] / Count[{2}]", this.GetType().Name, index, this.count));
+                throw new IndexOutOfRangeException(string.Format("{0} : Index[{1}] / Count[{2}]", this.GetType().Name, index, this.m_Count));
             }
 
-            if (index == this.count - 1)
+            m_Count--;
+            if (index == m_Count)
             {
-                m_Array[index] = default;
+                m_Array[m_Count] = default;
             }
             else
             {
-                Array.Copy(m_Array, index + 1, m_Array, index, count - index - 1);
-                m_Array[count - 1] = default;
+                Array.Copy(m_Array, index + 1, m_Array, index, m_Count - index);
+                m_Array[m_Count] = default;
             }
-
-            this.count--;
         }
 
         public T[] toArray()
         {
-            T[] array = new T[this.count];
-            Array.Copy(m_Array, 0, array, 0, this.count);
+            T[] array = new T[m_Count];
+            Array.Copy(m_Array, 0, array, 0, m_Count);
             return array;
         }
 
@@ -149,17 +159,22 @@ namespace tezcat.Framework.Utility
         /// </summary>
         public void clear()
         {
-            Array.Clear(m_Array, 0, m_Array.Length);
-            this.count = 0;
+            if (m_Count > 0)
+            {
+                Array.Clear(m_Array, 0, m_Array.Length);
+                m_Count = 0;
+            }
         }
 
         /// <summary>
         /// 关闭
-        /// 会删除整个数组
+        /// 清空一切数据
+        /// 此对象将不可再用
         /// </summary>
         public void close()
         {
             m_Array = null;
+            m_Count = 0;
         }
 
         IEnumerator IEnumerable.GetEnumerator()
