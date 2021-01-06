@@ -7,6 +7,12 @@ namespace tezcat.Framework.Core
         : TezValueWrapper<float>
         , ITezValueModifier
     {
+        public override ITezValueDescriptor descriptor
+        {
+            get { return this.modifierConfig.target; }
+            set { }
+        }
+
         /// <summary>
         /// 加成来源
         /// </summary>
@@ -54,7 +60,7 @@ namespace tezcat.Framework.Core
             }
         }
 
-        protected TezValueModifier(ITezValueDescriptor name) : base(name)
+        protected TezValueModifier() : base(null)
         {
 
         }

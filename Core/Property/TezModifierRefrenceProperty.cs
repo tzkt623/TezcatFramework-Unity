@@ -5,7 +5,7 @@ namespace tezcat.Framework.Core
     public interface ITezModifierRefrenceProperty : ITezProperty
     {
         TezValueModifierRefrence modifierRefrence { get; }
-        void createRefrence(ITezValueDescriptor descriptor, TezDefinition definition, TezValueModifierConfig modifierConfig, object source);
+        void createRefrence(TezDefinition definition, TezValueModifierConfig modifierConfig, object source);
     }
 
     public abstract class TezMRProperty<T>
@@ -30,6 +30,17 @@ namespace tezcat.Framework.Core
             this.modifierRefrence = null;
         }
 
-        public abstract void createRefrence(ITezValueDescriptor descriptor, TezDefinition definition, TezValueModifierConfig modifierConfig, object source);
+        public void createRefrence(TezDefinition definition, TezValueModifierConfig modifierConfig, object source)
+        {
+            if(this.modifierRefrence == null)
+            {
+                this.modifierRefrence = new TezValueModifierRefrence(this)
+                {
+                    modifierConfig = modifierConfig,
+                    definition = definition,
+                    source = source
+                };
+            }
+        }
     }
 }

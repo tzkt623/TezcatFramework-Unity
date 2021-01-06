@@ -22,22 +22,7 @@
             }
         }
 
-        public TezValueModifierRefrence(ITezProperty property, ITezValueDescriptor descriptor) : base(descriptor)
-        {
-            m_Property = property;
-            m_Property.onValueChanged += onRefValueChanged;
-            switch (m_Property.valueType)
-            {
-                case TezValueType.Int:
-                    m_Value = ((ITezProperty<int>)m_Property).value;
-                    break;
-                case TezValueType.Float:
-                    m_Value = ((ITezProperty<float>)m_Property).value;
-                    break;
-            }
-        }
-
-        public TezValueModifierRefrence(ITezProperty property) : base(property.descriptor)
+        public TezValueModifierRefrence(ITezProperty property) : base()
         {
             m_Property = property;
             m_Property.onValueChanged += onRefValueChanged;
