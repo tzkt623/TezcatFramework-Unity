@@ -24,6 +24,8 @@ namespace tezcat.Framework.Database
                 throw new Exception(m_PreRoot.Count.ToString());
             }
             File.WriteAllText(path, JsonMapper.ToJson(m_Root), Encoding.UTF8);
+            m_Root.Clear();
+            this.clear();
         }
 
         public override string ToString()

@@ -14,6 +14,9 @@ namespace tezcat.Framework.Game
         /// 朝向
         /// 格式为
         /// [零坐标]_[正增长坐标][负增长坐标]
+        /// X左上
+        /// Z右上
+        /// Y中下
         /// </summary>
         public enum Direction : int
         {
@@ -111,6 +114,11 @@ namespace tezcat.Framework.Game
             }
 
             return coordinates;
+        }
+
+        public static bool isNeighbor(TezHexCubeCoordinate center, TezHexCubeCoordinate other)
+        {
+            return center.getDistanceFrom(other) == 1;
         }
 
         public static TezHexCubeCoordinate getDirection(Direction direction)

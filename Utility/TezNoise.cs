@@ -434,6 +434,16 @@ namespace tezcat.Framework.Utility
             return sum / range;
         }
 
+        /// <summary>
+        /// 分形2D
+        /// </summary>
+        /// <param name="method"></param>
+        /// <param name="point"></param>
+        /// <param name="frequency"></param>
+        /// <param name="octaves"></param>
+        /// <param name="lacunarity"></param>
+        /// <param name="persistence"></param>
+        /// <returns>-1到1</returns>
         public static float sum2D(Function method, Vector2 point, float frequency, int octaves, float lacunarity, float persistence)
         {
             var function = m_F2Ds[(int)method];

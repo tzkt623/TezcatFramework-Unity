@@ -161,13 +161,18 @@ namespace tezcat.Framework.Database
         public abstract void write(string name, float value);
         public abstract void write(string name, string value);
 
-        public void close()
+        public void clear()
         {
             foreach (var checker in m_Checker)
             {
                 checker.close();
             }
             m_Checker.Clear();
+        }
+
+        public void close()
+        {
+            this.clear();
             m_Checker = null;
         }
     }

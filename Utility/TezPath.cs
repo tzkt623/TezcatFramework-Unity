@@ -56,16 +56,32 @@ namespace tezcat.Framework.Utility
             return TezFilePath.rootPath + "/" + path;
         }
 
-        public static string[] getFiles(string directory, bool recursively = false)
+        public static string[] getDirs(string path)
         {
-            if(string.IsNullOrEmpty(directory))
+            if (string.IsNullOrEmpty(path))
             {
                 throw new ArgumentNullException("directory");
             }
 
-            string[] files = null; 
+            var dirs = Directory.GetDirectories(path);
+            for (int i = 0; i < dirs.Length; i++)
+            {
+                dirs[i] = TezFilePath.cleanPath(dirs[i]);
+            }
 
-            if(recursively)
+            return dirs;
+        }
+
+        public static string[] getFiles(string directory, bool recursively = false)
+        {
+            if (string.IsNullOrEmpty(directory))
+            {
+                throw new ArgumentNullException("directory");
+            }
+
+            string[] files = null;
+
+            if (recursively)
             {
                 List<string> list = new List<string>(1);
                 TezFilePath.getFilesRecursively(directory, ref list);

@@ -11,6 +11,28 @@ namespace tezcat.Framework.Game
         public static readonly TezHexCubeCoordinate max = new TezHexCubeCoordinate(int.MaxValue, int.MaxValue, int.MaxValue, true);
         public static readonly TezHexCubeCoordinate min = new TezHexCubeCoordinate(int.MinValue, int.MinValue, int.MinValue, true);
 
+        #region 朝向计算
+        /// <summary>
+        /// 1左移(V+1)位
+        /// 
+        /// </summary>
+        const int MaskX001 = 1 << 0;
+        const int MaskX010 = 1 << 1;
+        const int MaskX100 = 1 << 2;
+
+        const int MaskY001 = 1 << 3;
+        const int MaskY010 = 1 << 4;
+        const int MaskY100 = 1 << 5;
+
+        const int MaskZ001 = 1 << 6;
+        const int MaskZ010 = 1 << 7;
+        const int MaskZ100 = 1 << 8;
+
+        const int Z_XY = MaskZ010 | MaskX100 | MaskY001;
+        const int Y_XZ = MaskY010 | MaskX100 | MaskZ001;
+        const int X_YZ = MaskX010 | MaskY100 | MaskZ001;
+        #endregion
+
         public int x;
         public int y;
         public int z;

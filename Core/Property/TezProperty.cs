@@ -19,7 +19,7 @@ namespace tezcat.Framework.Core
 
     public interface ITezProperty<T> : ITezProperty
     {
-        T baseValue { get; }
+        T baseValue { get; set; }
         T value { get; }
     }
 
