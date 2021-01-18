@@ -88,6 +88,13 @@ namespace tezcat.Framework.Utility
             m_Count = m_Array.Length;
         }
 
+        public TezArray(TezArray<T> other)
+        {
+            m_Array = new T[other.count];
+            m_Count = other.count;
+            Array.Copy(other.m_Array, m_Array, m_Count);
+        }
+
         public T this[int index]
         {
             get { return m_Array[index]; }

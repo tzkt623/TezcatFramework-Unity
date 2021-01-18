@@ -28,15 +28,15 @@ namespace tezcat.Framework.Definition
         #endregion
 
         public int ID { get; }
-        public TezDefinitionSystem system { get; private set; } = null;
+        public ITezDefinitionSystem system { get; private set; } = null;
         public abstract TezDefinitionNodeType nodeType { get; }
 
         List<ITezDefinitionObject> m_DefinitionObjects = null;
 
-        protected TezDefinitionNode(int id, TezDefinitionSystem set)
+        protected TezDefinitionNode(int id, ITezDefinitionSystem system)
         {
             this.ID = id;
-            this.system = set;
+            this.system = system;
         }
 
         public virtual void onRegisterObject(ITezDefinitionHandler handler)

@@ -77,9 +77,10 @@ namespace tezcat.Framework.Database
 
         List<Slot> m_Slots = new List<Slot>();
 
+        Slot m_CurrentSlot = null;
+
         protected TezItemDatabase(int ID) : base(ID)
         {
-
         }
 
         public override void register(TezDatabaseItem item)
@@ -90,7 +91,7 @@ namespace tezcat.Framework.Database
 
         private void createSlot(TezDatabaseGameItem item)
         {
-            var index = item.category.finalToken.index;
+            var index = item.category.finalToken.mainTokenIndex;
             while (m_Slots.Count <= index)
             {
                 m_Slots.Add(new Slot());
@@ -99,16 +100,44 @@ namespace tezcat.Framework.Database
             m_Slots[index].add(item);
         }
 
-        public TezDatabaseGameItem get(ITezCategoryFinalToken final_token, string name)
+        public TezDatabaseGameItem get(ITezCategoryFinalToken finalToken, string name)
         {
-            var slot = m_Slots[final_token.index];
+            var slot = m_Slots[finalToken.mainTokenIndex];
             return slot.get(name);
         }
 
-        public TezDatabaseGameItem get(ITezCategoryFinalToken final_token, int index)
+        public TezDatabaseGameItem get(ITezCategoryFinalToken finalToken, int index)
         {
-            var slot = m_Slots[final_token.index];
+            var slot = m_Slots[finalToken.mainTokenIndex];
             return slot.get(index);
+        }
+
+        /// <summary>
+        /// 进入一个类型的数据库
+        /// </summary>
+        /// <param name="finalToken"></param>
+        public void beginToken(ITezCategoryFinalToken finalToken)
+        {
+            m_CurrentSlot = m_Slots[finalToken.mainTokenIndex];
+        }
+
+        /// <summary>
+        /// 从一个类型的数据库中取得数据
+        /// 请配合beginToken使用
+        /// 不得单独使用
+        /// </summary>
+        public TezDatabaseGameItem get(int index)
+        {
+            return m_CurrentSlot.get(index);
+        }
+
+        /// <summary>
+        /// 从一个数据类型库中退出
+        /// 请配合beginToken成对使用
+        /// </summary>
+        public void endToken()
+        {
+            m_CurrentSlot = null;
         }
 
         public override void close()
@@ -120,6 +149,7 @@ namespace tezcat.Framework.Database
 
             m_Slots.Clear();
             m_Slots = null;
+            m_CurrentSlot = null;
         }
     }
 }

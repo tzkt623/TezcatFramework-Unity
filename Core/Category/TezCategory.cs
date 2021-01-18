@@ -10,18 +10,18 @@ namespace tezcat.Framework.Core
     /// </summary>
     public class TezCategory : ITezCloseable
     {
-        ITezCategoryToken[] m_Tokens = null;
-
         /// <summary>
         /// 主Token
+        /// 此类型的最上级分类
         /// </summary>
-        public ITezCategoryMainToken mainToken { get; private set; } = null;
+        public ITezCategoryMainToken mainToken => (ITezCategoryMainToken)m_Tokens[0];
 
         /// <summary>
         /// 最终Token
+        /// 此类型的最下级分类
         /// 用于比较
         /// </summary>
-        public ITezCategoryFinalToken finalToken { get; private set; } = null;
+        public ITezCategoryFinalToken finalToken => (ITezCategoryFinalToken)m_Tokens[m_Last];
 
         /// <summary>
         /// 总分类等级
@@ -31,22 +31,19 @@ namespace tezcat.Framework.Core
             get { return m_Tokens.Length; }
         }
 
+        int m_Last = -1;
+        ITezCategoryToken[] m_Tokens = null;
+
         public void setToken(List<ITezCategoryToken> list)
         {
             m_Tokens = list.ToArray();
-            this.setToken();
+            m_Last = m_Tokens.Length - 1;
         }
 
         public void setToken(params ITezCategoryToken[] tokens)
         {
             m_Tokens = tokens;
-            this.setToken();
-        }
-
-        private void setToken()
-        {
-            this.mainToken = (ITezCategoryMainToken)m_Tokens[0];
-            this.finalToken = (ITezCategoryFinalToken)m_Tokens[m_Tokens.Length - 1];
+            m_Last = m_Tokens.Length - 1;
         }
 
         public int get(int index)
@@ -57,7 +54,6 @@ namespace tezcat.Framework.Core
         public void close()
         {
             m_Tokens = null;
-            this.finalToken = null;
         }
 
         /// <summary>

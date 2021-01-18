@@ -8,7 +8,7 @@ namespace tezcat.Framework.Definition
 
         List<ITezDefinitionHandler> m_Objects = new List<ITezDefinitionHandler>();
 
-        protected TezDefinitionLeaf(int id, TezDefinitionSystem set) : base(id, set)
+        protected TezDefinitionLeaf(int id, ITezDefinitionSystem system) : base(id, system)
         {
 
         }

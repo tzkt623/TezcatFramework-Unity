@@ -35,9 +35,10 @@ namespace tezcat.Framework.Core
     public interface ITezCategoryFinalToken : ITezCategoryToken
     {
         /// <summary>
-        /// 用于在MainToken中进行排序
+        /// 用于记录在MainToken中的位置
+        /// 可用于Database的索引建立等
         /// </summary>
-        int index { get; }
+        int mainTokenIndex { get; }
     }
 
     public abstract class TezCategoryBaseToken<TEnum, TValue>
@@ -54,13 +55,16 @@ namespace tezcat.Framework.Core
         }
     }
 
+    /// <summary>
+    /// 主分类节点
+    /// 用于对object进行分类
+    /// </summary>
     public abstract class TezCategoryMainToken<TEnum, TValue>
         : TezCategoryBaseToken<TEnum, TValue>
         , ITezCategoryMainToken
         where TEnum : TezCategoryBaseToken<TEnum, TValue>
         where TValue : struct, IComparable
     {
-        private int m_ID = 0;
         List<ITezCategoryFinalToken> m_FinalTokenList = new List<ITezCategoryFinalToken>();
         Dictionary<string, ITezCategoryFinalToken> m_FinalTokenDic = new Dictionary<string, ITezCategoryFinalToken>();
 
@@ -103,6 +107,10 @@ namespace tezcat.Framework.Core
         }
     }
 
+    /// <summary>
+    /// 路径分类节点
+    /// 通过传入父路径节点来建立联系
+    /// </summary>
     public abstract class TezCategoryPathToken<TEnum, TValue>
         : TezCategoryBaseToken<TEnum, TValue>
         where TEnum : TezCategoryBaseToken<TEnum, TValue>
@@ -118,13 +126,21 @@ namespace tezcat.Framework.Core
         }
     }
 
+    /// <summary>
+    /// 最终分类节点
+    /// 在此节点所标记的object就是实际被实现的object
+    /// </summary>
     public abstract class TezCategoryFinalToken<TEnum, TValue>
         : TezCategoryBaseToken<TEnum, TValue>
         , ITezCategoryFinalToken
         where TEnum : TezCategoryBaseToken<TEnum, TValue>
         where TValue : struct, IComparable
     {
-        public int index { get; }
+        /// <summary>
+        /// 此节点在主分类节点中的index
+        /// 多用于database
+        /// </summary>
+        public int mainTokenIndex { get; }
 
         /// <summary>
         /// 传入类型路径中的父级来构建路径
@@ -132,7 +148,7 @@ namespace tezcat.Framework.Core
         /// <param name="parent">父级路径Token</param>
         protected TezCategoryFinalToken(TValue value, ITezCategoryToken parent, ITezCategoryMainToken main_token) : base(value, parent.layer + 1)
         {
-            this.index = main_token.generateID();
+            this.mainTokenIndex = main_token.generateID();
             main_token.registerFinalToken(this);
         }
     }

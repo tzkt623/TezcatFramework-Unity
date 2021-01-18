@@ -4,153 +4,34 @@ using tezcat.Framework.Core;
 
 namespace tezcat.Framework.Definition
 {
-    public abstract class TezDefinitionSystem
+    public interface ITezDefinitionSystem
         : ITezCloseable
         , ITezDefinitionHandler
     {
-        #region Manager
-        public class Element : ITezDefinitionToken
-        {
-            public int tokenID { get; }
-            public string tokenName { get; }
-            public TezDefinitionTokenType tokenType { get; }
+        TezDefinitionNode getPrimaryNode(int id);
+        TezDefinitionLeaf getSecondaryNode(int id);
+    }
 
-            /// <summary>
-            /// 层级
-            /// 只在Primary路径上生效
-            /// </summary>
-            public int layer { get; } = -1;
-
-            public Element(int id, string name, TezDefinitionTokenType type)
-            {
-                this.tokenID = id;
-                this.tokenName = name;
-                this.tokenType = type;
-            }
-
-            public Element(int id, string name, TezDefinitionTokenType type, ITezDefinitionToken parent)
-            {
-                this.tokenID = id;
-                this.tokenName = name;
-                this.tokenType = type;
-                if (parent != null)
-                {
-                    this.layer = parent.layer + 1;
-                }
-                else
-                {
-                    this.layer = 0;
-                }
-            }
-
-            public override bool Equals(object obj)
-            {
-                return this.tokenID == ((Element)obj).tokenID;
-            }
-
-            public override int GetHashCode()
-            {
-                return tokenID.GetHashCode();
-            }
-
-            public void close()
-            {
-            }
-        }
-
-        static List<Element> m_PrimaryElements = new List<Element>();
-        static Dictionary<string, Element> m_PrimaryElementsWithName = new Dictionary<string, Element>();
-        public static Element createPrimaryElement(string name, TezDefinitionTokenType type, ITezDefinitionToken parent)
-        {
-            if (m_PrimaryElementsWithName.ContainsKey(name))
-            {
-                throw new Exception(string.Format("TezDefinitionSet : this Primary name [{0}] is existed", name));
-            }
-
-            var id = m_PrimaryElements.Count;
-            var element = new Element(id, name, type, parent);
-            m_PrimaryElements.Add(element);
-            m_PrimaryElementsWithName.Add(name, element);
-            return element;
-        }
-
-        public static Element getPrimary(string name)
-        {
-            Element element = null;
-            if (m_PrimaryElementsWithName.TryGetValue(name, out element))
-            {
-                return element;
-            }
-
-            throw new Exception(string.Format("TezDefinitionSet : Primary name [{0}] not exist", name));
-        }
-
-        public static Element getPrimary(int index)
-        {
-            return m_PrimaryElements[index];
-        }
-
-        static List<Element> m_SecondaryElements = new List<Element>();
-        static Dictionary<string, Element> m_SecondaryElementsWithName = new Dictionary<string, Element>();
-        public static Element createSecondaryElement(string name)
-        {
-            if (m_SecondaryElementsWithName.ContainsKey(name))
-            {
-                throw new Exception(string.Format("TezDefinitionSet : this Secondary name [{0}] is existed", name));
-            }
-
-            var id = m_SecondaryElements.Count;
-            var element = new Element(id, name, TezDefinitionTokenType.Leaf);
-            m_SecondaryElements.Add(element);
-            m_SecondaryElementsWithName.Add(name, element);
-            return element;
-        }
-
-        public static Element getSecondary(string name)
-        {
-            Element element = null;
-            if (m_SecondaryElementsWithName.TryGetValue(name, out element))
-            {
-                return element;
-            }
-
-            throw new Exception(string.Format("TezDefinitionSet : Secondary name [{0}] not exist", name));
-        }
-
-        public static Element getSecondary(int index)
-        {
-            return m_SecondaryElements[index];
-        }
-        #endregion
-
-        //         List<TezDefinitionNode> m_PrimaryNodes = new List<TezDefinitionNode>();
-        //         List<TezDefinitionLeaf> m_SecondaryNodes = new List<TezDefinitionLeaf>();
-
+    /// <summary>
+    /// 定义分类系统
+    /// 用于RPG游戏类的加成系统
+    /// 常见于装备,技能,属性
+    /// </summary>
+    /// <typeparam name="Container">分类器内部结构 默认提供List和Hash两种任选</typeparam>
+    public abstract class TezDefinitionSystem<Container>
+        : ITezDefinitionSystem
+        where Container : TezDefinitionSystemContainer, new()
+    {
         const int PrimaryBegin = 0;
-
-        Dictionary<int, TezDefinitionNode> m_PrimaryNodes = new Dictionary<int, TezDefinitionNode>();
-        Dictionary<int, TezDefinitionLeaf> m_SecondaryNodes = new Dictionary<int, TezDefinitionLeaf>();
+        TezDefinitionSystemContainer m_Container = new Container();
 
         /// <summary>
         /// 关闭
         /// </summary>
         public virtual void close()
         {
-            foreach (var pair in m_PrimaryNodes)
-            {
-                pair.Value.close();
-            }
-
-            foreach (var pair in m_SecondaryNodes)
-            {
-                pair.Value.close();
-            }
-
-            m_PrimaryNodes.Clear();
-            m_SecondaryNodes.Clear();
-
-            m_PrimaryNodes = null;
-            m_SecondaryNodes = null;
+            m_Container.close();
+            m_Container = null;
         }
 
         protected abstract TezDefinitionNode onCreatePrimaryChild(ITezDefinitionToken token);
@@ -161,10 +42,10 @@ namespace tezcat.Framework.Definition
             var id = token.tokenID;
 
             TezDefinitionNode node = null;
-            if (!m_PrimaryNodes.TryGetValue(id, out node))
+            if (!m_Container.tryGetPrimaryNode(id, out node))
             {
                 node = this.onCreatePrimaryChild(token);
-                m_PrimaryNodes.Add(id, node);
+                m_Container.addPrimaryNode(id, node);
                 pre_path_node?.addChild(id);
             }
 
@@ -181,10 +62,10 @@ namespace tezcat.Framework.Definition
             var id = token.tokenID;
 
             TezDefinitionNode node = null;
-            if (!m_PrimaryNodes.TryGetValue(id, out node))
+            if (!m_Container.tryGetPrimaryNode(id, out node))
             {
                 node = this.onCreatePrimaryChild(token);
-                m_PrimaryNodes.Add(id, node);
+                m_Container.addPrimaryNode(id, node);
             }
 
             return node;
@@ -197,8 +78,7 @@ namespace tezcat.Framework.Definition
 
         public TezDefinitionNode getPrimaryNode(int id)
         {
-            TezDefinitionNode node = null;
-            m_PrimaryNodes.TryGetValue(id, out node);
+            m_Container.tryGetPrimaryNode(id, out TezDefinitionNode node);
             return node;
         }
 
@@ -207,10 +87,10 @@ namespace tezcat.Framework.Definition
             var id = token.tokenID;
 
             TezDefinitionLeaf node = null;
-            if (!m_SecondaryNodes.TryGetValue(id, out node))
+            if (!m_Container.tryGetSecondaryNode(id, out node))
             {
                 node = this.onCreateSecondaryChild(token);
-                m_SecondaryNodes.Add(id, node);
+                m_Container.addSecondaryNode(id, node);
             }
 
             return node;
@@ -223,8 +103,7 @@ namespace tezcat.Framework.Definition
 
         public TezDefinitionLeaf getSecondaryNode(int id)
         {
-            TezDefinitionLeaf node = null;
-            m_SecondaryNodes.TryGetValue(id, out node);
+            m_Container.tryGetSecondaryNode(id, out TezDefinitionLeaf node);
             return node;
         }
 

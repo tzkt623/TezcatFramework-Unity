@@ -11,7 +11,7 @@ namespace tezcat.Framework.Definition
         }
         TezArray<int> m_Children = new TezArray<int>(1);
 
-        protected TezDefinitionPath(int id, TezDefinitionSystem set) : base(id, set)
+        protected TezDefinitionPath(int id, ITezDefinitionSystem system) : base(id, system)
         {
         }
 
