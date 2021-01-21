@@ -14,14 +14,14 @@ namespace tezcat.Framework.Core
         /// 主Token
         /// 此类型的最上级分类
         /// </summary>
-        public ITezCategoryMainToken mainToken => (ITezCategoryMainToken)m_Tokens[0];
+        public ITezCategoryToken mainToken => m_Tokens[0];
 
         /// <summary>
         /// 最终Token
         /// 此类型的最下级分类
         /// 用于比较
         /// </summary>
-        public ITezCategoryFinalToken finalToken => (ITezCategoryFinalToken)m_Tokens[m_Last];
+        public ITezCategoryToken finalToken => m_Tokens[m_Last];
 
         /// <summary>
         /// 总分类等级

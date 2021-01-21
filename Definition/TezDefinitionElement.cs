@@ -57,6 +57,9 @@ namespace tezcat.Framework.Definition
             }
         }
 
+        public static IReadOnlyList<Element> primaryElementList => m_PrimaryElements;
+        public static IReadOnlyDictionary<string, Element> primaryElementDic => m_PrimaryElementsWithName;
+
         static List<Element> m_PrimaryElements = new List<Element>();
         static Dictionary<string, Element> m_PrimaryElementsWithName = new Dictionary<string, Element>();
         public static Element createPrimaryElement(string name, TezDefinitionTokenType type, ITezDefinitionToken parent)
@@ -88,6 +91,9 @@ namespace tezcat.Framework.Definition
         {
             return m_PrimaryElements[index];
         }
+
+        public static IReadOnlyList<Element> secondaryElementList => m_SecondaryElements;
+        public static IReadOnlyDictionary<string, Element> secondaryElementDic => m_SecondaryElementsWithName;
 
         static List<Element> m_SecondaryElements = new List<Element>();
         static Dictionary<string, Element> m_SecondaryElementsWithName = new Dictionary<string, Element>();

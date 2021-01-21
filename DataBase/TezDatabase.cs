@@ -91,7 +91,7 @@ namespace tezcat.Framework.Database
 
         private void createSlot(TezDatabaseGameItem item)
         {
-            var index = item.category.finalToken.mainTokenIndex;
+            var index = item.category.finalToken.finalIndexInRootToken;
             while (m_Slots.Count <= index)
             {
                 m_Slots.Add(new Slot());
@@ -100,15 +100,15 @@ namespace tezcat.Framework.Database
             m_Slots[index].add(item);
         }
 
-        public TezDatabaseGameItem get(ITezCategoryFinalToken finalToken, string name)
+        public TezDatabaseGameItem get(ITezCategoryToken finalToken, string name)
         {
-            var slot = m_Slots[finalToken.mainTokenIndex];
+            var slot = m_Slots[finalToken.finalIndexInRootToken];
             return slot.get(name);
         }
 
-        public TezDatabaseGameItem get(ITezCategoryFinalToken finalToken, int index)
+        public TezDatabaseGameItem get(ITezCategoryToken finalToken, int index)
         {
-            var slot = m_Slots[finalToken.mainTokenIndex];
+            var slot = m_Slots[finalToken.finalIndexInRootToken];
             return slot.get(index);
         }
 
@@ -116,9 +116,9 @@ namespace tezcat.Framework.Database
         /// 进入一个类型的数据库
         /// </summary>
         /// <param name="finalToken"></param>
-        public void beginToken(ITezCategoryFinalToken finalToken)
+        public void beginToken(ITezCategoryToken finalToken)
         {
-            m_CurrentSlot = m_Slots[finalToken.mainTokenIndex];
+            m_CurrentSlot = m_Slots[finalToken.finalIndexInRootToken];
         }
 
         /// <summary>

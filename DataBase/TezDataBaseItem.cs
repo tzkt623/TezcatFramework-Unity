@@ -25,12 +25,22 @@ namespace tezcat.Framework.Database
             this.DBID = new TezDBID(db_id, item_id);
         }
 
-        public virtual void serialize(TezWriter writer)
+        public void serialize(TezWriter writer)
+        {
+            this.onSerialize(writer);
+        }
+
+        protected virtual void onSerialize(TezWriter writer)
         {
             writer.write(TezReadOnlyString.NID, this.NID);
         }
 
-        public virtual void deserialize(TezReader reader)
+        public void deserialize(TezReader reader)
+        {
+            this.onDeserialize(reader);
+        }
+
+        protected virtual void onDeserialize(TezReader reader)
         {
             this.NID = reader.readString(TezReadOnlyString.NID);
         }
@@ -138,36 +148,20 @@ namespace tezcat.Framework.Database
         public List<string> TAGS { get; private set; } = new List<string>();
 
         /// <summary>
-        /// 建立Item的分类
-        /// </summary>
-        private List<ITezCategoryToken> buildCategory
-        {
-            get
-            {
-                List<ITezCategoryToken> list = new List<ITezCategoryToken>(4);
-                this.onBuildCategory(ref list);
-                return list;
-            }
-        }
-
-        /// <summary>
         /// 使用Category系统
         /// 建立Item的分类路径
         /// </summary>
-        protected abstract void onBuildCategory(ref List<ITezCategoryToken> list);
-
-        public TezDatabaseGameItem()
-        {
-            this.category.setToken(buildCategory);
-        }
+        protected abstract void onBuildCategory(TezReader reader, List<ITezCategoryToken> list);
 
         public override void close()
         {
             base.close();
 
-            this.CID = null;
-
+            this.category.close();
             this.TAGS.Clear();
+
+            this.category = null;
+            this.CID = null;
             this.TAGS = null;
         }
 
@@ -181,18 +175,27 @@ namespace tezcat.Framework.Database
             return entity;
         }
 
-        public override void serialize(TezWriter writer)
+        protected override void onSerialize(TezWriter writer)
         {
-            base.serialize(writer);
+            base.onSerialize(writer);
             writer.write(TezReadOnlyString.CID, this.CID);
             writer.write(TezReadOnlyString.NID, this.NID);
         }
 
-        public override void deserialize(TezReader reader)
+        protected override void onDeserialize(TezReader reader)
         {
-            base.deserialize(reader);
+            base.onDeserialize(reader);
+            this.buildCategory(reader);
             this.CID = reader.readString(TezReadOnlyString.CID);
             this.NID = reader.readString(TezReadOnlyString.NID);
+        }
+
+        private void buildCategory(TezReader reader)
+        {
+            ///6层初始容量应该够用了
+            var list = new List<ITezCategoryToken>(6);
+            this.onBuildCategory(reader, list);
+            this.category.setToken(list);
         }
 
         protected virtual TezGameObject onCreateObject()
