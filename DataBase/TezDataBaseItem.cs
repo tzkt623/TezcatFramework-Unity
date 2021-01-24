@@ -137,7 +137,7 @@ namespace tezcat.Framework.Database
         public string CID { get; private set; }
 
 
-        public TezCategory category { get; protected set; } = new TezCategory();
+        public TezCategory category { get; private set; }
 
         /// <summary>
         /// 允许堆叠的数量
@@ -151,7 +151,7 @@ namespace tezcat.Framework.Database
         /// 使用Category系统
         /// 建立Item的分类路径
         /// </summary>
-        protected abstract void onBuildCategory(TezReader reader, List<ITezCategoryToken> list);
+        protected abstract void onBuildCategory(TezReader reader, List<ITezCategoryBaseToken> list);
 
         public override void close()
         {
@@ -193,9 +193,15 @@ namespace tezcat.Framework.Database
         private void buildCategory(TezReader reader)
         {
             ///6层初始容量应该够用了
-            var list = new List<ITezCategoryToken>(6);
+            var list = new List<ITezCategoryBaseToken>(6);
             this.onBuildCategory(reader, list);
-            this.category.setToken(list);
+            TezCategorySystem.generate((ITezCategoryRootToken)list[0], (ITezCategoryToken)list[list.Count - 1], out TezCategory result, () =>
+            {
+                var category = new TezCategory();
+                category.setToken(list);
+                return category;
+            });
+            this.category = result;
         }
 
         protected virtual TezGameObject onCreateObject()

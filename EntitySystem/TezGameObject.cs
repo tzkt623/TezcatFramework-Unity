@@ -20,7 +20,7 @@ namespace tezcat.Framework.ECS
         /// <summary>
         /// 对象分类
         /// </summary>
-        public TezCategory category { get; private set; } = null;
+        public TezCategory category { get; protected set; } = null;
 
         /// <summary>
         /// 模板物品
@@ -137,4 +137,3 @@ namespace tezcat.Framework.ECS
         }
     }
 }
-

@@ -14,14 +14,14 @@ namespace tezcat.Framework.Core
         /// 主Token
         /// 此类型的最上级分类
         /// </summary>
-        public ITezCategoryToken mainToken => m_Tokens[0];
+        public ITezCategoryRootToken rootToken => (ITezCategoryRootToken)m_Tokens[0];
 
         /// <summary>
         /// 最终Token
         /// 此类型的最下级分类
         /// 用于比较
         /// </summary>
-        public ITezCategoryToken finalToken => m_Tokens[m_Last];
+        public ITezCategoryToken finalToken => (ITezCategoryToken)m_Tokens[m_Last];
 
         /// <summary>
         /// 总分类等级
@@ -32,15 +32,15 @@ namespace tezcat.Framework.Core
         }
 
         int m_Last = -1;
-        ITezCategoryToken[] m_Tokens = null;
+        ITezCategoryBaseToken[] m_Tokens = null;
 
-        public void setToken(List<ITezCategoryToken> list)
+        public void setToken(List<ITezCategoryBaseToken> list)
         {
             m_Tokens = list.ToArray();
             m_Last = m_Tokens.Length - 1;
         }
 
-        public void setToken(params ITezCategoryToken[] tokens)
+        public void setToken(params ITezCategoryBaseToken[] tokens)
         {
             m_Tokens = tokens;
             m_Last = m_Tokens.Length - 1;
@@ -59,7 +59,7 @@ namespace tezcat.Framework.Core
         /// <summary>
         /// 检测Category是否包含此类型
         /// </summary>
-        public bool contains(ITezCategoryToken token)
+        public bool contains(ITezCategoryBaseToken token)
         {
             if (token.layer < m_Tokens.Length)
             {
