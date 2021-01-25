@@ -41,8 +41,7 @@ namespace tezcat.Framework.Core
         /// 基础数值
         /// 可以更改
         /// 更改后此属性被标记为脏
-        /// 可以通过直接获得Value来获得最新数据
-        /// 也可以通过调用update来更新以及通知数据变化
+        /// 可以通过调用update来更新Value以及通知数据变化
         /// </summary>
         public virtual T baseValue
         {
