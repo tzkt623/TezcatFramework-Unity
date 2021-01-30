@@ -7,9 +7,6 @@ namespace tezcat.Framework.Core
     public interface ITezAttribute : ITezValueWrapper
     {
         event TezEventExtension.Action<ITezAttribute> onValueChanged;
-
-        void addBuffer(TezAttributeBuffer buffer);
-        bool removeBuffer(TezAttributeBuffer buffer);
     }
 
     public abstract class TezAttribute<T>
@@ -19,9 +16,10 @@ namespace tezcat.Framework.Core
         public event TezEventExtension.Action<ITezAttribute> onValueChanged;
         public override TezWrapperType wrapperType => TezWrapperType.Attribute;
 
-        List<TezAttributeBuffer> m_Buffers = new List<TezAttributeBuffer>();
-
         T m_Value;
+        /// <summary>
+        /// 设置此数值将会通知更新
+        /// </summary>
         public override T value
         {
             get
@@ -31,9 +29,20 @@ namespace tezcat.Framework.Core
             set
             {
                 m_Value = value;
-                this.onValueChanged?.Invoke(this);
+                this.update();
             }
         }
+
+        /// <summary>
+        /// 内部数据
+        /// 设置此数据将不会通知更新
+        /// 需要手动调用update
+        /// </summary>
+        public T innerValue
+        {
+            set { m_Value = value; }
+        }
+
 
         protected TezAttribute(ITezValueDescriptor name) : base(name)
         {
@@ -47,24 +56,14 @@ namespace tezcat.Framework.Core
             this.descriptor = null;
             m_Value = default;
             onValueChanged = null;
-            m_Buffers.Clear();
-            m_Buffers = null;
         }
 
-        public void addBuffer(TezAttributeBuffer buffer)
+        /// <summary>
+        /// 通知数据更新
+        /// </summary>
+        public void update()
         {
-            buffer.onAdd(this);
-            m_Buffers.Add(buffer);
-        }
-
-        public bool removeBuffer(TezAttributeBuffer buffer)
-        {
-            if(m_Buffers.Remove(buffer))
-            {
-                buffer.onRemove(this);
-                return true;
-            }
-            return false;
+            this.onValueChanged?.Invoke(this);
         }
     }
 
@@ -76,7 +75,7 @@ namespace tezcat.Framework.Core
         }
     }
 
-    public abstract class TezAttributeFloat : TezAttribute<int>
+    public abstract class TezAttributeFloat : TezAttribute<float>
     {
         protected TezAttributeFloat(ITezValueDescriptor name) : base(name)
         {

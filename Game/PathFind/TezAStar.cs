@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using tezcat.Framework.Extension;
 using tezcat.Framework.Utility;
 
@@ -6,21 +7,22 @@ namespace tezcat.Framework.Game
 {
     public abstract class TezAStarNode<Self>
         : ITezBinaryHeapItem<Self>
+        , IEquatable<Self>
         where Self : TezAStarNode<Self>
     {
         public Self parent { get; set; }
         public int index { get; set; } = -1;
 
         /// <summary>
-        /// 距离起点的Cost
+        /// 移动的代价
+        /// 上一个点的代价+上一个点到此点的代价
+        /// 等于此点的gCost
         /// </summary>
-        /// <returns></returns>
         public virtual int gCost { get; set; }
 
         /// <summary>
-        /// 距离终点的Cost
+        /// 距离终点无视任何阻挡的最短路径
         /// </summary>
-        /// <returns></returns>
         public virtual int hCost { get; set; }
 
         /// <summary>
@@ -40,17 +42,29 @@ namespace tezcat.Framework.Game
         public abstract int CompareTo(Self other);
 
         public abstract bool sameAs(Self other);
+
+        public override int GetHashCode()
+        {
+            return base.GetHashCode();
+        }
+
+        public abstract bool Equals(Self other);
     }
 
     public class TezAStar<Node> where Node : TezAStarNode<Node>
     {
+        #region Pool
+        static Queue<HashSet<Node>> Pool = new Queue<HashSet<Node>>();
+        #endregion
+
         public event TezEventExtension.Action<List<Node>> onPathFound;
         public event TezEventExtension.Action onPathNotFound;
 
         public void findPath(Node start, Node end, TezBinaryHeap<Node> open_set)
         {
+
 //             Stopwatch stopwatch = new Stopwatch();
-//             stopwatch.Start(
+//             stopwatch.Start();
             if (end.blocked())
             {
                 onPathNotFound?.Invoke();
@@ -87,7 +101,6 @@ namespace tezcat.Framework.Game
                     {
                         neighbour.gCost = newCost;
                         neighbour.hCost = neighbour.getCostFrom(end);
-
                         neighbour.parent = currentNode;
 
                         if (!inOpen)

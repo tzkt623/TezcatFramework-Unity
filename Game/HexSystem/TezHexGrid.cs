@@ -351,37 +351,9 @@ namespace tezcat.Framework.Game
 
         #region Mesh
 
-        public class Mesh
+        public TezHexMesh createHexMesh(Vector3 center)
         {
-            public List<Vector3> vertices = new List<Vector3>();
-            public List<int> indices = new List<int>();
-            public List<Vector2> uv = new List<Vector2>();
-
-            public void combine(Mesh data)
-            {
-                int rate = vertices.Count > 0 ? vertices.Count / 4 : 0;
-
-                for (int i = 0; i < data.vertices.Count; i++)
-                {
-                    vertices.Add(data.vertices[i]);
-                }
-
-                int add = rate * data.vertices.Count;
-                for (int i = 0; i < data.indices.Count; i++)
-                {
-                    indices.Add(data.indices[i] + add);
-                }
-
-                for (int i = 0; i < data.uv.Count; i++)
-                {
-                    uv.Add(data.uv[i]);
-                }
-            }
-        }
-
-        public Mesh createHexMesh(Vector3 center)
-        {
-            Mesh mesh = new Mesh();
+            TezHexMesh mesh = new TezHexMesh();
             mesh.vertices.Capacity = 7;
 
             mesh.vertices.Add(center);
@@ -400,9 +372,9 @@ namespace tezcat.Framework.Game
             return mesh;
         }
 
-        public Mesh createBorderMesh(Vector3 center, float border_scale = 0.8f)
+        public TezHexMesh createBorderMesh(Vector3 center, float border_scale = 0.8f)
         {
-            Mesh mesh = new Mesh();
+            TezHexMesh mesh = new TezHexMesh();
             mesh.vertices.Capacity = 12;
             mesh.indices.Capacity = BorderTriangleIndices.Length;
 
@@ -424,9 +396,9 @@ namespace tezcat.Framework.Game
             return mesh;
         }
 
-        public Mesh createBorderMesh(List<Vector3> center_list, float border_scale = 0.8f)
+        public TezHexMesh createBorderMesh(List<Vector3> center_list, float border_scale = 0.8f)
         {
-            Mesh mesh = new Mesh();
+            TezHexMesh mesh = new TezHexMesh();
             mesh.vertices.Capacity = center_list.Count * 12;
             mesh.indices.Capacity = center_list.Count * BorderTriangleIndices.Length;
 
@@ -457,9 +429,9 @@ namespace tezcat.Framework.Game
             return mesh;
         }
 
-        public Mesh createMesh(List<Vector3> center_list)
+        public TezHexMesh createMesh(List<Vector3> center_list)
         {
-            Mesh mesh = new Mesh();
+            TezHexMesh mesh = new TezHexMesh();
             mesh.vertices.Capacity = 7 * center_list.Count;
             mesh.indices.Capacity = center_list.Count * HexTriangleIndices.Length;
 
@@ -485,4 +457,32 @@ namespace tezcat.Framework.Game
         }
         #endregion
     }
+    public class TezHexMesh
+    {
+        public List<Vector3> vertices = new List<Vector3>();
+        public List<int> indices = new List<int>();
+        public List<Vector2> uv = new List<Vector2>();
+
+        public void combine(TezHexMesh data)
+        {
+            int rate = vertices.Count > 0 ? vertices.Count / 4 : 0;
+
+            for (int i = 0; i < data.vertices.Count; i++)
+            {
+                vertices.Add(data.vertices[i]);
+            }
+
+            int add = rate * data.vertices.Count;
+            for (int i = 0; i < data.indices.Count; i++)
+            {
+                indices.Add(data.indices[i] + add);
+            }
+
+            for (int i = 0; i < data.uv.Count; i++)
+            {
+                uv.Add(data.uv[i]);
+            }
+        }
+    }
+
 }
