@@ -77,9 +77,9 @@ namespace tezcat.Framework.InputSystem
                 UnityKeyConfigSystem.instance.readFromSave(reader);
             }
 
-            if(UnityKeyConfigSystem.instance.isWaitingKey)
+            if(UnityKeyConfigSystem.instance.isWaitingChangeKey)
             {
-                UnityKeyConfigSystem.instance.waitingKey();
+                UnityKeyConfigSystem.instance.waitingChangeKey();
             }
         }
     }

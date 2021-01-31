@@ -4,13 +4,20 @@ using tezcat.Framework.Extension;
 
 namespace tezcat.Framework.InputSystem
 {
+    /// <summary>
+    /// 
+    /// 按键配置管理器类
+    /// 
+    /// 具体使用方法看TestKeyConfig
+    /// 
+    /// </summary>
     public class TezKeyConfigManager
     {
         public event TezEventExtension.Action<TezKeyWrapper> onPrepare;
         public event TezEventExtension.Action<TezKeyWrapper> onOK;
         public event TezEventExtension.Action<TezKeyWrapper> onCancel;
 
-        public bool isWaitingKey { get { return m_ChangeKey != null; } }
+        public bool isWaitingChangeKey { get { return m_ChangeKey != null; } }
 
         List<TezKeyConfigLayer> m_List = new List<TezKeyConfigLayer>();
         Dictionary<string, TezKeyConfigLayer> m_Dic = new Dictionary<string, TezKeyConfigLayer>();
@@ -92,7 +99,10 @@ namespace tezcat.Framework.InputSystem
             onPrepare?.Invoke(wrapper);
         }
 
-        public void waitingKey()
+        /// <summary>
+        /// 等待改建按键
+        /// </summary>
+        public void waitingChangeKey()
         {
             m_ChangeKey.waitingKey();
         }

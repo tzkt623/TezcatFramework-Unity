@@ -1,19 +1,26 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.Generic;
+using tezcat.Framework.Core;
 using tezcat.Framework.Extension;
 
 namespace tezcat.Framework.Utility
 {
-    public interface ITezBinaryHeapItem<T> : IComparable<T>
+    public interface ITezBinaryHeapItem
     {
         int index { get; set; }
-        bool sameAs(T other);
+    }
+    public interface ITezBinaryHeapItem<T>
+        : ITezBinaryHeapItem
+        , IComparable<T>
+    {
     }
 
     public class TezTestBHItem : ITezBinaryHeapItem<TezTestBHItem>
     {
         public int id { get; set; }
 
-        int ITezBinaryHeapItem<TezTestBHItem>.index
+        int ITezBinaryHeapItem.index
         {
             get; set;
         }
@@ -21,11 +28,6 @@ namespace tezcat.Framework.Utility
         int IComparable<TezTestBHItem>.CompareTo(TezTestBHItem other)
         {
             return id.CompareTo(other.id);
-        }
-
-        bool ITezBinaryHeapItem<TezTestBHItem>.sameAs(TezTestBHItem other)
-        {
-            throw new NotImplementedException();
         }
     }
 
@@ -37,7 +39,10 @@ namespace tezcat.Framework.Utility
     /// 高优先级在前
     /// 
     /// </summary>
-    public class TezBinaryHeap<T> where T : ITezBinaryHeapItem<T>
+    public class TezBinaryHeap<T>
+        : ITezCloseable
+        , IEnumerable<T>
+        where T : ITezBinaryHeapItem, ITezBinaryHeapItem<T>
     {
         T[] m_Items = null;
 
@@ -50,16 +55,16 @@ namespace tezcat.Framework.Utility
             {
                 if (m_Capacity < value)
                 {
-                    T[] temp = new T[value];
-                    Array.Copy(m_Items, temp, this.count);
+                    m_Capacity = value;
+                    T[] temp = new T[m_Capacity];
+                    Array.Copy(m_Items, temp, m_Count);
                     m_Items = temp;
                 }
-
-                m_Capacity = value;
             }
         }
 
-        public int count { get; private set; } = 0;
+        public int count => m_Count;
+        int m_Count = 0;
 
         public TezBinaryHeap()
         {
@@ -79,13 +84,13 @@ namespace tezcat.Framework.Utility
 
         private void grow()
         {
-            if (count + 1 >= m_Capacity)
+            if (m_Count + 1 >= m_Capacity)
             {
                 m_Capacity += m_GrowCount;
                 m_GrowCount = m_GrowCount + (m_GrowCount >> 1) + 1;
 
                 T[] temp = new T[m_Capacity];
-                Array.Copy(m_Items, temp, this.count);
+                Array.Copy(m_Items, temp, m_Count);
                 m_Items = temp;
             }
         }
@@ -94,23 +99,23 @@ namespace tezcat.Framework.Utility
         {
             this.grow();
 
-            item.index = count;
-            m_Items[count] = item;
+            item.index = m_Count;
+            m_Items[m_Count] = item;
             this.sortUp(item);
 
-            count += 1;
+            m_Count += 1;
         }
 
         public T pop()
         {
             T first = m_Items[0];
-            count -= 1;
+            m_Count -= 1;
 
-            m_Items[0] = m_Items[count];
+            m_Items[0] = m_Items[m_Count];
             m_Items[0].index = 0;
 
             this.sortDown(m_Items[0]);
-            m_Items[count] = default(T);
+            m_Items[m_Count] = default(T);
 
             return first;
         }
@@ -118,13 +123,9 @@ namespace tezcat.Framework.Utility
         public bool contains(T item)
         {
             var index = item.index;
-            if(index >= 0 && index < this.count)
+            if (index >= 0 && index < m_Count)
             {
-                var select = m_Items[index];
-                if (select != null)
-                {
-                    return select.sameAs(item);
-                }
+                return item.Equals(m_Items[index]);
             }
 
             return false;
@@ -135,7 +136,7 @@ namespace tezcat.Framework.Utility
         /// </summary>
         public void reset()
         {
-            count = 0;
+            m_Count = 0;
             m_GrowCount = 3;
             m_Capacity = 8;
             m_Items = new T[m_Capacity];
@@ -147,12 +148,12 @@ namespace tezcat.Framework.Utility
         public void clear()
         {
             Array.Clear(m_Items, 0, m_Items.Length);
-            count = 0;
+            m_Count = 0;
         }
 
         public void debug(TezEventExtension.Action<int, T> action)
         {
-            for (int i = 0; i < this.count; i++)
+            for (int i = 0; i < m_Count; i++)
             {
                 action(i, m_Items[i]);
             }
@@ -173,12 +174,12 @@ namespace tezcat.Framework.Utility
                 int swap_index = 0;
 
                 ///如果左子树没有越界
-                if (left_index < count)
+                if (left_index < m_Count)
                 {
                     ///暂时保存
                     swap_index = left_index;
                     ///如果右子树也没有越界
-                    if (right_index < count)
+                    if (right_index < m_Count)
                     {
                         ///比较左右子树的优先级
                         ///选取优先级大的一个作为交换对象
@@ -241,6 +242,21 @@ namespace tezcat.Framework.Utility
             int temp = item1.index;
             item1.index = item2.index;
             item2.index = temp;
+        }
+
+        public void close()
+        {
+            m_Items = null;
+        }
+
+        public IEnumerator<T> GetEnumerator()
+        {
+            return new TezArrayEnumerator<T>(m_Items);
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return m_Items.GetEnumerator();
         }
     }
 }

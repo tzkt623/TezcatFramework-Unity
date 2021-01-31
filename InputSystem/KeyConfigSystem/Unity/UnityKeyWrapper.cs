@@ -21,18 +21,6 @@ namespace tezcat.Framework.InputSystem
 
         public KeyCode keyCode;
 
-        public override void resetToDefault(TezReader reader, int index)
-        {
-            if (Enum.TryParse(reader.readString(index), out KeyCode result))
-            {
-                keyCode = result;
-            }
-            else
-            {
-                throw new Exception();
-            }
-        }
-
         public override void writeToSave(TezWriter writer)
         {
             writer.write("State", (int)this.state);

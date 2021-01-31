@@ -56,7 +56,5 @@ namespace tezcat.Framework.InputSystem
 
         public abstract void readFromSave(TezReader reader);
         public abstract void writeToSave(TezWriter writer);
-
-        public abstract void resetToDefault(TezReader reader, int index);
     }
 }

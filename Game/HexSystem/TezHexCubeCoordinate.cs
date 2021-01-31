@@ -10,7 +10,6 @@ namespace tezcat.Framework.Game
         public static readonly TezHexCubeCoordinate one = new TezHexCubeCoordinate(1, 1, 1, true);
         public static readonly TezHexCubeCoordinate max = new TezHexCubeCoordinate(int.MaxValue, int.MaxValue, int.MaxValue, true);
         public static readonly TezHexCubeCoordinate min = new TezHexCubeCoordinate(int.MinValue, int.MinValue, int.MinValue, true);
-
         #region 朝向计算
         /// <summary>
         /// 1左移(V+1)位
@@ -76,6 +75,54 @@ namespace tezcat.Framework.Game
             this.z = r;
         }
 
+        public bool Equals(TezHexCubeCoordinate other)
+        {
+            return this.x == other.x && this.z == other.z;
+        }
+
+        public override bool Equals(object other)
+        {
+            return this.Equals((TezHexCubeCoordinate)other);
+        }
+
+        public override int GetHashCode()
+        {
+#if false
+            var hash = TezHash.intHash(q);
+            hash = TezHash.intHash(hash + r);
+            return hash;
+#else
+
+            var hq = TezHash.intHash(q);
+            var hr = TezHash.intHash(r);
+            return hq ^ (hr + 0x61C88647 + (hq << 6) + (hq >> 2));
+#endif
+        }
+
+        public override string ToString()
+        {
+            return string.Format("{0},{1},{2}", x, y, z);
+        }
+
+        public static TezHexCubeCoordinate operator +(TezHexCubeCoordinate v1, TezHexCubeCoordinate v2)
+        {
+            return new TezHexCubeCoordinate(v1.x + v2.x, v1.z + v2.z);
+        }
+
+        public static TezHexCubeCoordinate operator -(TezHexCubeCoordinate v1, TezHexCubeCoordinate v2)
+        {
+            return new TezHexCubeCoordinate(v1.x - v2.x, v1.z - v2.z);
+        }
+
+        public static bool operator !=(TezHexCubeCoordinate v1, TezHexCubeCoordinate v2)
+        {
+            return v1.x != v2.x || v1.z != v2.z;
+        }
+
+        public static bool operator ==(TezHexCubeCoordinate v1, TezHexCubeCoordinate v2)
+        {
+            return v1.x == v2.x && v1.z == v2.z;
+        }
         public TezHexOffsetCoordinate toOffset(TezHexGrid.Layout layout)
         {
             switch (layout)
@@ -108,38 +155,9 @@ namespace tezcat.Framework.Game
             this.z = z;
         }
 
-        public bool Equals(TezHexCubeCoordinate other)
-        {
-            return this.x == other.x && this.z == other.z;
-        }
-
-        public override bool Equals(object other)
-        {
-            return this.Equals((TezHexCubeCoordinate)other);
-        }
-
-        public override int GetHashCode()
-        {
-#if false
-            var hash = TezHash.intHash(q);
-            hash = TezHash.intHash(hash + r);
-            return hash;
-#else
-
-            var hq = TezHash.intHash(q);
-            var hr = TezHash.intHash(r);
-            return hq ^ (hr + 0x61C88647 + (hq << 6) + (hq >> 2));
-#endif
-        }
-
         public int getDistanceFrom(TezHexCubeCoordinate other)
         {
             return (Mathf.Abs(x - other.x) + Mathf.Abs(y - other.y) + Mathf.Abs(z - other.z)) / 2;
-        }
-
-        public override string ToString()
-        {
-            return string.Format("{0},{1},{2}", x, y, z);
         }
 
         public void scale(int value)
@@ -230,24 +248,5 @@ namespace tezcat.Framework.Game
             throw new Exception("TezHexCoordinate fromOffset");
         }
 
-        public static TezHexCubeCoordinate operator +(TezHexCubeCoordinate v1, TezHexCubeCoordinate v2)
-        {
-            return new TezHexCubeCoordinate(v1.x + v2.x, v1.z + v2.z);
-        }
-
-        public static TezHexCubeCoordinate operator -(TezHexCubeCoordinate v1, TezHexCubeCoordinate v2)
-        {
-            return new TezHexCubeCoordinate(v1.x - v2.x, v1.z - v2.z);
-        }
-
-        public static bool operator !=(TezHexCubeCoordinate v1, TezHexCubeCoordinate v2)
-        {
-            return v1.x != v2.x || v1.z != v2.z;
-        }
-
-        public static bool operator ==(TezHexCubeCoordinate v1, TezHexCubeCoordinate v2)
-        {
-            return v1.x == v2.x && v1.z == v2.z;
-        }
     }
 }

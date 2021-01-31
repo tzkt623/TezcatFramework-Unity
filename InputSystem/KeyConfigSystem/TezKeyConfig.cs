@@ -33,10 +33,7 @@ namespace tezcat.Framework.InputSystem
 
         public void resetToDefault(TezReader reader)
         {
-            for (int i = 0; i < reader.count; i++)
-            {
-                m_Wrappers[i].resetToDefault(reader, i);
-            }
+            this.readFromSave(reader);
         }
 
         public TezKeyWrapper getWrapper(int index)
