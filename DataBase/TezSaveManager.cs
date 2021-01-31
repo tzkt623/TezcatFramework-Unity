@@ -21,21 +21,14 @@ namespace tezcat.Framework.Database
             }
         }
 
-        TezClassFactory m_Factory = null;
-
         public TezSaveManager()
         {
-            m_Factory = TezService.get<TezClassFactory>();
+
         }
 
         public T createObject<T>(string CID) where T : class
         {
-            return m_Factory.create<T>(CID);
-        }
-
-        public T createObject<T>() where T : class
-        {
-            return m_Factory.create<T>();
+            return TezClassFactory.instance.create<T>(CID);
         }
 
         public ITezSerializable get(int index)
@@ -98,13 +91,12 @@ namespace tezcat.Framework.Database
             TezJsonReader reader = new TezJsonReader();
             if (reader.load(path))
             {
-                var factory = TezService.get<TezClassFactory>();
                 int count = reader.count;
                 for (int i = 0; i < count; i++)
                 {
                     reader.beginObject(i);
                     var CID = reader.readString(TezReadOnlyString.CID);
-                    var obj = factory.create<TezGameObject>(CID);
+                    var obj = TezClassFactory.instance.create<TezGameObject>(CID);
                     if (obj != null)
                     {
                         obj.initNew();
@@ -128,7 +120,7 @@ namespace tezcat.Framework.Database
 
         public void close()
         {
-            m_Factory = null;
+
         }
 
         public void begin(int index)

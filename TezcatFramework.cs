@@ -76,7 +76,7 @@ namespace tezcat.Framework
             TezService.register(this);
             this.registerVersions();
             this.registerService();
-            this.registerClassFactory(TezService.get<TezClassFactory>());
+            this.registerClassFactory();
         }
 
         protected virtual void registerService()
@@ -90,7 +90,6 @@ namespace tezcat.Framework
             TezService.register(new TezEventDispatcher());
             TezService.register(new TezInputController());
 
-            TezService.register(new TezClassFactory());
             TezService.register(new TezSaveManager());
 
             TezService.register(new TezRandom());
@@ -100,7 +99,7 @@ namespace tezcat.Framework
         }
 
 
-        protected virtual void registerClassFactory(TezClassFactory factory)
+        protected virtual void registerClassFactory()
         {
 
         }
