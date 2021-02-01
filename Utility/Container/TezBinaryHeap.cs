@@ -16,22 +16,6 @@ namespace tezcat.Framework.Utility
     {
     }
 
-    public class TezTestBHItem : ITezBinaryHeapItem<TezTestBHItem>
-    {
-        public int id { get; set; }
-
-        int ITezBinaryHeapItem.index
-        {
-            get; set;
-        }
-
-        int IComparable<TezTestBHItem>.CompareTo(TezTestBHItem other)
-        {
-            return id.CompareTo(other.id);
-        }
-    }
-
-
     /// <summary>
     /// 
     /// 二叉堆
@@ -42,7 +26,7 @@ namespace tezcat.Framework.Utility
     public class TezBinaryHeap<T>
         : ITezCloseable
         , IEnumerable<T>
-        where T : ITezBinaryHeapItem, ITezBinaryHeapItem<T>
+        where T : ITezBinaryHeapItem<T>
     {
         T[] m_Items = null;
 
@@ -251,12 +235,12 @@ namespace tezcat.Framework.Utility
 
         public IEnumerator<T> GetEnumerator()
         {
-            return new TezArrayEnumerator<T>(m_Items);
+            return new TezCountArrayEnumerator<T>(m_Items, m_Count);
         }
 
         IEnumerator IEnumerable.GetEnumerator()
         {
-            return m_Items.GetEnumerator();
+            return new TezCountArrayEnumerator<T>(m_Items, m_Count);
         }
     }
 }

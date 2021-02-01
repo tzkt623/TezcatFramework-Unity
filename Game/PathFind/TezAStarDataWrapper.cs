@@ -1,35 +1,27 @@
 ﻿using System.Collections.Generic;
+using tezcat.Framework.Extension;
 using tezcat.Framework.Utility;
 
 namespace tezcat.Framework.Game
 {
     /// <summary>
-    /// 记得重载GetHashCode()以获得相等比较的
+    /// Wrapper层
+    /// 如果有Wrapper层存在
+    /// 由于比较的是HashCode来判断相等
+    /// 则Heap查询的方式必然会出现相同的内部Data却查不到的问题
+    /// 
+    /// 所以必须有个管理器记录下所有已经产生过的Wrapper
+    /// 以便当查询到同一个Wrapper时 不用再次产生
     /// </summary>
-    /// <typeparam name="T"></typeparam>
-    public abstract class TezAStarNode<T>
-        : ITezAStarNode<T>
-        where T : TezAStarNode<T>, new()
+    public abstract class TezAStarDataWrapper<Self, BlockData>
+        : ITezAStarDataWrapper<Self, BlockData>
+        where Self : TezAStarDataWrapper<Self, BlockData>, new()
     {
-        #region Pool
-        static Queue<ITezAStarNode> s_Pool = new Queue<ITezAStarNode>();
-        public static T create()
-        {
-            if (s_Pool.Count > 0)
-            {
-                return (T)s_Pool.Dequeue();
-            }
+        public ITezAStarDataWrapper parent { get; set; }
 
-            return new T();
-        }
+        public BlockData blockData { get; set; }
 
-        static void recycle(ITezAStarNode obj)
-        {
-            s_Pool.Enqueue(obj);
-        }
-        #endregion
-
-        public ITezAStarNode parent { get; set; }
+        public object data => this.blockData;
 
         int ITezBinaryHeapItem.index { get; set; } = -1;
 
@@ -58,7 +50,7 @@ namespace tezcat.Framework.Game
             return false;
         }
 
-        public virtual int CompareTo(T other)
+        public virtual int CompareTo(Self other)
         {
             int compare = this.fCost.CompareTo(other.fCost);
             if (compare == 0)
@@ -68,45 +60,46 @@ namespace tezcat.Framework.Game
             return -compare;
         }
 
+        /// <summary>
+        /// HashCode是由内部数据impData计算得出
+        /// </summary>
         public sealed override int GetHashCode()
         {
-            return this.onGetHashCode();
+            return this.blockData.GetHashCode();
         }
-
-        protected abstract int onGetHashCode();
 
         public override bool Equals(object obj)
         {
-            return this.Equals((T)obj);
+            return this.Equals((Self)obj);
         }
 
-        public virtual bool Equals(T other)
+        public virtual bool Equals(Self other)
         {
             if (object.ReferenceEquals(other, null))
             {
                 return false;
             }
 
-            return this.GetHashCode() == other.GetHashCode();
+            return this.blockData.Equals(other.blockData);
         }
 
         public virtual void close()
         {
             this.parent = null;
-            recycle(this);
+            this.blockData = default;
         }
 
-        public static bool operator ==(TezAStarNode<T> a, TezAStarNode<T> b)
+        public static bool operator ==(TezAStarDataWrapper<Self, BlockData> a, TezAStarDataWrapper<Self, BlockData> b)
         {
             if (object.ReferenceEquals(a, null))
             {
                 return object.ReferenceEquals(b, null);
             }
 
-            return a.Equals(b);
+            return a.blockData.Equals(b.blockData);
         }
 
-        public static bool operator !=(TezAStarNode<T> a, TezAStarNode<T> b)
+        public static bool operator !=(TezAStarDataWrapper<Self, BlockData> a, TezAStarDataWrapper<Self, BlockData> b)
         {
             return !(a == b);
         }

@@ -10,6 +10,7 @@ namespace tezcat.Framework.Game
         public static readonly TezHexCubeCoordinate one = new TezHexCubeCoordinate(1, 1, 1, true);
         public static readonly TezHexCubeCoordinate max = new TezHexCubeCoordinate(int.MaxValue, int.MaxValue, int.MaxValue, true);
         public static readonly TezHexCubeCoordinate min = new TezHexCubeCoordinate(int.MinValue, int.MinValue, int.MinValue, true);
+
         #region 朝向计算
         /// <summary>
         /// 1左移(V+1)位
@@ -85,14 +86,20 @@ namespace tezcat.Framework.Game
             return this.Equals((TezHexCubeCoordinate)other);
         }
 
+        /// <summary>
+        /// 请包装类记录一下Hash值
+        /// </summary>
         public override int GetHashCode()
         {
 #if false
+            ///经过测试
+            ///此算法约80W数据时冲突362个
             var hash = TezHash.intHash(q);
             hash = TezHash.intHash(hash + r);
             return hash;
 #else
-
+            ///经过测试
+            ///此算法约80W数据时冲突76个值
             var hq = TezHash.intHash(q);
             var hr = TezHash.intHash(r);
             return hq ^ (hr + 0x61C88647 + (hq << 6) + (hq >> 2));
@@ -101,7 +108,7 @@ namespace tezcat.Framework.Game
 
         public override string ToString()
         {
-            return string.Format("{0},{1},{2}", x, y, z);
+            return string.Format("[{0},{1},{2}]", x, y, z);
         }
 
         public static TezHexCubeCoordinate operator +(TezHexCubeCoordinate v1, TezHexCubeCoordinate v2)

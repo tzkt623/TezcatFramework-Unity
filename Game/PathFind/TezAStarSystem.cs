@@ -1,81 +1,110 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using tezcat.Framework.Core;
 using tezcat.Framework.Extension;
 using tezcat.Framework.Utility;
 
 namespace tezcat.Framework.Game
 {
-    public abstract class TezAStarSystem<Node> where Node : TezAStarNode<Node>, new()
+    /// <summary>
+    /// A星寻路系统
+    /// </summary>
+    /// <typeparam name="Wrapper">路径包装器</typeparam>
+    /// <typeparam name="BlockData">包装器中的实际路块数据</typeparam>
+    public abstract class TezAStarSystem<Wrapper, BlockData>
+        : ITezCloseable
+        where Wrapper : TezAStarDataWrapper<Wrapper, BlockData>, new()
     {
-        #region Pool
-        public static TezEventExtension.Action<HashSet<Node>> onCloseRecycle;
+        #region Tool
 
-        static Queue<HashSet<Node>> s_CloseListPool = new Queue<HashSet<Node>>();
-        static HashSet<Node> createCloseList()
+        public static void closePools()
         {
-            if (s_CloseListPool.Count > 0)
-            {
-                return s_CloseListPool.Dequeue();
-            }
-
-            return new HashSet<Node>();
+            TezSamplePool<Wrapper>.instance.close();
+            TezSamplePool<HashSet<Wrapper>>.instance.close();
+            TezSamplePool<List<BlockData>>.instance.close();
+            TezSamplePool<List<Wrapper>>.instance.close();
         }
 
-        static void recycleCloseList(HashSet<Node> list)
+        protected static List<BlockData> createList_BlockData()
         {
-            foreach (var item in list)
-            {
-                item.close();
-            }
-            list.Clear();
-            s_CloseListPool.Enqueue(list);
+            return TezSamplePool<List<BlockData>>.instance.create();
+        }
+
+        protected static void recycleList_BlockData(List<BlockData> blockDatas)
+        {
+            TezSamplePool<List<BlockData>>.instance.recycle(blockDatas);
+        }
+
+        protected static Wrapper createWrapper()
+        {
+            return TezSamplePool<Wrapper>.instance.create();
+        }
+
+        protected static void recycleWrapper(Wrapper wrapper)
+        {
+            TezSamplePool<Wrapper>.instance.recycle(wrapper);
+        }
+
+        protected static List<Wrapper> createList_Wrapper()
+        {
+            return TezSamplePool<List<Wrapper>>.instance.create();
+        }
+
+        protected static void recycleList_Wrapper(List<Wrapper> wrappers)
+        {
+            TezSamplePool<List<Wrapper>>.instance.recycle(wrappers);
+        }
+
+        protected static HashSet<Wrapper> createHashSet_Wrapper()
+        {
+            return TezSamplePool<HashSet<Wrapper>>.instance.create();
+        }
+
+        protected static void recycleHashSet_Wrapper(HashSet<Wrapper> wrappers)
+        {
+            TezSamplePool<HashSet<Wrapper>>.instance.recycle(wrappers);
         }
         #endregion
+
+
+        Dictionary<BlockData, Wrapper> m_SaveWrappers = new Dictionary<BlockData, Wrapper>();
 
         /// <summary>
         /// 路径找到
         /// </summary>
-        public event TezEventExtension.Action<List<Node>> onPathFound;
+        public event TezEventExtension.Action<List<BlockData>> onPathFound;
         /// <summary>
         /// 路径没找到
         /// </summary>
         public event TezEventExtension.Action onPathNotFound;
 
-        /// <summary>
-        /// 计算G的前置代价
-        /// 为当前块到邻居块的移动代价
-        /// </summary>
-        protected abstract int calculateGPreCost(Node current, Node neighbour);
+        public virtual void close()
+        {
+            onPathFound = null;
+            onPathNotFound = null;
 
-        /// <summary>
-        /// 计算HCost
-        /// 无视阻挡到终点的最近距离
-        /// </summary>
-        protected abstract int calculateHCost(Node neighbour, Node end);
-
-        /// <summary>
-        /// 计算当前块的邻居
-        /// </summary>
-        protected abstract ICollection<Node> calculateNeighbours(Node current);
-
+            m_SaveWrappers.Clear();
+            m_SaveWrappers = null;
+        }
         /// <summary>
         /// 使用二叉堆加速型的find
         /// </summary>
-        public void findPath(Node start, Node end, TezBinaryHeap<Node> openSet)
+        public void findPath(Wrapper start, Wrapper end, TezBinaryHeap<Wrapper> openSet)
         {
-
             //             Stopwatch stopwatch = new Stopwatch();
             //             stopwatch.Start();
+            this.saveWrapper(start);
+            this.saveWrapper(end);
+
             if (end.isBlocked())
             {
-                start.close();
-                end.close();
+                this.onPathFindComplete();
                 onPathNotFound.Invoke();
                 return;
             }
 
-            HashSet<Node> close_set = createCloseList();
+            HashSet<Wrapper> close_set = createHashSet_Wrapper();
             openSet.push(start);
 
             while (openSet.count > 0)
@@ -85,12 +114,8 @@ namespace tezcat.Framework.Game
                 {
                     //                     stopwatch.Stop();
                     //                     UnityEngine.Debug.Log(stopwatch.ElapsedMilliseconds + "ms");
-                    foreach (var item in openSet)
-                    {
-                        item.close();
-                    }
-                    recycleCloseList(close_set);
                     this.retracePath(start, current_node);
+                    this.onPathFindComplete(openSet, close_set);
                     return;
                 }
 
@@ -101,7 +126,6 @@ namespace tezcat.Framework.Game
                 {
                     if (neighbour.isBlocked() || close_set.Contains(neighbour))
                     {
-                        neighbour.close();
                         continue;
                     }
 
@@ -119,16 +143,110 @@ namespace tezcat.Framework.Game
                         }
                     }
                 }
+                this.recycleNeighbourList(neighbours);
             }
 
-            recycleCloseList(close_set);
             onPathNotFound.Invoke();
+            this.onPathFindComplete(openSet, close_set);
+        }
+
+        private void recycleNeighbourList(List<Wrapper> neighbours)
+        {
+            neighbours.Clear();
+            recycleList_Wrapper(neighbours);
+        }
+
+        public void retracePath(Wrapper start, Wrapper end)
+        {
+            List<BlockData> path = new List<BlockData>();
+            Wrapper current = end;
+
+            while (!current.Equals(start))
+            {
+                path.Add(current.blockData);
+                current = (Wrapper)current.parent;
+            }
+            path.Reverse();
+
+            onPathFound.Invoke(path);
+        }
+        /// <summary>
+        /// 计算G的前置代价
+        /// 为当前块到邻居块的移动代价
+        /// </summary>
+        protected abstract int calculateGPreCost(Wrapper current, Wrapper neighbour);
+
+        /// <summary>
+        /// 计算HCost
+        /// 无视阻挡到终点的最近距离
+        /// </summary>
+        protected abstract int calculateHCost(Wrapper neighbour, Wrapper end);
+
+        /// <summary>
+        /// 计算当前块的邻居
+        /// 
+        /// </summary>
+        private List<Wrapper> calculateNeighbours(Wrapper current)
+        {
+            List<Wrapper> wrappers = createList_Wrapper();
+            this.calculateNeighbours(wrappers, current);
+            return wrappers;
+        }
+
+        protected abstract void calculateNeighbours(List<Wrapper> wrappers, Wrapper blockData);
+
+        protected Wrapper getOrCreateWrapper(BlockData blockData)
+        {
+            if (m_SaveWrappers.TryGetValue(blockData, out Wrapper neighbor))
+            {
+                if (!blockData.Equals(neighbor.blockData))
+                {
+                    throw new Exception("BlockData Must The Same");
+                }
+            }
+            else
+            {
+                neighbor = createWrapper();
+                neighbor.blockData = blockData;
+                this.saveWrapper(neighbor);
+            }
+
+            return neighbor;
+        }
+
+
+        /// <summary>
+        /// 所有生成的块全都会被清理
+        /// </summary>
+        protected virtual void onPathFindComplete()
+        {
+            foreach (var pair in m_SaveWrappers)
+            {
+                pair.Value.close();
+                recycleWrapper(pair.Value);
+            }
+            m_SaveWrappers.Clear();
+        }
+
+        protected virtual void onPathFindComplete(TezBinaryHeap<Wrapper> openSet, HashSet<Wrapper> closeSet)
+        {
+            this.onPathFindComplete();
+
+            openSet.clear();
+            closeSet.Clear();
+            recycleHashSet_Wrapper(closeSet);
+        }
+
+        private void saveWrapper(Wrapper wrapper)
+        {
+            m_SaveWrappers.Add(wrapper.blockData, wrapper);
         }
 
         /// <summary>
         /// 普通find
         /// </summary>
-        public void findPath(Node start, Node end)
+        [Obsolete("尽量不要使用这个方法,用带二叉堆的那个,此方法主要着重于介绍思路")]
+        private void findPath(Wrapper start, Wrapper end)
         {
             //             Stopwatch stopwatch = new Stopwatch();
             //             stopwatch.Start();
@@ -139,8 +257,8 @@ namespace tezcat.Framework.Game
                 return;
             }
 
-            List<Node> open_set = new List<Node>();
-            HashSet<Node> close_set = createCloseList();
+            List<Wrapper> open_set = new List<Wrapper>();
+            HashSet<Wrapper> close_set = createHashSet_Wrapper();
 
             open_set.Add(start);
             int remove_index = 0;
@@ -166,7 +284,7 @@ namespace tezcat.Framework.Game
                 {
                     //                     stopwatch.Stop();
                     //                     UnityEngine.Debug.Log(stopwatch.ElapsedMilliseconds + "ms");
-                    recycleCloseList(close_set);
+                    recycleHashSet_Wrapper(close_set);
                     this.retracePath(start, current_node);
                     return;
                 }
@@ -180,6 +298,7 @@ namespace tezcat.Framework.Game
                 ///计算邻居Cost值
                 ///并且加入开列表中
                 var neighbours = this.calculateNeighbours(current_node);
+
                 foreach (var neighbour in neighbours)
                 {
                     if (neighbour.isBlocked() || close_set.Contains(neighbour))
@@ -187,7 +306,7 @@ namespace tezcat.Framework.Game
                         continue;
                     }
 
-                    var not_in_open = open_set.Find((Node node) =>
+                    var not_in_open = open_set.Find((Wrapper node) =>
                     {
                         return node.Equals(neighbour);
                     }) == null;
@@ -205,26 +324,13 @@ namespace tezcat.Framework.Game
                         }
                     }
                 }
+
             }
 
-            recycleCloseList(close_set);
+            recycleHashSet_Wrapper(close_set);
             onPathNotFound.Invoke();
         }
 
-        public void retracePath(Node start, Node end)
-        {
-            List<Node> path = new List<Node>();
-            Node current = end;
-
-            while (!current.Equals(start))
-            {
-                path.Add(current);
-                current = (Node)current.parent;
-            }
-            path.Reverse();
-
-            onPathFound.Invoke(path);
-        }
     }
 }
 

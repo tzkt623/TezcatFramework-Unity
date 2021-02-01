@@ -1,13 +1,15 @@
 ﻿using tezcat.Framework.Database;
+using tezcat.Framework.InputSystem;
 using UnityEngine;
 
-namespace tezcat.Framework.InputSystem
+namespace tezcat.Framework.Test
 {
     public class TestKeyConfig
     {
         TezKeyConfig m_Config;
         TezKeyConfig m_SaveConfig;
         TezKeyConfig m_LoadConfig;
+        TezKeyConfig m_ChangeKeyConfig;
 
         public void init()
         {
@@ -18,7 +20,7 @@ namespace tezcat.Framework.InputSystem
                 {
                     keyCode = KeyCode.LeftControl
                 },
-                new UnityKeyDownWrapper()
+                new UnityKeyPressWrapper()
                 {
                     keyCode = KeyCode.G
                 }));
@@ -37,6 +39,15 @@ namespace tezcat.Framework.InputSystem
                 {
                     keyCode = KeyCode.L
                 }));
+
+            var change_key = UnityKeyConfigSystem.instance.getOrCreateConfigLayer("Option");
+            change_key.addConfig(new UnityBaseKeyConfig1(
+                "ChangeKey",
+                new UnityKeyPressWrapper()
+                {
+                    keyCode = KeyCode.F1
+                }));
+
         }
 
         public void getConfigs()
@@ -47,8 +58,11 @@ namespace tezcat.Framework.InputSystem
             UnityKeyConfigSystem.instance.getOrCreateConfigLayer("SL").tryGetConfig("Save", out TezKeyConfig sc);
             m_SaveConfig = sc;
 
-            UnityKeyConfigSystem.instance.getOrCreateConfigLayer("SL").tryGetConfig("Save", out TezKeyConfig lc);
+            UnityKeyConfigSystem.instance.getOrCreateConfigLayer("SL").tryGetConfig("Load", out TezKeyConfig lc);
             m_LoadConfig = lc;
+
+            UnityKeyConfigSystem.instance.getOrCreateConfigLayer("Option").tryGetConfig("ChangeKey", out TezKeyConfig ck);
+            m_ChangeKeyConfig = ck;
         }
 
         public void changeKey()
@@ -66,7 +80,7 @@ namespace tezcat.Framework.InputSystem
 
             if (m_SaveConfig.active())
             {
-                TezJsonWriter writer = new TezJsonWriter();
+                TezWriter writer = new TezJsonWriter();
                 UnityKeyConfigSystem.instance.writeToSave(writer);
             }
 
@@ -75,6 +89,11 @@ namespace tezcat.Framework.InputSystem
                 TezReader reader = new TezJsonReader();
                 reader.load("DataPath");
                 UnityKeyConfigSystem.instance.readFromSave(reader);
+            }
+
+            if(m_ChangeKeyConfig.active())
+            {
+                this.changeKey();
             }
 
             if(UnityKeyConfigSystem.instance.isWaitingChangeKey)
