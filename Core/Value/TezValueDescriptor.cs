@@ -39,11 +39,6 @@ namespace tezcat.Framework.Core
             return this.ID;
         }
 
-        public static implicit operator int(TezValueDescriptor<Descriptor> vn)
-        {
-            return vn.ID;
-        }
-
         #region 注册
         static Dictionary<string, ITezValueDescriptor> m_NameDic = new Dictionary<string, ITezValueDescriptor>();
         static List<ITezValueDescriptor> m_NameList = new List<ITezValueDescriptor>();

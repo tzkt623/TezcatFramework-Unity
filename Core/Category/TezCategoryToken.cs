@@ -61,10 +61,10 @@ namespace tezcat.Framework.Core
         void registerFinalToken(ITezCategoryToken token);
     }
 
-    public abstract class TezCategoryBaseToken<TEnum, TValue>
-        : TezEnumeration<TEnum, TValue>
+    public abstract class TezCategoryBaseToken<Self, TValue>
+        : TezEnumeration<Self, TValue>
         , ITezCategoryBaseToken
-        where TEnum : TezCategoryBaseToken<TEnum, TValue>
+        where Self : TezCategoryBaseToken<Self, TValue>
         where TValue : struct, IComparable
     {
         public abstract TezCategoryTokenClassify classify { get; }
@@ -129,10 +129,10 @@ namespace tezcat.Framework.Core
     /// 路径分类节点
     /// 通过传入父路径节点来建立联系
     /// </summary>
-    public abstract class TezCategoryToken<TEnum, TValue>
-        : TezCategoryBaseToken<TEnum, TValue>
+    public abstract class TezCategoryToken<Self, TValue>
+        : TezCategoryBaseToken<Self, TValue>
         , ITezCategoryToken
-        where TEnum : TezCategoryBaseToken<TEnum, TValue>
+        where Self : TezCategoryBaseToken<Self, TValue>
         where TValue : struct, IComparable
     {
         public override TezCategoryTokenClassify classify

@@ -187,13 +187,18 @@ namespace tezcat.Framework.Core
         }
 
         /// <summary>
-        /// 直接比较内存地址是否为同一个
-        /// 比较ID请使用==或!=
+        /// 等于比较
+        /// 会比较两个Wrapper的descriptor的ID是否相同
+        /// 比较内存请使用object.ReferenceEquals
         /// </summary>
         public bool Equals(TezValueWrapper other)
         {
-            return Object.ReferenceEquals(this, other);
-            //            return other != null && this.descriptor.Equals(other.descriptor);
+            if (object.ReferenceEquals(other, null))
+            {
+                return false;
+            }
+
+            return this.descriptor.Equals(other.descriptor);
         }
 
         public int CompareTo(TezValueWrapper other)
@@ -202,12 +207,13 @@ namespace tezcat.Framework.Core
         }
 
         /// <summary>
-        /// 直接比较内存地址是否为同一个
-        /// 比较ID请使用==或!=
+        /// 等于比较
+        /// 会比较两个Wrapper的descriptor的ID是否相同
+        /// 比较内存请使用object.ReferenceEquals
         /// </summary>
         public override bool Equals(object other)
         {
-            return object.ReferenceEquals(this, other);
+            return this.Equals((TezValueWrapper)other);
         }
 
         public override int GetHashCode()
@@ -223,29 +229,25 @@ namespace tezcat.Framework.Core
         /// <summary>
         /// 等于比较
         /// 会比较两个Wrapper的descriptor的ID是否相同
-        /// 而不是直接比较内存
-        /// 比较内存请使用Equals
+        /// 比较内存请使用object.ReferenceEquals
         /// </summary>
         public static bool operator ==(TezValueWrapper a, TezValueWrapper b)
         {
-            var flag_a = object.ReferenceEquals(a, null);
-            var flag_b = object.ReferenceEquals(b, null);
-
-            return (flag_a && flag_b) || (!flag_a && !flag_b && a.descriptor.Equals(b.descriptor));
+            if (object.ReferenceEquals(a, null))
+            {
+                return object.ReferenceEquals(b, null);
+            }
+            return a.descriptor.Equals(b.descriptor);
         }
 
         /// <summary>
         /// 不等于比较
         /// 会比较两个Wrapper的descriptor的ID是否相同
-        /// 而不是直接比较内存
-        /// 比较内存请使用Equals
+        /// 比较内存请使用object.ReferenceEquals
         /// </summary>
         public static bool operator !=(TezValueWrapper a, TezValueWrapper b)
         {
-            var flag_a = object.ReferenceEquals(a, null);
-            var flag_b = object.ReferenceEquals(b, null);
-
-            return (!flag_a || !flag_b) && (flag_a || flag_b || !a.descriptor.Equals(b.descriptor));
+            return !(a == b);
         }
 
         public static bool operator true(TezValueWrapper value)

@@ -15,9 +15,7 @@ namespace tezcat.Framework.Game.Inventory
     /// <summary>
     /// 物品选择器
     /// </summary>
-    public class TezInventorySelector<Object>
-        : ITezService
-        where Object : TezGameObject
+    public class TezInventorySelector<Object> where Object : TezGameObject
     {
         public bool isActive
         {

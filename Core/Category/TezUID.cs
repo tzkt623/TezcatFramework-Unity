@@ -12,7 +12,7 @@ namespace tezcat.Framework.Core
 
         static uint generateID()
         {
-            if(IDPool.Count > 0)
+            if (IDPool.Count > 0)
             {
                 return IDPool.Dequeue();
             }
@@ -49,6 +49,16 @@ namespace tezcat.Framework.Core
         public bool sameAs(TezUID other)
         {
             return this.RTID == other.RTID;
+        }
+
+        public bool dbSameAs(TezUID other)
+        {
+            if (object.ReferenceEquals(this.DBID, null) || object.ReferenceEquals(other.DBID, null))
+            {
+                return false;
+            }
+
+            return this.DBID.Equals(other.DBID);
         }
     }
 }

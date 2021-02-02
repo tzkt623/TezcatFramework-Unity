@@ -61,30 +61,5 @@ namespace tezcat.Framework.Game.Inventory
             this.item = null;
             this.inventory = null;
         }
-
-
-        #region TempSlot
-        static Stack<TezInventoryItemSlot> Pool = new Stack<TezInventoryItemSlot>();
-
-        public static TezInventoryItemSlot createTemp(ITezInventory inventory)
-        {
-            if (Pool.Count > 0)
-            {
-                return Pool.Pop();
-            }
-
-            return new TezInventoryItemSlot(inventory)
-            {
-                index = TezInventoryItemSlot.TempIndex
-            };
-        }
-
-        public static void recycleTemp(TezInventoryItemSlot tempSlot)
-        {
-            tempSlot.item = null;
-            tempSlot.index = TezInventoryItemSlot.TempIndex;
-            Pool.Push(tempSlot);
-        }
-        #endregion
     }
 }

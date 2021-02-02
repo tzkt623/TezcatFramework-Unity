@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace tezcat.Framework.Core
 {
@@ -8,7 +9,9 @@ namespace tezcat.Framework.Core
     /// 序列中最后一个为实际类型
     /// 其他则为分类路径
     /// </summary>
-    public class TezCategory : ITezCloseable
+    public class TezCategory
+        : ITezCloseable
+        , IEquatable<TezCategory>
     {
         /// <summary>
         /// 主Token
@@ -63,23 +66,40 @@ namespace tezcat.Framework.Core
         {
             if (token.layer < m_Tokens.Length)
             {
-                return m_Tokens[token.layer].sameAs(token);
+                return m_Tokens[token.layer].Equals(token);
             }
 
             return false;
         }
 
-        /// <summary>
-        /// 与另一个比较是否相同
-        /// </summary>
-        public bool sameAs(TezCategory other)
+        public override bool Equals(object other)
         {
-            if (this.count != other.count)
+            return this.Equals((TezCategory)other);
+        }
+
+        public bool Equals(TezCategory other)
+        {
+            if (object.ReferenceEquals(other, null))
             {
                 return false;
             }
 
-            return this.finalToken.sameAs(other.finalToken);
+            return this.finalToken.Equals(other.finalToken);
+        }
+
+        public static bool operator ==(TezCategory a, TezCategory b)
+        {
+            if (object.ReferenceEquals(a, null))
+            {
+                return object.ReferenceEquals(b, null);
+            }
+
+            return a.Equals(b);
+        }
+
+        public static bool operator !=(TezCategory a, TezCategory b)
+        {
+            return !(a == b);
         }
     }
 }

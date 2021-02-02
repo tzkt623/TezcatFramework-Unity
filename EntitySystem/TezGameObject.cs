@@ -10,7 +10,7 @@ namespace tezcat.Framework.ECS
 
     public abstract class TezGameObject
         : TezDataObject
-        , ITezGameObjectComparer
+        , IEquatable<TezGameObject>
     {
         /// <summary>
         /// 唯一名称ID
@@ -100,14 +100,36 @@ namespace tezcat.Framework.ECS
 
         }
 
-        /// <summary>
-        /// 与另一个对象相同
-        /// 即拥有相同的运行时ID
-        /// </summary>
-        public bool sameAs(TezGameObject other)
+        public override bool Equals(object other)
         {
+            return this.Equals((TezGameObject)other);
+        }
+
+        public bool Equals(TezGameObject other)
+        {
+            if (object.ReferenceEquals(other, null))
+            {
+                return false;
+            }
+
             return m_UID.sameAs(other.m_UID);
         }
+
+        public static bool operator ==(TezGameObject a, TezGameObject b)
+        {
+            if (object.ReferenceEquals(a, null))
+            {
+                return object.ReferenceEquals(b, null);
+            }
+
+            return a.Equals(b);
+        }
+
+        public static bool operator !=(TezGameObject a, TezGameObject b)
+        {
+            return !(a == b);
+        }
+
 
         /// <summary>
         /// 与另一个对象的模板相同
@@ -115,12 +137,7 @@ namespace tezcat.Framework.ECS
         /// </summary>
         public bool templateAs(TezGameObject other)
         {
-            if (m_UID.DBID == null || other.m_UID.DBID == null)
-            {
-                return false;
-            }
-
-            return m_UID.DBID.sameAs(other.m_UID.DBID);
+            return m_UID.dbSameAs(other.m_UID);
         }
 
         /// <summary>

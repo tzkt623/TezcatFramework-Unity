@@ -8,14 +8,19 @@ namespace tezcat.Framework.TypeTraits
         Type systemType { get; }
         string toName { get; }
         int toID { get; }
-        bool sameAs(ITezEnumeration enumeration);
     }
 
-    public abstract class TezEnumeration<TEnumeration, TEnumValue>
+    public interface ITezEnumeration<Self>
         : ITezEnumeration
-        , IComparable<TEnumeration>
-        , IEquatable<TEnumeration>
-        where TEnumeration : TezEnumeration<TEnumeration, TEnumValue>
+        , IEquatable<Self>
+    {
+
+    }
+
+    public abstract class TezEnumeration<Self, TEnumValue>
+        : ITezEnumeration<Self>
+        , IComparable<Self>
+        where Self : TezEnumeration<Self, TEnumValue>
         where TEnumValue : struct, IComparable
     {
         #region Static
@@ -26,8 +31,7 @@ namespace tezcat.Framework.TypeTraits
 
         static TezEnumeration()
         {
-            var temp = (TEnumValue[])Enum.GetValues(typeof(TEnumValue));
-            EnumCount = temp.Length;
+            EnumCount = Enum.GetValues(typeof(TEnumValue)).Length;
 
             EnumWithName = new Dictionary<string, ITezEnumeration>(EnumCount);
             EnumNameArray = Enum.GetNames(typeof(TEnumValue));
@@ -35,92 +39,76 @@ namespace tezcat.Framework.TypeTraits
         }
         #endregion
 
-        public Type systemType { get; } = typeof(TEnumeration);
+        Type m_SystemType = typeof(Self);
+        public Type systemType => m_SystemType;
 
         public string toName
         {
-            get { return EnumNameArray[toID]; }
+            get { return EnumNameArray[m_ID]; }
         }
 
-        public abstract int toID { get; }
+        int m_ID = 0;
+        public int toID => m_ID;
 
-        public TEnumValue value { get; private set; }
+        TEnumValue m_Value;
+        public TEnumValue value => m_Value;
 
         protected TezEnumeration(TEnumValue value)
         {
-            this.value = value;
-            EnumWithName[this.toName] = (TEnumeration)this;
-            EnumArray[this.toID] = (TEnumeration)this;
-        }
-
-        public bool sameAs(ITezEnumeration enumeration)
-        {
-            return this.systemType == enumeration.systemType && this.toID == enumeration.toID;
-        }
-
-        public int CompareTo(TEnumeration other)
-        {
-            return value.CompareTo(other.value);
-        }
-
-        public bool Equals(TEnumeration other)
-        {
-            return other != null && value.Equals(other.value);
-        }
-
-        #region 重载操作
-        public static implicit operator TEnumValue(TezEnumeration<TEnumeration, TEnumValue> enumeration)
-        {
-            return enumeration.value;
-        }
-
-        public override bool Equals(object obj)
-        {
-            return this.Equals((TEnumeration)obj);
+            m_Value = value;
+            m_ID = Convert.ToInt32(m_Value);
+            EnumWithName[this.toName] = (Self)this;
+            EnumArray[this.toID] = (Self)this;
         }
 
         public override int GetHashCode()
         {
-            return value.GetHashCode();
+            return m_Value.GetHashCode();
         }
 
-        public static bool operator !=(TezEnumeration<TEnumeration, TEnumValue> x, TezEnumeration<TEnumeration, TEnumValue> y)
+        public override bool Equals(object other)
         {
-            /// (!true || !false) && (true || false) || (x)
-            /// (!false || !false) && (false || false) || (x.ID != y.ID || x.name != y.name)
-
-            var flagx = object.ReferenceEquals(x, null);
-            var flagy = object.ReferenceEquals(y, null);
-
-            return (!flagx || !flagy) && (flagx || flagy || x.value.CompareTo(y.value) != 0);
+            return this.Equals((Self)other);
         }
 
-        public static bool operator ==(TezEnumeration<TEnumeration, TEnumValue> x, TezEnumeration<TEnumeration, TEnumValue> y)
+        public bool Equals(Self other)
         {
-            ///(false && false) || (x.ID == y.ID && x.name == y.name)
-            ///(true && true) || (x)
-            ///(false && true) || (!false && !true) && (x)
+            if (object.ReferenceEquals(other, null))
+            {
+                return false;
+            }
 
-            var flagx = object.ReferenceEquals(x, null);
-            var flagy = object.ReferenceEquals(y, null);
-
-            return (flagx && flagy) || (!flagx && !flagy && x.value.CompareTo(y.value) == 0);
+            return m_SystemType == other.m_SystemType && this.m_ID == other.m_ID;
         }
 
-        public static bool operator true(TezEnumeration<TEnumeration, TEnumValue> obj)
+        public int CompareTo(Self other)
+        {
+            return m_ID.CompareTo(other.m_ID);
+        }
+
+        public static bool operator !=(TezEnumeration<Self, TEnumValue> a, TezEnumeration<Self, TEnumValue> b)
+        {
+            return !(a == b);
+        }
+
+        public static bool operator ==(TezEnumeration<Self, TEnumValue> a, TezEnumeration<Self, TEnumValue> b)
+        {
+            if (object.ReferenceEquals(a, null))
+            {
+                return object.ReferenceEquals(b, null);
+            }
+
+            return a.Equals(b);
+        }
+
+        public static bool operator true(TezEnumeration<Self, TEnumValue> obj)
         {
             return !object.ReferenceEquals(obj, null);
         }
 
-        public static bool operator false(TezEnumeration<TEnumeration, TEnumValue> obj)
+        public static bool operator false(TezEnumeration<Self, TEnumValue> obj)
         {
             return object.ReferenceEquals(obj, null);
         }
-
-        public static bool operator !(TezEnumeration<TEnumeration, TEnumValue> obj)
-        {
-            return object.ReferenceEquals(obj, null);
-        }
-        #endregion
     }
 }

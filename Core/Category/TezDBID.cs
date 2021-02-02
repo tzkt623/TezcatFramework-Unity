@@ -1,6 +1,10 @@
-﻿namespace tezcat.Framework.Core
+﻿using System;
+
+namespace tezcat.Framework.Core
 {
-    public class TezDBID : ITezCloseable
+    public class TezDBID
+        : ITezCloseable
+        , IEquatable<TezDBID>
     {
         /// <summary>
         /// 数据库ID
@@ -18,17 +22,24 @@
             this.itemID = item_id;
         }
 
-        /// <summary>
-        /// 比较是否相同
-        /// </summary>
-        public bool sameAs(TezDBID other)
-        {
-            return this.dbID == other.dbID && this.itemID == other.itemID;
-        }
-
         public void close()
         {
 
+        }
+
+        public override bool Equals(object obj)
+        {
+            return this.Equals((TezDBID)obj);
+        }
+
+        public bool Equals(TezDBID other)
+        {
+            if (object.ReferenceEquals(other, null))
+            {
+                return false;
+            }
+
+            return this.dbID == other.dbID && this.itemID == other.itemID;
         }
     }
 }
