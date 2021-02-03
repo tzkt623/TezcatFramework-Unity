@@ -34,7 +34,7 @@
         }
     }
 
-    public struct TezBitMask16
+    public class TezBitMask16
     {
         ushort m_Bit;
         public void set(ushort value)
@@ -68,7 +68,7 @@
         }
     }
 
-    public struct TezBitMask32
+    public class TezBitMask32
     {
         uint m_Bit;
         public void set(uint value)
@@ -102,7 +102,7 @@
         }
     }
 
-    public struct TezBitMask64
+    public class TezBitMask64
     {
         ulong m_Bit;
         public void set(ulong value)

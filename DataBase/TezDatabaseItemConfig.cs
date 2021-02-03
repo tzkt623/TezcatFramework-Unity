@@ -21,8 +21,13 @@ namespace tezcat.Framework.Database
 
         public static Config createConfig(TezCategory category)
         {
-            var rid = category.rootToken.toID;
-            var findex = category.finalToken.finalIndexInRootToken;
+            return createConfig(category.rootToken, category.finalToken);
+        }
+
+        public static Config createConfig(ITezCategoryRootToken rootToken, ITezCategoryToken finalToken)
+        {
+            var rid = rootToken.toID;
+            var findex = finalToken.finalIndexInRootToken;
 
             while (m_ConfigList.Count <= rid)
             {
@@ -42,8 +47,13 @@ namespace tezcat.Framework.Database
 
         public static Config getConfig(TezCategory category)
         {
-            var rid = category.rootToken.toID;
-            var findex = category.finalToken.finalIndexInRootToken;
+            return getConfig(category.rootToken, category.finalToken);
+        }
+
+        public static Config getConfig(ITezCategoryRootToken rootToken, ITezCategoryToken finalToken)
+        {
+            var rid = rootToken.toID;
+            var findex = finalToken.finalIndexInRootToken;
             if (rid < m_ConfigList.Count)
             {
                 var list = m_ConfigList[rid];

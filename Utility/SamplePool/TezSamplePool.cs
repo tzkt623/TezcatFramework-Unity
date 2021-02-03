@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using tezcat.Framework.Core;
 using tezcat.Framework.Extension;
 
 namespace tezcat.Framework.Utility
@@ -10,7 +9,9 @@ namespace tezcat.Framework.Utility
     /// 无法继承此类
     /// 直接用就行了
     /// </summary>
-    public sealed class TezSamplePool<MyObject> where MyObject : new()
+    public sealed class TezSamplePool<MyObject>
+        : ITezSamplePool
+        where MyObject : new()
     {
         static TezSamplePool<MyObject> m_Instance = new TezSamplePool<MyObject>();
         public static TezSamplePool<MyObject> instance => m_Instance;
@@ -46,6 +47,12 @@ namespace tezcat.Framework.Utility
         }
 
         int m_CreateCount = 0;
+
+        /// <summary>
+        /// 池名称
+        /// (包含类型的名称)
+        /// </summary>
+        public string name { get; } = typeof(MyObject).Name;
         /// <summary>
         /// 以创建的个数
         /// </summary>
@@ -59,7 +66,7 @@ namespace tezcat.Framework.Utility
 
         private TezSamplePool()
         {
-
+            TezSamplePoolManager.register(this);
         }
 
         /// <summary>
@@ -137,6 +144,26 @@ namespace tezcat.Framework.Utility
         {
             m_ClearFunction(myObject);
             m_Pool.Enqueue(myObject);
+        }
+
+        object ITezSamplePool.create()
+        {
+            return this.create();
+        }
+
+        object ITezSamplePool.customCreate()
+        {
+            return this.customCreate();
+        }
+
+        void ITezSamplePool.recycle(object obj)
+        {
+            this.recycle((MyObject)obj);
+        }
+
+        void ITezSamplePool.recycleWithClear(object obj)
+        {
+            this.recycleWithClear((MyObject)obj);
         }
     }
 }
