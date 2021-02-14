@@ -8,14 +8,14 @@ namespace tezcat.Framework.Game.Inventory
     /// </summary>
     public interface ITezInventoryVisualSelector
     {
-        void onSelect(TezGameObject game_object);
+        void onSelect(TezComData game_object);
         void onComplete();
     }
 
     /// <summary>
     /// 物品选择器
     /// </summary>
-    public class TezInventorySelector<Object> where Object : TezGameObject
+    public class TezInventorySelector<Object> where Object : TezComData
     {
         public bool isActive
         {

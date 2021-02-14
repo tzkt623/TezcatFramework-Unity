@@ -35,7 +35,7 @@ namespace tezcat.Framework.Game.Inventory
         const byte Mask_Contain = 1;
         const byte Mask_NotContain = 2;
         byte m_FilterMask = 0;
-        TezEventExtension.Function<bool, TezGameObject> m_CurrentFilter = null;
+        TezEventExtension.Function<bool, TezComData> m_CurrentFilter = null;
 
         public TezInventoryFilter(ITezInventory inventory, List<TezInventoryItemSlot> slots)
         {
@@ -43,7 +43,7 @@ namespace tezcat.Framework.Game.Inventory
             m_CurrentSlots = slots;
         }
 
-        public void add(TezGameObject gameObject, int count)
+        public void add(TezComData gameObject, int count)
         {
             switch (m_FilterMask)
             {
@@ -82,7 +82,7 @@ namespace tezcat.Framework.Game.Inventory
             }
         }
 
-        public bool remove(TezGameObject gameObject, int count)
+        public bool remove(TezComData gameObject, int count)
         {
             TezInventoryItemSlot result_slot = null;
             bool flag = false;
@@ -165,7 +165,7 @@ namespace tezcat.Framework.Game.Inventory
         /// 按照条件过滤物品
         /// 符合条件的被选中
         /// </summary>
-        public void contain(TezEventExtension.Function<bool, TezGameObject> onFilter)
+        public void contain(TezEventExtension.Function<bool, TezComData> onFilter)
         {
             m_CurrentFilter = onFilter;
             m_FilterMask = Mask_Contain;
@@ -197,7 +197,7 @@ namespace tezcat.Framework.Game.Inventory
         /// 按条件过滤物品
         /// 符合条件的的被排除
         /// </summary>
-        public void notContain(TezEventExtension.Function<bool, TezGameObject> onFilter)
+        public void notContain(TezEventExtension.Function<bool, TezComData> onFilter)
         {
             m_CurrentFilter = onFilter;
             m_FilterMask = Mask_NotContain;

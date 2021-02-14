@@ -36,7 +36,7 @@ namespace tezcat.Framework.Game.Inventory
         /// <summary>
         /// 装的Item
         /// </summary>
-        public TezGameObject item { get; set; } = null;
+        public TezComData item { get; set; } = null;
 
         /// <summary>
         /// Item的数量
@@ -46,7 +46,7 @@ namespace tezcat.Framework.Game.Inventory
         /// <summary>
         /// 转换Item
         /// 转换失败返回Null
-        public T getItem<T>() where T : TezGameObject
+        public T getItem<T>() where T : TezComData
         {
             return this.item as T;
         }

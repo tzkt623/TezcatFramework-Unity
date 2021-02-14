@@ -6,7 +6,7 @@ namespace tezcat.Framework.Game.Inventory
 {
     public static class TezInventoryHelper
     {
-        public static TezInventoryItemSlot add(TezGameObject gameObject, int count, List<TezInventoryItemSlot> slotList, ITezInventory inventory)
+        public static TezInventoryItemSlot add(TezComData gameObject, int count, List<TezInventoryItemSlot> slotList, ITezInventory inventory)
         {
             var stackable = TezDatabaseItemConfig.getConfig(gameObject.category).stackCount > 0;
 
@@ -84,7 +84,7 @@ namespace tezcat.Framework.Game.Inventory
             return result_slot;
         }
 
-        public static bool remove(TezGameObject gameObject, int count, List<TezInventoryItemSlot> slotList, out TezInventoryItemSlot resultSlot)
+        public static bool remove(TezComData gameObject, int count, List<TezInventoryItemSlot> slotList, out TezInventoryItemSlot resultSlot)
         {
             var index = slotList.FindIndex((TezInventoryItemSlot slot) =>
             {

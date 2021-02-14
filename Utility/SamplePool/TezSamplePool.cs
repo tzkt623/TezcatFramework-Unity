@@ -48,11 +48,22 @@ namespace tezcat.Framework.Utility
 
         int m_CreateCount = 0;
 
+        string m_Name = string.Empty;
         /// <summary>
         /// 池名称
         /// (包含类型的名称)
         /// </summary>
-        public string name { get; } = typeof(MyObject).Name;
+        public string poolName
+        {
+            get
+            {
+                if (string.IsNullOrEmpty(m_Name))
+                {
+                    m_Name = string.Format("TezSamplePool<{0}>", typeof(MyObject).Name);
+                }
+                return m_Name;
+            }
+        }
         /// <summary>
         /// 以创建的个数
         /// </summary>
@@ -73,7 +84,7 @@ namespace tezcat.Framework.Utility
         /// 清理内存
         /// 腾出空间
         /// </summary>
-        public void clear()
+        public void destroyObjects()
         {
             if (m_CloseFunction != null)
             {
@@ -91,7 +102,7 @@ namespace tezcat.Framework.Utility
         /// </summary>
         public void close()
         {
-            this.clear();
+            this.destroyObjects();
 
             m_Pool = null;
 

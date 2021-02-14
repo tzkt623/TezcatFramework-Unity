@@ -1,13 +1,15 @@
 ﻿using System;
+using System.Collections.Generic;
 using tezcat.Framework.Core;
 using tezcat.Framework.TypeTraits;
+using UnityEngine;
 
 namespace tezcat.Framework.ECS
 {
     public interface ITezComponent : ITezCloseable
     {
         TezEntity entity { get; }
-        int comID { get; }
+        int UID { get; }
         void onAdd(TezEntity entity);
         void onRemove(TezEntity entity);
         void onOtherComponentAdded(ITezComponent component, int com_id);
@@ -21,41 +23,42 @@ namespace tezcat.Framework.ECS
     {
         public static int ID { get; private set; } = TezTypeInfo.ErrorID;
 
-        public static void setID(int com_id)
+        public static void setID(int comID)
         {
-            if(ID != TezTypeInfo.ErrorID)
+            if (ID != TezTypeInfo.ErrorID)
             {
                 throw new Exception(string.Format("{0} this type has initialized", typeof(Component).Name));
             }
 
-            ID = com_id;
+            ID = comID;
         }
 
-        public static bool sameAsID(int com_id)
+        public static bool sameAsID(int comID)
         {
             if (ID == TezTypeInfo.ErrorID)
             {
                 throw new Exception(string.Format("{0} this type is not a ID Getter", typeof(Component).Name));
             }
 
-            return ID == com_id;
+            return ID == comID;
         }
     }
 
     public class TezComponentManager
     {
-        public static int componentCount { get; private set; }
+        public static int count { get; private set; }
 
         public static int register<Component>() where Component : ITezComponent
         {
             if (TezComponentID<Component>.ID == TezTypeInfo.ErrorID)
             {
-                var id = componentCount++;
+                var id = count++;
                 TezComponentID<Component>.setID(id);
+                Debug.Log(string.Format("TezComponentManager : Register {0}-{1}", typeof(Component).Name, id));
                 return id;
             }
 
-            return -1;
+            throw new Exception(string.Format("TezComponentManager : [{0}] register twice!!", typeof(Component).Name));
         }
     }
 }

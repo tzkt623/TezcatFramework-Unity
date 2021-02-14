@@ -8,16 +8,16 @@ namespace tezcat.Framework.Extension
         /// <summary>
         /// 用Item数据创建一个
         /// </summary>
-        public static ObjectCom create<ObjectCom>(this TezDatabaseGameItem item) where ObjectCom : TezGameObject
+        public static ObjectCom create<ObjectCom>(this TezDatabaseGameItem item) where ObjectCom : TezComData
         {
             var entity = item.createObject();
-            return entity.getComponent<TezDataObject, ObjectCom>();
+            return entity.getComponent<TezComBaseData, ObjectCom>();
         }
 
         /// <summary>
         /// 创建一个新的
         /// </summary>
-        public static ObjectCom create<ObjectCom>() where ObjectCom : TezGameObject, new()
+        public static ObjectCom create<ObjectCom>() where ObjectCom : TezComData, new()
         {
             ObjectCom data = new ObjectCom();
             data.initNew();

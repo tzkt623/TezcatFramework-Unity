@@ -4,21 +4,19 @@ using tezcat.Framework.Database;
 
 namespace tezcat.Framework.ECS
 {
-    public abstract class TezDataObject
+    public abstract class TezComBaseData
         : TezObject
         , ITezComponent
     {
-        #region Component
+        static int s_UID = TezComponentManager.register<TezComBaseData>();
+        public static int SUID => s_UID;
+
         /// <summary>
-        /// Com的唯一ID
+        /// 类型的唯一ID
         /// </summary>
-        public static int ComUID { get; } = TezComponentManager.register<TezDataObject>();
+        public int UID => s_UID;
 
         public TezEntity entity { get; private set; }
-        /// <summary>
-        /// 此Com类型的唯一ID
-        /// </summary>
-        public int comID => ComUID;
 
         void ITezComponent.onAdd(TezEntity entity)
         {
@@ -32,14 +30,14 @@ namespace tezcat.Framework.ECS
             this.entity = null;
         }
 
-        void ITezComponent.onOtherComponentAdded(ITezComponent component, int com_id)
+        void ITezComponent.onOtherComponentAdded(ITezComponent component, int comID)
         {
-            this.onOtherComponentAdded(component, com_id);
+            this.onOtherComponentAdded(component, comID);
         }
 
-        void ITezComponent.onOtherComponentRemoved(ITezComponent component, int com_id)
+        void ITezComponent.onOtherComponentRemoved(ITezComponent component, int comID)
         {
-            this.onOtherComponentRemoved(component, com_id);
+            this.onOtherComponentRemoved(component, comID);
         }
 
         /// <summary>
@@ -55,12 +53,11 @@ namespace tezcat.Framework.ECS
         /// <summary>
         /// 当其他Com添加进Entity时
         /// </summary>
-        protected virtual void onOtherComponentAdded(ITezComponent com, int com_id) { }
+        protected virtual void onOtherComponentAdded(ITezComponent com, int comID) { }
 
         /// <summary>
         /// 当其他Com从Entity中移除时
         /// </summary>
-        protected virtual void onOtherComponentRemoved(ITezComponent com, int com_id) { }
-        #endregion
+        protected virtual void onOtherComponentRemoved(ITezComponent com, int comID) { }
     }
 }

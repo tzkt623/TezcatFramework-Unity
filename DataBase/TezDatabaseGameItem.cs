@@ -78,7 +78,7 @@ namespace tezcat.Framework.Database
             this.category = result;
         }
 
-        protected virtual TezGameObject onCreateObject()
+        protected virtual TezComData onCreateObject()
         {
             throw new Exception(string.Format("Please override this method for {0}", this.GetType().Name));
         }

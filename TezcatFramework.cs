@@ -131,7 +131,7 @@ namespace tezcat.Framework
 
         #region Renderer
         public Renderer createRenderer<Renderer>(Transform parent)
-            where Renderer : TezRenderer, ITezSinglePrefab
+            where Renderer : TezComBaseRenderer, ITezSinglePrefab
         {
             var prefab = TezService.get<TezPrefabDatabase>().get<Renderer>();
             var go = MonoBehaviour.Instantiate(prefab, parent);
@@ -139,7 +139,7 @@ namespace tezcat.Framework
         }
 
         public Renderer createRenderer<Renderer>(Transform parent, string prefab_name)
-            where Renderer : TezRenderer, ITezMultiPrefab
+            where Renderer : TezComBaseRenderer, ITezMultiPrefab
         {
             var prefab = TezService.get<TezPrefabDatabase>().get<Renderer>(prefab_name);
             var go = MonoBehaviour.Instantiate(prefab, parent);

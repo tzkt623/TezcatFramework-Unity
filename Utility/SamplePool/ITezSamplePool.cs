@@ -4,7 +4,7 @@ namespace tezcat.Framework.Utility
 {
     public interface ITezSamplePool : ITezCloseable
     {
-        string name { get; }
+        string poolName { get; }
         object create();
         object customCreate();
         void recycle(object obj);

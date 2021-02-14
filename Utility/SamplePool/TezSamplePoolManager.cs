@@ -1,26 +1,25 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using UnityEngine;
 
 namespace tezcat.Framework.Utility
 {
     public static class TezSamplePoolManager
     {
-        static Dictionary<string, ITezSamplePool> m_Dic = new Dictionary<string, ITezSamplePool>();
+        static Dictionary<Type, ITezSamplePool> m_Dic = new Dictionary<Type, ITezSamplePool>();
 
         public static void register<T>(T pool) where T : ITezSamplePool
         {
-            if (!m_Dic.ContainsKey(pool.name))
+            var type = typeof(T);
+            if (!m_Dic.ContainsKey(type))
             {
-                m_Dic.Add(pool.name, pool);
+                Debug.Log("TezSamplePoolManager : " + type.FullName);
+                m_Dic.Add(type, pool);
             }
             else
             {
-                throw new System.Exception(string.Format("TezSamplePool<{0}> be new twice!!", pool.name));
+                throw new System.Exception(string.Format("TezSamplePool<{0}> be new twice!!", pool.poolName));
             }
-        }
-
-        public static ITezSamplePool getPool(string name)
-        {
-            return m_Dic[name];
         }
 
         public static void closeAll()

@@ -110,7 +110,7 @@ namespace tezcat.Framework.Core
         {
             if (!m_Closed)
             {
-                this.onClose(m_Closed);
+                this.onClose();
             }
         }
 
@@ -152,7 +152,7 @@ namespace tezcat.Framework.Core
         /// <summary>
         /// 关闭组件
         /// </summary>
-        protected abstract void onClose(bool self_close);
+        protected abstract void onClose();
 
         /// <summary>
         /// 在显示时调用
@@ -186,7 +186,7 @@ namespace tezcat.Framework.Core
         public void close()
         {
             m_Closed = true;
-            this.onClose(m_Closed);
+            this.onClose();
             Destroy(this.gameObject);
         }
     }

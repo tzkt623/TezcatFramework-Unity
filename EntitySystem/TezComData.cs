@@ -7,10 +7,9 @@ using tezcat.Framework.Extension;
 
 namespace tezcat.Framework.ECS
 {
-
-    public abstract class TezGameObject
-        : TezDataObject
-        , IEquatable<TezGameObject>
+    public abstract class TezComData
+        : TezComBaseData
+        , IEquatable<TezComData>
     {
         /// <summary>
         /// 唯一名称ID
@@ -102,10 +101,10 @@ namespace tezcat.Framework.ECS
 
         public override bool Equals(object other)
         {
-            return this.Equals((TezGameObject)other);
+            return this.Equals((TezComData)other);
         }
 
-        public bool Equals(TezGameObject other)
+        public bool Equals(TezComData other)
         {
             if (object.ReferenceEquals(other, null))
             {
@@ -115,7 +114,7 @@ namespace tezcat.Framework.ECS
             return m_UID.sameAs(other.m_UID);
         }
 
-        public static bool operator ==(TezGameObject a, TezGameObject b)
+        public static bool operator ==(TezComData a, TezComData b)
         {
             if (object.ReferenceEquals(a, null))
             {
@@ -125,7 +124,7 @@ namespace tezcat.Framework.ECS
             return a.Equals(b);
         }
 
-        public static bool operator !=(TezGameObject a, TezGameObject b)
+        public static bool operator !=(TezComData a, TezComData b)
         {
             return !(a == b);
         }
@@ -135,7 +134,7 @@ namespace tezcat.Framework.ECS
         /// 与另一个对象的模板相同
         /// 即拥有相同的数据库ID
         /// </summary>
-        public bool templateAs(TezGameObject other)
+        public bool templateAs(TezComData other)
         {
             return m_UID.dbSameAs(other.m_UID);
         }

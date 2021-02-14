@@ -236,7 +236,7 @@ namespace tezcat.Framework.TypeTraits
         #endregion
     }
 
-    public abstract class TezType
+    public abstract class TezType : IEquatable<TezType>
     {
         public int ID { get; protected set; }
         public string name { get; private set; }
@@ -249,7 +249,7 @@ namespace tezcat.Framework.TypeTraits
 
         public override bool Equals(object obj)
         {
-            return base.Equals(obj);
+            return this.Equals((TezType)obj);
         }
 
         public override int GetHashCode()
@@ -277,44 +277,29 @@ namespace tezcat.Framework.TypeTraits
             return TezTypeList<T>.List;
         }
 
+        public bool Equals(TezType other)
+        {
+            if (object.ReferenceEquals(other, null))
+            {
+                return false;
+            }
+
+            return this.ID == other.ID;
+        }
+
         public static bool operator !=(TezType x, TezType y)
         {
-            /// (!true || !false) && (true || false) || (x)
-            /// (!false || !false) && (false || false) || (x.ID != y.ID || x.name != y.name)
+            if (object.ReferenceEquals(x, null))
+            {
+                return object.ReferenceEquals(y, null);
+            }
 
-            var flagx = object.ReferenceEquals(x, null);
-            var flagy = object.ReferenceEquals(y, null);
-
-            return (!flagx || !flagy) && (flagx || flagy || (x.ID != y.ID));
+            return x.Equals(y);
         }
 
         public static bool operator ==(TezType x, TezType y)
         {
-            ///(false && false) || (x.ID == y.ID && x.name == y.name)
-            ///(true && true) || (x)
-            ///(false && true) || (!false && !true) && (x)
-
-            var flagx = object.ReferenceEquals(x, null);
-            var flagy = object.ReferenceEquals(y, null);
-
-            return (flagx && flagy) || (!flagx && !flagy && (x.ID == y.ID));
+            return !(x == y);
         }
-
-        #region 重载操作
-        public static bool operator true(TezType obj)
-        {
-            return !object.ReferenceEquals(obj, null);
-        }
-
-        public static bool operator false(TezType obj)
-        {
-            return object.ReferenceEquals(obj, null);
-        }
-
-        public static bool operator !(TezType obj)
-        {
-            return object.ReferenceEquals(obj, null);
-        }
-        #endregion
     }
 }

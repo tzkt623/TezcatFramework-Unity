@@ -12,7 +12,7 @@ namespace tezcat.Framework.Game.Inventory
     public class TezInventory<Object>
         : TezRefObject
         , ITezInventory
-        where Object : TezGameObject
+        where Object : TezComData
     {
         /// <summary>
         /// 物品数量

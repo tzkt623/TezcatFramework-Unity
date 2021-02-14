@@ -12,7 +12,7 @@ namespace tezcat.Framework.UI
     {
         Image m_Icon = null;
 
-        public TezGameObject singleItem { get; private set; }
+        public TezComData singleItem { get; private set; }
 
         protected override void preInit()
         {
@@ -35,7 +35,7 @@ namespace tezcat.Framework.UI
             }
         }
 
-        public void onSelect(TezGameObject item)
+        public void onSelect(TezComData item)
         {
             this.singleItem = item;
             this.open();
