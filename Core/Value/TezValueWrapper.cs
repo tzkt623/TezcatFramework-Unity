@@ -20,7 +20,7 @@ namespace tezcat.Framework.Core
         Float,
         Double,
         String,
-        IDString,
+        StaticString,
         Class,
         Type,
         Unknown
@@ -89,7 +89,6 @@ namespace tezcat.Framework.Core
             {typeof(float), TezValueType.Float },
             {typeof(double), TezValueType.Double },
             {typeof(string), TezValueType.String },
-            {typeof(TezIDString), TezValueType.IDString },
         };
 
         public abstract Type systemType { get; }
@@ -121,7 +120,6 @@ namespace tezcat.Framework.Core
             {typeof(float), TezValueType.Float },
             {typeof(double), TezValueType.Double },
             {typeof(string), TezValueType.String },
-            {typeof(TezIDString), TezValueType.IDString },
         };
 
         protected class WrapperID<Value> : TezTypeInfo<Value, TezValueWrapper>
@@ -237,7 +235,7 @@ namespace tezcat.Framework.Core
             {
                 return object.ReferenceEquals(b, null);
             }
-            return a.descriptor.Equals(b.descriptor);
+            return a.Equals(b);
         }
 
         /// <summary>

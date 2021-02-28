@@ -6,13 +6,13 @@ namespace tezcat.Framework.ECS
         : TezMonoObject
         , ITezComponent
     {
-        static int s_UID = TezComponentManager.register<TezComBaseRenderer>();
-        public static int SUID => s_UID;
+        static int s_ComUID = TezComponentManager.register<TezComBaseRenderer>();
+        public static int SComUID => s_ComUID;
 
         /// <summary>
         /// 类型的唯一ID
         /// </summary>
-        public int UID => s_UID;
+        public int comUID => s_ComUID;
 
         public TezEntity entity { get; private set; }
 

@@ -38,15 +38,15 @@ namespace tezcat.Framework.UI
 
         private void refreshData()
         {
-            string value;
-            if (TezService.get<TezTranslator>().translateName(m_KeyInput.text, out value))
-            {
-                m_LocalizationInput.text = value;
-            }
-            else
-            {
-                m_LocalizationInput.text = m_KeyInput.text;
-            }
+//             string value;
+//             if (TezService.get<TezTranslator>().translateName(m_KeyInput.text, out value))
+//             {
+//                 m_LocalizationInput.text = value;
+//             }
+//             else
+//             {
+//                 m_LocalizationInput.text = m_KeyInput.text;
+//             }
         }
 
         protected override void onHide()
@@ -72,10 +72,10 @@ namespace tezcat.Framework.UI
         private void checkKey(string key)
         {
             string value;
-            if (TezService.get<TezTranslator>().translateName(key, out value))
-            {
-                m_LocalizationInput.text = value;
-            }
+//             if (TezService.get<TezTranslator>().translateName(key, out value))
+//             {
+//                 m_LocalizationInput.text = value;
+//             }
         }
 
         public void set(string key)
@@ -107,7 +107,7 @@ namespace tezcat.Framework.UI
         {
             if (eventData.button == PointerEventData.InputButton.Left)
             {
-                TezService.get<TezTranslator>().saveName(m_KeyInput.text, m_LocalizationInput.text);
+//                TezService.get<TezTranslator>().saveName(m_KeyInput.text, m_LocalizationInput.text);
                 listArea.refreshPhase = TezRefreshPhase.Refresh;
                 this.close();
             }

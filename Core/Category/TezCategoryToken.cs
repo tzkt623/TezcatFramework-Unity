@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using tezcat.Framework.TypeTraits;
+using UnityEngine;
 
 namespace tezcat.Framework.Core
 {
@@ -14,6 +15,11 @@ namespace tezcat.Framework.Core
     public interface ITezCategoryBaseToken : ITezEnumeration
     {
         /// <summary>
+        /// Token的UID
+        /// </summary>
+        int UID { get; }
+
+        /// <summary>
         /// Token存在的层
         /// 即在Category系统里TokenArray中的Index
         /// </summary>
@@ -23,6 +29,12 @@ namespace tezcat.Framework.Core
         /// 分类
         /// </summary>
         TezCategoryTokenClassify classify { get; }
+
+        /// <summary>
+        /// 父级
+        /// Root没有父级
+        /// </summary>
+        ITezCategoryBaseToken parent { get; }
     }
 
     public interface ITezCategoryToken : ITezCategoryBaseToken
@@ -48,17 +60,10 @@ namespace tezcat.Framework.Core
         ITezCategoryToken get(int index);
 
         /// <summary>
-        /// 分配FinalToken的ID
-        /// 请勿手动调用
-        /// </summary>
-        /// <returns></returns>
-        int generateID();
-
-        /// <summary>
         /// 注册FinalToken
         /// 请勿手动调用
         /// </summary>
-        void registerFinalToken(ITezCategoryToken token);
+        int registerFinalToken(ITezCategoryToken token);
     }
 
     public abstract class TezCategoryBaseToken<Self, TValue>
@@ -74,9 +79,16 @@ namespace tezcat.Framework.Core
         /// </summary>
         public int layer { get; }
 
-        protected TezCategoryBaseToken(TValue value, int layer) : base(value)
+        public ITezCategoryBaseToken parent { get; }
+
+        public int UID { get; } = -1;
+
+        protected TezCategoryBaseToken(TValue value, int layer, ITezCategoryBaseToken parent) : base(value)
         {
             this.layer = layer;
+            this.parent = parent;
+            this.UID = TezCategorySystem.registerToken(this);
+            Debug.Log(string.Format("{0}:{1}", this.toName, this.UID));
         }
     }
 
@@ -98,7 +110,7 @@ namespace tezcat.Framework.Core
         /// <summary>
         /// 用于创建RootToken
         /// </summary>
-        protected TezCategoryRootToken(TValue value) : base(value, 0)
+        protected TezCategoryRootToken(TValue value) : base(value, 0, null)
         {
             TezCategorySystem.registerRootToken(this);
         }
@@ -113,15 +125,12 @@ namespace tezcat.Framework.Core
             return m_FinalTokenList[index];
         }
 
-        int ITezCategoryRootToken.generateID()
+        int ITezCategoryRootToken.registerFinalToken(ITezCategoryToken token)
         {
-            return m_FinalTokenList.Count;
-        }
-
-        void ITezCategoryRootToken.registerFinalToken(ITezCategoryToken token)
-        {
+            var id = m_FinalTokenList.Count;
             m_FinalTokenList.Add(token);
             m_FinalTokenDic.Add(token.toName, token);
+            return id;
         }
     }
 
@@ -160,9 +169,8 @@ namespace tezcat.Framework.Core
         /// 用于创建PathToken
         /// </summary>
         /// <param name="parentToken">Path中的上一级</param>
-        protected TezCategoryToken(TValue value, ITezCategoryBaseToken parentToken) : base(value, parentToken.layer + 1)
+        protected TezCategoryToken(TValue value, ITezCategoryBaseToken parentToken) : base(value, parentToken.layer + 1, parentToken)
         {
-
         }
 
         /// <summary>
@@ -171,10 +179,10 @@ namespace tezcat.Framework.Core
         /// <param name="value"></param>
         /// <param name="parentToken">Path中的上一级</param>
         /// <param name="rootToken">Root级Token</param>
-        protected TezCategoryToken(TValue value, ITezCategoryBaseToken parentToken, ITezCategoryRootToken rootToken) : base(value, parentToken.layer + 1)
+        protected TezCategoryToken(TValue value, ITezCategoryBaseToken parentToken, ITezCategoryRootToken rootToken) : base(value, parentToken.layer + 1, parentToken)
         {
-            this.finalIndexInRootToken = rootToken.generateID();
-            rootToken.registerFinalToken(this);
+            this.finalIndexInRootToken =  rootToken.registerFinalToken(this);
+            TezCategorySystem.registerFinalToken(this);
         }
     }
 }

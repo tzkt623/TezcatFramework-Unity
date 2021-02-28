@@ -5,7 +5,7 @@ namespace tezcat.Framework.Core
 {
     public interface ITezRefObject : ITezCloseable
     {
-        TezRefObject.Ref refMark { get; }
+        TezRefObject.Ref refHolder { get; }
     }
 
     public class TezWeakRef<T>
@@ -17,7 +17,7 @@ namespace tezcat.Framework.Core
 
         public TezWeakRef(T obj)
         {
-            m_Ref = obj.refMark;
+            m_Ref = obj.refHolder;
             m_Object = obj;
         }
 
@@ -37,6 +37,14 @@ namespace tezcat.Framework.Core
             m_Ref = null;
             m_Object = null;
         }
+
+        /// <summary>
+        /// 隐式转换
+        /// </summary>
+        public static implicit operator TezWeakRef<T>(T value)
+        {
+            return new TezWeakRef<T>(value);
+        }
     }
 
     public abstract class TezRefObject : ITezRefObject
@@ -46,13 +54,13 @@ namespace tezcat.Framework.Core
             public bool isClosed { get; set; }
         }
 
-        Ref m_RefMark = new Ref();
-        Ref ITezRefObject.refMark => m_RefMark;
+        Ref m_RefHolder = new Ref();
+        Ref ITezRefObject.refHolder => m_RefHolder;
 
         public virtual void close()
         {
-            m_RefMark.isClosed = true;
-            m_RefMark = null;
+            m_RefHolder.isClosed = true;
+            m_RefHolder = null;
         }
     }
 }

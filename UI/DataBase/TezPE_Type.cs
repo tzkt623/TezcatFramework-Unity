@@ -45,19 +45,19 @@ namespace tezcat.Framework.UI
 
         private void refreshData()
         {
-            m_PropertyName.text = TezService.get<TezTranslator>().translateName(m_Property.name, m_Property.name);
-            m_Types = TezTypeListManager.getList(m_Property.systemType);
-
-            m_DropDown.ClearOptions();
-            List<Dropdown.OptionData> options = new List<Dropdown.OptionData>();
-            for (int i = 0; i < m_Types.Count; i++)
-            {
-                options.Add(new Dropdown.OptionData(m_Types[i].name));
-            }
-            m_DropDown.AddOptions(options);
-
-            m_DropDown.value = ((TezPV_Type)m_Property).baseValue.ID;
-            m_DropDown.captionText.text = ((TezPV_Type)m_Property).baseValue.name;
+//             m_PropertyName.text = TezService.get<TezTranslator>().translateName(m_Property.name, m_Property.name);
+//             m_Types = TezTypeListManager.getList(m_Property.systemType);
+// 
+//             m_DropDown.ClearOptions();
+//             List<Dropdown.OptionData> options = new List<Dropdown.OptionData>();
+//             for (int i = 0; i < m_Types.Count; i++)
+//             {
+//                 options.Add(new Dropdown.OptionData(m_Types[i].name));
+//             }
+//             m_DropDown.AddOptions(options);
+// 
+//             m_DropDown.value = ((TezPV_Type)m_Property).baseValue.ID;
+//             m_DropDown.captionText.text = ((TezPV_Type)m_Property).baseValue.name;
         }
 
         protected override void onHide()

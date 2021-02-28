@@ -98,8 +98,8 @@ namespace tezcat.Framework.UI
 
         private void refreshData()
         {
-            m_PageController.count = TezService.get<TezTranslator>().descriptionCount;
-            m_PageController.setPage(m_PageController.currentPage);
+//             m_PageController.count = TezService.get<TezTranslator>().descriptionCount;
+//             m_PageController.setPage(m_PageController.currentPage);
         }
 
         private void onPageChanged(int begin, int end)
@@ -113,10 +113,10 @@ namespace tezcat.Framework.UI
             }
             m_ItemList.Clear();
 
-            TezService.get<TezTranslator>().foreachDescription(
-                this.createItem,
-                begin,
-                end);
+//             TezService.get<TezTranslator>().foreachDescription(
+//                 this.createItem,
+//                 begin,
+//                 end);
         }
 
         private void onPageSet(string page)
@@ -151,10 +151,10 @@ namespace tezcat.Framework.UI
 
         private void onRemoveClick(TezButton button, PointerEventData eventData)
         {
-            TezService.get<TezTranslator>().removeDescription(m_SelectItem.key);
-            m_Vernier.SetParent(this.transform, false);
-            m_Vernier.gameObject.SetActive(false);
-            this.refreshPhase = TezRefreshPhase.Refresh;
+//             TezService.get<TezTranslator>().removeDescription(m_SelectItem.key);
+//             m_Vernier.SetParent(this.transform, false);
+//             m_Vernier.gameObject.SetActive(false);
+//             this.refreshPhase = TezRefreshPhase.Refresh;
         }
 
         private void onClearSearchClick(TezButton button, PointerEventData eventData)
@@ -180,27 +180,27 @@ namespace tezcat.Framework.UI
 
         private void onSearch(string key)
         {
-            if (!string.IsNullOrEmpty(key))
-            {
-                string value = null;
-                if (TezService.get<TezTranslator>().translateDescription(key, out value))
-                {
-                    if (m_SearchResult != null)
-                    {
-                        m_SearchResult.set(key);
-                    }
-                    else
-                    {
-                        m_SearchResult = TezService.get<TezcatFramework>().createWidget<TezLocalizationDescriptionItem>(m_Content);
-                        m_SearchResult.listArea = this;
-                        m_SearchResult.set(key);
-                        m_SearchResult.open();
-                    }
-                }
-
-                this.hideAllItem();
-                m_PageGO.SetActive(false);
-            }
+//             if (!string.IsNullOrEmpty(key))
+//             {
+//                 string value = null;
+//                 if (TezService.get<TezTranslator>().translateDescription(key, out value))
+//                 {
+//                     if (m_SearchResult != null)
+//                     {
+//                         m_SearchResult.set(key);
+//                     }
+//                     else
+//                     {
+//                         m_SearchResult = TezService.get<TezcatFramework>().createWidget<TezLocalizationDescriptionItem>(m_Content);
+//                         m_SearchResult.listArea = this;
+//                         m_SearchResult.set(key);
+//                         m_SearchResult.open();
+//                     }
+//                 }
+// 
+//                 this.hideAllItem();
+//                 m_PageGO.SetActive(false);
+//             }
         }
 
         private void onLoadPropertyClick(TezButton button, PointerEventData eventData)

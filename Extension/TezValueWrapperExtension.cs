@@ -47,7 +47,7 @@ namespace tezcat.Framework.Extension
                     }
                 case TezValueType.Class:
                     break;
-                case TezValueType.IDString:
+                case TezValueType.StaticString:
                     break;
                 case TezValueType.Type:
                     break;
@@ -90,7 +90,7 @@ namespace tezcat.Framework.Extension
                     }
                 case TezValueType.Class:
                     break;
-                case TezValueType.IDString:
+                case TezValueType.StaticString:
                     break;
                 case TezValueType.Type:
                     break;

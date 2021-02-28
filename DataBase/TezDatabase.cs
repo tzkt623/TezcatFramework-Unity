@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using tezcat.Framework.Core;
+using tezcat.Framework.Utility;
 
 namespace tezcat.Framework.Database
 {
@@ -28,10 +29,149 @@ namespace tezcat.Framework.Database
         public abstract void close();
     }
 
+    public class TezItemDatabase
+    {
+        public class Container
+        {
+            TezItemDatabase m_Database = null;
+            List<int> m_IndexList = new List<int>();
+            Dictionary<string, int> m_NameSearchDic = new Dictionary<string, int>();
+
+            public IReadOnlyList<int> itemIndexList => m_IndexList;
+            public int count => m_IndexList.Count;
+
+            public Container(TezItemDatabase database)
+            {
+                m_Database = database;
+            }
+
+            public void add(string name, int posInDataBase)
+            {
+                m_IndexList.Add(posInDataBase);
+                m_NameSearchDic.Add(name, posInDataBase);
+                this.onAdd(posInDataBase);
+            }
+
+            protected virtual void onAdd(int posInDataBase)
+            {
+
+            }
+
+            public TezDatabaseGameItem get(string name)
+            {
+                if (m_NameSearchDic.TryGetValue(name, out int index))
+                {
+                    return m_Database.get(index);
+                }
+
+                throw new Exception();
+            }
+
+            /// <summary>
+            /// 使用当前Container的Index间接获得Database中的Item
+            /// </summary>
+            public TezDatabaseGameItem getFromContainer(int index)
+            {
+                return m_Database.get(m_IndexList[index]);
+            }
+
+            /// <summary>
+            /// 使用Database中的Index直接获得Item
+            /// </summary>
+            public TezDatabaseGameItem getFromDatabase(int index)
+            {
+                return m_Database.get(index);
+            }
+        }
+
+        List<TezDatabaseGameItem> m_ContainerWithID = new List<TezDatabaseGameItem>();
+        Dictionary<string, int> m_ContainerWithName = new Dictionary<string, int>();
+
+        List<Container> m_TagContainerList = new List<Container>();
+
+        public void register(TezDatabaseGameItem item)
+        {
+            var id = m_ContainerWithID.Count;
+            item.onRegister(0, id);
+            m_ContainerWithID.Add(item);
+            m_ContainerWithName.Add(item.NID, id);
+            this.registerWithCategory(item, id);
+            this.onRegister(item, id);
+        }
+
+        private void onRegister(TezDatabaseGameItem item, int id)
+        {
+
+        }
+
+        /// <summary>
+        /// 利用Category的UID来建立数据库分类系统
+        /// </summary>
+        private void registerWithCategory(TezDatabaseGameItem item, int id)
+        {
+            if (item.category != null)
+            {
+                var category = item.category;
+                for (int i = 0; i < category.count; i++)
+                {
+                    var uid = category[i].UID;
+                    while (uid >= m_TagContainerList.Count)
+                    {
+                        m_TagContainerList.Add(null);
+                    }
+
+                    Container container = m_TagContainerList[uid];
+                    if (container == null)
+                    {
+                        container = this.createContainer(uid);
+                        m_TagContainerList[uid] = container;
+                    }
+
+                    container.add(item.NID, id);
+                }
+            }
+        }
+
+        protected virtual Container createContainer(int tokenUID)
+        {
+            return new Container(this);
+        }
+
+        public TezDatabaseGameItem get(string name)
+        {
+            if (m_ContainerWithName.TryGetValue(name, out int pos))
+            {
+                return m_ContainerWithID[pos];
+            }
+
+            throw new Exception();
+        }
+
+        public TezDatabaseGameItem get(int index)
+        {
+            return m_ContainerWithID[index];
+        }
+
+        public Container getContainerFromTokenName(string tokenName)
+        {
+            return m_TagContainerList[TezCategorySystem.getToken(tokenName).UID];
+        }
+
+        public Container getContainerFromToken(ITezCategoryBaseToken baseToken)
+        {
+            return m_TagContainerList[baseToken.UID];
+        }
+
+        public virtual void close()
+        {
+
+        }
+    }
+
     /// <summary>
     /// GameItem数据库基础类
     /// </summary>
-    public abstract class TezItemDatabase : TezDatabase
+    public abstract class TezItemDatabaseOOO : TezDatabase
     {
         class Slot
         {
@@ -79,8 +219,9 @@ namespace tezcat.Framework.Database
 
         Slot m_CurrentSlot = null;
 
-        protected TezItemDatabase(int ID) : base(ID)
+        protected TezItemDatabaseOOO(int ID) : base(ID)
         {
+
         }
 
         public override void register(TezDatabaseItem item)
@@ -91,7 +232,8 @@ namespace tezcat.Framework.Database
 
         private void createSlot(TezDatabaseGameItem item)
         {
-            var index = item.category.finalToken.finalIndexInRootToken;
+            //           var index = item.category.finalToken.finalIndexInRootToken;
+            int index = 0;
             while (m_Slots.Count <= index)
             {
                 m_Slots.Add(new Slot());

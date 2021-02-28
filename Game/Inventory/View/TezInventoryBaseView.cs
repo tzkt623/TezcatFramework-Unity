@@ -6,18 +6,24 @@ namespace tezcat.Framework.Game.Inventory
 {
     public abstract class TezInventoryBaseView : ITezCloseable
     {
-        public ITezInventory inventory => m_InventoryRef.get();
-        protected TezWeakRef<ITezInventory> m_InventoryRef = null;
+        public TezInventory inventory => m_InventoryRef.get();
+        protected TezWeakRef<TezInventory> m_InventoryRef = null;
 
-        public virtual void setInventory(ITezInventory inventory)
+
+        public TezInventoryFilterManager filterManager { get; private set; } = new TezInventoryFilterManager();
+
+        public virtual void setInventory(TezInventory inventory)
         {
-            m_InventoryRef = new TezWeakRef<ITezInventory>(inventory);
+            m_InventoryRef = inventory;
         }
 
         public virtual void close()
         {
             m_InventoryRef.close();
             m_InventoryRef = null;
+
+            this.filterManager.close();
+            this.filterManager = null;
         }
     }
 }

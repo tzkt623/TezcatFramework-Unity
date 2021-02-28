@@ -15,15 +15,15 @@ namespace tezcat.Framework.Game.Inventory
     /// <summary>
     /// 物品选择器
     /// </summary>
-    public class TezInventorySelector<Object> where Object : TezComData
+    public class TezInventorySelector
     {
         public bool isActive
         {
             get { return this.sourceSlot != null; }
         }
 
-        public ITezInventory sourceInventory { get; private set; }
-        public ITezInventory targetInventory { get; set; }
+        public TezInventory sourceInventory { get; private set; }
+        public TezInventory targetInventory { get; set; }
 
         public TezInventoryItemSlot sourceSlot { get; private set; }
 
@@ -43,13 +43,13 @@ namespace tezcat.Framework.Game.Inventory
 
         public void putToTarget(int count = 1)
         {
-            ((TezInventory<Object>)this.targetInventory).add((Object)sourceSlot.item, count);
-            ((TezInventory<Object>)this.sourceInventory).remove(sourceSlot.index, count);
+            this.targetInventory.add(sourceSlot.item, count);
+            this.sourceInventory.remove(sourceSlot.index, count);
         }
 
         public void removeFromSource(int count = 1)
         {
-            ((TezInventory<Object>)this.sourceInventory).remove(sourceSlot.index, count);
+            this.sourceInventory.remove(sourceSlot.index, count);
         }
 
         public void complete()

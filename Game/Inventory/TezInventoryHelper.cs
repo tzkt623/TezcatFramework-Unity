@@ -6,10 +6,11 @@ namespace tezcat.Framework.Game.Inventory
 {
     public static class TezInventoryHelper
     {
-        public static TezInventoryItemSlot add(TezComData gameObject, int count, List<TezInventoryItemSlot> slotList, ITezInventory inventory)
+        public static TezInventoryItemSlot add(TezComData gameObject, int count, List<TezInventoryItemSlot> slotList, TezInventory inventory)
         {
-            var stackable = TezDatabaseItemConfig.getConfig(gameObject.category).stackCount > 0;
+            //          var stackable = TezDatabaseItemConfig.getConfig(gameObject.).stackCount > 0;
 
+            var stackable = false;
             int result_index = 0;
             TezInventoryItemSlot result_slot = null;
             while (result_index < slotList.Count)

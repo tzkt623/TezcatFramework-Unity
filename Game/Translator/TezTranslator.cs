@@ -1,15 +1,120 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using tezcat.Framework.Core;
 using tezcat.Framework.Database;
 using tezcat.Framework.Extension;
+using tezcat.Framework.Utility;
 using UnityEngine;
 
 namespace tezcat.Framework.Game
 {
+    public class TezTranslator
+    {
+        Dictionary<string, string> m_Dic = new Dictionary<string, string>();
+
+        public void add(string key, string value)
+        {
+            m_Dic.Add(key, value);
+        }
+
+        public string translate(string key)
+        {
+            if (m_Dic.TryGetValue(key, out string result))
+            {
+                return result;
+            }
+
+            return string.Format("${0}$", key);
+        }
+
+        public string translate(string key, string defaultValue)
+        {
+            if (m_Dic.TryGetValue(key, out string result))
+            {
+                return result;
+            }
+
+            return defaultValue;
+        }
+    }
+
+    public class TezTranslator111
+    {
+        #region DataCenter
+        public static class DataCenter
+        {
+            static int m_Capacity = 0;
+            static List<string[]> m_List = new List<string[]>();
+
+            public static void setCapacity(int capacity)
+            {
+                m_Capacity = capacity;
+            }
+
+            private static void grow(int id)
+            {
+                while (id >= m_List.Count)
+                {
+                    m_List.Add(new string[m_Capacity]);
+                }
+            }
+
+            public static string[] getOrCreateData(TezStaticString<TezTranslator111> idString)
+            {
+                DataCenter.grow(idString.ID);
+                return m_List[idString.ID];
+            }
+
+            public static string[] get(TezStaticString<TezTranslator111> idString)
+            {
+                return m_List[idString.ID];
+            }
+        }
+        #endregion
+
+        /// <summary>
+        /// 设置翻译容器的容量
+        /// </summary>
+        public static int dataCapacity
+        {
+            set { DataCenter.setCapacity(value); }
+        }
+
+        int m_Index = -1;
+
+        /// <summary>
+        /// 输入当前翻译器对应的容器Index
+        /// </summary>
+        public TezTranslator111(int tranIndex)
+        {
+            m_Index = tranIndex;
+        }
+
+        public void add(TezStaticString<TezTranslator111> idString, string value)
+        {
+            DataCenter.getOrCreateData(idString)[m_Index] = value;
+        }
+
+        public string translate(TezStaticString<TezTranslator111> idString)
+        {
+            return DataCenter.get(idString)[m_Index];
+        }
+
+        public string translate(TezStaticString<TezTranslator111> idString, string defaultValue)
+        {
+            if (idString.ID == 0)
+            {
+                return defaultValue;
+            }
+
+            return DataCenter.get(idString)[m_Index];
+        }
+    }
+
     /// <summary>
     /// 翻译机
     /// </summary>
-    public sealed class TezTranslator : ITezService
+    public class TezTranslatorOOO
     {
         class Text
         {
@@ -336,7 +441,6 @@ namespace tezcat.Framework.Game
             return m_Description.translate(key);
         }
         #endregion
-
 
         #region Extra
         public void sortExtra()

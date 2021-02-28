@@ -1,4 +1,4 @@
-﻿namespace tezcat.Framework.Core
+﻿namespace tezcat.Framework.Utility
 {
     public class TezReadOnlyString
     {
@@ -18,17 +18,13 @@
         public const string TAG = "TAG";
 
         /// <summary>
-        /// Category系统
-        /// MainToken
+        /// Catgory RootToken
         /// </summary>
-        public const string MainToken = "MT";
-
+        public const string CTG_RT = "CTG_RT";
 
         /// <summary>
-        /// Category系统
-        /// FinalToken
+        /// Catgory FinalToken
         /// </summary>
-        public const string FinalToken = "FT";
-
+        public const string CTG_FT = "CTG_FT";
     }
 }

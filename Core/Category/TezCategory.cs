@@ -8,6 +8,14 @@ namespace tezcat.Framework.Core
     /// 通过一个分类序列将对象进行分类
     /// 序列中最后一个为实际类型
     /// 其他则为分类路径
+    /// 
+    /// 此类属于特化型唯一变量
+    /// 仅在配置单生成
+    /// 
+    /// 他由Item赋予真实生成的Object
+    /// 或者使用CategorySystem获得
+    /// 
+    /// 请勿在运行时单独生成
     /// </summary>
     public class TezCategory
         : ITezCloseable
@@ -36,6 +44,11 @@ namespace tezcat.Framework.Core
 
         int m_Last = -1;
         ITezCategoryBaseToken[] m_Tokens = null;
+
+        public ITezCategoryBaseToken this[int index]
+        {
+            get { return m_Tokens[index];}
+        }
 
         public void setToken(List<ITezCategoryBaseToken> list)
         {
@@ -72,6 +85,11 @@ namespace tezcat.Framework.Core
             return false;
         }
 
+        public override int GetHashCode()
+        {
+            return base.GetHashCode();
+        }
+
         public override bool Equals(object other)
         {
             return this.Equals((TezCategory)other);
@@ -84,7 +102,7 @@ namespace tezcat.Framework.Core
                 return false;
             }
 
-            return this.finalToken.Equals(other.finalToken);
+            return this.rootToken.toID == other.rootToken.toID && this.finalToken.toID == other.finalToken.toID;
         }
 
         public static bool operator ==(TezCategory a, TezCategory b)

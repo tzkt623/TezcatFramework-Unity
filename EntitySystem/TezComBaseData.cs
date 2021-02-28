@@ -8,13 +8,13 @@ namespace tezcat.Framework.ECS
         : TezObject
         , ITezComponent
     {
-        static int s_UID = TezComponentManager.register<TezComBaseData>();
-        public static int SUID => s_UID;
+        static int s_ComUID = TezComponentManager.register<TezComBaseData>();
+        public static int SComUID => s_ComUID;
 
         /// <summary>
         /// 类型的唯一ID
         /// </summary>
-        public int UID => s_UID;
+        public int comUID => s_ComUID;
 
         public TezEntity entity { get; private set; }
 

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using tezcat.Framework.Core;
 using tezcat.Framework.ECS;
+using tezcat.Framework.Utility;
 
 namespace tezcat.Framework.Database
 {
@@ -15,26 +16,27 @@ namespace tezcat.Framework.Database
         /// </summary>
         public string CID { get; private set; }
 
-
-        public TezCategory category { get; private set; }
-
-
-        public List<string> TAGS { get; private set; } = new List<string>();
+        /// <summary>
+        /// 分类系统
+        /// </summary>
+        public TezCategory category { get; protected set; }
 
         /// <summary>
-        /// 使用Category系统
-        /// 建立Item的分类路径
+        /// Tags用于对Item进行分类
+        /// 如果为空
+        /// 则表示不需要分类
         /// </summary>
-        protected abstract void onBuildCategory(TezReader reader, List<ITezCategoryBaseToken> list);
+        public string[] TAGS = null;
+
+        /// <summary>
+        /// 可堆叠数量
+        /// </summary>
+        public int stackCount { get; private set; } = 0;
+
 
         public override void close()
         {
             base.close();
-
-            this.category.close();
-            this.TAGS.Clear();
-
-            this.category = null;
             this.CID = null;
             this.TAGS = null;
         }
@@ -54,29 +56,35 @@ namespace tezcat.Framework.Database
             base.onSerialize(writer);
             writer.write(TezReadOnlyString.CID, this.CID);
             writer.write(TezReadOnlyString.NID, this.NID);
+            if (this.category != null)
+            {
+                writer.write(TezReadOnlyString.CTG_FT, this.category.finalToken.toName);
+            }
         }
 
         protected override void onDeserialize(TezReader reader)
         {
             base.onDeserialize(reader);
-            this.buildCategory(reader);
             this.CID = reader.readString(TezReadOnlyString.CID);
             this.NID = reader.readString(TezReadOnlyString.NID);
+            if (reader.tryRead(TezReadOnlyString.CTG_FT, out string final_token_name))
+            {
+                this.category = TezCategorySystem.getCategory(final_token_name);
+            }
         }
 
-        private void buildCategory(TezReader reader)
-        {
-            ///6层初始容量应该够用了
-            var list = new List<ITezCategoryBaseToken>(6);
-            this.onBuildCategory(reader, list);
-            TezCategorySystem.generate((ITezCategoryRootToken)list[0], (ITezCategoryToken)list[list.Count - 1], out TezCategory result, () =>
-            {
-                var category = new TezCategory();
-                category.setToken(list);
-                return category;
-            });
-            this.category = result;
-        }
+//         private void buildCategory(TezReader reader)
+//         {
+//             ///6层初始容量应该够用了
+//             var list = new List<ITezCategoryBaseToken>(6);
+//             this.onBuildCategory(reader, list);
+//             TezCategorySystem.generate((ITezCategoryRootToken)list[0], (ITezCategoryToken)list[list.Count - 1], out TezCategory result, () =>
+//             {
+//                 var category = new TezCategory();
+//                 category.setToken(list);
+//                 return category;
+//             });
+//         }
 
         protected virtual TezComData onCreateObject()
         {

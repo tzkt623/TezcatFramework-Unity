@@ -1,53 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using tezcat.Framework.Core;
 using tezcat.Framework.TypeTraits;
-using UnityEngine;
 
 namespace tezcat.Framework.ECS
 {
-    public interface ITezEntityBinder
-    {
-        void bind(TezEntity entity);
-    }
-
-    public interface ITezEntityManager : ITezService
-    {
-        TezEntity create();
-        void recycle(TezEntity entity);
-    }
-
-    public class TezEntityManager : ITezEntityManager
-    {
-        List<TezEntity> m_FreeEntity = new List<TezEntity>();
-
-        public TezEntity create()
-        {
-            if (m_FreeEntity.Count > 0)
-            {
-                var index = m_FreeEntity.Count - 1;
-                var temp = m_FreeEntity[index];
-                m_FreeEntity.RemoveAt(index);
-                return temp;
-            }
-
-            return null;
-        }
-
-        public void recycle(TezEntity entity)
-        {
-            Debug.Log(string.Format("Entity : Recycle {0}", entity.ID));
-            m_FreeEntity.Add(entity);
-        }
-
-        public void close()
-        {
-            m_FreeEntity.Clear();
-            m_FreeEntity = null;
-        }
-    }
-
-
     public class TezEntity : ITezCloseable
     {
         ITezComponent[] m_Components = new ITezComponent[TezComponentManager.count];
@@ -57,7 +13,7 @@ namespace tezcat.Framework.ECS
 
         public static TezEntity create()
         {
-            TezEntity entity = TezService.get<ITezEntityManager>().create();
+            TezEntity entity = TezEntityManager.instance.create();
             if (entity == null)
             {
                 entity = new TezEntity()
@@ -120,7 +76,7 @@ namespace tezcat.Framework.ECS
         /// <param name="component">实际组件对象</param>
         public void addComponent(ITezComponent component)
         {
-            var id = component.UID;
+            var id = component.comUID;
             foreach (var item in m_Components)
             {
                 item?.onOtherComponentAdded(component, id);
@@ -136,7 +92,7 @@ namespace tezcat.Framework.ECS
         /// <param name="component"></param>
         public void replaceComponent(ITezComponent component, bool close_old = true)
         {
-            var id = component.UID;
+            var id = component.comUID;
 
             var old = m_Components[id];
             if (old != null)
@@ -192,7 +148,7 @@ namespace tezcat.Framework.ECS
 
         public void removeComponent(ITezComponent component)
         {
-            var id = component.UID;
+            var id = component.comUID;
             var temp = m_Components[id];
             m_Components[id] = null;
             temp.onRemove(this);
@@ -217,7 +173,7 @@ namespace tezcat.Framework.ECS
                 }
             }
 
-            TezService.get<ITezEntityManager>().recycle(this);
+            TezEntityManager.instance.recycle(this);
         }
 
         #region 重载操作

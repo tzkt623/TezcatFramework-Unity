@@ -1,5 +1,6 @@
 ﻿using LitJson;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
@@ -475,6 +476,16 @@ namespace tezcat.Framework.Database
             }
 
             return m_Current.Keys;
+        }
+
+        public override ICollection getValues()
+        {
+            if (!m_Current.IsArray)
+            {
+                throw new System.ArgumentException();
+            }
+
+            return m_Current;
         }
 
         public override ValueType getValueType(int index)

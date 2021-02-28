@@ -1,0 +1,356 @@
+﻿using tezcat.Framework.Core;
+using tezcat.Framework.Extension;
+using System.Collections.Generic;
+using tezcat.Framework.ECS;
+
+namespace tezcat.Framework.Game.Inventory
+{
+    public class TezInventoryFilterManager : ITezCloseable
+    {
+        public abstract class BaseFilter : ITezCloseable
+        {
+            public abstract int count { get; }
+            public abstract TezInventoryDataSlot this[int index] { get; }
+
+            public int index { get; }
+            public TezInventoryFilterManager manager { get; set; }
+            public string name { get; set; }
+            public abstract bool calculate(TezComData gameObject);
+            public abstract void setFunction(TezEventExtension.Function<bool, TezComData> function);
+            public virtual void close()
+            {
+                this.name = null;
+            }
+
+            public BaseFilter(int index)
+            {
+                this.index = index;
+            }
+
+            public abstract TezInventoryDataSlot convertToDataSlot(TezInventoryItemSlot itemSlot);
+            public abstract TezInventoryFilterSlot createSlot(TezInventoryItemSlot itemSlot);
+        }
+
+        public class Filter_Null : BaseFilter
+        {
+            public override int count => this.manager.m_Inventory.get().count;
+
+            public override TezInventoryDataSlot this[int index]
+            {
+                get
+                {
+                    return this.manager.m_Inventory.get()[index];
+                }
+            }
+
+            public Filter_Null() : base(0)
+            {
+                this.name = DefaultFilter;
+            }
+
+            public override bool calculate(TezComData gameObject)
+            {
+                return true;
+            }
+
+            public override TezInventoryDataSlot convertToDataSlot(TezInventoryItemSlot itemSlot)
+            {
+                return itemSlot;
+            }
+
+            public override TezInventoryFilterSlot createSlot(TezInventoryItemSlot itemSlot)
+            {
+                return this.manager.createSlotWithoutFilter(itemSlot);
+            }
+
+            public override void setFunction(TezEventExtension.Function<bool, TezComData> function)
+            {
+
+            }
+        }
+
+        public class Filter_Custom : BaseFilter
+        {
+            TezEventExtension.Function<bool, TezComData> m_Function = null;
+
+            public Filter_Custom(int index) : base(index)
+            {
+            }
+
+            public override TezInventoryDataSlot this[int index]
+            {
+                get { return this.manager.m_SlotList[index]; }
+            }
+
+            public override int count => this.manager.m_SlotList.Count;
+
+            public override bool calculate(TezComData gameObject)
+            {
+                return m_Function(gameObject);
+            }
+
+            public override void close()
+            {
+                base.close();
+                m_Function = null;
+            }
+
+            public override TezInventoryDataSlot convertToDataSlot(TezInventoryItemSlot itemSlot)
+            {
+                this.manager.m_SlotDic.TryGetValue(itemSlot.index, out var slot);
+                return slot;
+            }
+
+            public override TezInventoryFilterSlot createSlot(TezInventoryItemSlot itemSlot)
+            {
+                return this.manager.createSlotWithFilter(itemSlot);
+            }
+
+            public override void setFunction(TezEventExtension.Function<bool, TezComData> function)
+            {
+                m_Function = function;
+            }
+        }
+
+        public const string DefaultFilter = "DefaultFilter";
+
+        /// <summary>
+        /// 当前Filter规则发生变化
+        /// 通知整个物品栏刷新
+        /// </summary>
+        public event TezEventExtension.Action<TezInventoryFilterManager> onFilterChanged;
+
+        /// <summary>
+        /// 当前符合Filter规则的槽位发生变化
+        /// 通知此槽位刷新
+        /// </summary>
+        public event TezEventExtension.Action<TezInventoryDataSlot> onItemChanged;
+
+
+        Dictionary<int, TezInventoryFilterSlot> m_SlotDic = new Dictionary<int, TezInventoryFilterSlot>();
+        List<TezInventoryFilterSlot> m_SlotList = new List<TezInventoryFilterSlot>();
+
+        BaseFilter m_CurrentFilter = null;
+        List<BaseFilter> m_Filters = new List<BaseFilter>();
+        TezWeakRef<TezInventory> m_Inventory = null;
+
+        public int count
+        {
+            get
+            {
+                return m_CurrentFilter.count;
+            }
+        }
+
+        public TezInventoryDataSlot this[int index]
+        {
+            get
+            {
+                return m_CurrentFilter[index];
+            }
+        }
+
+        public TezInventoryFilterManager()
+        {
+            m_CurrentFilter = new Filter_Null()
+            {
+                name = DefaultFilter,
+                manager = this
+            };
+            m_Filters.Add(m_CurrentFilter);
+        }
+
+        public void setInventory(TezInventory inventory)
+        {
+            if (m_Inventory != null && m_Inventory.tryGet(out var old_inventory))
+            {
+                old_inventory.onItemAdded -= this.onItemAdded;
+                old_inventory.onItemRemoved -= this.onItemRemoved;
+                m_Inventory.close();
+            }
+
+            this.resetSlots();
+
+            m_Inventory = inventory;
+            inventory.onItemAdded += onItemAdded;
+            inventory.onItemRemoved += onItemRemoved;
+        }
+
+        private void resetSlots()
+        {
+            for (int i = 0; i < m_SlotList.Count; i++)
+            {
+                m_SlotList[i].close();
+            }
+            m_SlotList.Clear();
+            m_SlotDic.Clear();
+        }
+
+        public void changeFilter(int index = 0)
+        {
+            if (m_CurrentFilter.index != index)
+            {
+                m_CurrentFilter = m_Filters[index];
+
+                this.resetSlots();
+
+                if (m_Inventory.tryGet(out var inventory))
+                {
+                    for (int i = 0; i < inventory.count; i++)
+                    {
+                        var slot = inventory[i];
+                        if (m_CurrentFilter.calculate(slot.item))
+                        {
+                            this.createSlotWithFilter(slot);
+                        }
+                    }
+                }
+
+                onFilterChanged?.Invoke(this);
+            }
+        }
+
+        public void changeFilter(string filterName = DefaultFilter)
+        {
+            if (m_CurrentFilter.name != filterName)
+            {
+                var result = m_Filters.Find((BaseFilter filter) =>
+                {
+                    return filter.name == filterName;
+                });
+
+                m_CurrentFilter = result;
+
+                this.resetSlots();
+
+                if (m_Inventory.tryGet(out var inventory))
+                {
+                    for (int i = 0; i < inventory.count; i++)
+                    {
+                        var slot = inventory[i];
+                        if (m_CurrentFilter.calculate(slot.item))
+                        {
+                            this.createSlotWithFilter(slot);
+                        }
+                    }
+                }
+
+                onFilterChanged?.Invoke(this);
+            }
+        }
+
+        public int createFilter(string filterName, TezEventExtension.Function<bool, TezComData> function)
+        {
+            var result = m_Filters.Find((BaseFilter filter) =>
+            {
+                return filter.name == filterName;
+            });
+
+            if (result == null)
+            {
+                result = new Filter_Custom(m_Filters.Count)
+                {
+                    name = filterName,
+                    manager = this
+                };
+                result.setFunction(function);
+                m_Filters.Add(result);
+                return result.index;
+            }
+
+            return -1;
+        }
+
+        private void onItemRemoved(TezInventoryItemSlot itemSlot)
+        {
+            if (m_CurrentFilter.calculate(itemSlot.item))
+            {
+                var data_slot = m_CurrentFilter.convertToDataSlot(itemSlot);
+                if (data_slot != null)
+                {
+                    onItemChanged?.Invoke(data_slot);
+                }
+            }
+        }
+
+        private void onItemAdded(TezInventoryItemSlot itemSlot)
+        {
+            if (m_CurrentFilter.calculate(itemSlot.item))
+            {
+                var data_slot = m_CurrentFilter.createSlot(itemSlot);
+                if (data_slot != null)
+                {
+                    onItemChanged?.Invoke(data_slot);
+                }
+            }
+        }
+
+        private TezInventoryFilterSlot createSlotWithoutFilter(TezInventoryItemSlot itemSlot)
+        {
+            var slot = TezInventoryFilterSlot.create();
+            slot.index = m_SlotList.Count;
+            slot.bindItemSlot(itemSlot);
+            m_SlotList.Add(slot);
+
+            return slot;
+        }
+
+        private TezInventoryFilterSlot createSlotWithFilter(TezInventoryItemSlot itemSlot)
+        {
+            if (!m_SlotDic.TryGetValue(itemSlot.index, out var slot))
+            {
+                slot = TezInventoryFilterSlot.create();
+                slot.index = m_SlotList.Count;
+                slot.bindItemSlot(itemSlot);
+
+                m_SlotDic.Add(itemSlot.index, slot);
+                m_SlotList.Add(slot);
+            }
+
+            return slot;
+        }
+
+        public void add(TezComData gameObject, int count)
+        {
+            if (m_Inventory.tryGet(out var inventory))
+            {
+                inventory.add(gameObject, count);
+            }
+        }
+
+        public void remove(TezComData gameObject, int count)
+        {
+            if (m_Inventory.tryGet(out var inventory))
+            {
+                inventory.remove(gameObject, count);
+            }
+        }
+
+        public void close()
+        {
+            if (m_Inventory.tryGet(out var inventory))
+            {
+                inventory.onItemAdded -= this.onItemAdded;
+                inventory.onItemRemoved -= this.onItemRemoved;
+            }
+            m_Inventory.close();
+
+            for (int i = 0; i < m_Filters.Count; i++)
+            {
+                m_Filters[i].close();
+            }
+            m_Filters.Clear();
+
+            this.resetSlots();
+
+            m_CurrentFilter = null;
+            m_Filters = null;
+            m_Inventory = null;
+            m_SlotDic = null;
+            m_SlotList = null;
+
+            onItemChanged = null;
+            onFilterChanged = null;
+        }
+    }
+}

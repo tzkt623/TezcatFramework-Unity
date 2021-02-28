@@ -1,5 +1,6 @@
 ﻿using System;
 using tezcat.Framework.Core;
+using tezcat.Framework.Utility;
 
 namespace tezcat.Framework.Database
 {
@@ -14,7 +15,7 @@ namespace tezcat.Framework.Database
         /// <summary>
         /// Name ID
         /// </summary>
-        public string NID { get; set; } = null;
+        public string NID { get; set; }
 
         public TezDBID DBID { get; private set; }
 
@@ -47,9 +48,14 @@ namespace tezcat.Framework.Database
         {
             DBID.close();
             DBID = null;
+            this.NID = null;
         }
 
-        #region 重载
+        public override int GetHashCode()
+        {
+            return base.GetHashCode();
+        }
+
         public override bool Equals(object other)
         {
             return this.Equals((TezDatabaseItem)other);
@@ -89,7 +95,6 @@ namespace tezcat.Framework.Database
         {
             return object.ReferenceEquals(item, null);
         }
-        #endregion
     }
 
     /// <summary>

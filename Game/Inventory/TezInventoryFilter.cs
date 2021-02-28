@@ -5,6 +5,7 @@ using tezcat.Framework.Extension;
 using System.Collections.Generic;
 using System;
 using tezcat.Framework.ECS;
+using tezcat.Framework.Utility;
 
 namespace tezcat.Framework.Game.Inventory
 {
@@ -29,7 +30,7 @@ namespace tezcat.Framework.Game.Inventory
         List<TezInventoryItemSlot> m_BackupSlots = new List<TezInventoryItemSlot>();
         List<TezInventoryItemSlot> m_HiddenSlots = new List<TezInventoryItemSlot>();
 
-        ITezInventory m_Inventory = null;
+        TezInventory m_Inventory = null;
 
         const byte Mask_Null = 0;
         const byte Mask_Contain = 1;
@@ -37,7 +38,7 @@ namespace tezcat.Framework.Game.Inventory
         byte m_FilterMask = 0;
         TezEventExtension.Function<bool, TezComData> m_CurrentFilter = null;
 
-        public TezInventoryFilter(ITezInventory inventory, List<TezInventoryItemSlot> slots)
+        public TezInventoryFilter(TezInventory inventory, List<TezInventoryItemSlot> slots)
         {
             m_Inventory = inventory;
             m_CurrentSlots = slots;
@@ -158,7 +159,7 @@ namespace tezcat.Framework.Game.Inventory
             }
             m_HiddenSlots.Clear();
 
-            onRuleChangedRefresh?.Invoke(m_Inventory);
+//            onRuleChangedRefresh?.Invoke(m_Inventory);
         }
 
         /// <summary>
@@ -187,10 +188,10 @@ namespace tezcat.Framework.Game.Inventory
             }
 
             m_CurrentSlots.Clear();
-            m_Inventory.swapSlots(m_BackupSlots);
+ //           m_Inventory.swapSlots(m_BackupSlots);
             this.swap();
 
-            onRuleChangedRefresh?.Invoke(m_Inventory);
+//            onRuleChangedRefresh?.Invoke(m_Inventory);
         }
 
         /// <summary>
@@ -219,10 +220,10 @@ namespace tezcat.Framework.Game.Inventory
             }
 
             m_CurrentSlots.Clear();
-            m_Inventory.swapSlots(m_BackupSlots);
+ //           m_Inventory.swapSlots(m_BackupSlots);
             this.swap();
 
-            onRuleChangedRefresh?.Invoke(m_Inventory);
+//            onRuleChangedRefresh?.Invoke(m_Inventory);
         }
 
         /// <summary>
@@ -237,7 +238,7 @@ namespace tezcat.Framework.Game.Inventory
             {
                 m_CurrentSlots[i].index = i;
             }
-            onRuleChangedRefresh?.Invoke(m_Inventory);
+//            onRuleChangedRefresh?.Invoke(m_Inventory);
         }
 
         /// <summary>
@@ -256,10 +257,10 @@ namespace tezcat.Framework.Game.Inventory
             }
 
             m_CurrentSlots.Clear();
-            m_Inventory.swapSlots(m_BackupSlots);
+//            m_Inventory.swapSlots(m_BackupSlots);
             this.swap();
 
-            onRuleChangedRefresh?.Invoke(m_Inventory);
+//            onRuleChangedRefresh?.Invoke(m_Inventory);
         }
 
         /// <summary>

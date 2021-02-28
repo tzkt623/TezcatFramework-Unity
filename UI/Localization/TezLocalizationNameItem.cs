@@ -54,15 +54,15 @@ namespace tezcat.Framework.UI
 
         private void refreshData()
         {
-            string value = null;
-            if (TezService.get<TezTranslator>().translateName(m_KeyName.text, out value))
-            {
-                m_LocalizationName.text = value;
-            }
-            else
-            {
-                m_LocalizationName.text = m_KeyName.text;
-            }
+//             string value = null;
+//             if (TezService.get<TezTranslator>().translateName(m_KeyName.text, out value))
+//             {
+//                 m_LocalizationName.text = value;
+//             }
+//             else
+//             {
+//                 m_LocalizationName.text = m_KeyName.text;
+//             }
         }
 
         private void onEditClick(TezButton button, PointerEventData eventData)

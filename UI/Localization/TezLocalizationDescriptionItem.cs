@@ -68,13 +68,13 @@ namespace tezcat.Framework.UI
 
         void IPointerEnterHandler.OnPointerEnter(PointerEventData eventData)
         {
-            string value = null;
-            if (TezService.get<TezTranslator>().translateDescription(m_KeyName.text, out value))
-            {
-                TezService.get<TezTipController>()
-                    .setDescription(value)
-                    .show();
-            }
+//             string value = null;
+//             if (TezService.get<TezTranslator>().translateDescription(m_KeyName.text, out value))
+//             {
+//                 TezService.get<TezTipController>()
+//                     .setDescription(value)
+//                     .show();
+//             }
         }
 
         void IPointerExitHandler.OnPointerExit(PointerEventData eventData)

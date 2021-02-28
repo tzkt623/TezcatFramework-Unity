@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
 
 namespace tezcat.Framework.Database
 {
@@ -208,6 +209,7 @@ namespace tezcat.Framework.Database
         /// 获得当前层级下所有的Key
         /// </summary>
         public abstract ICollection<string> getKeys();
+        public abstract ICollection getValues();
 
         public abstract ValueType getValueType(string key);
         public abstract ValueType getValueType(int index);

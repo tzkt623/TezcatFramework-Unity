@@ -61,10 +61,11 @@ namespace tezcat.Framework.Database
         class SinglePrefabContainer<Prefab> where Prefab : class, ITezSinglePrefab
         {
             public static ITezSinglePrefab prefab = null;
-            public static int ID { get; private set; } = -1;
+            static int m_ID = -1;
+            public static int ID => m_ID;
             public static void setID(int id)
             {
-                ID = id;
+                m_ID = id;
             }
         }
 
@@ -98,12 +99,11 @@ namespace tezcat.Framework.Database
 
             //            Debug.Log(string.Format("{0}/{1}", prefab.GetType().Name, count));
 
-            type.InvokeMember("setID"
-                , BindingFlags.Public | BindingFlags.Static | BindingFlags.InvokeMethod
+            type.InvokeMember("m_ID"
+                , BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.SetField
                 , null
                 , null
                 , new object[] { count++ });
-
         }
 
         public void register<T>(ITezSinglePrefab prefab) where T : class, ITezSinglePrefab
@@ -139,4 +139,3 @@ namespace tezcat.Framework.Database
         }
     }
 }
-

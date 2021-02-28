@@ -4,6 +4,7 @@ using tezcat.Framework.Core;
 using tezcat.Framework.Database;
 using tezcat.Framework.Definition;
 using tezcat.Framework.Extension;
+using tezcat.Framework.Utility;
 
 namespace tezcat.Framework.ECS
 {
@@ -14,17 +15,18 @@ namespace tezcat.Framework.ECS
         /// <summary>
         /// 唯一名称ID
         /// </summary>
-        public string NID { get; set; } = null;
-
-        /// <summary>
-        /// 对象分类
-        /// </summary>
-        public TezCategory category { get; protected set; } = null;
+        public string NID { get; protected set; }
 
         /// <summary>
         /// 模板物品
         /// </summary>
         public TezDatabaseGameItem templateItem { get; private set; } = null;
+
+        /// <summary>
+        /// 特化型分类系统
+        /// 请勿释放此变量
+        /// </summary>
+        public TezCategory category { get; protected set; } = null;
 
         /// <summary>
         /// 标签
@@ -69,8 +71,8 @@ namespace tezcat.Framework.ECS
         {
             var data_item = (TezDatabaseGameItem)item;
             this.NID = data_item.NID;
-            this.category = data_item.category;
             this.templateItem = data_item;
+            this.category = data_item.category;
             m_UID.DBID = data_item.DBID;
 
             this.preInit();
@@ -97,6 +99,11 @@ namespace tezcat.Framework.ECS
         protected virtual void postInit()
         {
 
+        }
+
+        public override int GetHashCode()
+        {
+            return base.GetHashCode();
         }
 
         public override bool Equals(object other)
@@ -146,8 +153,8 @@ namespace tezcat.Framework.ECS
         {
             m_UID.close();
 
-            this.NID = null;
             this.category = null;
+            this.NID = null;
             this.templateItem = null;
             m_UID = null;
         }

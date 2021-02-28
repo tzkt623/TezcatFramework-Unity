@@ -12,7 +12,7 @@ namespace tezcat.Framework.UI
         [SerializeField]
         InputField m_Input = null;
 
-        TezIDString m_String = null;
+//        TezStaticString<> m_String = null;
 
         protected override void preInit()
         {
@@ -41,14 +41,14 @@ namespace tezcat.Framework.UI
 
         private void set(string content)
         {
-            m_String.replace(content);
+//            m_String.replace(content);
         }
 
-        public void bind(TezEventExtension.Function<string> function, TezIDString str)
-        {
-            m_PropertyName.setGetter(function);
-            m_String = str;
-            m_Input.text = m_String;
-        }
+//         public void bind(TezEventExtension.Function<string> function, TezStaticString str)
+//         {
+//             m_PropertyName.setGetter(function);
+//             m_String = str;
+//             m_Input.text = m_String;
+//         }
     }
 }

@@ -45,8 +45,8 @@ namespace tezcat.Framework.UI
                 case TezValueType.String:
                     (m_Property as TezValueWrapper<string>).value = value;
                     break;
-                case TezValueType.IDString:
-                    (m_Property as TezValueWrapper<TezIDString>).value = value;
+                case TezValueType.StaticString:
+//                    (m_Property as TezValueWrapper<TezStaticString>).value = value;
                     break;
             }
         }
@@ -58,26 +58,26 @@ namespace tezcat.Framework.UI
 
         private void refreshData()
         {
-            m_PropertyName.text = TezService.get<TezTranslator>().translateName(m_Property.name, m_Property.name);
-            switch (m_Property.valueType)
-            {
-                case TezValueType.Float:
-                    m_Input.contentType = InputField.ContentType.DecimalNumber;
-                    m_Input.text = (m_Property as TezValueWrapper<float>).value.ToString();
-                    break;
-                case TezValueType.Int:
-                    m_Input.contentType = InputField.ContentType.IntegerNumber;
-                    m_Input.text = (m_Property as TezValueWrapper<int>).value.ToString();
-                    break;
-                case TezValueType.String:
-                    m_Input.contentType = InputField.ContentType.Standard;
-                    m_Input.text = (m_Property as TezValueWrapper<string>).value;
-                    break;
-                case TezValueType.IDString:
-                    m_Input.contentType = InputField.ContentType.Standard;
-                    m_Input.text = (m_Property as TezValueWrapper<TezIDString>).value;
-                    break;
-            }
+//             m_PropertyName.text = TezService.get<TezTranslator>().translateName(m_Property.name, m_Property.name);
+//             switch (m_Property.valueType)
+//             {
+//                 case TezValueType.Float:
+//                     m_Input.contentType = InputField.ContentType.DecimalNumber;
+//                     m_Input.text = (m_Property as TezValueWrapper<float>).value.ToString();
+//                     break;
+//                 case TezValueType.Int:
+//                     m_Input.contentType = InputField.ContentType.IntegerNumber;
+//                     m_Input.text = (m_Property as TezValueWrapper<int>).value.ToString();
+//                     break;
+//                 case TezValueType.String:
+//                     m_Input.contentType = InputField.ContentType.Standard;
+//                     m_Input.text = (m_Property as TezValueWrapper<string>).value;
+//                     break;
+//                 case TezValueType.IDString:
+//                     m_Input.contentType = InputField.ContentType.Standard;
+//                     m_Input.text = (m_Property as TezValueWrapper<TezIDString>).value;
+//                     break;
+//             }
         }
     }
 }

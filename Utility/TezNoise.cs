@@ -1,4 +1,5 @@
-﻿using tezcat.Framework.Extension;
+﻿using System;
+using tezcat.Framework.Extension;
 using UnityEngine;
 
 namespace tezcat.Framework.Utility
@@ -6,35 +7,41 @@ namespace tezcat.Framework.Utility
     /// <summary>
     /// 噪声
     /// </summary>
-    public class TezNoise
+    public static class TezNoise
     {
-        static TezEventExtension.Function<float, float, float>[] m_F1Ds = new TezEventExtension.Function<float, float, float>[]
+        static TezEventExtension.Function<float, float, float>[] s_F1Ds = new TezEventExtension.Function<float, float, float>[]
         {
             value1D,
             perlin1D,
         };
 
-        static TezEventExtension.Function<float, Vector2, float>[] m_F2Ds = new TezEventExtension.Function<float, Vector2, float>[]
+        static TezEventExtension.Function<float, Vector2, float>[] s_F2Ds = new TezEventExtension.Function<float, Vector2, float>[]
         {
             value2D,
             perlin2D
         };
 
-        static TezEventExtension.Function<float, Vector3, float>[] m_F3Ds = new TezEventExtension.Function<float, Vector3, float>[]
+        static TezEventExtension.Function<float, Vector3, float>[] s_F3Ds = new TezEventExtension.Function<float, Vector3, float>[]
         {
             value3D,
             perlin3D
         };
+
+        static Function s_FunctionCache = Function.Error;
+        static TezEventExtension.Function<float, float, float> s_F1DCache = null;
+        static TezEventExtension.Function<float, Vector2, float> s_F2DCache = null;
+        static TezEventExtension.Function<float, Vector3, float> s_F3DCache = null;
+
 
         public enum Function
         {
             Error = -1,
             Value1D = 0,
             Perlin1D = 1,
-            Value2D = 0,
-            Perlin2D = 1,
-            Value3D = 0,
-            Perlin3D = 1,
+            Value2D = 2,
+            Perlin2D = 3,
+            Value3D = 4,
+            Perlin3D = 5,
         }
 
         #region 工具
@@ -47,7 +54,8 @@ namespace tezcat.Framework.Utility
         /// 这样就优化掉了(point&Mask)运算
         /// 并且不会出现长度越界的情况
         /// </summary>
-        private static int[] m_HashArray = {
+        private static int[] s_HashArray =
+        {
             151,160,137, 91, 90, 15,131, 13,201, 95, 96, 53,194,233,  7,225,
             140, 36,103, 30, 69,142,  8, 99, 37,240, 21, 10, 23,190,  6,148,
             247,120,234, 75,  0, 26,197, 62, 94,252,219,203,117, 35, 11, 32,
@@ -84,6 +92,7 @@ namespace tezcat.Framework.Utility
         };
 
         private const int m_HashMask = 255;
+        private const float m_MaskRate = 1 / m_HashMask;
 
         private static float smooth(float t)
         {
@@ -98,6 +107,25 @@ namespace tezcat.Framework.Utility
         private static float dot(Vector3 g, float x, float y, float z)
         {
             return g.x * x + g.y * y + g.z * z;
+        }
+
+        /// <summary>
+        /// 更换随机Hash表的值
+        /// hash表的长度一定是256
+        /// 如果不明白原理
+        /// 就不要使用这个函数
+        /// </summary>
+        public static void changeHashArray(int[] hashArray)
+        {
+            const int length = 256;
+            if (hashArray.Length != length)
+            {
+                throw new Exception("Hash Array Must Have 256 Values!!");
+            }
+
+            s_HashArray = new int[length * 2];
+            Array.Copy(hashArray, 0, s_HashArray, 0, length);
+            Array.Copy(hashArray, 0, s_HashArray, length, length);
         }
         #endregion
 
@@ -121,8 +149,8 @@ namespace tezcat.Framework.Utility
             int i1 = i0 + 1;
 
             ///取得左边点和右边点的参考值
-            int h0 = m_HashArray[i0];
-            int h1 = m_HashArray[i1];
+            int h0 = s_HashArray[i0];
+            int h1 = s_HashArray[i1];
 
             ///获得平滑的插值系数
             t = smooth(t);
@@ -130,9 +158,9 @@ namespace tezcat.Framework.Utility
             ///用当前点左右两边的参考值
             ///配合平滑插值系数进行插值
             ///取得当前点真正的参考值(Mathf.Lerp(h0, h1, t))
-            ///并且转换到0-1之内(除以(1f / m_HashMask))
+            ///并且转换到0-1之内
             ///便获得了平滑的一维随机数
-            return Mathf.Lerp(h0, h1, t) * (1f / m_HashMask);
+            return Mathf.Lerp(h0, h1, t) * m_MaskRate;
         }
 
         public static float value1D(Vector3 point, float frequency)
@@ -158,22 +186,22 @@ namespace tezcat.Framework.Utility
 
             ///取得线上的值
             ///为了下一步计算面上的值
-            int h0 = m_HashArray[ix0];
-            int h1 = m_HashArray[ix1];
+            int h0 = s_HashArray[ix0];
+            int h1 = s_HashArray[ix1];
 
             ///计算面上的值
             ///用于插值计算
-            int h00 = m_HashArray[h0 + iy0];
-            int h10 = m_HashArray[h1 + iy0];
-            int h01 = m_HashArray[h0 + iy1];
-            int h11 = m_HashArray[h1 + iy1];
+            int h00 = s_HashArray[h0 + iy0];
+            int h10 = s_HashArray[h1 + iy0];
+            int h01 = s_HashArray[h0 + iy1];
+            int h11 = s_HashArray[h1 + iy1];
 
             tx = smooth(tx);
             ty = smooth(ty);
 
             return Mathf.Lerp(Mathf.Lerp(h00, h10, tx)
                 , Mathf.Lerp(h01, h11, tx)
-                , ty) * (1f / m_HashMask);
+                , ty) * m_MaskRate;
         }
 
         public static float value2D(Vector3 point, float frequency)
@@ -202,26 +230,26 @@ namespace tezcat.Framework.Utility
 
             ///计算线上的值
             ///为了下一步计算面上的值
-            int h0 = m_HashArray[ix0];
-            int h1 = m_HashArray[ix1];
+            int h0 = s_HashArray[ix0];
+            int h1 = s_HashArray[ix1];
 
             ///计算面上的值
             ///为了下一步计算体上的值
-            int h00 = m_HashArray[h0 + iy0];
-            int h10 = m_HashArray[h1 + iy0];
-            int h01 = m_HashArray[h0 + iy1];
-            int h11 = m_HashArray[h1 + iy1];
+            int h00 = s_HashArray[h0 + iy0];
+            int h10 = s_HashArray[h1 + iy0];
+            int h01 = s_HashArray[h0 + iy1];
+            int h11 = s_HashArray[h1 + iy1];
 
             ///计算体上的值
             ///用于插值计算
-            int h000 = m_HashArray[h00 + iz0];
-            int h100 = m_HashArray[h10 + iz0];
-            int h010 = m_HashArray[h01 + iz0];
-            int h110 = m_HashArray[h11 + iz0];
-            int h001 = m_HashArray[h00 + iz1];
-            int h101 = m_HashArray[h10 + iz1];
-            int h011 = m_HashArray[h01 + iz1];
-            int h111 = m_HashArray[h11 + iz1];
+            int h000 = s_HashArray[h00 + iz0];
+            int h100 = s_HashArray[h10 + iz0];
+            int h010 = s_HashArray[h01 + iz0];
+            int h110 = s_HashArray[h11 + iz0];
+            int h001 = s_HashArray[h00 + iz1];
+            int h101 = s_HashArray[h10 + iz1];
+            int h011 = s_HashArray[h01 + iz1];
+            int h111 = s_HashArray[h11 + iz1];
 
             tx = smooth(tx);
             ty = smooth(ty);
@@ -230,7 +258,7 @@ namespace tezcat.Framework.Utility
             return Mathf.Lerp(
                 Mathf.Lerp(Mathf.Lerp(h000, h100, tx), Mathf.Lerp(h010, h110, tx), ty)
                 , Mathf.Lerp(Mathf.Lerp(h001, h101, tx), Mathf.Lerp(h011, h111, tx), ty)
-                , tz) * (1f / m_HashMask);
+                , tz) * m_MaskRate;
         }
         #endregion
 
@@ -286,8 +314,8 @@ namespace tezcat.Framework.Utility
 
             int i1 = i0 + 1;
 
-            float g0 = m_Gradients1D[m_HashArray[i0] & m_GradientsMask1D];
-            float g1 = m_Gradients1D[m_HashArray[i1] & m_GradientsMask1D];
+            float g0 = m_Gradients1D[s_HashArray[i0] & m_GradientsMask1D];
+            float g1 = m_Gradients1D[s_HashArray[i1] & m_GradientsMask1D];
 
             float v0 = g0 * t0;
             float v1 = g1 * t1;
@@ -321,13 +349,13 @@ namespace tezcat.Framework.Utility
             int ix1 = ix0 + 1;
             int iy1 = iy0 + 1;
 
-            int h0 = m_HashArray[ix0];
-            int h1 = m_HashArray[ix1];
+            int h0 = s_HashArray[ix0];
+            int h1 = s_HashArray[ix1];
 
-            var g00 = m_Gradients2D[m_HashArray[h0 + iy0] & m_GradientsMask2D];
-            var g10 = m_Gradients2D[m_HashArray[h1 + iy0] & m_GradientsMask2D];
-            var g01 = m_Gradients2D[m_HashArray[h0 + iy1] & m_GradientsMask2D];
-            var g11 = m_Gradients2D[m_HashArray[h1 + iy1] & m_GradientsMask2D];
+            var g00 = m_Gradients2D[s_HashArray[h0 + iy0] & m_GradientsMask2D];
+            var g10 = m_Gradients2D[s_HashArray[h1 + iy0] & m_GradientsMask2D];
+            var g01 = m_Gradients2D[s_HashArray[h0 + iy1] & m_GradientsMask2D];
+            var g11 = m_Gradients2D[s_HashArray[h1 + iy1] & m_GradientsMask2D];
 
             float v00 = dot(g00, tx0, ty0);
             float v10 = dot(g10, tx1, ty0);
@@ -369,22 +397,22 @@ namespace tezcat.Framework.Utility
             int iy1 = iy0 + 1;
             int iz1 = iz0 + 1;
 
-            int h0 = m_HashArray[ix0];
-            int h1 = m_HashArray[ix1];
+            int h0 = s_HashArray[ix0];
+            int h1 = s_HashArray[ix1];
 
-            int h00 = m_HashArray[h0 + iy0];
-            int h10 = m_HashArray[h1 + iy0];
-            int h01 = m_HashArray[h0 + iy1];
-            int h11 = m_HashArray[h1 + iy1];
+            int h00 = s_HashArray[h0 + iy0];
+            int h10 = s_HashArray[h1 + iy0];
+            int h01 = s_HashArray[h0 + iy1];
+            int h11 = s_HashArray[h1 + iy1];
 
-            var g000 = m_Gradients3D[m_HashArray[h00 + iz0] & m_GradientsMask3D];
-            var g100 = m_Gradients3D[m_HashArray[h10 + iz0] & m_GradientsMask3D];
-            var g010 = m_Gradients3D[m_HashArray[h01 + iz0] & m_GradientsMask3D];
-            var g110 = m_Gradients3D[m_HashArray[h11 + iz0] & m_GradientsMask3D];
-            var g001 = m_Gradients3D[m_HashArray[h00 + iz1] & m_GradientsMask3D];
-            var g101 = m_Gradients3D[m_HashArray[h10 + iz1] & m_GradientsMask3D];
-            var g011 = m_Gradients3D[m_HashArray[h01 + iz1] & m_GradientsMask3D];
-            var g111 = m_Gradients3D[m_HashArray[h11 + iz1] & m_GradientsMask3D];
+            var g000 = m_Gradients3D[s_HashArray[h00 + iz0] & m_GradientsMask3D];
+            var g100 = m_Gradients3D[s_HashArray[h10 + iz0] & m_GradientsMask3D];
+            var g010 = m_Gradients3D[s_HashArray[h01 + iz0] & m_GradientsMask3D];
+            var g110 = m_Gradients3D[s_HashArray[h11 + iz0] & m_GradientsMask3D];
+            var g001 = m_Gradients3D[s_HashArray[h00 + iz1] & m_GradientsMask3D];
+            var g101 = m_Gradients3D[s_HashArray[h10 + iz1] & m_GradientsMask3D];
+            var g011 = m_Gradients3D[s_HashArray[h01 + iz1] & m_GradientsMask3D];
+            var g111 = m_Gradients3D[s_HashArray[h11 + iz1] & m_GradientsMask3D];
 
             float v000 = dot(g000, tx0, ty0, tz0);
             float v100 = dot(g100, tx1, ty0, tz0);
@@ -407,6 +435,92 @@ namespace tezcat.Framework.Utility
         #endregion
 
         #region 分形噪音
+        public static void begin(Function method)
+        {
+            s_FunctionCache = method;
+            switch (method)
+            {
+                case Function.Value1D:
+                    s_F1DCache = value1D;
+                    break;
+                case Function.Perlin1D:
+                    s_F1DCache = perlin1D;
+                    break;
+                case Function.Value2D:
+                    s_F2DCache = value2D;
+                    break;
+                case Function.Perlin2D:
+                    s_F2DCache = perlin2D;
+                    break;
+                case Function.Value3D:
+                    s_F3DCache = value3D;
+                    break;
+                case Function.Perlin3D:
+                    s_F3DCache = perlin3D;
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        public static void end(Function method)
+        {
+            if (s_FunctionCache != method)
+            {
+                throw new Exception(string.Format("TezNoise End ERROR!![Current:{0}][You Want:{1}]", s_FunctionCache.ToString(), method.ToString()));
+            }
+
+            s_FunctionCache = Function.Error;
+            s_F1DCache = null;
+            s_F2DCache = null;
+            s_F3DCache = null;
+        }
+
+        public static float sum1D(float point, float frequency, int octaves, float lacunarity, float persistence)
+        {
+            float sum = s_F1DCache(point, frequency);
+            float amplitude = 1f;
+            float range = 1f;
+            for (int o = 1; o < octaves; o++)
+            {
+                frequency *= lacunarity;
+                amplitude *= persistence;
+                range += amplitude;
+                sum += s_F1DCache(point, frequency) * amplitude;
+            }
+            return sum / range;
+        }
+
+        public static float sum2D(Vector2 point, float frequency, int octaves, float lacunarity, float persistence)
+        {
+            float sum = s_F2DCache(point, frequency);
+            float amplitude = 1f;
+            float range = 1f;
+            for (int o = 1; o < octaves; o++)
+            {
+                frequency *= lacunarity;
+                amplitude *= persistence;
+                range += amplitude;
+                sum += s_F2DCache(point, frequency) * amplitude;
+            }
+            return sum / range;
+        }
+
+        public static float sum3D(Vector3 point, float frequency, int octaves, float lacunarity, float persistence)
+        {
+            float sum = s_F3DCache(point, frequency);
+            float amplitude = 1f;
+            float range = 1f;
+            for (int o = 1; o < octaves; o++)
+            {
+                frequency *= lacunarity;
+                amplitude *= persistence;
+                range += amplitude;
+                sum += s_F3DCache(point, frequency) * amplitude;
+            }
+            return sum / range;
+        }
+
         /// <summary>
         /// 范围-1到1
         /// </summary>
@@ -419,7 +533,7 @@ namespace tezcat.Framework.Utility
         /// <returns></returns>
         public static float sum1D(Function method, float point, float frequency, int octaves, float lacunarity, float persistence)
         {
-            var function = m_F1Ds[(int)method];
+            var function = s_F1Ds[(int)method];
 
             float sum = function(point, frequency);
             float amplitude = 1f;
@@ -446,7 +560,7 @@ namespace tezcat.Framework.Utility
         /// <returns>-1到1</returns>
         public static float sum2D(Function method, Vector2 point, float frequency, int octaves, float lacunarity, float persistence)
         {
-            var function = m_F2Ds[(int)method];
+            var function = s_F2Ds[(int)method - 2];
 
             float sum = function(point, frequency);
             float amplitude = 1f;
@@ -463,7 +577,7 @@ namespace tezcat.Framework.Utility
 
         public static float sum3D(Function method, Vector3 point, float frequency, int octaves, float lacunarity, float persistence)
         {
-            var function = m_F3Ds[(int)method];
+            var function = s_F3Ds[(int)method - 4];
 
             float sum = function(point, frequency);
             float amplitude = 1f;

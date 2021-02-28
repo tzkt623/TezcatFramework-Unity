@@ -58,16 +58,16 @@ namespace tezcat.Framework.UI
 
         private void checkKey(string key)
         {
-            string value;
-            if (TezService.get<TezTranslator>().translateDescription(key, out value))
-            {
-                m_DescriptionInput.text = value;
-            }
-            else
-            {
-                TezService.get<TezTranslator>().addDescription(key, value);
-                this.refreshPhase = TezRefreshPhase.Refresh;
-            }
+//             string value;
+//             if (TezService.get<TezTranslator>().translateDescription(key, out value))
+//             {
+//                 m_DescriptionInput.text = value;
+//             }
+//             else
+//             {
+//                 TezService.get<TezTranslator>().addDescription(key, value);
+//                 this.refreshPhase = TezRefreshPhase.Refresh;
+//             }
         }
 
         public void set(string key)
@@ -89,22 +89,22 @@ namespace tezcat.Framework.UI
 
         private void onConfirmClick(TezButton button, PointerEventData eventData)
         {
-            TezService.get<TezTranslator>().saveDescription(m_KeyInput.text, m_DescriptionInput.text);
-            listArea.refreshPhase = TezRefreshPhase.Refresh;
-            this.close();
+//             TezService.get<TezTranslator>().saveDescription(m_KeyInput.text, m_DescriptionInput.text);
+//             listArea.refreshPhase = TezRefreshPhase.Refresh;
+//             this.close();
         }
 
         private void refreshData()
         {
-            string value;
-            if (TezService.get<TezTranslator>().translateDescription(m_KeyInput.text, out value))
-            {
-                m_DescriptionInput.text = value;
-            }
-            else
-            {
-                m_DescriptionInput.text = m_KeyInput.text;
-            }
+//             string value;
+//             if (TezService.get<TezTranslator>().translateDescription(m_KeyInput.text, out value))
+//             {
+//                 m_DescriptionInput.text = value;
+//             }
+//             else
+//             {
+//                 m_DescriptionInput.text = m_KeyInput.text;
+//             }
         }
 
         protected override void onRefresh()

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using tezcat.Framework.Extension;
+using tezcat.Framework.Utility;
 
 namespace tezcat.Framework.Core
 {
@@ -44,8 +45,11 @@ namespace tezcat.Framework.Core
         static List<ITezValueDescriptor> m_NameList = new List<ITezValueDescriptor>();
         public static ITezValueDescriptor register(string name)
         {
-            ITezValueDescriptor property;
-            if (!m_NameDic.TryGetValue(name, out property))
+            if (m_NameDic.TryGetValue(name, out ITezValueDescriptor property))
+            {
+                throw new ArgumentException();
+            }
+            else
             {
                 property = new TezValueDescriptor<Descriptor>(m_NameList.Count, name);
                 m_NameDic.Add(name, property);
@@ -58,7 +62,7 @@ namespace tezcat.Framework.Core
         public static ITezValueDescriptor get(string name)
         {
             ITezValueDescriptor pn;
-            if(!m_NameDic.TryGetValue(name, out pn))
+            if (!m_NameDic.TryGetValue(name, out pn))
             {
                 throw new Exception(string.Format("This Value[{0}] is not registered!!", name));
             }

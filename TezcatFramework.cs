@@ -81,10 +81,7 @@ namespace tezcat.Framework
 
         protected virtual void registerService()
         {
-            TezService.register<ITezEntityManager>(new TezEntityManager());
-
             TezService.register(new TezThread());
-            TezService.register(new TezTranslator());
 
             TezService.register(new TezGraphicSystem());
             TezService.register(new TezEventDispatcher());
