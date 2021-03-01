@@ -1,308 +1,380 @@
-﻿using UnityEngine;
-using System.Collections;
-using tezcat.Framework.Core;
+﻿using tezcat.Framework.Core;
 using tezcat.Framework.Extension;
 using System.Collections.Generic;
-using System;
 using tezcat.Framework.ECS;
-using tezcat.Framework.Utility;
 
 namespace tezcat.Framework.Game.Inventory
 {
-    /// <summary>
-    /// 物品栏过滤器
-    /// </summary>
     public class TezInventoryFilter : ITezCloseable
     {
+        public abstract class BaseFilter : ITezCloseable
+        {
+            public abstract int count { get; }
+            public abstract TezInventoryDataSlot this[int index] { get; }
+
+            public int index { get; }
+            public TezInventoryFilter manager { get; set; }
+            public string name { get; set; }
+            public abstract bool calculate(TezComData gameObject);
+            public abstract void setFunction(TezEventExtension.Function<bool, TezComData> function);
+            public virtual void close()
+            {
+                this.name = null;
+                this.manager = null;
+            }
+
+            public BaseFilter(int index)
+            {
+                this.index = index;
+            }
+
+            /// <summary>
+            /// 将当前ItemSlot
+            /// 转化为Filter中的Slot
+            /// </summary>
+            public abstract TezInventoryDataSlot convertToDataSlot(TezInventoryItemSlot itemSlot);
+            public abstract TezInventoryDataSlot createSlot(TezInventoryItemSlot itemSlot);
+        }
+
+        public class Filter_Null : BaseFilter
+        {
+            public override int count => this.manager.m_Inventory.get().count;
+
+            public override TezInventoryDataSlot this[int index]
+            {
+                get
+                {
+                    return this.manager.m_Inventory.get()[index];
+                }
+            }
+
+            public Filter_Null() : base(0)
+            {
+                this.name = DefaultFilter;
+            }
+
+            public override bool calculate(TezComData gameObject)
+            {
+                return true;
+            }
+
+            public override TezInventoryDataSlot convertToDataSlot(TezInventoryItemSlot itemSlot)
+            {
+                return itemSlot;
+            }
+
+            public override TezInventoryDataSlot createSlot(TezInventoryItemSlot itemSlot)
+            {
+                return itemSlot;
+            }
+
+            public override void setFunction(TezEventExtension.Function<bool, TezComData> function)
+            {
+
+            }
+        }
+
+        public class Filter_Custom : BaseFilter
+        {
+            TezEventExtension.Function<bool, TezComData> m_Function = null;
+
+            public Filter_Custom(int index) : base(index)
+            {
+            }
+
+            public override TezInventoryDataSlot this[int index]
+            {
+                get { return this.manager.m_SlotList[index]; }
+            }
+
+            public override int count => this.manager.m_SlotList.Count;
+
+            public override bool calculate(TezComData gameObject)
+            {
+                return m_Function(gameObject);
+            }
+
+            public override void close()
+            {
+                base.close();
+                m_Function = null;
+            }
+
+            public override TezInventoryDataSlot convertToDataSlot(TezInventoryItemSlot itemSlot)
+            {
+                this.manager.m_SlotDic.TryGetValue(itemSlot.index, out var slot);
+                return slot;
+            }
+
+            public override TezInventoryDataSlot createSlot(TezInventoryItemSlot itemSlot)
+            {
+                return this.manager.createOrGetFilterSlot(itemSlot);
+            }
+
+            public override void setFunction(TezEventExtension.Function<bool, TezComData> function)
+            {
+                m_Function = function;
+            }
+        }
+
+        public const string DefaultFilter = "DefaultFilter";
+
         /// <summary>
         /// 当前Filter规则发生变化
         /// 通知整个物品栏刷新
         /// </summary>
-	    public event TezEventExtension.Action<ITezInventory> onRuleChangedRefresh;
+        public event TezEventExtension.Action<TezInventoryFilter> onFilterChanged;
 
         /// <summary>
         /// 当前符合Filter规则的槽位发生变化
         /// 通知此槽位刷新
         /// </summary>
-        public event TezEventExtension.Action<TezInventoryItemSlot> onItemChangedRefresh;
+        public event TezEventExtension.Action<TezInventoryDataSlot> onItemChanged;
 
-        List<TezInventoryItemSlot> m_CurrentSlots = null;
-        List<TezInventoryItemSlot> m_BackupSlots = new List<TezInventoryItemSlot>();
-        List<TezInventoryItemSlot> m_HiddenSlots = new List<TezInventoryItemSlot>();
 
-        TezInventory m_Inventory = null;
 
-        const byte Mask_Null = 0;
-        const byte Mask_Contain = 1;
-        const byte Mask_NotContain = 2;
-        byte m_FilterMask = 0;
-        TezEventExtension.Function<bool, TezComData> m_CurrentFilter = null;
+        Dictionary<int, TezInventoryFilterSlot> m_SlotDic = new Dictionary<int, TezInventoryFilterSlot>();
+        List<TezInventoryFilterSlot> m_SlotList = new List<TezInventoryFilterSlot>();
 
-        public TezInventoryFilter(TezInventory inventory, List<TezInventoryItemSlot> slots)
+        BaseFilter m_CurrentFilter = null;
+        List<BaseFilter> m_Filters = new List<BaseFilter>();
+        TezWeakRef<TezInventory> m_Inventory = null;
+
+        public int count
         {
-            m_Inventory = inventory;
-            m_CurrentSlots = slots;
+            get
+            {
+                return m_CurrentFilter.count;
+            }
         }
 
-        public void add(TezComData gameObject, int count)
+        public TezInventoryDataSlot this[int index]
         {
-            switch (m_FilterMask)
+            get
             {
-                case Mask_Null:
+                return m_CurrentFilter[index];
+            }
+        }
+
+        public TezInventoryFilter()
+        {
+            m_CurrentFilter = new Filter_Null()
+            {
+                name = DefaultFilter,
+                manager = this
+            };
+            m_Filters.Add(m_CurrentFilter);
+        }
+
+        public void setInventory(TezInventory inventory)
+        {
+            if (m_Inventory != null && m_Inventory.tryGet(out var old_inventory))
+            {
+                old_inventory.onItemAdded -= this.onItemAdded;
+                old_inventory.onItemRemoved -= this.onItemRemoved;
+                m_Inventory.close();
+            }
+
+            this.resetSlots();
+
+            m_Inventory = inventory;
+            inventory.onItemAdded += onItemAdded;
+            inventory.onItemRemoved += onItemRemoved;
+        }
+
+        private void resetSlots()
+        {
+            for (int i = 0; i < m_SlotList.Count; i++)
+            {
+                m_SlotList[i].close();
+            }
+            m_SlotList.Clear();
+            m_SlotDic.Clear();
+        }
+
+        public void changeFilter(int index = 0)
+        {
+            if (m_CurrentFilter.index != index)
+            {
+                m_CurrentFilter = m_Filters[index];
+
+                this.resetSlots();
+
+                if (m_Inventory.tryGet(out var inventory))
+                {
+                    for (int i = 0; i < inventory.count; i++)
                     {
-                        var result_slot = TezInventoryHelper.add(gameObject, count, m_CurrentSlots, m_Inventory);
-                        onItemChangedRefresh?.Invoke(result_slot);
+                        var slot = inventory[i];
+                        if (m_CurrentFilter.calculate(slot.item))
+                        {
+                            this.createOrGetFilterSlot(slot);
+                        }
+                    }
+                }
+
+                onFilterChanged?.Invoke(this);
+            }
+        }
+
+        public void changeFilter(string filterName = DefaultFilter)
+        {
+            if (m_CurrentFilter.name != filterName)
+            {
+                var result = m_Filters.Find((BaseFilter filter) =>
+                {
+                    return filter.name == filterName;
+                });
+
+                m_CurrentFilter = result;
+
+                this.resetSlots();
+
+                if (m_Inventory.tryGet(out var inventory))
+                {
+                    for (int i = 0; i < inventory.count; i++)
+                    {
+                        var slot = inventory[i];
+                        if (m_CurrentFilter.calculate(slot.item))
+                        {
+                            this.createOrGetFilterSlot(slot);
+                        }
+                    }
+                }
+
+                onFilterChanged?.Invoke(this);
+            }
+        }
+
+        public int createFilter(string filterName, TezEventExtension.Function<bool, TezComData> function)
+        {
+            var result = m_Filters.Find((BaseFilter filter) =>
+            {
+                return filter.name == filterName;
+            });
+
+            if (result == null)
+            {
+                result = new Filter_Custom(m_Filters.Count)
+                {
+                    name = filterName,
+                    manager = this
+                };
+                result.setFunction(function);
+                m_Filters.Add(result);
+                return result.index;
+            }
+
+            return -1;
+        }
+
+        private void onItemRemoved(TezInventoryItemSlot itemSlot)
+        {
+            ///删除时无需检测过滤条件
+            ///只需要检测是否被当前过滤条件记录即可
+            var data_slot = m_CurrentFilter.convertToDataSlot(itemSlot);
+            if (data_slot != null)
+            {
+                onItemChanged?.Invoke(data_slot);
+                if (data_slot.category == TezInventoryDataSlot.Category.Filter)
+                {
+                    if (itemSlot.item == null)
+                    {
+                        m_SlotDic.Remove(itemSlot.index);
+                        ((TezInventoryFilterSlot)data_slot).bindItemSlot(null);
+                    }
+                }
+            }
+        }
+
+        private void onItemAdded(TezInventoryItemSlot itemSlot)
+        {
+            ///添加物品时需要计算过滤范围
+            ///如果不符合条件
+            ///就不显示
+            if (m_CurrentFilter.calculate(itemSlot.item))
+            {
+                var data_slot = m_CurrentFilter.createSlot(itemSlot);
+                if (data_slot != null)
+                {
+                    onItemChanged?.Invoke(data_slot);
+                }
+            }
+        }
+
+        private TezInventoryFilterSlot createOrGetFilterSlot(TezInventoryItemSlot itemSlot)
+        {
+            if (!m_SlotDic.TryGetValue(itemSlot.index, out var slot))
+            {
+                foreach (var filter_slot in m_SlotList)
+                {
+                    if (filter_slot.itemSlot == null)
+                    {
+                        slot = filter_slot;
                         break;
                     }
-                case Mask_Contain:
-                    ///成功的被选中
-                    if (m_CurrentFilter(gameObject))
-                    {
-                        var result_slot = TezInventoryHelper.add(gameObject, count, m_CurrentSlots, m_Inventory);
-                        onItemChangedRefresh?.Invoke(result_slot);
-                    }
-                    else
-                    {
-                        TezInventoryHelper.add(gameObject, count, m_HiddenSlots, m_Inventory);
-                    }
-                    break;
-                case Mask_NotContain:
-                    ///成功的被隐藏
-                    if (m_CurrentFilter(gameObject))
-                    {
-                        TezInventoryHelper.add(gameObject, count, m_HiddenSlots, m_Inventory);
-                    }
-                    else
-                    {
-                        var result_slot = TezInventoryHelper.add(gameObject, count, m_CurrentSlots, m_Inventory);
-                        onItemChangedRefresh?.Invoke(result_slot);
-                    }
-                    break;
-                default:
-                    throw new Exception("notifyItemChanged");
+                }
+
+                if (slot == null)
+                {
+                    slot = TezInventoryFilterSlot.create();
+                    slot.index = m_SlotList.Count;
+                    m_SlotList.Add(slot);
+                }
+                m_SlotDic.Add(itemSlot.index, slot);
+
+                slot.bindItemSlot(itemSlot);
             }
+
+            return slot;
+        }
+
+        public bool add(TezComData gameObject, int count)
+        {
+            if (m_Inventory.tryGet(out var inventory))
+            {
+                inventory.add(gameObject, count);
+                return true;
+            }
+
+            return false;
         }
 
         public bool remove(TezComData gameObject, int count)
         {
-            TezInventoryItemSlot result_slot = null;
-            bool flag = false;
-            switch (m_FilterMask)
+            if (m_Inventory.tryGet(out var inventory))
             {
-                case Mask_Null:
-                    {
-                        flag = TezInventoryHelper.remove(gameObject, count, m_CurrentSlots, out result_slot);
-                        if (flag)
-                        {
-                            onItemChangedRefresh?.Invoke(result_slot);
-                        }
-                    }
-                    break;
-                case Mask_Contain:
-                    ///成功的被选中
-                    if (m_CurrentFilter(gameObject))
-                    {
-                        flag = TezInventoryHelper.remove(gameObject, count, m_CurrentSlots, out result_slot);
-                        if (flag)
-                        {
-                            onItemChangedRefresh?.Invoke(result_slot);
-                        }
-                    }
-                    else
-                    {
-                        flag = TezInventoryHelper.remove(gameObject, count, m_HiddenSlots, out result_slot);
-                    }
-                    break;
-                case Mask_NotContain:
-                    ///成功的被隐藏
-                    if (m_CurrentFilter(gameObject))
-                    {
-                        flag = TezInventoryHelper.remove(gameObject, count, m_HiddenSlots, out result_slot);
-                    }
-                    else
-                    {
-                        flag = TezInventoryHelper.remove(gameObject, count, m_CurrentSlots, out result_slot);
-                        if (flag)
-                        {
-                            onItemChangedRefresh?.Invoke(result_slot);
-                        }
-                    }
-                    break;
-                default:
-                    throw new Exception("notifyItemChanged");
+                inventory.remove(gameObject, count);
+                return true;
             }
 
-            return flag;
+            return false;
         }
 
-        /// <summary>
-        /// 通知Item发生变化
-        /// </summary>
-        public void notifyItemChanged(TezInventoryItemSlot inventorySlot)
+        public void close()
         {
-            onItemChangedRefresh?.Invoke(inventorySlot);
-        }
+            if (m_Inventory.tryGet(out var inventory))
+            {
+                inventory.onItemAdded -= this.onItemAdded;
+                inventory.onItemRemoved -= this.onItemRemoved;
+            }
+            m_Inventory.close();
 
-        /// <summary>
-        /// 取消过滤
-        /// </summary>
-        public void cancelFilter()
-        {
-            m_FilterMask = Mask_Null;
+            for (int i = 0; i < m_Filters.Count; i++)
+            {
+                m_Filters[i].close();
+            }
+            m_Filters.Clear();
+
+            this.resetSlots();
+
             m_CurrentFilter = null;
-
-            for (int i = 0; i < m_HiddenSlots.Count; i++)
-            {
-                var slot = m_HiddenSlots[i];
-                slot.index = m_CurrentSlots.Count;
-                m_CurrentSlots.Add(slot);
-            }
-            m_HiddenSlots.Clear();
-
-//            onRuleChangedRefresh?.Invoke(m_Inventory);
-        }
-
-        /// <summary>
-        /// 按照条件过滤物品
-        /// 符合条件的被选中
-        /// </summary>
-        public void contain(TezEventExtension.Function<bool, TezComData> onFilter)
-        {
-            m_CurrentFilter = onFilter;
-            m_FilterMask = Mask_Contain;
-            this.reloadHide();
-
-            for (int i = 0; i < m_CurrentSlots.Count; i++)
-            {
-                var slot = m_CurrentSlots[i];
-                if (m_CurrentFilter(slot.item))
-                {
-                    slot.index = m_BackupSlots.Count;
-                    m_BackupSlots.Add(slot);
-                }
-                else
-                {
-                    slot.index = -1;
-                    m_HiddenSlots.Add(slot);
-                }
-            }
-
-            m_CurrentSlots.Clear();
- //           m_Inventory.swapSlots(m_BackupSlots);
-            this.swap();
-
-//            onRuleChangedRefresh?.Invoke(m_Inventory);
-        }
-
-        /// <summary>
-        /// 按条件过滤物品
-        /// 符合条件的的被排除
-        /// </summary>
-        public void notContain(TezEventExtension.Function<bool, TezComData> onFilter)
-        {
-            m_CurrentFilter = onFilter;
-            m_FilterMask = Mask_NotContain;
-            this.reloadHide();
-
-            for (int i = 0; i < m_CurrentSlots.Count; i++)
-            {
-                var slot = m_CurrentSlots[i];
-                if (m_CurrentFilter(slot.item))
-                {
-                    slot.index = -1;
-                    m_HiddenSlots.Add(slot);
-                }
-                else
-                {
-                    slot.index = m_BackupSlots.Count;
-                    m_BackupSlots.Add(slot);
-                }
-            }
-
-            m_CurrentSlots.Clear();
- //           m_Inventory.swapSlots(m_BackupSlots);
-            this.swap();
-
-//            onRuleChangedRefresh?.Invoke(m_Inventory);
-        }
-
-        /// <summary>
-        /// 按自定义规则排序
-        /// </summary>
-        public void sortBy(Comparison<TezInventoryItemSlot> onSort)
-        {
-            this.reloadHide();
-
-            m_CurrentSlots.Sort(onSort);
-            for (int i = 0; i < m_CurrentSlots.Count; i++)
-            {
-                m_CurrentSlots[i].index = i;
-            }
-//            onRuleChangedRefresh?.Invoke(m_Inventory);
-        }
-
-        /// <summary>
-        /// 整理空格子
-        /// </summary>
-        public void clearupEmptySlot()
-        {
-            for (int i = 0; i < m_CurrentSlots.Count; i++)
-            {
-                var slot = m_CurrentSlots[i];
-                if (slot.item != null)
-                {
-                    slot.index = m_BackupSlots.Count;
-                    m_BackupSlots.Add(slot);
-                }
-            }
-
-            m_CurrentSlots.Clear();
-//            m_Inventory.swapSlots(m_BackupSlots);
-            this.swap();
-
-//            onRuleChangedRefresh?.Invoke(m_Inventory);
-        }
-
-        /// <summary>
-        /// 交换备用槽
-        /// </summary>
-        private void swap()
-        {
-            var temp = m_CurrentSlots;
-            m_CurrentSlots = m_BackupSlots;
-            m_BackupSlots = temp;
-        }
-
-        private void reloadHide()
-        {
-            if (m_HiddenSlots.Count > 0)
-            {
-                m_CurrentSlots.AddRange(m_HiddenSlots);
-                m_HiddenSlots.Clear();
-            }
-        }
-
-        public void clearEvent()
-        {
-            onRuleChangedRefresh = null;
-        }
-
-        public virtual void close()
-        {
-            foreach (var item in m_HiddenSlots)
-            {
-                item.close();
-            }
-
-            m_HiddenSlots.Clear();
-            m_BackupSlots.Clear();
-
-            m_HiddenSlots = null;
-            m_BackupSlots = null;
+            m_Filters = null;
             m_Inventory = null;
-            m_CurrentSlots = null;
-            onRuleChangedRefresh = null;
-            onItemChangedRefresh = null;
+            m_SlotDic = null;
+            m_SlotList = null;
+
+            onItemChanged = null;
+            onFilterChanged = null;
         }
     }
 }

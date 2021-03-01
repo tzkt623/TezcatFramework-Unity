@@ -6,6 +6,5 @@ namespace tezcat.Framework.Game.Inventory
 	public class TezInventoryDefaultView : TezInventoryBaseView
 	{
 	
-	
 	}
 }

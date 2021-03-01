@@ -10,11 +10,28 @@ namespace tezcat.Framework.Game.Inventory
         protected TezWeakRef<TezInventory> m_InventoryRef = null;
 
 
-        public TezInventoryFilterManager filterManager { get; private set; } = new TezInventoryFilterManager();
+        public TezInventoryFilter filterManager { get; private set; } = new TezInventoryFilter();
+
+        public TezInventoryBaseView()
+        {
+            this.filterManager.onItemChanged += this.onItemChanged;
+            this.filterManager.onFilterChanged += this.onFilterChanged;
+        }
 
         public virtual void setInventory(TezInventory inventory)
         {
             m_InventoryRef = inventory;
+            this.filterManager.setInventory(inventory);
+        }
+
+        protected virtual void onItemChanged(TezInventoryDataSlot dataSlot)
+        {
+
+        }
+
+        protected virtual void onFilterChanged(TezInventoryFilter filterManager)
+        {
+            throw new System.NotImplementedException();
         }
 
         public virtual void close()

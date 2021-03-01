@@ -1,26 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using tezcat.Framework.Core;
 using tezcat.Framework.ECS;
-using tezcat.Framework.Utility;
 
 namespace tezcat.Framework.Game.Inventory
 {
-    public abstract class TezInventoryBaseSlot : ITezCloseable
-    {
-        public int index { get; set; }
-
-        public virtual void close()
-        {
-            this.index = -1;
-        }
-    }
-
-    public abstract class TezInventoryDataSlot : TezInventoryBaseSlot
-    {
-        public abstract TezInventoryItemSlot itemSlot { get; }
-    }
-
     /// <summary>
     /// InventorySlot
     /// </summary>
@@ -39,6 +22,7 @@ namespace tezcat.Framework.Game.Inventory
         /// </summary>
         public const int TempIndex = -3;
 
+        public override Category category => Category.Item;
 
         public override TezInventoryItemSlot itemSlot => this;
 
@@ -77,39 +61,5 @@ namespace tezcat.Framework.Game.Inventory
             this.inventory = null;
         }
 
-    }
-
-    public class TezInventoryFilterSlot : TezInventoryDataSlot
-    {
-        TezInventoryItemSlot m_ItemSlot = null;
-        public override TezInventoryItemSlot itemSlot => m_ItemSlot;
-
-        public static TezInventoryFilterSlot create()
-        {
-            return TezSamplePool<TezInventoryFilterSlot>.instance.create();
-        }
-
-        public void bindItemSlot(TezInventoryItemSlot slot)
-        {
-            m_ItemSlot = slot;
-        }
-
-        public override void close()
-        {
-            base.close();
-            m_ItemSlot = null;
-            TezSamplePool<TezInventoryFilterSlot>.instance.recycle(this);
-        }
-    }
-
-    public class TezInventoryViewSlot : TezInventoryBaseSlot
-    {
-        public TezInventoryItemSlot bindSlot { get; set; }
-
-        public override void close()
-        {
-            base.close();
-            this.bindSlot = null;
-        }
     }
 }

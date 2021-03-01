@@ -50,7 +50,7 @@ namespace tezcat.Framework.Game.Inventory
             }
             else
             {
-                result_slot = this.findSlotNoStackable(result_slot);
+                result_slot = this.findSlotNoStackable();
             }
 
             ///如果有可以放下的格子
@@ -93,22 +93,22 @@ namespace tezcat.Framework.Game.Inventory
             onItemAdded?.Invoke(result_slot);
         }
 
-        private TezInventoryItemSlot findSlotNoStackable(TezInventoryItemSlot result_slot)
+        private TezInventoryItemSlot findSlotNoStackable()
         {
             int result_index = 0;
+
             while (result_index < m_Slots.Count)
             {
                 var slot = m_Slots[result_index];
                 ///找空格子
                 if (slot.item == null)
                 {
-                    result_slot = slot;
-                    break;
+                    return slot;
                 }
                 result_index++;
             }
 
-            return result_slot;
+            return null;
         }
 
         private TezInventoryItemSlot findSlotStackable(TezComData gameObject)

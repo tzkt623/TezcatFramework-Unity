@@ -185,7 +185,11 @@ namespace tezcat.Framework.Core
         /// <param name="reader"></param>
         public static void generateCodeFile(string outPath, TezReader reader)
         {
+            List<string> final_list = new List<string>();
             StringBuilder builder = new StringBuilder();
+
+            var root_class = "Root";
+            var wrapper_class = reader.readString("WrapperClass");
 
             var name_space = reader.readString("Namespace");
             builder.AppendLine("using System;");
@@ -193,15 +197,18 @@ namespace tezcat.Framework.Core
             builder.AppendLine("using tezcat.Framework.Core;");
             builder.AppendLine();
             builder.AppendLine();
+
+            ///Namespace
             builder.AppendLine(string.Format("namespace {0}", name_space));
             builder.AppendLine("{");
 
+            ///Config Class
+            builder.AppendLine(string.Format("public static class {0}", wrapper_class));
+            builder.AppendLine("{");
 
-            var prefix = reader.readString("Prefix");
-            var root_name = reader.readString("RootName");
-
-            reader.beginObject(root_name);
-            var children = writeRootClass(reader, builder, prefix, root_name);
+            #region 写类
+            reader.beginObject(root_class);
+            var children = writeRootClass(reader, builder, root_class);
             ///从Key中获得所有Class的名称
             foreach (var class_name in children)
             {
@@ -211,8 +218,8 @@ namespace tezcat.Framework.Core
                 {
                     ///写入当前PathClass
                     ///并且得到下一级Class的Name
-                    var new_children = writePathClass(reader, builder, prefix, class_name, root_name);
-                    writeClasses(new_children, reader, builder, prefix, class_name, root_name, class_name);
+                    var new_children = writePathClass(reader, builder, class_name, root_class);
+                    writeClasses(new_children, reader, builder, class_name, root_class, class_name, final_list);
                     reader.endObject(class_name);
 
                     ///调用自己写入下一个Class
@@ -222,19 +229,36 @@ namespace tezcat.Framework.Core
                 else
                 {
                     reader.beginArray(class_name);
-                    writeFinalClass(reader, builder, prefix, class_name, root_name, root_name, class_name);
+                    writeFinalClass(reader, builder, class_name, root_class, root_class, class_name);
                     reader.endArray(class_name);
+                    final_list.Add(class_name);
                 }
             }
-            reader.endObject(root_name);
+            reader.endObject(root_class);
+            #endregion
+
+            #region 初始化函数
+            builder.AppendLine("public static void init()");
+            builder.AppendLine("{");
+            for (int i = 0; i < final_list.Count; i++)
+            {
+                builder.AppendLine(string.Format("{0}.init();", final_list[i]));
+            }
+            builder.AppendLine("}");
+            #endregion
+
+            ///Config Class
             builder.AppendLine("}");
 
-            var writer = TezFilePath.createTextFile(outPath + "/" + prefix + root_name + ".cs");
+            ///Namespace
+            builder.AppendLine("}");
+
+            var writer = TezFilePath.createTextFile(outPath + "/" + wrapper_class + ".cs");
             writer.Write(builder.ToString());
             writer.Close();
         }
 
-        private static void writeClasses(ICollection<string> children, TezReader reader, StringBuilder builder, string prefix, string parentClass, string rootName, string rootMemeber)
+        private static void writeClasses(ICollection<string> children, TezReader reader, StringBuilder builder, string parentClass, string rootClass, string rootMemeber, List<string> finalList)
         {
             ///从Key中获得所有Class的名称
             foreach (var class_name in children)
@@ -245,9 +269,9 @@ namespace tezcat.Framework.Core
                 {
                     ///写入当前PathClass
                     ///并且得到下一级Class的Name
-                    var new_children = writePathClass(reader, builder, prefix, class_name, parentClass);
+                    var new_children = writePathClass(reader, builder, class_name, parentClass);
                     ///调用自己写入下一个Class
-                    writeClasses(new_children, reader, builder, prefix, class_name, rootName, rootMemeber);
+                    writeClasses(new_children, reader, builder, class_name, rootClass, rootMemeber, finalList);
                     reader.endObject(class_name);
                 }
                 ///如果不是Object
@@ -255,15 +279,16 @@ namespace tezcat.Framework.Core
                 else
                 {
                     reader.beginArray(class_name);
-                    writeFinalClass(reader, builder, prefix, class_name, parentClass, rootName, rootMemeber);
+                    writeFinalClass(reader, builder, class_name, parentClass, rootClass, rootMemeber);
                     reader.endArray(class_name);
+                    finalList.Add(class_name);
                 }
             }
         }
 
-        private static void writeFinalClass(TezReader reader, StringBuilder builder, string prefix, string className, string parentClass, string rootClass, string rootMember)
+        private static void writeFinalClass(TezReader reader, StringBuilder builder, string className, string parentClass, string rootClass, string rootMember)
         {
-            builder.AppendLine(string.Format("public class {0}{1} : TezCategoryToken<{0}{1}, {0}{1}.Category>", prefix, className));
+            builder.AppendLine(string.Format("public class {0} : TezCategoryToken<{0}, {0}.Category>", className));
             builder.AppendLine("{");
 
             #region 枚举变量
@@ -277,7 +302,7 @@ namespace tezcat.Framework.Core
             #endregion
 
             #region 构造函数
-            builder.AppendLine(string.Format("private {0}{1}(Category value, ITezCategoryBaseToken parentToken, ITezCategoryRootToken rootToken) : base(value, parentToken, rootToken)", prefix, className));
+            builder.AppendLine(string.Format("private {0}(Category value, ITezCategoryBaseToken parentToken, ITezCategoryRootToken rootToken) : base(value, parentToken, rootToken)", className));
             builder.AppendLine("{");
             builder.AppendLine("}");
             #endregion
@@ -285,16 +310,20 @@ namespace tezcat.Framework.Core
             #region 生成变量
             for (int i = 0; i < reader.count; i++)
             {
-                builder.AppendLine(string.Format("public static readonly {0}{1} {2} = new {0}{1}(Category.{2}, {0}{3}.{1}, {0}{4}.{5});", prefix, className, reader.readString(i), parentClass, rootClass, rootMember));
+                builder.AppendLine(string.Format("public static readonly {0} {1} = new {0}(Category.{1}, {2}.{0}, {3}.{4});", className, reader.readString(i), parentClass, rootClass, rootMember));
             }
             #endregion
 
+            ///生成初始化函数
+            builder.AppendLine("public static void init() {}");
+
             builder.AppendLine("}");
+            builder.AppendLine();
         }
 
-        private static ICollection<string> writePathClass(TezReader reader, StringBuilder builder, string prefix, string className, string parentClass)
+        private static ICollection<string> writePathClass(TezReader reader, StringBuilder builder, string className, string parentClass)
         {
-            builder.AppendLine(string.Format("public class {0}{1} : TezCategoryToken<{0}{1}, {0}{1}.Category>", prefix, className));
+            builder.AppendLine(string.Format("public class {0} : TezCategoryToken<{0}, {0}.Category>", className));
             builder.AppendLine("{");
 
             #region 枚举变量
@@ -309,7 +338,7 @@ namespace tezcat.Framework.Core
             #endregion
 
             #region 构造函数
-            builder.AppendLine(string.Format("private {0}{1}(Category value, ITezCategoryBaseToken parentToken) : base(value, parentToken)", prefix, className));
+            builder.AppendLine(string.Format("private {0}(Category value, ITezCategoryBaseToken parentToken) : base(value, parentToken)", className));
             builder.AppendLine("{");
             builder.AppendLine("}");
             #endregion
@@ -317,17 +346,18 @@ namespace tezcat.Framework.Core
             #region 生成变量
             foreach (var member_name in keys)
             {
-                builder.AppendLine(string.Format("public static readonly {0}{1} {2} = new {0}{1}(Category.{2}, {0}{3}.{1});", prefix, className, member_name, parentClass));
+                builder.AppendLine(string.Format("public static readonly {0} {1} = new {0}(Category.{1}, {2}.{0});", className, member_name, parentClass));
             }
             #endregion
 
             builder.AppendLine("}");
+            builder.AppendLine();
             return keys;
         }
 
-        private static ICollection<string> writeRootClass(TezReader reader, StringBuilder builder, string prefix, string rootName)
+        private static ICollection<string> writeRootClass(TezReader reader, StringBuilder builder, string className)
         {
-            builder.AppendLine(string.Format("public class {0}{1} : TezCategoryRootToken<{0}{1}, {0}{1}.Category>", prefix, rootName));
+            builder.AppendLine(string.Format("public class {0} : TezCategoryRootToken<{0}, {0}.Category>", className));
             builder.AppendLine("{");
 
             #region 枚举变量
@@ -342,7 +372,7 @@ namespace tezcat.Framework.Core
             #endregion
 
             #region 构造函数
-            builder.AppendLine(string.Format("private {0}{1}(Category value) : base(value)", prefix, rootName));
+            builder.AppendLine(string.Format("private {0}(Category value) : base(value)", className));
             builder.AppendLine("{");
             builder.AppendLine("}");
             #endregion
@@ -350,11 +380,12 @@ namespace tezcat.Framework.Core
             #region 生成变量
             foreach (var key in keys)
             {
-                builder.AppendLine(string.Format("public static readonly {0}{1} {2} = new {0}{1}(Category.{2});", prefix, rootName, key));
+                builder.AppendLine(string.Format("public static readonly {0} {1} = new {0}(Category.{1});", className, key));
             }
             #endregion
 
             builder.AppendLine("}");
+            builder.AppendLine();
             return keys;
         }
         #endregion
