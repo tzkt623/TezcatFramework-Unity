@@ -2,14 +2,14 @@
 using tezcat.Framework.Core;
 using tezcat.Framework.Extension;
 using tezcat.Framework.TypeTraits;
+using tezcat.Framework.Utility;
 #if UNITY_EDITOR
 using UnityEngine;
 #endif
 
 namespace tezcat.Framework.Event
 {
-
-    public sealed class TezEventDispatcher : ITezService
+    public sealed class TezEventDispatcher : TezSingleton<TezEventDispatcher>
     {
         public sealed class EventID<EventData>
             : TezTypeInfo<EventData, TezEventDispatcher>

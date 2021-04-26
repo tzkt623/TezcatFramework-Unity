@@ -84,7 +84,6 @@ namespace tezcat.Framework
             TezService.register(new TezThread());
 
             TezService.register(new TezGraphicSystem());
-            TezService.register(new TezEventDispatcher());
             TezService.register(new TezInputController());
 
             TezService.register(new TezSaveManager());

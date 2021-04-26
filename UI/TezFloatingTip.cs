@@ -22,6 +22,7 @@ namespace tezcat.Framework.UI
         Vector2 m_Pivot = new Vector2(0, 1);
 
         List<ITezBaseWidget> m_Widgets = new List<ITezBaseWidget>();
+        bool m_NeedClear = false;
 
         protected override void initWidget()
         {
@@ -39,16 +40,27 @@ namespace tezcat.Framework.UI
 
         protected override void onHide()
         {
-            foreach (var widget in m_Widgets)
-            {
-                widget.close();
-            }
-            m_Widgets.Clear();
+            this.clearTip();
         }
 
         protected override void onShow()
         {
+            this.clearTip();
+            m_NeedClear = true;
             this.calculatePosition();
+        }
+
+        protected void clearTip()
+        {
+            if (m_NeedClear)
+            {
+                foreach (var widget in m_Widgets)
+                {
+                    widget.close();
+                }
+                m_Widgets.Clear();
+                m_NeedClear = false;
+            }
         }
 
         private void Update()
