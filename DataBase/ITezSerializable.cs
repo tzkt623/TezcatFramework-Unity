@@ -10,6 +10,7 @@ namespace tezcat.Framework.Database
 
     public interface ITezSerializableItem
     {
+        string NID { get; }
         void serialize(TezWriter writer);
         void deserialize(TezReader reader);
     }

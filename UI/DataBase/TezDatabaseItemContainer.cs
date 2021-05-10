@@ -34,7 +34,7 @@ namespace tezcat.Framework.UI
 
         TezDatabaseGroup m_Group = null;
         TezDatabaseSlot m_CurrentSlot = null;
-        public TezDatabaseItem currentItem
+        public TezDatabaseGameItem currentItem
         {
             get; private set;
         }

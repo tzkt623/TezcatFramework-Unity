@@ -3,9 +3,9 @@
 namespace tezcat.Framework.Core
 {
     /// <summary>
-    /// 自带通知的类型
+    /// 轻量级的Value包装器
     /// </summary>
-	public class TezBindable<T>
+	public class TezBindable<T> : ITezCloseable
     {
         /// <summary>
         /// 通知事件
@@ -52,6 +52,72 @@ namespace tezcat.Framework.Core
         {
             onChanged = null;
             innerValue = default;
+        }
+    }
+
+    /// <summary>
+    /// 轻量级的Value包装器
+    /// Min Max 版
+    /// </summary>
+    public class TezBindableMax<T> : ITezCloseable
+    {
+        /// <summary>
+        /// 通知事件
+        /// </summary>
+        public event TezEventExtension.Action<T, T> onChanged;
+
+        /// <summary>
+        /// 内部实际数据
+        /// 修改此数据不会触发通知
+        /// </summary>
+        public T innerValue;
+
+        /// <summary>
+        /// 内部实际数据
+        /// 修改此数据不会触发通知
+        /// </summary>
+        public T innerMax;
+
+        /// <summary>
+        /// 外部数据
+        /// 修改此数据会触发通知
+        /// </summary>
+        public T value
+        {
+            get { return innerValue; }
+            set
+            {
+                this.innerValue = value;
+                onChanged?.Invoke(this.innerValue, innerMax);
+            }
+        }
+
+        /// <summary>
+        /// 外部数据
+        /// 修改此数据会触发通知
+        /// </summary>
+        public T max
+        {
+            get { return innerMax; }
+            set
+            {
+                innerMax = value;
+                onChanged?.Invoke(this.innerValue, innerMax);
+            }
+        }
+
+        /// <summary>
+        /// 手动通知
+        /// </summary>
+        public void notify()
+        {
+            onChanged?.Invoke(innerValue, innerMax);
+        }
+
+
+        public void close()
+        {
+            onChanged = null;
         }
     }
 }

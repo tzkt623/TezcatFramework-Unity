@@ -8,13 +8,24 @@ namespace tezcat.Framework.Database
 {
     /// <summary>
     /// 游戏对象Item
+    /// 比如 炮 飞船 技能 天赋等等
     /// </summary>
-    public abstract class TezDatabaseGameItem : TezDatabaseItem
+    public abstract class TezDatabaseGameItem
+        : IEquatable<TezDatabaseGameItem>
+        , ITezSerializableItem
+        , ITezCloseable
     {
+        public TezDBID DBID { get; private set; }
+
         /// <summary>
         /// Class ID
         /// </summary>
         public string CID { get; private set; }
+
+        /// <summary>
+        /// Name ID
+        /// </summary>
+        public string NID { get; set; }
 
         /// <summary>
         /// 分类系统
@@ -33,10 +44,28 @@ namespace tezcat.Framework.Database
         /// </summary>
         public int stackCount { get; private set; } = 0;
 
-
-        public override void close()
+        public void onRegister(int dbUID, int itemID)
         {
-            base.close();
+            this.DBID = new TezDBID(dbUID, itemID);
+        }
+
+        public void serialize(TezWriter writer)
+        {
+            this.onSerialize(writer);
+        }
+
+        public void deserialize(TezReader reader)
+        {
+            this.onDeserialize(reader);
+        }
+
+        public virtual void close()
+        {
+            DBID.close();
+            DBID = null;
+
+            this.category = null;
+            this.NID = null;
             this.CID = null;
             this.TAGS = null;
         }
@@ -51,9 +80,13 @@ namespace tezcat.Framework.Database
             return entity;
         }
 
-        protected override void onSerialize(TezWriter writer)
+        protected virtual TezComData onCreateObject()
         {
-            base.onSerialize(writer);
+            throw new Exception(string.Format("Please override this method for {0}", this.GetType().Name));
+        }
+
+        protected virtual void onSerialize(TezWriter writer)
+        {
             writer.write(TezReadOnlyString.CID, this.CID);
             writer.write(TezReadOnlyString.NID, this.NID);
             if (this.category != null)
@@ -62,9 +95,8 @@ namespace tezcat.Framework.Database
             }
         }
 
-        protected override void onDeserialize(TezReader reader)
+        protected virtual void onDeserialize(TezReader reader)
         {
-            base.onDeserialize(reader);
             this.CID = reader.readString(TezReadOnlyString.CID);
             this.NID = reader.readString(TezReadOnlyString.NID);
             if (reader.tryRead(TezReadOnlyString.CTG_FT, out string final_token_name))
@@ -73,22 +105,39 @@ namespace tezcat.Framework.Database
             }
         }
 
-//         private void buildCategory(TezReader reader)
-//         {
-//             ///6层初始容量应该够用了
-//             var list = new List<ITezCategoryBaseToken>(6);
-//             this.onBuildCategory(reader, list);
-//             TezCategorySystem.generate((ITezCategoryRootToken)list[0], (ITezCategoryToken)list[list.Count - 1], out TezCategory result, () =>
-//             {
-//                 var category = new TezCategory();
-//                 category.setToken(list);
-//                 return category;
-//             });
-//         }
-
-        protected virtual TezComData onCreateObject()
+        public override int GetHashCode()
         {
-            throw new Exception(string.Format("Please override this method for {0}", this.GetType().Name));
+            return this.DBID.GetHashCode();
+        }
+
+        public override bool Equals(object other)
+        {
+            return this.Equals((TezDatabaseGameItem)other);
+        }
+
+        public bool Equals(TezDatabaseGameItem other)
+        {
+            if (object.ReferenceEquals(other, null))
+            {
+                return false;
+            }
+
+            return DBID.Equals(other.DBID);
+        }
+
+        public static bool operator ==(TezDatabaseGameItem a, TezDatabaseGameItem b)
+        {
+            if (object.ReferenceEquals(a, null))
+            {
+                return object.ReferenceEquals(b, null);
+            }
+
+            return a.Equals(b);
+        }
+
+        public static bool operator !=(TezDatabaseGameItem a, TezDatabaseGameItem b)
+        {
+            return !(a == b);
         }
     }
 }

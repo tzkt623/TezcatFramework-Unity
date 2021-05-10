@@ -23,7 +23,7 @@ namespace tezcat.Framework.UI
          public abstract void bind(int category);
 //        public abstract void bind(TezItem item);
 
-        protected abstract TezDatabaseItem getItem();
+        protected abstract TezDatabaseGameItem getItem();
 
         protected override void initWidget()
         {

@@ -2,6 +2,9 @@
 
 namespace tezcat.Framework.Core
 {
+    /// <summary>
+    /// 数据库ID
+    /// </summary>
     public class TezDBID
         : ITezCloseable
         , IEquatable<TezDBID>
@@ -16,15 +19,20 @@ namespace tezcat.Framework.Core
         /// </summary>
         public int itemID { get; }
 
-        public TezDBID(int db_id, int item_id)
+        public TezDBID(int dbUID, int itemID)
         {
-            this.dbID = db_id;
-            this.itemID = item_id;
+            this.dbID = dbUID;
+            this.itemID = itemID;
         }
 
         public void close()
         {
 
+        }
+
+        public override int GetHashCode()
+        {
+            return base.GetHashCode();
         }
 
         public override bool Equals(object obj)

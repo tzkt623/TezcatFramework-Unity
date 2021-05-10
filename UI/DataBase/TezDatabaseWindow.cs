@@ -67,7 +67,7 @@ namespace tezcat.Framework.UI
             m_CurrentEditor.open();
         }
 
-        public void editItem(TezDatabaseItem item)
+        public void editItem(TezDatabaseGameItem item)
         {
 //             if (m_CurrentEditor)
 //             {

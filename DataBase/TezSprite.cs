@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace tezcat.Framework.Database
 {
-    public class TezSprite : TezDataBaseAssetItem
+    public class TezSprite : TezDatabaseAssetItem
     {
         public enum Size
         {

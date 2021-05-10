@@ -32,7 +32,7 @@ namespace tezcat.Framework.UI
             base.preInit();
         }
 
-        protected override TezDatabaseItem getItem()
+        protected override TezDatabaseGameItem getItem()
         {
             return m_Item;
         }
