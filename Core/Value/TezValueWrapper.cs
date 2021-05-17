@@ -50,6 +50,7 @@ namespace tezcat.Framework.Core
         ITezValueDescriptor descriptor { get; set; }
         string name { get; }
         int ID { get; }
+        string valueToString();
     }
 
     public abstract class TezBaseValueWrapper
@@ -224,6 +225,8 @@ namespace tezcat.Framework.Core
             this.descriptor = null;
         }
 
+        public abstract string valueToString();
+
         /// <summary>
         /// 等于比较
         /// 会比较两个Wrapper的descriptor的ID是否相同
@@ -292,6 +295,11 @@ namespace tezcat.Framework.Core
         {
             return this.value.ToString();
         }
+
+        public override string valueToString()
+        {
+            return this.value.ToString();
+        }
     }
 
     #region 特殊Value
@@ -328,6 +336,11 @@ namespace tezcat.Framework.Core
         public TezPV_Type(ITezValueDescriptor name) : base(name)
         {
 
+        }
+
+        public override string valueToString()
+        {
+            return this.value.ToString();
         }
     }
 

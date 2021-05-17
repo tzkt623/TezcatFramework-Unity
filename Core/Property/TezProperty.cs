@@ -15,6 +15,7 @@ namespace tezcat.Framework.Core
         /// 但一定会发出更新事件
         /// </summary>
         void update();
+        string baseValueToString();
     }
 
     public interface ITezProperty<T> : ITezProperty
@@ -157,6 +158,11 @@ namespace tezcat.Framework.Core
             this.onValueChanged = null;
             m_ModifierCache = null;
             this.descriptor = null;
+        }
+
+        public virtual string baseValueToString()
+        {
+            return m_BaseValue.ToString();
         }
     }
 }
