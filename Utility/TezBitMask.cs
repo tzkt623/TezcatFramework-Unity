@@ -1,5 +1,6 @@
 ﻿namespace tezcat.Framework.Utility
 {
+
     public class TezBitMask8
     {
         byte m_Bit;
