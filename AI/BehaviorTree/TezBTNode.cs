@@ -1,4 +1,5 @@
-﻿using tezcat.Framework.Core;
+﻿using System;
+using tezcat.Framework.Core;
 using tezcat.Framework.Database;
 
 namespace tezcat.Framework.AI
@@ -48,7 +49,9 @@ namespace tezcat.Framework.AI
             this.parent = null;
         }
 
+        [Obsolete("暂时废弃,请用[newExecute]")]
         public abstract void execute();
+
         public abstract Result newExecute();
 
         public abstract void init();
