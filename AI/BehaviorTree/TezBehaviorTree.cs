@@ -88,14 +88,14 @@ namespace tezcat.Framework.AI
 
         ITezBTContext m_Context = null;
         TezBTComposite m_Root = null;
-        TezBTObserver m_Observer = null;
 
-        int m_ActionIDGenerator = 0;
+//         int m_ActionIDGenerator = 0;
+//         List<int> m_DeleteActionList = new List<int>();
+
         List<TezBTNode> m_RunningActionList = new List<TezBTNode>();
         List<TezBTCondition> m_RunningConditionList = new List<TezBTCondition>();
 
         List<TezBTAction> m_ActionList = new List<TezBTAction>();
-        List<int> m_DeleteActionList = new List<int>();
 
         Stack<TezBTComposite> m_NodeStack = new Stack<TezBTComposite>();
 
@@ -116,13 +116,6 @@ namespace tezcat.Framework.AI
             m_Root.tree = this;
             m_Root.parent = this;
             m_Root.loadConfig(reader);
-        }
-
-        public void setObserver(TezBTObserver observer)
-        {
-            m_Observer = observer;
-            m_Observer.tree = this;
-            m_Observer.init();
         }
 
         public void setContext(ITezBTContext context)
@@ -159,11 +152,9 @@ namespace tezcat.Framework.AI
 
         public void close()
         {
-            m_Observer.close();
             m_Root.close();
             m_Context.close();
 
-            m_Observer = null;
             m_Root = null;
             m_Context = null;
         }
@@ -253,9 +244,9 @@ namespace tezcat.Framework.AI
             m_ActionList.Add(node);
         }
 
-        public override void onReport(TezBTNode node, TezBTNode.Result result)
+        public override void onReport(TezBTNode node, Result result)
         {
-            if (result != TezBTNode.Result.Running)
+            if (result != Result.Running)
             {
                 this.reset();
                 onTraversalComplete?.Invoke(result);
