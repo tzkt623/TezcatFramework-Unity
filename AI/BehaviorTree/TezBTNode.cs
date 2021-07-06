@@ -29,14 +29,18 @@ namespace tezcat.Framework.AI
             set
             {
                 m_Tree = value;
-                if (category == Category.Action)
-                {
-                    m_Tree.registerAction((TezBTActionNode)this);
-                }
+                //                 if (category == Category.Action)
+                //                 {
+                //                     m_Tree.registerAction((TezBTAction)this);
+                //                 }
             }
         }
 
         public TezBTNode parent { get; set; }
+
+        public int deep { get; set; } = 0;
+        public int index { get; set; } = 0;
+        protected Result m_Result = Result.Running;
 
         public virtual void close()
         {
@@ -44,32 +48,25 @@ namespace tezcat.Framework.AI
             this.parent = null;
         }
 
-        /// <summary>
-        /// 非Action节点使用
-        /// </summary>
         public abstract void execute();
+        public abstract Result newExecute();
 
         public abstract void init();
         public abstract void reset();
 
-        protected void report(Result result)
+        protected virtual void report(Result result)
         {
-            if (this.parent != null)
-            {
-                this.parent.onReport(this, result);
-            }
-            else
-            {
-                this.tree.onReport(this, result);
-            }
+            this.parent.onReport(this, result);
         }
 
-        protected virtual void onReport(TezBTNode node, Result result)
+        public virtual void onReport(TezBTNode node, Result result)
         {
 
         }
 
-        public abstract void loadConfig(TezReader reader);
+        public virtual void loadConfig(TezReader reader) { }
+
+        public virtual void removeSelfFromTree() { }
     }
 
 }

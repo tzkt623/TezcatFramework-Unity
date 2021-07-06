@@ -7,25 +7,12 @@ namespace tezcat.Framework.AI
     /// 顺序运行所有节点 所有节点Success 则返回Success
     /// 否则返回Fail
     /// </summary>
-    public class TezBTSequence : TezBTCompositeNode
+    public class TezBTSequence : TezBTComposite_List
     {
-        List<TezBTNode> m_List = new List<TezBTNode>();
-        bool m_Running = true;
-        int m_Index = 0;
-
-        public override void init()
-        {
-            m_List.TrimExcess();
-            for (int i = 0; i < m_List.Count; i++)
-            {
-                m_List[i].init();
-            }
-        }
-
         /// <summary>
         /// 子节点向自己报告运行状态
         /// </summary>
-        protected override void onReport(TezBTNode node, Result result)
+        public override void onReport(TezBTNode node, Result result)
         {
             switch (result)
             {
@@ -36,11 +23,6 @@ namespace tezcat.Framework.AI
                         this.reset();
                         this.report(Result.Success);
                     }
-                    else
-                    {
-                        m_List[m_Index].execute();
-                    }
-
                     break;
                 case Result.Fail:
                     this.reset();
@@ -53,32 +35,34 @@ namespace tezcat.Framework.AI
             }
         }
 
+        public override void removeSelfFromTree()
+        {
+            m_List[m_Index].removeSelfFromTree();
+        }
+
         protected override void onExecute()
         {
             m_List[m_Index].execute();
         }
 
-        public override void reset()
+        public override Result newExecute()
         {
-            m_Index = 0;
-        }
-
-        public override void close()
-        {
-            base.close();
-
-            for (int i = 0; i < m_List.Count; i++)
+            switch (m_List[m_Index].newExecute())
             {
-                m_List[i].close();
+                case Result.Success:
+                    m_Index++;
+                    if (m_Index == m_List.Count)
+                    {
+                        this.reset();
+                        return Result.Success;
+                    }
+                    break;
+                case Result.Fail:
+                    this.reset();
+                    return Result.Fail;
             }
-            m_List.Clear();
-            m_List = null;
-        }
 
-        public override void addNode(TezBTNode node)
-        {
-            base.addNode(node);
-            m_List.Add(node);
+            return Result.Running;
         }
-    }
+    } 
 }

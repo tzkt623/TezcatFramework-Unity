@@ -8,43 +8,14 @@ namespace tezcat.Framework.AI
     /// 随机运行直到某一个子节点返回Success 则返回Success
     /// 否则返回Fail
     /// </summary>
-    public class TezBTRandomSelector : TezBTCompositeNode
+    public class TezBTRandomSelector : TezBTComposite_List
     {
-        int m_Index;
         bool m_Random = false;
-        List<TezBTNode> m_List = new List<TezBTNode>();
-
-        public override void addNode(TezBTNode node)
-        {
-            base.addNode(node);
-            m_List.Add(node);
-        }
-
-        public override void init()
-        {
-            m_List.TrimExcess();
-            for (int i = 0; i < m_List.Count; i++)
-            {
-                m_List[i].init();
-            }
-        }
-
-        public override void close()
-        {
-            base.close();
-
-            for (int i = 0; i < m_List.Count; i++)
-            {
-                m_List[i].close();
-            }
-            m_List.Clear();
-            m_List = null;
-        }
 
         /// <summary>
         /// 子节点向自己报告运行状态
         /// </summary>
-        protected override void onReport(TezBTNode node, Result result)
+        public override void onReport(TezBTNode node, Result result)
         {
             switch (result)
             {
@@ -63,10 +34,6 @@ namespace tezcat.Framework.AI
                         this.reset();
                         this.report(Result.Fail);
                     }
-                    else
-                    {
-                        m_List[m_Index].execute();
-                    }
                     break;
                 case Result.Running:
                     break;
@@ -84,12 +51,55 @@ namespace tezcat.Framework.AI
             }
 
             m_List[m_Index].execute();
+            this.report(m_Result);
+        }
+
+        public override Result newExecute()
+        {
+            if (!m_Random)
+            {
+                m_Random = true;
+                m_List.shuffle();
+            }
+
+            bool flag = true;
+            while (flag)
+            {
+                switch (m_List[m_Index].newExecute())
+                {
+                    case Result.Success:
+                        ///如果有节点运行成功
+                        ///像父级报告运行成功
+                        this.reset();
+                        return Result.Success;
+                    case Result.Fail:
+                        ///如果有节点运行失败
+                        ///测试下一个节点
+                        m_Index++;
+                        if (m_Index == m_List.Count)
+                        {
+                            this.reset();
+                            return Result.Fail;
+                        }
+                        break;
+                    case Result.Running:
+                        flag = false;
+                        break;
+                }
+            }
+
+            return Result.Running;
         }
 
         public override void reset()
         {
+            base.reset();
             m_Random = false;
-            m_Index = 0;
+        }
+
+        public override void removeSelfFromTree()
+        {
+            m_List[m_Index].removeSelfFromTree();
         }
     }
 }

@@ -7,26 +7,9 @@ namespace tezcat.Framework.AI
     /// 不论子节点成功失败都会运行
     /// 直到所有节点运行完毕返回Success
     /// </summary>
-    public class TezBTForce : TezBTCompositeNode
+    public class TezBTForce : TezBTComposite_List
     {
-        List<TezBTNode> m_List = new List<TezBTNode>();
-        int m_Index = 0;
-
-        public override void init()
-        {
-            m_List.TrimExcess();
-            for (int i = 0; i < m_List.Count; i++)
-            {
-                m_List[i].init();
-            }
-        }
-
-        public override void reset()
-        {
-            m_Index = 0;
-        }
-
-        protected override void onReport(TezBTNode node, Result result)
+        public override void onReport(TezBTNode node, Result result)
         {
             switch (result)
             {
@@ -39,35 +22,31 @@ namespace tezcat.Framework.AI
                         this.reset();
                         this.report(Result.Success);
                     }
-                    else
-                    {
-                        m_List[m_Index].execute();
-                    }
                     break;
             }
         }
 
-        protected override void onExecute()
+        public override Result newExecute()
         {
-            m_List[m_Index].execute();
-        }
-
-        public override void close()
-        {
-            base.close();
-            for (int i = 0; i < m_List.Count; i++)
+            switch (m_List[m_Index].newExecute())
             {
-                m_List[i].close();
+                case Result.Fail:
+                case Result.Success:
+                    m_Index++;
+                    if (m_Index == m_List.Count)
+                    {
+                        this.reset();
+                        return Result.Success;
+                    }
+                    break;
             }
-            m_List.Clear();
-            m_List = null;
+
+            return Result.Running;
         }
 
-        public override void addNode(TezBTNode node)
+        public override void removeSelfFromTree()
         {
-            base.addNode(node);
-            m_List.Add(node);
+            m_List[m_Index].removeSelfFromTree();
         }
-
     }
 }
