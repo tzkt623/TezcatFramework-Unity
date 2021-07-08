@@ -8,7 +8,7 @@ namespace tezcat.Framework.Math
     /// 分布率为63.xx%
     /// 
     /// </summary>
-    public class TezRandom : ITezService
+    public class TezRandom
     {
         private const uint MAX_MASK_UINT = int.MaxValue;
         /// <summary>
@@ -17,7 +17,7 @@ namespace tezcat.Framework.Math
         /// 那么要算出0-1之间的值 必须超过这个值 所以+1000 变成2.147484E+09
         /// 这样就保证可以算出0-0.99999x之间的数了
         /// </summary>
-        private const float MAX_MASK_FLOAT = int.MaxValue + 1000f;
+        private const double MAX_MASK_DOUBLE = int.MaxValue + 1d;
         private const uint factor = 16807;
 
         private uint m_Seed;
@@ -31,6 +31,11 @@ namespace tezcat.Framework.Math
         public TezRandom(string seed)
         {
             m_Seed = (uint)seed.GetHashCode();
+        }
+
+        public TezRandom(uint seed)
+        {
+            m_Seed = seed;
         }
 
         public void setSeed(int seed)
@@ -70,12 +75,17 @@ namespace tezcat.Framework.Math
 
         public int nextInt(int min, int max)
         {
-            return min + (int)((max - min) * this.nextFloat());
+            return min + (int)((max - min) * this.nextDouble());
+        }
+
+        public double nextDouble()
+        {
+            return this.gen() / MAX_MASK_DOUBLE;
         }
 
         public float nextFloat()
         {
-            return this.gen() / MAX_MASK_FLOAT;
+            return (float)this.nextDouble();
         }
 
         public float nextFloat(float min, float max)
@@ -88,11 +98,6 @@ namespace tezcat.Framework.Math
             ///0 2 4 6 8
             ///1 3 5 7 9
             return (this.nextInt(0, 10) & 1) == 0;
-        }
-
-        public void close()
-        {
-
         }
     }
 }

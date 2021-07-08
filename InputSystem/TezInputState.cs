@@ -33,10 +33,10 @@ namespace tezcat.Framework.InputSystem
         {
             Debug.Log(string.Format("InputState >> Enter {0}", name));
         }
+
         public virtual void onExit()
         {
             Debug.Log(string.Format("InputState >> Exit {0}", name));
-            this.name = null;
         }
 
         public virtual void onPause()

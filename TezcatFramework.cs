@@ -82,16 +82,9 @@ namespace tezcat.Framework
         protected virtual void registerService()
         {
             TezService.register(new TezThread());
-
             TezService.register(new TezGraphicSystem());
-            TezService.register(new TezInputController());
-
-            TezService.register(new TezSaveManager());
-
-            TezService.register(new TezRandom());
             TezService.register(new TezTextureDatabase());
             TezService.register(new TezPrefabDatabase());
-            TezService.register(new TezTipController());
         }
 
 

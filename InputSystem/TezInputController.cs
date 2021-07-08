@@ -6,8 +6,10 @@ using tezcat.Framework.Utility;
 
 namespace tezcat.Framework.InputSystem
 {
-    public class TezInputController : ITezService
+    public class TezInputController : ITezCloseable
     {
+        public static readonly TezInputController instance = new TezInputController();
+
         public const int POP_FAILED = 0;
         public const int POP_OK = 1;
         public const int POP_OK_BUT_CURRENT = 2;
@@ -26,6 +28,11 @@ namespace tezcat.Framework.InputSystem
         class Handler<T> where T : TezInputState, new()
         {
             public static readonly T state = new T();
+        }
+
+        private TezInputController()
+        {
+
         }
 
         public bool isBlocked()
@@ -61,7 +68,8 @@ namespace tezcat.Framework.InputSystem
             }
 
             m_Current?.onExit();
-            m_Current = new State();
+            //            m_Current = new State();
+            m_Current = Handler<State>.state;
             m_Current.onEnter();
             m_Current.setExtraData(extra_data);
             m_OnClear(m_Current);
@@ -74,7 +82,7 @@ namespace tezcat.Framework.InputSystem
         {
             var old = m_Current;
             m_Current?.onExit();
-            m_Current = new State();
+            m_Current = Handler<State>.state;
             m_Current.onEnter();
             m_Current.setExtraData(extra_data);
             m_OnTo(old, m_Current);
@@ -91,7 +99,7 @@ namespace tezcat.Framework.InputSystem
                 m_Current.onPause();
             }
 
-            m_Current = new State();
+            m_Current = Handler<State>.state;
             m_Current.onEnter();
             m_Current.setExtraData(extra_data);
             m_OnPush(m_Current);
@@ -135,7 +143,7 @@ namespace tezcat.Framework.InputSystem
             }
 
             var temp_type = typeof(State);
-            if(m_Current.GetType() == temp_type)
+            if (m_Current.GetType() == temp_type)
             {
                 return POP_OK_BUT_CURRENT;
             }
