@@ -3,9 +3,13 @@ using tezcat.Framework.Extension;
 
 namespace tezcat.Framework.Game
 {
+    /// <summary>
+    /// Hex块
+    /// 用于解决Mesh顶点问题
+    /// </summary>
     public class TezHexChunk<Block>
         : ITezCloseable
-        where Block : TezHexBlock
+        where Block : TezHexBlock, new()
     {
         public int X { get; private set; }
         public int Y { get; private set; }
@@ -26,10 +30,23 @@ namespace tezcat.Framework.Game
             m_Width = width;
             m_Height = height;
             m_BlockArray = new Block[m_Width, m_Height];
-            this.onInitBlockArray(ref m_BlockArray);
+            this.onInitBlockArray(ref m_BlockArray, m_Width, m_Height);
         }
 
-        protected virtual void onInitBlockArray(ref Block[,] array)
+        protected virtual void onInitBlockArray(ref Block[,] array, int width, int height)
+        {
+            for (int y = 0; y < height; y++)
+            {
+                for (int x = 0; x < width; x++)
+                {
+                    var block = new Block();
+                    this.onCreateBlock(block);
+                    array[x, y] = block;
+                }
+            }
+        }
+
+        protected virtual void onCreateBlock(Block block)
         {
 
         }
@@ -42,6 +59,7 @@ namespace tezcat.Framework.Game
 
         protected virtual void onBlockSetted(Block block)
         {
+
         }
 
         public Block get(int x, int y)
@@ -49,15 +67,15 @@ namespace tezcat.Framework.Game
             return m_BlockArray[x, y];
         }
 
-        public bool tryGetBlock(int local_x, int local_y, out Block block)
+        public bool tryGetBlock(int localX, int localY, out Block block)
         {
-            if (local_x < 0 || local_x >= m_Width || local_y < 0 || local_y >= m_Height)
+            if (localX < 0 || localX >= m_Width || localY < 0 || localY >= m_Height)
             {
                 block = null;
                 return false;
             }
 
-            block = m_BlockArray[local_x, local_y];
+            block = m_BlockArray[localX, localY];
             return block != null;
         }
 

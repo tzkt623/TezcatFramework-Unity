@@ -3,9 +3,12 @@ using UnityEngine;
 
 namespace tezcat.Framework.Game
 {
+    /// <summary>
+    /// Hex位置计算器
+    /// </summary>
     public class TezHexGrid
     {
-        #region Tool
+        #region Config
         public static readonly float Sqrt3 = Mathf.Sqrt(3);
         public static readonly float Sqrt3D2 = Mathf.Sqrt(3) / 2;
         public static readonly float Sqrt3D3 = Mathf.Sqrt(3) / 3;
@@ -182,14 +185,25 @@ namespace tezcat.Framework.Game
             Flat
         }
 
-        public Layout layout { get; private set; } = Layout.Pointy;
-        public float size { get; private set; } = 1;
-        public float cellHeight { get; private set; } = 0;
-        public float cellWidth { get; private set; } = 0;
-        public float vDistance { get; private set; } = 0;
-        public float hDistance { get; private set; } = 0;
+        public Layout layout => m_Layout;
+        Layout m_Layout = Layout.Pointy;
 
-        bool m_BorderWith = false;
+
+        public float size => m_Size;
+        float m_Size = 1;
+
+        public float cellHeight => m_CellHeight;
+        float m_CellHeight = 0;
+
+        public float cellWidth => m_CellWidth;
+        float m_CellWidth = 0;
+
+        public float vDistance => m_VDistance;
+        float m_VDistance = 0;
+
+        public float hDistance => m_HDistance;
+        float m_HDistance = 0;
+
 
         public TezHexGrid(float size, Layout layout)
         {
@@ -198,24 +212,24 @@ namespace tezcat.Framework.Game
 
         private void init(float size, Layout layout)
         {
-            this.size = size;
-            this.layout = layout;
+            this.m_Size = size;
+            this.m_Layout = layout;
 
             switch (layout)
             {
                 case Layout.Pointy:
-                    cellHeight = size * 2;
-                    cellWidth = Sqrt3 / 2 * cellHeight;
+                    m_CellHeight = size * 2;
+                    m_CellWidth = Sqrt3 / 2 * m_CellHeight;
 
-                    vDistance = cellHeight * 3 / 4;
-                    hDistance = cellWidth;
+                    m_VDistance = m_CellHeight * 3 / 4;
+                    m_HDistance = m_CellWidth;
                     break;
                 case Layout.Flat:
-                    cellWidth = size * 2;
-                    cellHeight = Sqrt3 / 2 * cellWidth;
+                    m_CellWidth = size * 2;
+                    m_CellHeight = Sqrt3 / 2 * m_CellWidth;
 
-                    vDistance = cellHeight;
-                    hDistance = cellWidth * 3 / 4;
+                    m_VDistance = m_CellHeight;
+                    m_HDistance = m_CellWidth * 3 / 4;
                     break;
             }
         }
@@ -266,7 +280,7 @@ namespace tezcat.Framework.Game
             float x = 0;
             float y = 0;
 
-            switch (layout)
+            switch (m_Layout)
             {
                 /*
                  function hex_to_pixel(hex):
@@ -275,8 +289,8 @@ namespace tezcat.Framework.Game
                     return Point(x, y)
                  */
                 case Layout.Pointy:
-                    x = size * Sqrt3 * (q + r / 2.0f);
-                    y = size * 3 / 2 * r;
+                    x = m_Size * Sqrt3 * (q + r / 2.0f);
+                    y = m_Size * 3 / 2 * r;
                     break;
 
                 /*
@@ -286,8 +300,8 @@ namespace tezcat.Framework.Game
                     return Point(x, y)
                  */
                 case Layout.Flat:
-                    x = size * 3 / 2 * q;
-                    y = size * Sqrt3 * (r + q / 2.0f);
+                    x = m_Size * 3 / 2 * q;
+                    y = m_Size * Sqrt3 * (r + q / 2.0f);
                     break;
             }
 
@@ -299,7 +313,7 @@ namespace tezcat.Framework.Game
             float q = 0;
             float r = 0;
 
-            switch (layout)
+            switch (m_Layout)
             {
                 /*
                  function pixel_to_hex(x, y):
@@ -308,8 +322,8 @@ namespace tezcat.Framework.Game
                     return hex_round(Hex(q, r)) 
                  */
                 case Layout.Pointy:
-                    q = (position.x * Sqrt3D3 - position.y / 3) / size;
-                    r = position.y * 2 / 3 / size;
+                    q = (position.x * Sqrt3D3 - position.y / 3) / m_Size;
+                    r = position.y * 2 / 3 / m_Size;
                     break;
                 /*
                  function pixel_to_hex(x, y):
@@ -318,8 +332,8 @@ namespace tezcat.Framework.Game
                     return hex_round(Hex(q, r))
                  */
                 case Layout.Flat:
-                    q = position.x * 2 / 3 / size;
-                    r = (-position.x / 3 + Sqrt3D3 * position.y) / size;
+                    q = position.x * 2 / 3 / m_Size;
+                    r = (-position.x / 3 + Sqrt3D3 * position.y) / m_Size;
                     break;
             }
 
@@ -330,7 +344,7 @@ namespace tezcat.Framework.Game
         {
             float angle_deg = 0;
 
-            switch (layout)
+            switch (m_Layout)
             {
                 case Layout.Pointy:
                     angle_deg = 60 * index + 30;
@@ -343,14 +357,13 @@ namespace tezcat.Framework.Game
             var angle_rad = Mathf.Deg2Rad * angle_deg;
 
             return new Vector3(
-                corner.x + size * Mathf.Cos(angle_rad),
+                corner.x + m_Size * Mathf.Cos(angle_rad),
                 corner.y,
-                corner.z + size * Mathf.Sin(angle_rad)) * scale;
+                corner.z + m_Size * Mathf.Sin(angle_rad)) * scale;
         }
         #endregion
 
         #region Mesh
-
         public TezHexMesh createHexMesh(Vector3 center)
         {
             TezHexMesh mesh = new TezHexMesh();
@@ -372,7 +385,7 @@ namespace tezcat.Framework.Game
             return mesh;
         }
 
-        public TezHexMesh createBorderMesh(Vector3 center, float border_scale = 0.8f)
+        public TezHexMesh createBorderMesh(Vector3 center, float borderScale = 0.8f)
         {
             TezHexMesh mesh = new TezHexMesh();
             mesh.vertices.Capacity = 12;
@@ -385,7 +398,7 @@ namespace tezcat.Framework.Game
 
             for (int i = 0; i < 6; i++)
             {
-                mesh.vertices.Add(this.createCorner(i, center, border_scale));
+                mesh.vertices.Add(this.createCorner(i, center, borderScale));
             }
 
             for (int i = 0; i < BorderTriangleIndices.Length; i++)
@@ -396,15 +409,15 @@ namespace tezcat.Framework.Game
             return mesh;
         }
 
-        public TezHexMesh createBorderMesh(List<Vector3> center_list, float border_scale = 0.8f)
+        public TezHexMesh createBorderMesh(List<Vector3> centerList, float borderScale = 0.8f)
         {
             TezHexMesh mesh = new TezHexMesh();
-            mesh.vertices.Capacity = center_list.Count * 12;
-            mesh.indices.Capacity = center_list.Count * BorderTriangleIndices.Length;
+            mesh.vertices.Capacity = centerList.Count * 12;
+            mesh.indices.Capacity = centerList.Count * BorderTriangleIndices.Length;
 
-            for (int center_index = 0; center_index < center_list.Count; center_index++)
+            for (int center_index = 0; center_index < centerList.Count; center_index++)
             {
-                var center = center_list[center_index];
+                var center = centerList[center_index];
                 for (int i = 0; i < 6; i++)
                 {
                     mesh.vertices.Add(this.createCorner(i, Vector3.zero) + center);
@@ -416,7 +429,7 @@ namespace tezcat.Framework.Game
                     ///可以方便进行Vector3的Scale运算
                     ///然后再把计算好的点移动到指定的center上
                     ///否则很难在指定的center上进行Vector3的Scale计算
-                    mesh.vertices.Add(this.createCorner(i, Vector3.zero, border_scale) + center);
+                    mesh.vertices.Add(this.createCorner(i, Vector3.zero, borderScale) + center);
                 }
 
                 var offset = 12 * center_index;
@@ -429,15 +442,15 @@ namespace tezcat.Framework.Game
             return mesh;
         }
 
-        public TezHexMesh createMesh(List<Vector3> center_list)
+        public TezHexMesh createMesh(List<Vector3> centerList)
         {
             TezHexMesh mesh = new TezHexMesh();
-            mesh.vertices.Capacity = 7 * center_list.Count;
-            mesh.indices.Capacity = center_list.Count * HexTriangleIndices.Length;
+            mesh.vertices.Capacity = 7 * centerList.Count;
+            mesh.indices.Capacity = centerList.Count * HexTriangleIndices.Length;
 
-            for (int i = 0; i < center_list.Count; i++)
+            for (int i = 0; i < centerList.Count; i++)
             {
-                var center = center_list[i];
+                var center = centerList[i];
                 mesh.vertices.Add(center);
                 mesh.vertices.Add(this.createCorner(0, center));
                 mesh.vertices.Add(this.createCorner(1, center));
@@ -457,32 +470,4 @@ namespace tezcat.Framework.Game
         }
         #endregion
     }
-    public class TezHexMesh
-    {
-        public List<Vector3> vertices = new List<Vector3>();
-        public List<int> indices = new List<int>();
-        public List<Vector2> uv = new List<Vector2>();
-
-        public void combine(TezHexMesh data)
-        {
-            int rate = vertices.Count > 0 ? vertices.Count / 4 : 0;
-
-            for (int i = 0; i < data.vertices.Count; i++)
-            {
-                vertices.Add(data.vertices[i]);
-            }
-
-            int add = rate * data.vertices.Count;
-            for (int i = 0; i < data.indices.Count; i++)
-            {
-                indices.Add(data.indices[i] + add);
-            }
-
-            for (int i = 0; i < data.uv.Count; i++)
-            {
-                uv.Add(data.uv[i]);
-            }
-        }
-    }
-
 }

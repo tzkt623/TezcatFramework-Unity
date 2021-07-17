@@ -3,11 +3,16 @@ using tezcat.Framework.Core;
 
 namespace tezcat.Framework.Game
 {
+    /// <summary>
+    /// Block
+    /// 真正应该关心的类
+    /// 用于实现各种游戏功能
+    /// </summary>
     public class TezHexBlock
         : ITezCloseable
         , IEquatable<TezHexBlock>
     {
-        public TezHexCubeCoordinate coordinate { get; set; }
+        public TezHexCubeCoordinate coordinate;
 
         bool m_NeedHash = true;
         int m_HashCode = 0;
@@ -36,9 +41,9 @@ namespace tezcat.Framework.Game
         /// 判断内存是否相等
         /// 因为地块始终只有一个
         /// </summary>
-        public override bool Equals(object obj)
+        public override bool Equals(object other)
         {
-            return this.Equals((TezHexBlock)obj);
+            return this.Equals((TezHexBlock)other);
         }
 
         /// <summary>

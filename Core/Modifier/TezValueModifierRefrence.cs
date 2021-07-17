@@ -7,7 +7,7 @@
     /// </summary>
     public class TezValueModifierRefrence : TezValueModifier
     {
-        ITezProperty m_Property = null;
+        ITezModifierRefrenceProperty m_Property = null;
 
         public override float value
         {
@@ -22,7 +22,7 @@
             }
         }
 
-        public TezValueModifierRefrence(ITezProperty property) : base()
+        public TezValueModifierRefrence(ITezModifierRefrenceProperty property) : base()
         {
             m_Property = property;
             m_Property.onValueChanged += onRefValueChanged;
@@ -49,14 +49,18 @@
                     m_Value = ((ITezProperty<float>)m_Property).value;
                     break;
             }
+
             this.notifyValueChanged(this, old);
         }
 
         public override void close()
         {
-            base.close();
-            m_Property.onValueChanged -= onRefValueChanged;
-            m_Property = null;
+            if(m_Property.allowCloseRef)
+            {
+                base.close();
+                m_Property.onValueChanged -= onRefValueChanged;
+                m_Property = null;
+            }
         }
     }
 }
