@@ -1,4 +1,5 @@
-﻿using tezcat.Framework.Core;
+﻿using System;
+using tezcat.Framework.Core;
 using tezcat.Framework.Extension;
 
 namespace tezcat.Framework.Game
@@ -30,25 +31,6 @@ namespace tezcat.Framework.Game
             m_Width = width;
             m_Height = height;
             m_BlockArray = new Block[m_Width, m_Height];
-            this.onInitBlockArray(ref m_BlockArray, m_Width, m_Height);
-        }
-
-        protected virtual void onInitBlockArray(ref Block[,] array, int width, int height)
-        {
-            for (int y = 0; y < height; y++)
-            {
-                for (int x = 0; x < width; x++)
-                {
-                    var block = new Block();
-                    this.onCreateBlock(block);
-                    array[x, y] = block;
-                }
-            }
-        }
-
-        protected virtual void onCreateBlock(Block block)
-        {
-
         }
 
         public void set(int x, int y, Block block)
@@ -65,6 +47,22 @@ namespace tezcat.Framework.Game
         public Block get(int x, int y)
         {
             return m_BlockArray[x, y];
+        }
+
+        public void initBlock(int localX, int localY, Block block)
+        {
+            if (localX < 0 || localX >= m_Width || localY < 0 || localY >= m_Height)
+            {
+                throw new IndexOutOfRangeException("Position Out of range");
+            }
+
+            m_BlockArray[localX, localY] = block;
+            this.onBlockInited(block);
+        }
+
+        protected virtual void onBlockInited(Block block)
+        {
+
         }
 
         public bool tryGetBlock(int localX, int localY, out Block block)

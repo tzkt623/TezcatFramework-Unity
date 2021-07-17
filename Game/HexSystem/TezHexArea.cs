@@ -80,23 +80,22 @@ namespace tezcat.Framework.Game
         /// <summary>
         /// 初始化Block
         /// </summary>
-        public bool tryInitBlock(TezHexCubeCoordinate coordinate, TezHexGrid.Layout layout, out Block block)
+        public void initBlock(TezHexCubeCoordinate coordinate, TezHexGrid.Layout layout, Block block)
         {
             var array_index = this.toArrayIndex(coordinate.toOffset(layout));
-
             if (array_index.isChunkOutOfRange(m_ChunkXCount, m_ChunkYCount))
             {
-                block = null;
-                return false;
+                throw new IndexOutOfRangeException("Chunk Out Of Range");
             }
 
-            if (m_ChunkArray[array_index.chunkX, array_index.chunkY].tryGetBlock(array_index.blockX, array_index.blockY, out block))
-            {
-                block.coordinate = coordinate;
-                return true;
-            }
+            block.coordinate = coordinate;
+            m_ChunkArray[array_index.chunkX, array_index.chunkY].initBlock(array_index.blockX, array_index.blockY, block);
+            this.onBlockInited(block);
+        }
 
-            return false;
+        protected virtual void onBlockInited(Block block)
+        {
+
         }
 
         public bool tryGetBlock(TezHexOffsetCoordinate coordinate, out Block block)

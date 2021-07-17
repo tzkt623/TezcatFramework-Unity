@@ -26,10 +26,7 @@
                     {
                         if (x + y + z == 0)
                         {
-                            if (m_HexArea.tryInitBlock(new TezHexCubeCoordinate(x, y, z), m_HexGrid.layout, out var block))
-                            {
-                               
-                            }
+                            m_HexArea.initBlock(new TezHexCubeCoordinate(x, y, z), m_HexGrid.layout, new TestHexBlock());
                         }
                     }
                 }

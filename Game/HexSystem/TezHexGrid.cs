@@ -308,6 +308,12 @@ namespace tezcat.Framework.Game
             return new Vector3(x, 0, y);
         }
 
+        /// <summary>
+        /// 注意X,Y,Z轴的取舍转换
+        /// 
+        /// 在3D坐标下需要的是Hex平面的平铺坐标
+        /// 垂直的高度坐标是不需要的
+        /// </summary>
         public TezHexCubeCoordinate calculateCoordinate(Vector2 position)
         {
             float q = 0;
