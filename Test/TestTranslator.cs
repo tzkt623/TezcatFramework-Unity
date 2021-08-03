@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
+using tezcat.Framework.Game;
 
-namespace tezcat.Framework.Game
+namespace tezcat.Framework.Test
 {
     public class TestTranslator_AllInOne
     {

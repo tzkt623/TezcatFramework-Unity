@@ -1,4 +1,6 @@
-﻿namespace tezcat.Framework.Game
+﻿using tezcat.Framework.Game;
+
+namespace tezcat.Framework.Test
 {
     public class TestHexSystem
     {

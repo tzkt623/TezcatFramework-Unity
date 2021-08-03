@@ -4,28 +4,19 @@ namespace tezcat.Framework.Math
 {
     /// <summary>
     /// 
-    /// 16807随机数发生器
-    /// 分布率为63.xx%
+    /// xorShift随机数
     /// 
     /// </summary>
     public class TezRandom
     {
-        private const uint MAX_MASK_UINT = int.MaxValue;
-        /// <summary>
-        /// 因为flota精度问题 有效数字只有7位
-        /// 所以int最大值 2147483647 用float表示应该为 2.147483E+09
-        /// 那么要算出0-1之间的值 必须超过这个值 所以+1000 变成2.147484E+09
-        /// 这样就保证可以算出0-0.99999x之间的数了
-        /// </summary>
-        private const double MAX_MASK_DOUBLE = int.MaxValue + 1d;
-        private const uint factor = 16807;
+        private static uint DefaultSeed = (uint)"DefaultSeed".GetHashCode();
+        private const double MAX_MASK_DOUBLE = uint.MaxValue + 1d;
 
         private uint m_Seed;
-        private static int DefaultSeed = "DefaultSeed".GetHashCode();
 
         public TezRandom()
         {
-            m_Seed = (uint)DefaultSeed;
+            m_Seed = DefaultSeed;
         }
 
         public TezRandom(string seed)
@@ -38,9 +29,14 @@ namespace tezcat.Framework.Math
             m_Seed = seed;
         }
 
-        public void setSeed(int seed)
+        public void setSeed(uint seed)
         {
-            m_Seed = (uint)seed;
+            m_Seed = seed;
+        }
+
+        public void setSeed(string seed)
+        {
+            m_Seed = (uint)seed.GetHashCode();
         }
 
         public uint getSeed()
@@ -48,56 +44,88 @@ namespace tezcat.Framework.Math
             return m_Seed;
         }
 
-        private uint gen()
+        /// <summary>
+        /// 随机一个UInt值
+        /// </summary>
+        public uint nextUInt()
         {
-            uint lo = factor * (m_Seed & 0xFFFF);
-            uint hi = factor * (m_Seed >> 16);
-
-            lo += (hi & 0x7FFF) << 16;
-            lo += hi >> 15;
-
-            if (lo > 0x7FFFFFFF)
-            {
-                lo -= 0x7FFFFFFF;
-            }
-
-            m_Seed = (uint)(int)lo;
-
+            m_Seed = this.xorShift32(m_Seed);
             return m_Seed;
-
-            //            return m_Seed = (m_Seed * factor) & MAX_MASK_UINT;
         }
 
+        /// <summary>
+        /// [0.0, 1.0)
+        /// </summary>
+        public double nextDouble()
+        {
+            return this.nextUInt() / MAX_MASK_DOUBLE;
+        }
+
+        /// <summary>
+        /// 随机一个Int值
+        /// </summary>
         public int nextInt()
         {
-            return (int)this.gen();
+            return (int)this.nextUInt();
         }
 
+
+        /// <summary>
+        /// [min, max)
+        /// </summary>
         public int nextInt(int min, int max)
         {
             return min + (int)((max - min) * this.nextDouble());
         }
 
-        public double nextDouble()
-        {
-            return this.gen() / MAX_MASK_DOUBLE;
-        }
-
-        public float nextFloat()
-        {
-            return (float)this.nextDouble();
-        }
-
+        /// <summary>
+        /// [min, max)
+        /// </summary>
         public float nextFloat(float min, float max)
         {
             return min + (max - min) * this.nextFloat();
         }
 
+        /// <summary>
+        /// [0.0, 1.0)
+        /// </summary>
+        public double nextDouble(double min, double max)
+        {
+            return min + (max - min) * this.nextDouble();
+        }
+
+        /// <summary>
+        /// [0.0, 1.0)
+        /// </summary>
+        public float nextFloat()
+        {
+            return (float)this.nextDouble();
+        }
+
+        /// <summary>
+        /// 随机一个Bool
+        /// </summary>
         public bool nextBool()
         {
             ///0 2 4 6 8
             ///1 3 5 7 9
             return (this.nextInt(0, 10) & 1) == 0;
+        }
+
+        private uint xorShift32(uint seed)
+        {
+            seed ^= seed << 13;
+            seed ^= seed >> 17;
+            seed ^= seed << 5;
+            return seed;
+        }
+
+        private ulong xorShift64Star(ulong seed)
+        {
+            seed ^= seed >> 12;
+            seed ^= seed << 25;
+            seed ^= seed >> 27;
+            return seed * 0x2545F4914F6CDD1Du;
         }
     }
 }

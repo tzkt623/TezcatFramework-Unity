@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using tezcat.Framework.Core;
 using tezcat.Framework.Database;
 
-namespace tezcat.Framework.Core
+namespace tezcat.Framework.Test
 {
     public class TeztCategory
     {
