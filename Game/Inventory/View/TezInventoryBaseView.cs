@@ -9,19 +9,19 @@ namespace tezcat.Framework.Game.Inventory
         public TezInventory inventory => m_InventoryRef.get();
         protected TezWeakRef<TezInventory> m_InventoryRef = null;
 
-
-        public TezInventoryFilter filterManager { get; private set; } = new TezInventoryFilter();
+        TezInventoryFilter m_FilterManager = new TezInventoryFilter();
+        public TezInventoryFilter filterManager => m_FilterManager;
 
         public TezInventoryBaseView()
         {
-            this.filterManager.onItemChanged += this.onItemChanged;
-            this.filterManager.onFilterChanged += this.onFilterChanged;
+            m_FilterManager.onItemChanged += this.onItemChanged;
+            m_FilterManager.onFilterChanged += this.onFilterChanged;
         }
 
         public virtual void setInventory(TezInventory inventory)
         {
             m_InventoryRef = inventory;
-            this.filterManager.setInventory(inventory);
+            m_FilterManager.setInventory(inventory);
         }
 
         protected virtual void onItemChanged(TezInventoryDataSlot dataSlot)
@@ -39,8 +39,8 @@ namespace tezcat.Framework.Game.Inventory
             m_InventoryRef.close();
             m_InventoryRef = null;
 
-            this.filterManager.close();
-            this.filterManager = null;
+            m_FilterManager.close();
+            m_FilterManager = null;
         }
     }
 }

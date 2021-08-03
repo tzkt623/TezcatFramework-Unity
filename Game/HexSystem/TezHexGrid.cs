@@ -370,10 +370,11 @@ namespace tezcat.Framework.Game
         #endregion
 
         #region Mesh
-        public TezHexMesh createHexMesh(Vector3 center)
+        public TezHexMesh createMesh(Vector3 center)
         {
             TezHexMesh mesh = new TezHexMesh();
             mesh.vertices.Capacity = 7;
+            mesh.indices.Capacity = HexTriangleIndices.Length;
 
             mesh.vertices.Add(center);
             mesh.vertices.Add(this.createCorner(0, center));
@@ -391,6 +392,32 @@ namespace tezcat.Framework.Game
             return mesh;
         }
 
+        public TezHexMesh createMesh(List<Vector3> centerList)
+        {
+            TezHexMesh mesh = new TezHexMesh();
+            mesh.vertices.Capacity = 7 * centerList.Count;
+            mesh.indices.Capacity = centerList.Count * HexTriangleIndices.Length;
+
+            for (int i = 0; i < centerList.Count; i++)
+            {
+                var center = centerList[i];
+                mesh.vertices.Add(center);
+                mesh.vertices.Add(this.createCorner(0, center));
+                mesh.vertices.Add(this.createCorner(1, center));
+                mesh.vertices.Add(this.createCorner(2, center));
+                mesh.vertices.Add(this.createCorner(3, center));
+                mesh.vertices.Add(this.createCorner(4, center));
+                mesh.vertices.Add(this.createCorner(5, center));
+
+                var offset = 7 * i;
+                for (int j = 0; j < HexTriangleIndices.Length; j++)
+                {
+                    mesh.indices.Add(HexTriangleIndices[j] + offset);
+                }
+            }
+
+            return mesh;
+        }
         public TezHexMesh createBorderMesh(Vector3 center, float borderScale = 0.8f)
         {
             TezHexMesh mesh = new TezHexMesh();
@@ -448,32 +475,6 @@ namespace tezcat.Framework.Game
             return mesh;
         }
 
-        public TezHexMesh createMesh(List<Vector3> centerList)
-        {
-            TezHexMesh mesh = new TezHexMesh();
-            mesh.vertices.Capacity = 7 * centerList.Count;
-            mesh.indices.Capacity = centerList.Count * HexTriangleIndices.Length;
-
-            for (int i = 0; i < centerList.Count; i++)
-            {
-                var center = centerList[i];
-                mesh.vertices.Add(center);
-                mesh.vertices.Add(this.createCorner(0, center));
-                mesh.vertices.Add(this.createCorner(1, center));
-                mesh.vertices.Add(this.createCorner(2, center));
-                mesh.vertices.Add(this.createCorner(3, center));
-                mesh.vertices.Add(this.createCorner(4, center));
-                mesh.vertices.Add(this.createCorner(5, center));
-
-                var offset = 7 * i;
-                for (int j = 0; j < HexTriangleIndices.Length; j++)
-                {
-                    mesh.indices.Add(HexTriangleIndices[j] + offset);
-                }
-            }
-
-            return mesh;
-        }
         #endregion
     }
 }

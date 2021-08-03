@@ -328,26 +328,76 @@ namespace tezcat.Framework.Game.Inventory
             return slot;
         }
 
-        public bool add(TezComData gameObject, int count)
+        public bool store(TezComData gameObject)
         {
             if (m_Inventory.tryGet(out var inventory))
             {
-                inventory.add(gameObject, count);
+                inventory.store(gameObject);
                 return true;
             }
 
             return false;
         }
 
-        public bool remove(TezComData gameObject, int count)
+        public bool store(TezComData gameObject, int count)
         {
             if (m_Inventory.tryGet(out var inventory))
             {
-                inventory.remove(gameObject, count);
+                inventory.store(gameObject, count);
                 return true;
             }
 
             return false;
+        }
+
+        public bool take(TezComData gameObject)
+        {
+            if (m_Inventory.tryGet(out var inventory))
+            {
+                var index = inventory.find(gameObject);
+                if (index > 0)
+                {
+                    inventory.take(index);
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        public TezComData take(int index)
+        {
+            if (m_Inventory.tryGet(out var inventory))
+            {
+                return inventory.take(index);
+            }
+
+            return null;
+        }
+
+        public bool take(TezComData gameObject, int count)
+        {
+            if (m_Inventory.tryGet(out var inventory))
+            {
+                var index = inventory.find(gameObject);
+                if (index > 0)
+                {
+                    inventory.take(index, count);
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        public TezComData take(int index, int count)
+        {
+            if (m_Inventory.tryGet(out var inventory))
+            {
+                return inventory.take(index, count);
+            }
+
+            return null;
         }
 
         public void close()

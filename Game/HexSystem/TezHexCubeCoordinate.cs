@@ -167,6 +167,19 @@ namespace tezcat.Framework.Game
             return (Mathf.Abs(x - other.x) + Mathf.Abs(y - other.y) + Mathf.Abs(z - other.z)) / 2;
         }
 
+        /// <summary>
+        /// 从目标坐标获得标准化的朝向方向
+        /// </summary>
+        public TezHexCubeCoordinate getDirectionFrom(TezHexCubeCoordinate target)
+        {
+            var x = target.x - this.x;
+            var y = target.y - this.y;
+            var z = target.z - this.z;
+
+            var distance = (Mathf.Abs(x) + Mathf.Abs(y) + Mathf.Abs(z)) / 2;
+            return new TezHexCubeCoordinate(x / distance, y / distance, z / distance);
+        }
+
         public void scale(int value)
         {
             this.x *= value;

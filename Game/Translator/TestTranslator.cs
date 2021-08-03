@@ -1,40 +1,97 @@
-﻿namespace tezcat.Framework.Game
+﻿using System.Collections.Generic;
+
+namespace tezcat.Framework.Game
 {
     public class TestTranslator
     {
         public void init()
         {
-//            TezTranslator.dataCapacity = 4;
+            TezTranslator.register("English");
+            TezTranslator.register("Chinese");
+            TezTranslator.register("German");
+            TezTranslator.register("Japanese");
         }
 
-        public void load()
+        #region 多文本单独翻译模式/Translate All In Multi-Files
+        public Dictionary<string, string> getLanguageFromYourDatabase(string language)
         {
-            TestTranslatorCenter.tranName.add("$A1", "HAHA1");
-            TestTranslatorCenter.tranName.add("$A2", "HAHA2");
-            TestTranslatorCenter.tranName.add("$A3", "HAHA3");
-
-            TestTranslatorCenter.tranDescription.add("$A1", "HAHA1`s Description");
-            TestTranslatorCenter.tranDescription.add("$A2", "HAHA2`s Description");
-            TestTranslatorCenter.tranDescription.add("$A3", "HAHA3`s Description");
-
-            TestTranslatorCenter.tranStory.add("$A1", "HAHA1`s Story");
-            TestTranslatorCenter.tranStory.add("$A2", "HAHA2`s Story");
-            TestTranslatorCenter.tranStory.add("$A3", "HAHA3`s Story");
-
-            TestTranslatorCenter.tranExtra.add("$A1", "HAHA1`s Extra");
-            TestTranslatorCenter.tranExtra.add("$A2", "HAHA2`s Extra");
-            TestTranslatorCenter.tranExtra.add("$A3", "HAHA3`s Extra");
+            return null;
         }
+
+        private void loadSingleText(TezTranslator translator, string language)
+        {
+            TezTranslator.beginLoad(language);
+
+            foreach (var item in this.getLanguageFromYourDatabase(language))
+            {
+                translator.loadSingle(item.Key, item.Value);
+            }
+
+            TezTranslator.endLoad(language);
+        }
+
+        public void load1()
+        {
+            this.loadSingleText(TestTranslatorCenter.tranName, "English");
+            this.loadSingleText(TestTranslatorCenter.tranDescription, "English");
+            this.loadSingleText(TestTranslatorCenter.tranStory, "English");
+            this.loadSingleText(TestTranslatorCenter.tranExtra, "English");
+
+            this.loadSingleText(TestTranslatorCenter.tranName, "Chinese");
+            this.loadSingleText(TestTranslatorCenter.tranDescription, "Chinese");
+            this.loadSingleText(TestTranslatorCenter.tranStory, "Chinese");
+            this.loadSingleText(TestTranslatorCenter.tranExtra, "Chinese");
+
+            this.loadSingleText(TestTranslatorCenter.tranName, "German");
+            this.loadSingleText(TestTranslatorCenter.tranDescription, "German");
+            this.loadSingleText(TestTranslatorCenter.tranStory, "German");
+            this.loadSingleText(TestTranslatorCenter.tranExtra, "German");
+
+            this.loadSingleText(TestTranslatorCenter.tranName, "Japanese");
+            this.loadSingleText(TestTranslatorCenter.tranDescription, "Japanese");
+            this.loadSingleText(TestTranslatorCenter.tranStory, "Japanese");
+            this.loadSingleText(TestTranslatorCenter.tranExtra, "Japanese");
+
+            ///Set Language
+            TezTranslator.switchLanguage("Chinese");
+        }
+        #endregion
+
+        #region 单文本翻译所有语言模式/Translate All In One File
+        public Dictionary<string, string[]> getAllFromYourDatabase()
+        {
+            return null;
+        }
+
+        private void loadAllText(TezTranslator translator)
+        {
+            foreach (var item in this.getAllFromYourDatabase())
+            {
+                translator.loadAll(item.Key, item.Value);
+            }
+        }
+
+        public void load2()
+        {
+            this.loadAllText(TestTranslatorCenter.tranName);
+            this.loadAllText(TestTranslatorCenter.tranDescription);
+            this.loadAllText(TestTranslatorCenter.tranStory);
+            this.loadAllText(TestTranslatorCenter.tranExtra);
+
+            ///Set Language
+            TezTranslator.switchLanguage("Chinese");
+        }
+        #endregion
 
         public void test()
         {
-            var an1 = TestTranslatorCenter.tranName.translate("$A1");
-            var an2 = TestTranslatorCenter.tranName.translate("$A2");
-            var an3 = TestTranslatorCenter.tranName.translate("$A3");
+            var n1 = TestTranslatorCenter.tranName.translate("$Name1");
+            var n2 = TestTranslatorCenter.tranName.translate("$Name2");
+            var n3 = TestTranslatorCenter.tranName.translate("$Name3");
 
-            var ad1 = TestTranslatorCenter.tranDescription.translate("$A1");
-            var ad2 = TestTranslatorCenter.tranDescription.translate("$A2");
-            var ad3 = TestTranslatorCenter.tranDescription.translate("$A3");
+            var d1 = TestTranslatorCenter.tranDescription.translate("$Description1");
+            var d2 = TestTranslatorCenter.tranDescription.translate("$Description2");
+            var d3 = TestTranslatorCenter.tranDescription.translate("$Description3");
         }
     }
 

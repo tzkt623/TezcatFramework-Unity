@@ -87,13 +87,20 @@ namespace tezcat.Framework
             TezService.register(new TezPrefabDatabase());
         }
 
-
         protected virtual void registerClassFactory()
         {
 
         }
 
         protected abstract void registerVersions();
+
+        /// <summary>
+        /// 注册管理UI
+        /// </summary>
+        public virtual void registerManagerWidget(TezUIWidget widget)
+        {
+            
+        }
         #endregion
 
         #region Loading

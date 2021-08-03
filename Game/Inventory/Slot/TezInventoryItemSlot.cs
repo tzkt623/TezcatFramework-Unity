@@ -26,10 +26,12 @@ namespace tezcat.Framework.Game.Inventory
 
         public override TezInventoryItemSlot itemSlot => this;
 
+
+        TezInventory m_Inventory = null;
         /// <summary>
         /// 格子属于的Inventory
         /// </summary>
-        public TezInventory inventory { get; private set; } = null;
+        public TezInventory inventory => m_Inventory;
 
         /// <summary>
         /// 装的Item
@@ -38,6 +40,7 @@ namespace tezcat.Framework.Game.Inventory
 
         /// <summary>
         /// Item的数量
+        /// 为-1表示不可堆叠
         /// </summary>
         public int count { get; set; } = -1;
 
@@ -51,15 +54,22 @@ namespace tezcat.Framework.Game.Inventory
 
         public TezInventoryItemSlot(TezInventory inventory)
         {
-            this.inventory = inventory;
+            m_Inventory = inventory;
         }
 
         public override void close()
         {
             base.close();
             this.item = null;
-            this.inventory = null;
+            m_Inventory = null;
         }
 
+        /// <summary>
+        /// 拿出
+        /// </summary>
+        public TezComData take()
+        {
+            return m_Inventory.take(this.index);
+        }
     }
 }

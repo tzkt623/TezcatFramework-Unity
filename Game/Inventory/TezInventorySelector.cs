@@ -43,13 +43,13 @@ namespace tezcat.Framework.Game.Inventory
 
         public void putToTarget(int count = 1)
         {
-            this.targetInventory.add(sourceSlot.item, count);
-            this.sourceInventory.remove(sourceSlot.index, count);
+            this.targetInventory.store(sourceSlot.item, count);
+            this.sourceInventory.take(sourceSlot.index, count);
         }
 
         public void removeFromSource(int count = 1)
         {
-            this.sourceInventory.remove(sourceSlot.index, count);
+            this.sourceInventory.take(sourceSlot.index, count);
         }
 
         public void complete()
