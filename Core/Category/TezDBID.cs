@@ -49,5 +49,26 @@ namespace tezcat.Framework.Core
 
             return this.dbID == other.dbID && this.itemID == other.itemID;
         }
+
+        /// <summary>
+        /// 比较两个Item的DBID是否一样
+        /// </summary>
+        public static bool operator ==(TezDBID a, TezDBID b)
+        {
+            if (object.ReferenceEquals(a, null))
+            {
+                return object.ReferenceEquals(b, null);
+            }
+
+            return a.Equals(b);
+        }
+
+        /// <summary>
+        /// 比较两个Item的DBID是否一样
+        /// </summary>
+        public static bool operator !=(TezDBID a, TezDBID b)
+        {
+            return !(a == b);
+        }
     }
 }

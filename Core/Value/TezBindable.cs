@@ -63,6 +63,7 @@ namespace tezcat.Framework.Core
     {
         /// <summary>
         /// 通知事件
+        /// Value,Max
         /// </summary>
         public event TezEventExtension.Action<T, T> onChanged;
 
