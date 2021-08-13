@@ -48,7 +48,7 @@ namespace tezcat.Framework.Utility
     /// </summary>
     public class TezValider<UserData>
         : ITezValider
-        where UserData : class, new()
+        where UserData : class
     {
         class Data
         {
@@ -160,8 +160,4 @@ namespace tezcat.Framework.Utility
             return false;
         }
     }
-
-
-
-
 }

@@ -25,8 +25,14 @@ namespace tezcat.Framework.Test
     public class Ship
     {
         public TezValider<Ship> valider = new TezValider<Ship>();
+        public TezStateValider<Ship> valider2 = new TezStateValider<Ship>();
 
         public int health = 10;
+
+        private Ship()
+        {
+
+        }
 
         public void update()
         {
