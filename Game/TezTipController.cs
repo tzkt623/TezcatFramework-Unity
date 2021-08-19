@@ -5,6 +5,7 @@ using UnityEngine;
 
 namespace tezcat.Framework.Game
 {
+
     public interface ITezTip
     {
         void accept(TezTipController controller);

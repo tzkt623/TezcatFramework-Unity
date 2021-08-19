@@ -1,81 +1,52 @@
-﻿using tezcat.Framework.Core;
-using tezcat.Framework.Event;
+﻿using tezcat.Framework.Event;
 
 namespace tezcat.Framework.AI
 {
-    public class TezFSM<TData>
-        : ITezCloseable
-        where TData : class, ITezFSMData, new()
+    public class TezFSM<TBlackboard, TState>
+        : TezBaseFSM<TBlackboard, TState>
+        where TState : TezBaseFSMState<TBlackboard>
+        where TBlackboard : TezBaseFSMBlackboard
     {
-        ITezFSMState<TData> m_GlobalState = null;
-        ITezFSMState<TData> m_CurrentState = null;
-        ITezFSMState<TData> m_PreviousState = null;
+        TState m_GlobalState = null;
+        TBlackboard m_Blackboard = null;
 
-        TData m_Data = null;
-
-        public void onEvent(ITezEventData evt)
+        public override void execute()
         {
-            if(m_CurrentState != null && m_CurrentState.onEvent(evt))
-            {
-                return;
-            }
-
-            if(m_GlobalState != null && m_GlobalState.onEvent(evt))
-            {
-                return;
-            }
+            m_GlobalState?.execute(m_Blackboard);
+            m_CurrentState?.execute(m_Blackboard);
         }
 
-        public void execute()
-        {
-            m_GlobalState?.execute(m_Data);
-            m_CurrentState?.execute(m_Data);
-        }
-
-        public void setData(TData data)
-        {
-            m_Data = data;
-        }
-
-        public void setCurrentState(ITezFSMState<TData> state)
-        {
-            m_CurrentState = state;
-            m_CurrentState.FSM = this;
-        }
-
-        public void setGlobalState(ITezFSMState<TData> state)
+        public void setGlobalState(TState state)
         {
             m_GlobalState = state;
-            m_GlobalState.FSM = this;
         }
 
-        public void changeState(ITezFSMState<TData> state)
+        public void changeState(TState state)
         {
-            m_PreviousState?.close();
-            m_PreviousState = m_CurrentState;
-            m_CurrentState.exit(m_Data);
-
+            m_CurrentState?.exit(m_Blackboard);
             m_CurrentState = state;
-            m_CurrentState.FSM = this;
-            m_CurrentState.enter(m_Data);
+            m_CurrentState.enter(m_Blackboard);
         }
 
-        public void revertState()
+        public override void dispatchEvent(ITezEventData eventData)
         {
-            this.changeState(m_PreviousState);
+            if (m_CurrentState != null && m_CurrentState.onEvent(eventData))
+            {
+                return;
+            }
+
+            if (m_GlobalState != null && m_GlobalState.onEvent(eventData))
+            {
+                return;
+            }
         }
 
-        public virtual void close()
+        public override void close()
         {
-            m_Data.close();
-            m_CurrentState?.close();
+            base.close();
+
             m_GlobalState?.close();
-            m_PreviousState?.close();
-
-            m_Data = null;
-            m_CurrentState = null;
             m_GlobalState = null;
-            m_PreviousState = null;
         }
     }
 }

@@ -37,7 +37,6 @@ namespace tezcat.Framework.Game.Galaxy
         versions of Netpbm.)
 
         C# by Tezcat
-
     */
     public class TezGalaxySpectra
     {
