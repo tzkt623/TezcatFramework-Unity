@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using tezcat.Framework.Core;
 using tezcat.Framework.Database;
 
-namespace tezcat.Framework.InputSystem
+namespace tezcat.Framework.Utility
 {
     /// <summary>
     /// Layer层

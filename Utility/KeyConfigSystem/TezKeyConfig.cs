@@ -5,7 +5,7 @@ using tezcat.Framework.Database;
 using tezcat.Framework.Utility;
 using UnityEngine;
 
-namespace tezcat.Framework.InputSystem
+namespace tezcat.Framework.Utility
 {
     /// <summary>
     /// 具体配置类

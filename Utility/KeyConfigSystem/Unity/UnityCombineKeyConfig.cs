@@ -1,6 +1,6 @@
 ﻿using System.Collections;
 
-namespace tezcat.Framework.InputSystem
+namespace tezcat.Framework.Utility
 {
     /// <summary>
     /// 改进型组合按键配置

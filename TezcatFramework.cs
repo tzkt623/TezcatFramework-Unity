@@ -1,16 +1,11 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.IO;
 using tezcat.Framework.Core;
 using tezcat.Framework.Database;
 using tezcat.Framework.ECS;
 using tezcat.Framework.Event;
-using tezcat.Framework.Extension;
-using tezcat.Framework.Game;
 using tezcat.Framework.GraphicSystem;
-using tezcat.Framework.InputSystem;
-using tezcat.Framework.Math;
 using tezcat.Framework.Threading;
 using tezcat.Framework.UI;
 using tezcat.Framework.Utility;
@@ -20,24 +15,32 @@ namespace tezcat.Framework
 {
     public abstract class TezcatFramework
         : TezUIWidget
-        , ITezService
     {
-        #region Static Data
-        private static void checkFile(string path, TezEventExtension.Action<StreamWriter> action)
-        {
-            if (!TezFilePath.fileExist(path))
-            {
-                var writer = TezFilePath.createTextFile(path);
-                action(writer);
-                writer.Close();
-            }
-        }
+        #region Instance
+        static TezcatFramework m_Instance = null;
+        public static TezcatFramework instance => m_Instance;
+        #endregion
+
+        #region Tools
+        static TezGraphicSystem m_GraphicSystem = null;
+        static TezPrefabDatabase m_PrefabDatabase = null;
+        static TezThread m_Thread = null;
+        static TezEventDispatcher m_EventDispatcher = null;
+        static UnityKeyConfigSystem m_UnityKeyConfigSystem = null;
+
+        public static TezGraphicSystem graphicSystem => m_GraphicSystem;
+        public static TezPrefabDatabase prefabDatabase => m_PrefabDatabase;
+        public static TezEventDispatcher eventDispatcher => m_EventDispatcher;
+        public static TezThread thread => m_Thread;
+        public static UnityKeyConfigSystem unityKeyConfigSystem => m_UnityKeyConfigSystem;
         #endregion
 
         #region Engine
+        bool m_ResourceInited = false;
         protected override void preInit()
         {
             this.register();
+            m_Instance = this;
         }
 
         protected override void initWidget()
@@ -56,7 +59,11 @@ namespace tezcat.Framework
 
         protected override void onRefresh()
         {
-            StartCoroutine(loadResources());
+            if (!m_ResourceInited)
+            {
+                m_ResourceInited = true;
+                StartCoroutine(loadResources());
+            }
         }
 
         protected override void onHide()
@@ -73,7 +80,6 @@ namespace tezcat.Framework
         #region Register
         private void register()
         {
-            TezService.register(this);
             this.registerVersions();
             this.registerService();
             this.registerClassFactory();
@@ -81,10 +87,11 @@ namespace tezcat.Framework
 
         protected virtual void registerService()
         {
-            TezService.register(new TezThread());
-            TezService.register(new TezGraphicSystem());
-            TezService.register(new TezTextureDatabase());
-            TezService.register(new TezPrefabDatabase());
+            m_GraphicSystem = new TezGraphicSystem();
+            m_PrefabDatabase = new TezPrefabDatabase();
+            m_Thread = new TezThread();
+            m_EventDispatcher = new TezEventDispatcher();
+            m_UnityKeyConfigSystem = new UnityKeyConfigSystem();
         }
 
         protected virtual void registerClassFactory()
@@ -99,7 +106,7 @@ namespace tezcat.Framework
         /// </summary>
         public virtual void registerManagerWidget(TezUIWidget widget)
         {
-            
+
         }
         #endregion
 
@@ -129,7 +136,7 @@ namespace tezcat.Framework
         public Renderer createRenderer<Renderer>(Transform parent)
             where Renderer : TezComBaseRenderer, ITezSinglePrefab
         {
-            var prefab = TezService.get<TezPrefabDatabase>().get<Renderer>();
+            var prefab = m_PrefabDatabase.get<Renderer>();
             var go = MonoBehaviour.Instantiate(prefab, parent);
             return go;
         }
@@ -137,7 +144,7 @@ namespace tezcat.Framework
         public Renderer createRenderer<Renderer>(Transform parent, string prefab_name)
             where Renderer : TezComBaseRenderer, ITezMultiPrefab
         {
-            var prefab = TezService.get<TezPrefabDatabase>().get<Renderer>(prefab_name);
+            var prefab = m_PrefabDatabase.get<Renderer>(prefab_name);
             var go = MonoBehaviour.Instantiate(prefab, parent);
             return go;
         }
@@ -145,7 +152,7 @@ namespace tezcat.Framework
         public GameMonoObject createGMO<GameMonoObject>(Transform parent)
             where GameMonoObject : TezGameMonoObject, ITezSinglePrefab
         {
-            var prefab = TezService.get<TezPrefabDatabase>().get<GameMonoObject>();
+            var prefab = m_PrefabDatabase.get<GameMonoObject>();
             var go = MonoBehaviour.Instantiate(prefab, parent);
             return go;
         }
@@ -222,7 +229,7 @@ namespace tezcat.Framework
         /// <returns></returns>
         public Widget createWidget<Widget>(RectTransform parent, TezWidgetLife life = TezWidgetLife.Normal) where Widget : TezBaseWidget, ITezSinglePrefab
         {
-            return (Widget)this.createWidget(TezService.get<TezPrefabDatabase>().get<Widget>(), parent, life);
+            return (Widget)this.createWidget(m_PrefabDatabase.get<Widget>(), parent, life);
         }
 
         public Widget createWidget<Widget>(TezLayer layer, TezWidgetLife life = TezWidgetLife.Normal) where Widget : TezBaseWidget, ITezSinglePrefab
@@ -272,7 +279,7 @@ namespace tezcat.Framework
 
         public Window createWindow<Window>(string name, TezLayer layer, TezWidgetLife life = TezWidgetLife.Normal) where Window : TezWindow, ITezSinglePrefab
         {
-            return this.createWindow(TezService.get<TezPrefabDatabase>().get<Window>(), name, layer, life);
+            return this.createWindow(m_PrefabDatabase.get<Window>(), name, layer, life);
         }
 
         public TezWindow createWindow(TezWindow prefab, TezLayer layer, TezWidgetLife life = TezWidgetLife.Normal)

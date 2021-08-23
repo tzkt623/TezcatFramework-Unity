@@ -1,4 +1,4 @@
-﻿namespace tezcat.Framework.InputSystem
+﻿namespace tezcat.Framework.Utility
 {
     /// <summary>
     /// 
@@ -9,11 +9,6 @@
     /// </summary>
     public class UnityKeyConfigSystem : TezKeyConfigManager
     {
-        public static readonly UnityKeyConfigSystem instance = new UnityKeyConfigSystem();
 
-        private UnityKeyConfigSystem()
-        {
-
-        }
     }
 }

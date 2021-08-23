@@ -11,8 +11,9 @@ namespace tezcat.Framework.Utility
     /// </summary>
     public class TezGameMachine<TBlackborad, TState>
         : TezBaseFSM<TBlackborad, TState>
+        , ITezGameMachine<TBlackborad, TState>
         where TBlackborad : TezBaseFSMBlackboard
-        where TState : TezGameMachineState<TBlackborad>
+        where TState : TezGameMachineState<TBlackborad, TState>
     {
         class Singleton<State> where State : TState, new()
         {
@@ -37,6 +38,7 @@ namespace tezcat.Framework.Utility
             }
 
             m_CurrentState = Singleton<State>.instance;
+            m_CurrentState.gameMachine = this;
             m_CurrentState.enter(m_Blackboard);
         }
 

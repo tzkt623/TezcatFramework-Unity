@@ -67,7 +67,7 @@ namespace tezcat.Framework.UI
             switch (life)
             {
                 case TezWidgetLife.TypeOnly:
-                    TezService.get<TezcatFramework>().removeTypeOnlyWidget(this);
+                    TezcatFramework.instance.removeTypeOnlyWidget(this);
                     break;
                 default:
                     break;
@@ -121,7 +121,7 @@ namespace tezcat.Framework.UI
                     switch (m_RefreshPhase)
                     {
                         case TezRefreshPhase.Ready:
-                            TezService.get<TezcatFramework>().pushRefreshHandler(this);
+                            TezcatFramework.instance.pushRefreshHandler(this);
                             m_RefreshPhase = value;
                             break;
                         default:
@@ -149,7 +149,7 @@ namespace tezcat.Framework.UI
             switch (life)
             {
                 case TezWidgetLife.TypeOnly:
-                    TezService.get<TezcatFramework>().removeTypeOnlyWidget(this);
+                    TezcatFramework.instance.removeTypeOnlyWidget(this);
                     break;
                 default:
                     break;

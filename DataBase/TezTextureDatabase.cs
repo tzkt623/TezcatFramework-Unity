@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace tezcat.Framework.Database
 {
-    public class TezTextureDatabase : ITezService
+    public class TezTextureDatabase : ITezCloseable
     {
         Dictionary<string, TezSprite> m_SpriteDic = new Dictionary<string, TezSprite>();
 

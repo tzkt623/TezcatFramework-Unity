@@ -6,10 +6,12 @@ namespace tezcat.Framework.Utility
     /// <summary>
     /// 状态
     /// </summary>
-    public abstract class TezGameMachineState<TBlackborad>
+    public abstract class TezGameMachineState<TBlackborad, Self>
         : TezBaseFSMState<TBlackborad>
         where TBlackborad : TezBaseFSMBlackboard
+        where Self : TezGameMachineState<TBlackborad, Self>
     {
+        public ITezGameMachine<TBlackborad, Self> gameMachine { get; set; }
         public int pauseCount => m_PauseCount;
         int m_PauseCount;
 
@@ -25,6 +27,11 @@ namespace tezcat.Framework.Utility
             {
                 throw new ArgumentOutOfRangeException("PauseCount < 0");
             }
+        }
+
+        public override void close()
+        {
+            this.gameMachine = null;
         }
     }
 }

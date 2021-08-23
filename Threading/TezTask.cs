@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace tezcat.Framework.Threading
 {
-    public class TezThread : ITezService
+    public class TezThread : ITezCloseable
     {
         int m_IDGiver = 0;
 

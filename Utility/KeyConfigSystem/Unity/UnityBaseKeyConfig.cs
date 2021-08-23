@@ -1,6 +1,6 @@
 ﻿using tezcat.Framework.Database;
 
-namespace tezcat.Framework.InputSystem
+namespace tezcat.Framework.Utility
 {
     /// <summary>
     /// 通用型按键配置

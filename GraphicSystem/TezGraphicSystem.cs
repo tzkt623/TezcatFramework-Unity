@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace tezcat.Framework.GraphicSystem
 {
-    public class TezGraphicSystem : ITezService
+    public class TezGraphicSystem : ITezCloseable
     {
         List<TezRenderCommand> m_Pool = new List<TezRenderCommand>();
         Queue<int> m_FreeID = new Queue<int>();

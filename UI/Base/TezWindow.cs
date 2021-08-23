@@ -146,7 +146,7 @@ namespace tezcat.Framework.UI
             m_SubwindowDic.Clear();
             m_SubwindowDic = null;
 
-            TezService.get<TezcatFramework>().removeWindow(this);
+            TezcatFramework.instance.removeWindow(this);
         }
 
         protected override void onRefresh()

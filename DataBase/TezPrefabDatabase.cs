@@ -52,7 +52,7 @@ namespace tezcat.Framework.Database
         }
     }
 
-    public class TezPrefabDatabase : ITezService
+    public class TezPrefabDatabase : ITezCloseable
     {
         Dictionary<string, ITezMultiPrefab> m_MultiDic = new Dictionary<string, ITezMultiPrefab>();
 

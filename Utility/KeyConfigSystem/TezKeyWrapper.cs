@@ -3,7 +3,7 @@ using tezcat.Framework.Core;
 using tezcat.Framework.Database;
 using tezcat.Framework.Extension;
 
-namespace tezcat.Framework.InputSystem
+namespace tezcat.Framework.Utility
 {
     /// <summary>
     /// °´¼ü°ü×°²ã

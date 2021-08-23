@@ -66,7 +66,7 @@ namespace tezcat.Framework.Core
                     switch (m_RefreshPhase)
                     {
                         case TezRefreshPhase.Ready:
-                            TezService.get<TezcatFramework>().pushRefreshHandler(this);
+                            TezcatFramework.instance.pushRefreshHandler(this);
                             m_RefreshPhase = value;
                             break;
                         default:

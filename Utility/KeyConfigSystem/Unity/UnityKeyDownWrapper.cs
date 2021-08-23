@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace tezcat.Framework.InputSystem
+namespace tezcat.Framework.Utility
 {
     public class UnityKeyDownWrapper : UnityKeyWrapper
     {

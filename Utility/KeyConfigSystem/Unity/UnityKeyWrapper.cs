@@ -3,7 +3,7 @@ using tezcat.Framework.Core;
 using tezcat.Framework.Database;
 using UnityEngine;
 
-namespace tezcat.Framework.InputSystem
+namespace tezcat.Framework.Utility
 {
     public abstract class UnityKeyWrapper : TezKeyWrapper
     {

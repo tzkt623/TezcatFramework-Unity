@@ -19,12 +19,12 @@ namespace tezcat.Framework.Utility
             return state;
         }
 
-        public static void set(uint state_s)
+        public static void add(uint state_s)
         {
             m_Mask |= state_s;
         }
 
-        public static void clear(uint state_s)
+        public static void remove(uint state_s)
         {
             m_Mask &= ~state_s;
         }
