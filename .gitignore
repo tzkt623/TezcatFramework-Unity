@@ -1,2 +1,9 @@
 *.meta
 *.mat
+
+.vs
+bin
+obj
+
+UGUI
+UGUIEditor

@@ -1,0 +1,275 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{22D8C2B7-9934-4822-B96C-67F90F9F694E}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>TezcatFramework</RootNamespace>
+    <AssemblyName>TezcatFramework</AssemblyName>
+    <TargetFrameworkVersion>v4.7.1</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <Deterministic>true</Deterministic>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <DocumentationFile>bin\Debug\TezcatFramework.xml</DocumentationFile>
+    <LangVersion>7.1</LangVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <DocumentationFile>bin\Release\TezcatFramework.xml</DocumentationFile>
+    <LangVersion>7.1</LangVersion>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xml" />
+    <Reference Include="UnityEngine, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\UnityDLL\UnityEngine.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TezcatFramework\AI\BehaviorTree\Action\TezBTAction.cs" />
+    <Compile Include="TezcatFramework\AI\BehaviorTree\Composite\TezBTComposite.cs" />
+    <Compile Include="TezcatFramework\AI\BehaviorTree\Composite\TezBTForce.cs" />
+    <Compile Include="TezcatFramework\AI\BehaviorTree\Composite\TezBTObserveParallel.cs" />
+    <Compile Include="TezcatFramework\AI\BehaviorTree\Composite\TezBTParallel.cs" />
+    <Compile Include="TezcatFramework\AI\BehaviorTree\Composite\TezBTRandomSelector.cs" />
+    <Compile Include="TezcatFramework\AI\BehaviorTree\Composite\TezBTSelector.cs" />
+    <Compile Include="TezcatFramework\AI\BehaviorTree\Composite\TezBTSequence.cs" />
+    <Compile Include="TezcatFramework\AI\BehaviorTree\Condition\TezBTCondition.cs" />
+    <Compile Include="TezcatFramework\AI\BehaviorTree\Decorator\TezBTDecorator.cs" />
+    <Compile Include="TezcatFramework\AI\BehaviorTree\ITezBTContext.cs" />
+    <Compile Include="TezcatFramework\AI\BehaviorTree\TezBehaviorTree.cs" />
+    <Compile Include="TezcatFramework\AI\BehaviorTree\TezBTNode.cs" />
+    <Compile Include="TezcatFramework\AI\BehaviorTree\TezBTObserver.cs" />
+    <Compile Include="TezcatFramework\AI\FSM\TezBaseFSMBlackboard.cs" />
+    <Compile Include="TezcatFramework\AI\FSM\TezBaseFSMState.cs" />
+    <Compile Include="TezcatFramework\AI\FSM\TezBaseFSM.cs" />
+    <Compile Include="TezcatFramework\AI\FSM\TezFSM.cs" />
+    <Compile Include="TezcatFramework\AI\TezPuppet.cs" />
+    <Compile Include="TezcatFramework\AttributeSystem\ITezAttributeTree.cs" />
+    <Compile Include="TezcatFramework\TezcatFramework.cs" />
+    <Compile Include="TezcatFramework\Utility\GameMachine\ITezGameMachine.cs" />
+    <Compile Include="TezcatFramework\Utility\GameMachine\TezGameMachine.cs" />
+    <Compile Include="TezcatFramework\Utility\GameMachine\TezGameMachineBlackborad.cs" />
+    <Compile Include="TezcatFramework\Utility\GameMachine\TezGameMachineState.cs" />
+    <Compile Include="TezcatFramework\Core\Category\TezCategory.cs" />
+    <Compile Include="TezcatFramework\Core\Category\TezCategorySystem.cs" />
+    <Compile Include="TezcatFramework\Core\Category\TezCategoryToken.cs" />
+    <Compile Include="TezcatFramework\Core\Object\ITezCloseable.cs" />
+    <Compile Include="TezcatFramework\Core\Object\TezRefObject.cs" />
+    <Compile Include="TezcatFramework\Core\Value\Property\TezLitPropertyManager.cs" />
+    <Compile Include="TezcatFramework\Core\Value\Property\TezLitPropertySortList.cs" />
+    <Compile Include="TezcatFramework\Core\Value\Property\TezValueSortList.cs" />
+    <Compile Include="TezcatFramework\Core\RefreshHandler\ITezRefresher.cs" />
+    <Compile Include="TezcatFramework\Core\Tag\ITezTagSet.cs" />
+    <Compile Include="TezcatFramework\Core\Object\TezObject.cs" />
+    <Compile Include="TezcatFramework\Core\Modifier\TezFunctionModifier.cs" />
+    <Compile Include="TezcatFramework\Core\Modifier\TezModifierConfig.cs" />
+    <Compile Include="TezcatFramework\Core\Modifier\TezValueModifierBaseCache.cs" />
+    <Compile Include="TezcatFramework\Core\Value\Property\TezNotificationValue.cs" />
+    <Compile Include="TezcatFramework\Core\Category\TezUID.cs" />
+    <Compile Include="TezcatFramework\Core\Value\TezBindable.cs" />
+    <Compile Include="TezcatFramework\Core\Category\TezDBID.cs" />
+    <Compile Include="TezcatFramework\DataBase\TezDatabaseGameItem.cs" />
+    <Compile Include="TezcatFramework\DataBase\TezDatabaseItemConfig.cs" />
+    <Compile Include="TezcatFramework\DataBase\TezLitDatabase_AssetItem.cs" />
+    <Compile Include="TezcatFramework\DataBase\TezLitDatabase_GameItem.cs" />
+    <Compile Include="TezcatFramework\AttributeSystem\ITezAttributeHandler.cs" />
+    <Compile Include="TezcatFramework\AttributeSystem\TezAttributeElement.cs" />
+    <Compile Include="TezcatFramework\AttributeSystem\TezAttributeBuilder.cs" />
+    <Compile Include="TezcatFramework\AttributeSystem\TezAttributeLeaf.cs" />
+    <Compile Include="TezcatFramework\AttributeSystem\TezAttributeNode.cs" />
+    <Compile Include="TezcatFramework\AttributeSystem\TezAttributePath.cs" />
+    <Compile Include="TezcatFramework\AttributeSystem\TezAttributeDef.cs" />
+    <Compile Include="TezcatFramework\AttributeSystem\TezAttributeTree.cs" />
+    <Compile Include="TezcatFramework\AttributeSystem\TezAttributeTreeContainer.cs" />
+    <Compile Include="TezcatFramework\EntitySystem\TezComponentID.cs" />
+    <Compile Include="TezcatFramework\EntitySystem\TezComponentManager.cs" />
+    <Compile Include="TezcatFramework\EntitySystem\TezEntityManager.cs" />
+    <Compile Include="TezcatFramework\Game\HexSystem\TezHexMesh.cs" />
+    <Compile Include="TezcatFramework\Game\Inventory\Slot\TezInventoryBaseSlot.cs" />
+    <Compile Include="TezcatFramework\Game\Inventory\Slot\TezInventoryDataSlot.cs" />
+    <Compile Include="TezcatFramework\Game\Inventory\Slot\TezInventoryFilterSlot.cs" />
+    <Compile Include="TezcatFramework\Game\Inventory\Slot\TezInventoryViewSlot.cs" />
+    <Compile Include="TezcatFramework\Game\Inventory\TezInventory.cs" />
+    <Compile Include="TezcatFramework\Game\Inventory\TezInventoryFilter.cs" />
+    <Compile Include="TezcatFramework\Game\Inventory\View\TezInventoryBaseView.cs" />
+    <Compile Include="TezcatFramework\Game\Inventory\View\TezInventoryDefaultView.cs" />
+    <Compile Include="TezcatFramework\Game\Inventory\View\TezInventoryPageView.cs" />
+    <Compile Include="TezcatFramework\Game\Inventory\TezInventorySelector.cs" />
+    <Compile Include="TezcatFramework\Game\Inventory\Slot\TezInventoryItemSlot.cs" />
+    <Compile Include="TezcatFramework\Game\PathFind\ITezAStarDataWrapper.cs" />
+    <Compile Include="TezcatFramework\Game\PathFind\TezAStarDataWrapper.cs" />
+    <Compile Include="TezcatFramework\Game\Planet\TezPlanetData.cs" />
+    <Compile Include="TezcatFramework\Game\Translator\TezTranslationSlot.cs" />
+    <Compile Include="TezcatFramework\Utility\KeyConfigSystem\TezKeyConfig.cs" />
+    <Compile Include="TezcatFramework\Utility\KeyConfigSystem\TezKeyConfigLayer.cs" />
+    <Compile Include="TezcatFramework\Utility\KeyConfigSystem\TezKeyConfigSystem.cs" />
+    <Compile Include="TezcatFramework\Utility\KeyConfigSystem\TezKeyWrapper.cs" />
+    <Compile Include="TezcatFramework\Utility\KeyConfigSystem\Unity\UnityBaseKeyConfig.cs" />
+    <Compile Include="TezcatFramework\Utility\KeyConfigSystem\Unity\UnityCombineKeyConfig.cs" />
+    <Compile Include="TezcatFramework\Utility\KeyConfigSystem\Unity\UnityKeyConfigSystem.cs" />
+    <Compile Include="TezcatFramework\Utility\KeyConfigSystem\Unity\UnityKeyDownWrapper.cs" />
+    <Compile Include="TezcatFramework\Utility\KeyConfigSystem\Unity\UnityKeyPressWrapper.cs" />
+    <Compile Include="TezcatFramework\Utility\KeyConfigSystem\Unity\UnityKeyUpWrapper.cs" />
+    <Compile Include="TezcatFramework\Utility\KeyConfigSystem\Unity\UnityKeyWrapper.cs" />
+    <Compile Include="TezcatFramework\Math\TezRemap.cs" />
+    <Compile Include="TezcatFramework\Core\TezClassFactory.cs" />
+    <Compile Include="TezcatFramework\Extension\TezBitMaskExtension.cs" />
+    <Compile Include="TezcatFramework\Utility\TezLazyValueManager.cs" />
+    <Compile Include="TezcatFramework\Utility\TezRandomIndex.cs" />
+    <Compile Include="TezcatFramework\Utility\TezReadOnlyString.cs" />
+    <Compile Include="TezcatFramework\DataBase\TezSaveManager.cs" />
+    <Compile Include="TezcatFramework\Core\TezService.cs" />
+    <Compile Include="TezcatFramework\Core\Tag\TezTag.cs" />
+    <Compile Include="TezcatFramework\Game\TezTipController.cs" />
+    <Compile Include="TezcatFramework\Game\Translator\TezTranslator.cs" />
+    <Compile Include="TezcatFramework\Core\TezVersions.cs" />
+    <Compile Include="TezcatFramework\Game\Buffer\TezBuffer.cs" />
+    <Compile Include="TezcatFramework\Core\Modifier\TezValueModifier.cs" />
+    <Compile Include="TezcatFramework\Core\Modifier\TezValueModifierCache.cs" />
+    <Compile Include="TezcatFramework\Core\Modifier\TezValueModifierConfig.cs" />
+    <Compile Include="TezcatFramework\Core\Modifier\TezValueModifierRefrence.cs" />
+    <Compile Include="TezcatFramework\Core\Value\Property\TezLitProperty.cs" />
+    <Compile Include="TezcatFramework\Core\Value\Property\TezModifierRefrenceProperty.cs" />
+    <Compile Include="TezcatFramework\Core\Value\Property\TezProperty.cs" />
+    <Compile Include="TezcatFramework\Core\Value\Property\TezPropertyManager.cs" />
+    <Compile Include="TezcatFramework\Core\Value\Property\TezPropertySortList.cs" />
+    <Compile Include="TezcatFramework\Core\Value\TezValueDescriptor.cs" />
+    <Compile Include="TezcatFramework\Core\Value\TezValueWrapper.cs" />
+    <Compile Include="TezcatFramework\DataBase\ITezSerializable.cs" />
+    <Compile Include="TezcatFramework\DataBase\TezDatabase.cs" />
+    <Compile Include="TezcatFramework\DataBase\TezDatabaseAssetItem.cs" />
+    <Compile Include="TezcatFramework\DataBase\FileIO\TezJsonReader.cs" />
+    <Compile Include="TezcatFramework\DataBase\FileIO\TezJsonWriter.cs" />
+    <Compile Include="TezcatFramework\DataBase\TezPrefabDatabase.cs" />
+    <Compile Include="TezcatFramework\DataBase\FileIO\TezReader.cs" />
+    <Compile Include="TezcatFramework\DataBase\TezSprite.cs" />
+    <Compile Include="TezcatFramework\DataBase\TezTextureDatabase.cs" />
+    <Compile Include="TezcatFramework\DataBase\FileIO\TezWriter.cs" />
+    <Compile Include="TezcatFramework\AttributeSystem\ITezAttributeNode.cs" />
+    <Compile Include="TezcatFramework\AttributeSystem\ITezAttributeToken.cs" />
+    <Compile Include="TezcatFramework\Effect\Bloom.cs" />
+    <Compile Include="TezcatFramework\EntitySystem\ITezComponent.cs" />
+    <Compile Include="TezcatFramework\EntitySystem\TezComBaseData.cs" />
+    <Compile Include="TezcatFramework\EntitySystem\TezEntity.cs" />
+    <Compile Include="TezcatFramework\EntitySystem\TezComData.cs" />
+    <Compile Include="TezcatFramework\Event\ITezEventData.cs" />
+    <Compile Include="TezcatFramework\Event\TezEventDispatcher.cs" />
+    <Compile Include="TezcatFramework\Extension\TezArrayExtension.cs" />
+    <Compile Include="TezcatFramework\Extension\TezDictionaryExtension.cs" />
+    <Compile Include="TezcatFramework\Extension\TezEntityExtension.cs" />
+    <Compile Include="TezcatFramework\Extension\TezEnumExtension.cs" />
+    <Compile Include="TezcatFramework\Extension\TezEventExtension.cs" />
+    <Compile Include="TezcatFramework\Extension\TezListExtension.cs" />
+    <Compile Include="TezcatFramework\Extension\TezStringExtension.cs" />
+    <Compile Include="TezcatFramework\Extension\TezTransformExtension.cs" />
+    <Compile Include="TezcatFramework\Extension\TezValueWrapperExtension.cs" />
+    <Compile Include="TezcatFramework\Extension\TezVectorExtension.cs" />
+    <Compile Include="TezcatFramework\Game\Command\TezCommand.cs" />
+    <Compile Include="TezcatFramework\Game\Command\TezCommandSequence.cs" />
+    <Compile Include="TezcatFramework\Game\Dungeon\ITezDungeon.cs" />
+    <Compile Include="TezcatFramework\Game\Dungeon\TezDungeonBlock.cs" />
+    <Compile Include="TezcatFramework\Game\Dungeon\TezDungeonCorridor.cs" />
+    <Compile Include="TezcatFramework\Game\Dungeon\TezDungeonGenerator.cs" />
+    <Compile Include="TezcatFramework\Game\Dungeon\TezDungeonRoom.cs" />
+    <Compile Include="TezcatFramework\Game\Dungeon\TezDungeonUtility.cs" />
+    <Compile Include="TezcatFramework\Game\Galaxy\TezGalaxyBody.cs" />
+    <Compile Include="TezcatFramework\Game\Galaxy\TezGalaxyCDF.cs" />
+    <Compile Include="TezcatFramework\Game\Galaxy\TezGalaxySimulator.cs" />
+    <Compile Include="TezcatFramework\Game\Galaxy\TezGalaxySpectra.cs" />
+    <Compile Include="TezcatFramework\Game\Galaxy\TezGalaxyTool.cs" />
+    <Compile Include="TezcatFramework\Game\HexSystem\TexHexList.cs" />
+    <Compile Include="TezcatFramework\Game\HexSystem\TezHexArea.cs" />
+    <Compile Include="TezcatFramework\Game\HexSystem\TezHexArrayIndex.cs" />
+    <Compile Include="TezcatFramework\Game\HexSystem\TezHexBlock.cs" />
+    <Compile Include="TezcatFramework\Game\HexSystem\TezHexChunk.cs" />
+    <Compile Include="TezcatFramework\Game\HexSystem\TezHexCubeCoordinate.cs" />
+    <Compile Include="TezcatFramework\Game\HexSystem\TezHexGrid.cs" />
+    <Compile Include="TezcatFramework\Game\HexSystem\TezHexLayout.cs" />
+    <Compile Include="TezcatFramework\Game\HexSystem\TezHexOffsetCoordinate.cs" />
+    <Compile Include="TezcatFramework\Game\HexSystem\TezHexOrientation.cs" />
+    <Compile Include="TezcatFramework\Game\HexSystem\TezHexVector2.cs" />
+    <Compile Include="TezcatFramework\Game\ITezHoverable.cs" />
+    <Compile Include="TezcatFramework\Game\ITezPickable.cs" />
+    <Compile Include="TezcatFramework\Game\PathFind\TezAStarSystem.cs" />
+    <Compile Include="TezcatFramework\Game\Planet\TezPlanetGenerator.cs" />
+    <Compile Include="TezcatFramework\Game\Planet\TezPlanetGMO.cs" />
+    <Compile Include="TezcatFramework\Game\Planet\TezPlanetTerrainFace.cs" />
+    <Compile Include="TezcatFramework\GraphicSystem\TezBasicMesh.cs" />
+    <Compile Include="TezcatFramework\GraphicSystem\TezGraphicObject.cs" />
+    <Compile Include="TezcatFramework\GraphicSystem\TezGraphicSystem.cs" />
+    <Compile Include="TezcatFramework\GraphicSystem\TezRenderCommand.cs" />
+    <Compile Include="TezcatFramework\LitJson\IJsonWrapper.cs" />
+    <Compile Include="TezcatFramework\LitJson\JsonData.cs" />
+    <Compile Include="TezcatFramework\LitJson\JsonException.cs" />
+    <Compile Include="TezcatFramework\LitJson\JsonMapper.cs" />
+    <Compile Include="TezcatFramework\LitJson\JsonMockWrapper.cs" />
+    <Compile Include="TezcatFramework\LitJson\JsonReader.cs" />
+    <Compile Include="TezcatFramework\LitJson\JsonWriter.cs" />
+    <Compile Include="TezcatFramework\LitJson\Lexer.cs" />
+    <Compile Include="TezcatFramework\LitJson\ParserToken.cs" />
+    <Compile Include="TezcatFramework\Math\TezHash.cs" />
+    <Compile Include="TezcatFramework\Math\TezRandom.cs" />
+    <Compile Include="TezcatFramework\Math\TezRoulette.cs" />
+    <Compile Include="TezcatFramework\Shape\TezCircle.cs" />
+    <Compile Include="TezcatFramework\Shape\TezPoint.cs" />
+    <Compile Include="TezcatFramework\Shape\TezRectangle.cs" />
+    <Compile Include="TezcatFramework\Shape\TezShape.cs" />
+    <Compile Include="TezcatFramework\Threading\TezTask.cs" />
+    <Compile Include="TezcatFramework\TypeTraits\TezEnumeration.cs" />
+    <Compile Include="TezcatFramework\TypeTraits\TezType.cs" />
+    <Compile Include="TezcatFramework\TypeTraits\TezTypeInfo.cs" />
+    <Compile Include="TezcatFramework\Utility\Container\TezArrayEnumerator.cs" />
+    <Compile Include="TezcatFramework\Utility\Container\TezCountArrayEnumerator.cs" />
+    <Compile Include="TezcatFramework\Utility\SamplePool\ITezSamplePool.cs" />
+    <Compile Include="TezcatFramework\Utility\SamplePool\TezSamplePoolManager.cs" />
+    <Compile Include="TezcatFramework\Utility\TezIDCreator.cs" />
+    <Compile Include="TezcatFramework\Utility\TezStaticString.cs" />
+    <Compile Include="TezcatFramework\Utility\TezPageController.cs" />
+    <Compile Include="TezcatFramework\Utility\Quadtree\TezQtEntry.cs" />
+    <Compile Include="TezcatFramework\Utility\Quadtree\TezQtPoint.cs" />
+    <Compile Include="TezcatFramework\Utility\Quadtree\TezQtRectangle.cs" />
+    <Compile Include="TezcatFramework\Utility\Quadtree\TezQuadtree.cs" />
+    <Compile Include="TezcatFramework\Utility\Container\TezArray.cs" />
+    <Compile Include="TezcatFramework\Utility\Container\TezBinaryHeap.cs" />
+    <Compile Include="TezcatFramework\Utility\TezBitMask.cs" />
+    <Compile Include="TezcatFramework\Utility\TezCodeWriter.cs" />
+    <Compile Include="TezcatFramework\Utility\TezGlobalState.cs" />
+    <Compile Include="TezcatFramework\Utility\Container\TezList.cs" />
+    <Compile Include="TezcatFramework\Utility\TezNoise.cs" />
+    <Compile Include="TezcatFramework\Utility\TezFilePath.cs" />
+    <Compile Include="TezcatFramework\Utility\SamplePool\TezSamplePool.cs" />
+    <Compile Include="TezcatFramework\Utility\TezSingleton.cs" />
+    <Compile Include="TezcatFramework\Utility\TezSmartObject.cs" />
+    <Compile Include="TezcatFramework\Utility\Container\TezTuple.cs" />
+    <Compile Include="TezcatFramework\Utility\Valider\TezBitValider.cs" />
+    <Compile Include="TezcatFramework\Utility\Valider\TezValider.cs" />
+    <Compile Include="TezcatFramework\Utility\Valider\TezStateValider.cs" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>
