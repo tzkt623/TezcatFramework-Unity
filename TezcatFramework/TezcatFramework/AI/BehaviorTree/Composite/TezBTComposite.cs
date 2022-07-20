@@ -64,7 +64,7 @@ namespace tezcat.Framework.AI
     }
 
     /// <summary>
-    /// List–Õ
+    /// List
     /// </summary>
     public abstract class TezBTComposite_List : TezBTComposite
     {

@@ -64,12 +64,16 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Test\TestAStartSystem.cs" />
+    <Compile Include="Test\TestBonusSystem.cs" />
     <Compile Include="Test\TestCategory.cs" />
+    <Compile Include="Test\TestDatabase.cs" />
     <Compile Include="Test\TestECS.cs" />
     <Compile Include="Test\TestGameMachine.cs" />
     <Compile Include="Test\TestHexSystem.cs" />
     <Compile Include="Test\TestKeyConfig.cs" />
+    <Compile Include="Test\TestProperty.cs" />
     <Compile Include="Test\TestRandomIndex.cs" />
+    <Compile Include="Test\TestTag.cs" />
     <Compile Include="Test\TestTranslator.cs" />
     <Compile Include="Test\TestValider.cs" />
   </ItemGroup>

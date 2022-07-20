@@ -2,12 +2,12 @@
 using System.Collections.Generic;
 using tezcat.Framework.Extension;
 using tezcat.Framework.TypeTraits;
-using tezcat.Framework.Utility;
 
 namespace tezcat.Framework.Core
 {
     public enum TezValueType
     {
+        Unknown = -1,
         Byte,
         SByte,
         Short,
@@ -22,8 +22,7 @@ namespace tezcat.Framework.Core
         String,
         StaticString,
         Class,
-        Type,
-        Unknown
+        Type
     }
 
     public enum TezWrapperType
@@ -31,7 +30,7 @@ namespace tezcat.Framework.Core
         Normal,
         Property,
         MRProperty,
-        Attribute,
+        LitProperty,
         Notification,
         WithMinMax,
         WithBasic,
@@ -78,18 +77,18 @@ namespace tezcat.Framework.Core
 
         static Dictionary<Type, TezValueType> Mapping = new Dictionary<Type, TezValueType>()
         {
-            {typeof(sbyte), TezValueType.SByte },
-            {typeof(byte), TezValueType.Byte },
-            {typeof(short), TezValueType.Short },
-            {typeof(ushort), TezValueType.UShort },
-            {typeof(bool), TezValueType.Bool },
-            {typeof(int), TezValueType.Int },
-            {typeof(uint), TezValueType.UInt },
-            {typeof(long), TezValueType.Long },
-            {typeof(ulong), TezValueType.ULong },
-            {typeof(float), TezValueType.Float },
-            {typeof(double), TezValueType.Double },
-            {typeof(string), TezValueType.String },
+            {typeof(sbyte),     TezValueType.SByte },
+            {typeof(byte),      TezValueType.Byte },
+            {typeof(short),     TezValueType.Short },
+            {typeof(ushort),    TezValueType.UShort },
+            {typeof(bool),      TezValueType.Bool },
+            {typeof(int),       TezValueType.Int },
+            {typeof(uint),      TezValueType.UInt },
+            {typeof(long),      TezValueType.Long },
+            {typeof(ulong),     TezValueType.ULong },
+            {typeof(float),     TezValueType.Float },
+            {typeof(double),    TezValueType.Double },
+            {typeof(string),    TezValueType.String },
         };
 
         public abstract Type systemType { get; }
@@ -109,18 +108,18 @@ namespace tezcat.Framework.Core
     {
         static Dictionary<Type, TezValueType> Mapping = new Dictionary<Type, TezValueType>()
         {
-            {typeof(sbyte), TezValueType.SByte },
-            {typeof(byte), TezValueType.Byte },
-            {typeof(short), TezValueType.Short },
-            {typeof(ushort), TezValueType.UShort },
-            {typeof(bool), TezValueType.Bool },
-            {typeof(int), TezValueType.Int },
-            {typeof(uint), TezValueType.UInt },
-            {typeof(long), TezValueType.Long },
-            {typeof(ulong), TezValueType.ULong },
-            {typeof(float), TezValueType.Float },
-            {typeof(double), TezValueType.Double },
-            {typeof(string), TezValueType.String },
+            {typeof(sbyte),     TezValueType.SByte },
+            {typeof(byte),      TezValueType.Byte },
+            {typeof(short),     TezValueType.Short },
+            {typeof(ushort),    TezValueType.UShort },
+            {typeof(bool),      TezValueType.Bool },
+            {typeof(int),       TezValueType.Int },
+            {typeof(uint),      TezValueType.UInt },
+            {typeof(long),      TezValueType.Long },
+            {typeof(ulong),     TezValueType.ULong },
+            {typeof(float),     TezValueType.Float },
+            {typeof(double),    TezValueType.Double },
+            {typeof(string),    TezValueType.String },
         };
 
         protected class WrapperID<Value> : TezTypeInfo<Value, TezValueWrapper>
@@ -262,6 +261,10 @@ namespace tezcat.Framework.Core
         }
     }
 
+    /// <summary>
+    /// 一种包含唯一ID的值
+    /// 可用于制作多种系统
+    /// </summary>
     public class TezValueWrapper<T> : TezValueWrapper
     {
         public sealed override Type systemType
@@ -402,6 +405,3 @@ namespace tezcat.Framework.Core
     }
     #endregion
 }
-
-
-

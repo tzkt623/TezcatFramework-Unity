@@ -3,32 +3,11 @@ using tezcat.Framework.Extension;
 
 namespace tezcat.Framework.Core
 {
-    public interface ITezProperty : ITezValueWrapper
-    {
-        event TezEventExtension.Action<ITezProperty> onValueChanged;
-
-        void addModifier(ITezValueModifier modifier);
-        bool removeModifier(ITezValueModifier modifier);
-
-        /// <summary>
-        /// 只有数据需要重新计算时,才会重新计算
-        /// 但一定会发出更新事件
-        /// </summary>
-        void update();
-        string baseValueToString();
-    }
-
-    public interface ITezProperty<T> : ITezProperty
-    {
-        T baseValue { get; set; }
-        T value { get; }
-    }
-
     /// <summary>
     /// 
     /// Property
     /// 是一种通过加入Modifier改变当前值的数据类型
-    /// 用来制作类似最大血量 力量值这样的参考属性
+    /// 用来制作类似最大血量 力量 敏捷 智力 等这样的参考属性
     /// 
     /// </summary>
     public abstract class TezProperty<T>
@@ -60,10 +39,11 @@ namespace tezcat.Framework.Core
         /// <summary>
         /// 当前数值被更改时所保存的旧值
         /// </summary>
-        public T oldValue { get; protected set; }
+//        public T oldValue { get; protected set; }
 
 
-        private T m_Value;
+        private T m_TrueValue;
+
         /// <summary>
         /// 实际数值
         /// 根据basevalue和modifier所计算出的实际作用数值
@@ -79,7 +59,7 @@ namespace tezcat.Framework.Core
                     m_ModifierCache.dirty = false;
                     this.calculateValue();
                 }
-                return m_Value;
+                return m_TrueValue;
             }
             set
             {
@@ -87,15 +67,21 @@ namespace tezcat.Framework.Core
             }
         }
 
-        protected TezValueModifierBaseCache<T> m_ModifierCache = null;
+        protected TezBaseValueModifierCache<T> m_ModifierCache = null;
         public override TezWrapperType wrapperType => TezWrapperType.Property;
 
-        protected TezProperty(ITezValueDescriptor name, TezValueModifierBaseCache<T> cache) : base(name)
+        /// <summary>
+        /// 
+        /// </summary>
+        protected TezProperty(ITezValueDescriptor name, TezBaseValueModifierCache<T> cache) : base(name)
         {
             m_ModifierCache = cache;
         }
 
-        protected TezProperty(TezValueModifierBaseCache<T> cache) : base()
+        /// <summary>
+        /// 
+        /// </summary>
+        protected TezProperty(TezBaseValueModifierCache<T> cache) : base()
         {
             m_ModifierCache = cache;
         }
@@ -128,8 +114,8 @@ namespace tezcat.Framework.Core
 
         private void calculateValue()
         {
-            this.oldValue = m_Value;
-            m_Value = m_ModifierCache.calculate(this);
+            //            this.oldValue = m_TrueValue;
+            m_TrueValue = m_ModifierCache.calculate(this);
         }
 
         /// <summary>
@@ -153,11 +139,12 @@ namespace tezcat.Framework.Core
             ///在Property中
             ///Value不可以被Set
             m_ModifierCache.close();
-            m_Value = default;
+            m_TrueValue = default;
+            m_BaseValue = default;
 
-            this.onValueChanged = null;
             m_ModifierCache = null;
             this.descriptor = null;
+            this.onValueChanged = null;
         }
 
         public virtual string baseValueToString()

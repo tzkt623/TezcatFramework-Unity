@@ -2,6 +2,6 @@
 {
     public interface ITezTagSet
     {
-        TezTagSet TAG { get; }
+        TezTags TAG { get; }
     }
 }

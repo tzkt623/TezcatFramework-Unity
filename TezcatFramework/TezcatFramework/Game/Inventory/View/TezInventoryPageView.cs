@@ -17,7 +17,7 @@ namespace tezcat.Framework.Game.Inventory
         /// </summary>
         public event TezEventExtension.Action<TezInventoryViewSlot> onSlotRefresh;
 
-        TezArray<TezInventoryViewSlot> m_Slots = null;
+        TezStepArray<TezInventoryViewSlot> m_Slots = null;
         int m_BeginPos = 0;
 
         public int capacity
@@ -46,7 +46,7 @@ namespace tezcat.Framework.Game.Inventory
 
         public void setPageCapacity(int capacity)
         {
-            m_Slots = new TezArray<TezInventoryViewSlot>(capacity);
+            m_Slots = new TezStepArray<TezInventoryViewSlot>(capacity);
             for (int i = 0; i < capacity; i++)
             {
                 m_Slots.add(new TezInventoryViewSlot() { index = i });

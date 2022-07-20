@@ -26,8 +26,8 @@ namespace tezcat.Framework.Database
 
         public static Config createConfig(ITezCategoryRootToken rootToken, ITezCategoryFinalToken finalToken)
         {
-            var rid = rootToken.toID;
-            var findex = finalToken.finalRID;
+            var rid = rootToken.intValue;
+            var findex = finalToken.indexUID;
 
             while (m_ConfigList.Count <= rid)
             {
@@ -52,8 +52,8 @@ namespace tezcat.Framework.Database
 
         public static Config getConfig(ITezCategoryRootToken rootToken, ITezCategoryFinalToken finalToken)
         {
-            var rid = rootToken.toID;
-            var findex = finalToken.finalRID;
+            var rid = rootToken.intValue;
+            var findex = finalToken.indexUID;
             if (rid < m_ConfigList.Count)
             {
                 var list = m_ConfigList[rid];

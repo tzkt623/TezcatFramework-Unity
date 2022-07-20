@@ -64,7 +64,7 @@
   <ItemGroup>
     <Compile Include="TezcatUnity\Editor\TezLogEditor.cs" />
     <Compile Include="TezcatUnity\Editor\TezScrollRectEditor.cs" />
-    <Compile Include="TezcatUnity\EntitySystem\TezComBaseRenderer.cs" />
+    <Compile Include="TezcatUnity\EntitySystem\TezRendererComponent.cs" />
     <Compile Include="TezcatUnity\Core\Object\TezGameMonoObject.cs" />
     <Compile Include="TezcatUnity\Core\Object\TezMonoObject.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

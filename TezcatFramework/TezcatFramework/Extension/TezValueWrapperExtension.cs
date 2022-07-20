@@ -5,12 +5,12 @@ namespace tezcat.Framework.Extension
 {
     public static class TezValueWrapperExtension
     {
-        public static void writePropertyCollection(TezWriter writer, TezPropertySortList collection, string name)
+        public static void writePropertyCollection(TezWriter writer, TezPropertySortListContainer collection, string name)
         {
 
         }
 
-        public static void readPropertyCollection<Descriptor>(TezReader reader, TezPropertySortList collection, string name)
+        public static void readPropertyCollection<Descriptor>(TezReader reader, TezPropertySortListContainer collection, string name)
         {
 
         }

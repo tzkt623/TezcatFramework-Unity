@@ -1,6 +1,4 @@
-﻿using System;
-using tezcat.Framework.Core;
-using tezcat.Framework.Utility;
+﻿using tezcat.Framework.Core;
 
 namespace tezcat.Framework.Database
 {
@@ -8,7 +6,7 @@ namespace tezcat.Framework.Database
     /// 非游戏物品类数据
     /// 比如文本,图片,声音等
     /// </summary>
-    public abstract class TezDatabaseAssetItem 
+    public abstract class TezDatabaseAssetItem
         : ITezCloseable
         , ITezSerializableItem
     {

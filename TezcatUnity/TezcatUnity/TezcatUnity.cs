@@ -89,7 +89,9 @@ namespace tezcat.Framework
 
         protected virtual void registerComponent()
         {
-
+            TezDataComponent.SComUID = TezComponentManager.register<TezDataComponent>();
+            TezInfoComponent.SComUID = TezComponentManager.register<TezInfoComponent>();
+            TezRendererComponent.SComUID = TezComponentManager.register<TezRendererComponent>();
         }
 
         protected abstract void registerVersions();
@@ -127,7 +129,7 @@ namespace tezcat.Framework
 
         #region Renderer
         public Renderer createRenderer<Renderer>(Transform parent)
-            where Renderer : TezComBaseRenderer, ITezSinglePrefab
+            where Renderer : TezRendererComponent, ITezSinglePrefab
         {
             var prefab = TezcatFramework.prefabDatabase.get<Renderer>();
             var go = MonoBehaviour.Instantiate(prefab, parent);
@@ -135,7 +137,7 @@ namespace tezcat.Framework
         }
 
         public Renderer createRenderer<Renderer>(Transform parent, string prefab_name)
-            where Renderer : TezComBaseRenderer, ITezMultiPrefab
+            where Renderer : TezRendererComponent, ITezMultiPrefab
         {
             var prefab = TezcatFramework.prefabDatabase.get<Renderer>(prefab_name);
             var go = MonoBehaviour.Instantiate(prefab, parent);

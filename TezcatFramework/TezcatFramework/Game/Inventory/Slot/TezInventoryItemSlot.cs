@@ -37,7 +37,7 @@ namespace tezcat.Framework.Game.Inventory
         /// <summary>
         /// 装的Item
         /// </summary>
-        public TezComData item { get; set; } = null;
+        public ITezInventoryItem item { get; set; } = null;
 
         /// <summary>
         /// Item的数量
@@ -48,9 +48,9 @@ namespace tezcat.Framework.Game.Inventory
         /// <summary>
         /// 转换Item
         /// 转换失败返回Null
-        public T getItem<T>() where T : TezComData
+        public T getItem<T>() where T : ITezInventoryItem
         {
-            return this.item as T;
+            return (T)this.item;
         }
 
         public TezInventoryItemSlot(TezInventory inventory)
@@ -69,7 +69,7 @@ namespace tezcat.Framework.Game.Inventory
         /// <summary>
         /// 拿出
         /// </summary>
-        public TezComData take()
+        public ITezInventoryItem take()
         {
             return m_Inventory.take(this.index);
         }
@@ -77,7 +77,7 @@ namespace tezcat.Framework.Game.Inventory
         /// <summary>
         /// 存入
         /// </summary>
-        public void store(TezComData item, int count)
+        public void store(ITezInventoryItem item, int count)
         {
             m_Inventory.store(this.index, item, count);
         }

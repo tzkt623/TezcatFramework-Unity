@@ -7,17 +7,13 @@ using tezcat.Framework.ECS;
 
 namespace tezcat.Framework.Test
 {
-    class MyData : TezComData
+    class MyData : TezDataComponent
     {
-        public static int SComUID;
-        public override int comUID => SComUID;
+
     }
 
-    class MyRenderer : TezComBaseRenderer
+    class MyRenderer : TezRendererComponent
     {
-        public static int SComUID;
-        public override int comUID => SComUID;
-
         public override void reset() { }
         protected override void initObject() { }
         protected override void onHide() { }
@@ -64,8 +60,8 @@ namespace tezcat.Framework.Test
         /// </summary>
         public void registerComponent()
         {
-            MyData.SComUID = TezComponentManager.register<MyData>();
-            MyRenderer.SComUID = TezComponentManager.register<MyRenderer>();
+            TezDataComponent.SComUID = TezComponentManager.register<TezDataComponent>();
+            TezRendererComponent.SComUID = TezComponentManager.register<TezRendererComponent>();
             MyPhysics.SComUID = TezComponentManager.register<MyPhysics>();
         }
 

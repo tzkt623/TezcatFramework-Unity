@@ -10,4 +10,12 @@
         /// </summary>
         void close();
     }
+
+    /// <summary>
+    /// 不允许手动释放的对象
+    /// </summary>
+    public interface ITezNonCloseable
+    {
+
+    }
 }

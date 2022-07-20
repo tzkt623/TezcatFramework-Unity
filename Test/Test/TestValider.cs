@@ -3,36 +3,12 @@ using tezcat.Framework.Utility;
 
 namespace tezcat.Framework.Test
 {
-    public class TestValider
-    {
-        Ship m_Ship;
-        Missle m_Missle;
-
-        public void init()
-        {
-            m_Missle.setTarget(m_Ship);
-        }
-
-        public void update()
-        {
-            m_Ship.update();
-
-            m_Missle.update();
-        }
-
-    }
-
     public class Ship
     {
         public TezValider<Ship> valider = new TezValider<Ship>();
         public TezStateValider<Ship> valider2 = new TezStateValider<Ship>();
 
         public int health = 10;
-
-        private Ship()
-        {
-
-        }
 
         public void update()
         {
@@ -46,7 +22,7 @@ namespace tezcat.Framework.Test
 
     public class Missle
     {
-        public TezValider<Ship> target;
+        public TezValider<Ship> target = null;
 
         public void update()
         {
@@ -77,5 +53,22 @@ namespace tezcat.Framework.Test
 
         }
     }
-}
 
+    public class TestValider
+    {
+        Ship m_Ship = new Ship();
+        Missle m_Missle = new Missle();
+
+        public void init()
+        {
+            m_Missle.setTarget(m_Ship);
+        }
+
+        public void update()
+        {
+            m_Ship.update();
+
+            m_Missle.update();
+        }
+    }
+}

@@ -97,7 +97,7 @@ namespace tezcat.Framework.Database
                 {
                     reader.beginObject(i);
                     var CID = reader.readString(TezReadOnlyString.CID);
-                    var obj = TezClassFactory.instance.create<TezComData>(CID);
+                    var obj = TezClassFactory.instance.create<TezDataComponent>(CID);
                     if (obj != null)
                     {
                         obj.initNew();
@@ -129,7 +129,7 @@ namespace tezcat.Framework.Database
             m_Reader.beginObject(index);
         }
 
-        public void saveItem(TezComData my_object)
+        public void saveItem(TezDataComponent my_object)
         {
 //            var ruid = my_object.GUID;
         }

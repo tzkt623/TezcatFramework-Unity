@@ -1,281 +1,167 @@
 ﻿using System;
 using System.Collections.Generic;
 using tezcat.Framework.Core;
-using tezcat.Framework.Utility;
 
 namespace tezcat.Framework.Database
 {
     /// <summary>
-    /// 查找物品使用Table
+    /// 
+    /// 建议使用
+    /// TezMultDatabase<Item>
+    /// 
+    /// <para>
+    /// 1.物品数据库不会有重名的物品存在
+    /// </para>
+    /// 
+    /// <para>
+    /// 2.如果有重名的单位,用后缀作为区别
+    ///     例如xxx_001,xxx_aab
+    /// </para>
+    /// 
+    /// <para>
+    /// 3.数据库的每一件物品只有唯一的ID
+    /// </para>
+    /// 
+    /// <para>
+    /// 物品定死类,既不支持自定义物品属性的游戏(例如万智牌等)
+    /// 每一个物品对应一个唯一的ID
+    /// 保存时只需要保存物品对应ID和名称,以及对应拥有多少个就可以了
+    /// </para>
+    /// 
+    /// <para>
+    /// 自定义物品类,数据库保存的物品只能算做模板物品
+    /// 玩家在保存时,需要保存每个物品的详细信息
+    /// </para>
+    /// 
+    /// <para>
+    /// 混合上面两种
+    /// 是模板物品就保存物品名称和ID
+    /// 不是模板物品就保存所有信息
+    /// </para>
+    /// 
     /// </summary>
-    public class TezItemTable
+    /// 
+
+    public interface ITezDatabase
     {
-        List<TezDatabaseGameItem> m_List = new List<TezDatabaseGameItem>();
-        Dictionary<string, TezDatabaseGameItem> m_NameSearchDic = new Dictionary<string, TezDatabaseGameItem>();
+        void registerItem(TezDatabaseGameItem item);
+        TezDatabaseGameItem getItem(int uid);
+        TezDatabaseGameItem getItem(string nid);
+    }
 
-        public IReadOnlyList<TezDatabaseGameItem> itemList => m_List;
-        public int count => m_List.Count;
+    public class TezDatabase : ITezDatabase
+    {
+        protected List<TezDatabaseGameItem> m_ItemList = new List<TezDatabaseGameItem>();
+        protected Dictionary<string, TezDatabaseGameItem> m_ItemDict = new Dictionary<string, TezDatabaseGameItem>();
 
+        public void registerItem(TezDatabaseGameItem item)
+        {
+            if (m_ItemDict.ContainsKey(item.NID))
+            {
+                throw new Exception(string.Format("{0} : Item {1} had registered!!", this.GetType().Name, item.NID));
+            }
+
+            item.onRegister(m_ItemList.Count);
+            m_ItemList.Add(item);
+            m_ItemDict.Add(item.NID, item);
+        }
+
+        public TezDatabaseGameItem getItem(int uid)
+        {
+            return m_ItemList[uid];
+        }
+
+        public TezDatabaseGameItem getItem(string nid)
+        {
+            return m_ItemDict[nid];
+        }
+    }
+
+    public interface ITezMultDatabase : ITezDatabase
+    {
+        int UID { get; }
+    }
+
+    public static class TezMultDatabase
+    {
+        static List<ITezMultDatabase> m_DatabaseList = new List<ITezMultDatabase>();
+
+        public static void register(ITezMultDatabase db)
+        {
+            while (m_DatabaseList.Count <= db.UID)
+            {
+                m_DatabaseList.Add(null);
+            }
+
+            if (m_DatabaseList[db.UID] != null)
+            {
+                throw new Exception("This Database ID already existed");
+            }
+
+            m_DatabaseList[db.UID] = db;
+        }
+
+        public static ITezMultDatabase get(int id)
+        {
+            return m_DatabaseList[id];
+        }
+    }
+
+
+    /// <summary>
+    /// 多数据库存储模式
+    /// </summary>
+    /// <typeparam name="Item"></typeparam>
+    public class TezMultDatabase<Item>
+        : ITezMultDatabase
+        where Item : TezDatabaseGameItem
+    {
         public int UID { get; }
 
-        public TezItemTable(int uid)
+        protected Dictionary<string, Item> m_ItemDict = new Dictionary<string, Item>();
+        protected List<Item> m_ItemList = new List<Item>();
+
+        public TezMultDatabase(int uid)
         {
             this.UID = uid;
+            TezMultDatabase.register(this);
         }
 
-        public void register(TezDatabaseGameItem item)
+        public void registerItem(Item item)
         {
-            var item_id = TezIDCreator<TezItemDatabase>.next();
-            //            item.onRegister(this.UID, item_id, m_List.Count);
-            m_List.Add(item);
-            m_NameSearchDic.Add(item.NID, item);
-            //            this.onAdd(item.innerID);
-        }
-
-        protected virtual void onAdd(int innerID)
-        {
-
-        }
-
-        public TezDatabaseGameItem get(string name)
-        {
-            if (m_NameSearchDic.TryGetValue(name, out TezDatabaseGameItem item))
+            if (m_ItemDict.ContainsKey(item.NID))
             {
-                return item;
+                throw new Exception(string.Format("{0} : Item {1} had registered!!", this.GetType().Name, item.NID));
             }
 
-            throw new Exception();
+            item.onRegister(this.UID, m_ItemList.Count);
+            m_ItemList.Add(item);
+            m_ItemDict.Add(item.NID, item);
         }
 
-        /// <summary>
-        /// 使用当前Container的Index间接获得Database中的Item
-        /// </summary>
-        public TezDatabaseGameItem get(int innerID)
+        public Item getItem(int uid)
         {
-            return m_List[innerID];
-        }
-    }
-
-    /// <summary>
-    /// Database用于管理Table和注册物品
-    /// </summary>
-    public class TezItemDatabase
-    {
-        Dictionary<string, Tuple<TezItemTable, int>> m_ContainerWithName = new Dictionary<string, Tuple<TezItemTable, int>>();
-
-        List<TezItemTable> m_TableList = new List<TezItemTable>();
-
-        public void register(int tableID, TezDatabaseGameItem item)
-        {
-            var table = m_TableList[tableID];
-            table.register(item);
-            //            m_ContainerWithName.Add(item.NID, new Tuple<TezItemTable, int>(table, item.innerID));
-            this.onRegister(item, table);
+            return m_ItemList[uid];
         }
 
-        private void onRegister(TezDatabaseGameItem item, TezItemTable table)
+        public Item getItem(string nid)
         {
-
+            return m_ItemDict[nid];
         }
 
-        public TezItemTable getOrCreateTable(int tableID)
+        TezDatabaseGameItem ITezDatabase.getItem(int uid)
         {
-            while (m_TableList.Count <= tableID)
-            {
-                m_TableList.Add(new TezItemTable(m_TableList.Count));
-            }
-            return m_TableList[tableID];
+            return m_ItemList[uid];
         }
 
-        public TezItemTable getTable(int tableID)
+        TezDatabaseGameItem ITezDatabase.getItem(string nid)
         {
-            return m_TableList[tableID];
+            return m_ItemDict[nid];
         }
 
-        public TezDatabaseGameItem get(string name)
+        void ITezDatabase.registerItem(TezDatabaseGameItem item)
         {
-            if (m_ContainerWithName.TryGetValue(name, out var tuple))
-            {
-                return tuple.Item1.get(tuple.Item2);
-            }
-
-            throw new Exception(string.Format("This Item [{0}] Not Exist ", name));
-        }
-
-        public TezItemTable getTable(string tokenName)
-        {
-            return m_TableList[TezCategorySystem.getToken(tokenName).UID];
-        }
-
-        public TezItemTable getTable(ITezCategoryBaseToken baseToken)
-        {
-            return m_TableList[baseToken.UID];
-        }
-
-        public virtual void close()
-        {
-
-        }
-    }
-
-    public class TestTezDatabase
-    {
-        public void dosomething()
-        {
-            TezItemDatabase DB = new TezItemDatabase();
-            var table1 = DB.getOrCreateTable(0);
-        }
-    }
-
-    /// <summary>
-    /// 数据库基础
-    /// </summary>
-    public abstract class TezDatabase : ITezService
-    {
-        public int ID { get; }
-
-        int m_ItemID = 0;
-
-        protected TezDatabase(int ID)
-        {
-            this.ID = ID;
-        }
-
-        /// <summary>
-        /// 注册Item
-        /// </summary>
-        public virtual void register(TezDatabaseGameItem item)
-        {
-            item.onRegister(this.ID, m_ItemID++);
-        }
-
-        public abstract void close();
-    }
-
-    /// <summary>
-    /// GameItem数据库基础类
-    /// </summary>
-    public abstract class TezItemDatabaseOOO : TezDatabase
-    {
-        class Slot
-        {
-            Dictionary<string, TezDatabaseGameItem> m_Dic = new Dictionary<string, TezDatabaseGameItem>();
-            List<TezDatabaseGameItem> m_List = new List<TezDatabaseGameItem>();
-
-            public void add(TezDatabaseGameItem item)
-            {
-                m_Dic.Add(item.NID, item);
-                m_List.Add(item);
-            }
-
-            public TezDatabaseGameItem get(string name)
-            {
-                TezDatabaseGameItem item = null;
-                if (m_Dic.TryGetValue(name, out item))
-                {
-                    return item;
-                }
-
-                throw new Exception(string.Format("{0} : Item[{1}] Not Registered", this.GetType().Name, name));
-            }
-
-            public TezDatabaseGameItem get(int index)
-            {
-                return m_List[index];
-            }
-
-            internal void close()
-            {
-                for (int i = 0; i < m_List.Count; i++)
-                {
-                    m_List[i].close();
-                }
-
-                m_List.Clear();
-                m_Dic.Clear();
-
-                m_Dic = null;
-                m_List = null;
-            }
-        }
-
-        List<Slot> m_Slots = new List<Slot>();
-
-        Slot m_CurrentSlot = null;
-
-        protected TezItemDatabaseOOO(int ID) : base(ID)
-        {
-
-        }
-
-        public override void register(TezDatabaseGameItem item)
-        {
-            base.register(item);
-            this.createSlot((TezDatabaseGameItem)item);
-        }
-
-        private void createSlot(TezDatabaseGameItem item)
-        {
-            //           var index = item.category.finalToken.finalIndexInRootToken;
-            int index = 0;
-            while (m_Slots.Count <= index)
-            {
-                m_Slots.Add(new Slot());
-            }
-
-            m_Slots[index].add(item);
-        }
-
-        public TezDatabaseGameItem get(ITezCategoryFinalToken finalToken, string name)
-        {
-            var slot = m_Slots[finalToken.finalRID];
-            return slot.get(name);
-        }
-
-        public TezDatabaseGameItem get(ITezCategoryFinalToken finalToken, int index)
-        {
-            var slot = m_Slots[finalToken.finalRID];
-            return slot.get(index);
-        }
-
-        /// <summary>
-        /// 进入一个类型的数据库
-        /// </summary>
-        /// <param name="finalToken"></param>
-        public void beginToken(ITezCategoryFinalToken finalToken)
-        {
-            m_CurrentSlot = m_Slots[finalToken.finalRID];
-        }
-
-        /// <summary>
-        /// 从一个类型的数据库中取得数据
-        /// 请配合beginToken使用
-        /// 不得单独使用
-        /// </summary>
-        public TezDatabaseGameItem get(int index)
-        {
-            return m_CurrentSlot.get(index);
-        }
-
-        /// <summary>
-        /// 从一个数据类型库中退出
-        /// 请配合beginToken成对使用
-        /// </summary>
-        public void endToken()
-        {
-            m_CurrentSlot = null;
-        }
-
-        public override void close()
-        {
-            for (int i = 0; i < m_Slots.Count; i++)
-            {
-                m_Slots[i].close();
-            }
-
-            m_Slots.Clear();
-            m_Slots = null;
-            m_CurrentSlot = null;
+            this.registerItem((Item)item);
         }
     }
 }

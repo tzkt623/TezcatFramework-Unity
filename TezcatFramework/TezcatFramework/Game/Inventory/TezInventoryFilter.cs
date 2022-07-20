@@ -15,8 +15,8 @@ namespace tezcat.Framework.Game.Inventory
             public int index { get; }
             public TezInventoryFilter manager { get; set; }
             public string name { get; set; }
-            public abstract bool calculate(TezComData gameObject);
-            public abstract void setFunction(TezEventExtension.Function<bool, TezComData> function);
+            public abstract bool calculate(ITezInventoryItem gameObject);
+            public abstract void setFunction(TezEventExtension.Function<bool, ITezInventoryItem> function);
             public virtual void close()
             {
                 this.name = null;
@@ -53,7 +53,7 @@ namespace tezcat.Framework.Game.Inventory
                 this.name = DefaultFilter;
             }
 
-            public override bool calculate(TezComData gameObject)
+            public override bool calculate(ITezInventoryItem gameObject)
             {
                 return true;
             }
@@ -68,7 +68,7 @@ namespace tezcat.Framework.Game.Inventory
                 return itemSlot;
             }
 
-            public override void setFunction(TezEventExtension.Function<bool, TezComData> function)
+            public override void setFunction(TezEventExtension.Function<bool, ITezInventoryItem> function)
             {
 
             }
@@ -76,7 +76,7 @@ namespace tezcat.Framework.Game.Inventory
 
         public class Filter_Custom : BaseFilter
         {
-            TezEventExtension.Function<bool, TezComData> m_Function = null;
+            TezEventExtension.Function<bool, ITezInventoryItem> m_Function = null;
 
             public Filter_Custom(int index) : base(index)
             {
@@ -89,7 +89,7 @@ namespace tezcat.Framework.Game.Inventory
 
             public override int count => this.manager.m_SlotList.Count;
 
-            public override bool calculate(TezComData gameObject)
+            public override bool calculate(ITezInventoryItem gameObject)
             {
                 return m_Function(gameObject);
             }
@@ -111,7 +111,7 @@ namespace tezcat.Framework.Game.Inventory
                 return this.manager.createOrGetFilterSlot(itemSlot);
             }
 
-            public override void setFunction(TezEventExtension.Function<bool, TezComData> function)
+            public override void setFunction(TezEventExtension.Function<bool, ITezInventoryItem> function)
             {
                 m_Function = function;
             }
@@ -245,7 +245,7 @@ namespace tezcat.Framework.Game.Inventory
             }
         }
 
-        public int createFilter(string filterName, TezEventExtension.Function<bool, TezComData> function)
+        public int createFilter(string filterName, TezEventExtension.Function<bool, ITezInventoryItem> function)
         {
             var result = m_Filters.Find((BaseFilter filter) =>
             {
@@ -328,7 +328,7 @@ namespace tezcat.Framework.Game.Inventory
             return slot;
         }
 
-        public bool store(TezComData gameObject)
+        public bool store(ITezInventoryItem gameObject)
         {
             if (m_Inventory.tryGet(out var inventory))
             {
@@ -339,7 +339,7 @@ namespace tezcat.Framework.Game.Inventory
             return false;
         }
 
-        public bool store(TezComData gameObject, int count)
+        public bool store(ITezInventoryItem gameObject, int count)
         {
             if (m_Inventory.tryGet(out var inventory))
             {
@@ -350,7 +350,7 @@ namespace tezcat.Framework.Game.Inventory
             return false;
         }
 
-        public bool take(TezComData gameObject)
+        public bool take(ITezInventoryItem gameObject)
         {
             if (m_Inventory.tryGet(out var inventory))
             {
@@ -365,7 +365,7 @@ namespace tezcat.Framework.Game.Inventory
             return false;
         }
 
-        public TezComData take(int index)
+        public ITezInventoryItem take(int index)
         {
             if (m_Inventory.tryGet(out var inventory))
             {
@@ -375,7 +375,7 @@ namespace tezcat.Framework.Game.Inventory
             return null;
         }
 
-        public bool take(TezComData gameObject, int count)
+        public bool take(ITezInventoryItem gameObject, int count)
         {
             if (m_Inventory.tryGet(out var inventory))
             {
@@ -390,7 +390,7 @@ namespace tezcat.Framework.Game.Inventory
             return false;
         }
 
-        public TezComData take(int index, int count)
+        public ITezInventoryItem take(int index, int count)
         {
             if (m_Inventory.tryGet(out var inventory))
             {

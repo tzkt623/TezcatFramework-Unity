@@ -100,15 +100,5 @@ namespace tezcat.Framework.TypeTraits
 
             return a.Equals(b);
         }
-
-        public static bool operator true(TezEnumeration<Self, TEnumValue> obj)
-        {
-            return !object.ReferenceEquals(obj, null);
-        }
-
-        public static bool operator false(TezEnumeration<Self, TEnumValue> obj)
-        {
-            return object.ReferenceEquals(obj, null);
-        }
     }
 }

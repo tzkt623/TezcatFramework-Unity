@@ -9,18 +9,18 @@ namespace tezcat.Framework.Math
     /// </summary>
     public class TezIntRoulette<Name> : ITezCloseable
     {
-        TezArray<TezTuple<Name, int>> m_Value = null;
+        TezStepArray<TezTuple<Name, int>> m_Value = null;
 
         public int maxValue { get; private set; }
 
         public TezIntRoulette(int max_capacity)
         {
-            m_Value = new TezArray<TezTuple<Name, int>>(max_capacity);
+            m_Value = new TezStepArray<TezTuple<Name, int>>(max_capacity);
         }
 
         public TezIntRoulette(TezTuple<Name, int>[] tuples)
         {
-            m_Value = new TezArray<TezTuple<Name, int>>(tuples);
+            m_Value = new TezStepArray<TezTuple<Name, int>>(tuples);
             foreach (var value in m_Value)
             {
                 this.maxValue += value.v2;

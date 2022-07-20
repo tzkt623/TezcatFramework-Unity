@@ -1,19 +1,11 @@
 ﻿namespace tezcat.Framework.Core
 {
-    public class TezPropertyManager : ITezCloseable
+    public class TezPropertyManager<Container>
+        : ITezCloseable
+        where Container : TezPropertyContainer, new()
     {
-        TezPropertySortList m_Properties = null;
-        public TezPropertySortList properties
-        {
-            get
-            {
-                if (m_Properties == null)
-                {
-                    m_Properties = new TezPropertySortList();
-                }
-                return m_Properties;
-            }
-        }
+        Container m_Container = new Container();
+        public TezPropertyContainer container => m_Container;
 
         /// <summary>
         /// 加入一个Modifier
@@ -21,7 +13,7 @@
         public void addModifier(ITezValueModifier modifier)
         {
             var target = modifier.modifierConfig.target;
-            var property = this.get<ITezProperty>(target);
+            var property = m_Container.get(target);
             property?.addModifier(modifier);
         }
 
@@ -32,9 +24,7 @@
         public bool addModifier(ITezValueModifier modifier, out ITezProperty property)
         {
             var target = modifier.modifierConfig.target;
-            property = this.get<ITezProperty>(target);
-            property?.addModifier(modifier);
-            return property != null;
+            return m_Container.tryGet(target, out property);
         }
 
         /// <summary>
@@ -43,8 +33,14 @@
         public bool removeModifier(ITezValueModifier modifier)
         {
             var target = modifier.modifierConfig.target;
-            var property = this.get<ITezProperty>(target);
-            return (property != null) && property.removeModifier(modifier);
+
+            if (m_Container.tryGet(target, out var property))
+            {
+                property.removeModifier(modifier);
+                return true;
+            }
+
+            return false;
         }
 
         /// <summary>
@@ -54,60 +50,52 @@
         public bool removeModifier(ITezValueModifier modifier, out ITezProperty property)
         {
             var target = modifier.modifierConfig.target;
-            property = this.get<ITezProperty>(target);
-            return (property != null) && property.removeModifier(modifier);
-        }
 
-        public T getOrCreate<T>(ITezValueDescriptor descriptor) where T : ITezProperty, new()
-        {
-            if (this.properties.binaryFind(descriptor.ID, out int index))
+            if (m_Container.tryGet(target, out property))
             {
-                return (T)m_Properties[index];
-            }
-            else
-            {
-                var property = new T();
-                property.descriptor = descriptor;
-                this.properties.insert(index, property);
-                return property;
-            }
-        }
-
-        public T get<T>(ITezValueDescriptor descriptor) where T : ITezProperty
-        {
-            return (T)this.properties.binaryFind(descriptor.ID);
-        }
-
-        public bool remove(ITezValueDescriptor descriptor)
-        {
-            if (this.properties.binaryFind(descriptor.ID, out int index))
-            {
-                this.properties.removeAt(index);
+                property.removeModifier(modifier);
                 return true;
             }
 
             return false;
         }
 
+        public T getOrCreate<T>(ITezValueDescriptor descriptor) where T : ITezProperty, new()
+        {
+            return m_Container.create<T>(descriptor);
+        }
+
+        public T get<T>(ITezValueDescriptor descriptor) where T : ITezProperty
+        {
+            return (T)m_Container.get(descriptor.ID);
+        }
+
+        public bool tryGet<T>(ITezValueDescriptor descriptor, out T property) where T : class, ITezProperty
+        {
+            if (m_Container.tryGet(descriptor.ID, out var result))
+            {
+                property = (T)result;
+                return true;
+            }
+
+            property = null;
+            return false;
+        }
+
+        public bool remove(ITezValueDescriptor descriptor)
+        {
+            return m_Container.remove(descriptor);
+        }
+
         public void clearAll()
         {
-            if (m_Properties == null)
-            {
-                return;
-            }
-
-            for (int i = 0; i < m_Properties.count; i++)
-            {
-                m_Properties[i].close();
-            }
-
-            m_Properties.clear();
+            m_Container.clear();
         }
 
         public virtual void close()
         {
-            this.clearAll();
-            m_Properties = null;
+            m_Container.close();
+            m_Container = null;
         }
     }
 }

@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using tezcat.Framework.Core;
-using tezcat.Framework.Database;
-using tezcat.Framework.ECS;
 using tezcat.Framework.Extension;
 
 namespace tezcat.Framework.Game.Inventory
@@ -65,21 +62,21 @@ namespace tezcat.Framework.Game.Inventory
         /// 存入
         /// 不允许堆叠
         /// </summary>
-        public void store(TezComData gameObject)
+        public void store(ITezInventoryItem item)
         {
             TezInventoryItemSlot result_slot = this.findSlotUnstackable();
 
             ///找到空格子
             if (result_slot != null)
             {
-                result_slot.item = gameObject;
+                result_slot.item = item;
                 result_slot.count = -1;
             }
             ///没有找到空格子
             else
             {
                 result_slot = this.createItemSlot();
-                result_slot.item = gameObject;
+                result_slot.item = item;
                 result_slot.count = -1;
                 result_slot.index = m_Slots.Count;
 
@@ -92,12 +89,12 @@ namespace tezcat.Framework.Game.Inventory
         /// <summary>
         /// 堆叠型加入
         /// </summary>
-        public void store(TezComData gameObject, int count)
+        public void store(ITezInventoryItem item, int count)
         {
-            var stack_max_count = TezDatabaseItemConfig.getConfig(gameObject.category).stackCount;
-            TezInventoryItemSlot result_slot = this.findSlotStackable(gameObject);
+            var stack_max_count = item.stackCount;
+            TezInventoryItemSlot result_slot = this.findSlotStackable(item);
 
-            ///找到空格子
+            ///找到格子
             if (result_slot != null)
             {
                 if (result_slot.item != null)
@@ -107,20 +104,20 @@ namespace tezcat.Framework.Game.Inventory
                     if (remain > 0)
                     {
                         result_slot.count = stack_max_count;
-                        this.store(gameObject, remain);
+                        this.store(item, remain);
                     }
                     else
                     {
-                        gameObject.close();
+                        item.recycle();
                     }
                 }
                 else
                 {
-                    result_slot.item = gameObject;
+                    result_slot.item = item;
                     if (count > stack_max_count)
                     {
                         result_slot.count = stack_max_count;
-                        this.store(gameObject, count - stack_max_count);
+                        this.store(item, count - stack_max_count);
                     }
                     else
                     {
@@ -128,11 +125,11 @@ namespace tezcat.Framework.Game.Inventory
                     }
                 }
             }
-            ///没有找到空格子
+            ///没有找到格子
             else
             {
                 result_slot = this.createItemSlot();
-                result_slot.item = gameObject;
+                result_slot.item = item;
                 result_slot.count = count;
                 result_slot.index = m_Slots.Count;
 
@@ -142,10 +139,10 @@ namespace tezcat.Framework.Game.Inventory
             onItemAdded?.Invoke(result_slot);
         }
 
-        public void store(int slotIndex, TezComData gameObject, int count)
+        public void store(int slotIndex, ITezInventoryItem item, int count)
         {
             var slot = m_Slots[slotIndex];
-            slot.item = gameObject;
+            slot.item = item;
             slot.count += count;
 
             onItemAdded?.Invoke(slot);
@@ -157,7 +154,7 @@ namespace tezcat.Framework.Game.Inventory
         /// 你应该知道精确的位置
         /// 才能从包裹里面取出物品
         /// </summary>
-        public TezComData take(int slotIndex, int count)
+        public ITezInventoryItem take(int slotIndex, int count)
         {
             var slot = m_Slots[slotIndex];
             var item = slot.item;
@@ -179,7 +176,7 @@ namespace tezcat.Framework.Game.Inventory
         /// 你应该知道精确的位置
         /// 才能从包裹里面取出物品
         /// </summary>
-        public TezComData take(int slotIndex)
+        public ITezInventoryItem take(int slotIndex)
         {
             var slot = m_Slots[slotIndex];
             var item = slot.item;
@@ -210,7 +207,7 @@ namespace tezcat.Framework.Game.Inventory
             return null;
         }
 
-        private TezInventoryItemSlot findSlotStackable(TezComData gameObject)
+        private TezInventoryItemSlot findSlotStackable(ITezInventoryItem item)
         {
             TezInventoryItemSlot result_slot = null;
 
@@ -227,7 +224,7 @@ namespace tezcat.Framework.Game.Inventory
                 ///找相同格子
                 ///可堆叠的物品
                 ///他们的模板相同
-                if (slot.item != null && slot.item.templateAs(gameObject))
+                if (slot.item != null && slot.item.templateAs(item))
                 {
                     result_slot = slot;
                     break;
@@ -243,7 +240,7 @@ namespace tezcat.Framework.Game.Inventory
         /// 从包裹里面查询是否有某个物品
         /// 返回-1表示没有
         /// </summary>
-        public int find(TezComData gameObject)
+        public int find(ITezInventoryItem gameObject)
         {
             return m_Slots.FindIndex((TezInventoryItemSlot slot) =>
             {
