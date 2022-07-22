@@ -1,13 +1,11 @@
 ﻿using System;
 using tezcat.Framework.Core;
-using tezcat.Framework.Database;
 
 namespace tezcat.Framework.ECS
 {
     public abstract class TezDataComponent
         : TezBaseComponent
         , IEquatable<TezDataComponent>
-        , ITezItemTypeID
     {
         /// <summary>
         /// 注册ID
@@ -15,18 +13,15 @@ namespace tezcat.Framework.ECS
         public static int SComUID;
         public sealed override int comUID => SComUID;
 
+
+        private uint m_ObjectUID = 0;
+
         /// <summary>
         /// UID
         /// 为0则表示没有分配
         /// </summary>
-        public uint objectUID { get; private set; } = 0;
+        public uint objectUID => m_ObjectUID;
 
-        /// <summary>
-        /// 物品类型ID
-        /// 如果此ID为-1
-        /// 则表示此对象没有分类系统
-        /// </summary>
-        public int itemTypeID { get; set; } = -1;
 
         /// <summary>
         /// 唯一名称ID
@@ -53,30 +48,11 @@ namespace tezcat.Framework.ECS
         }
 
         /// <summary>
-        /// 使用物品模板初始化对象
-        /// </summary>
-        public void initWithData(ITezSerializableItem item)
-        {
-            var data_item = (TezDatabaseGameItem)item;
-            this.NID = data_item.NID;
-            this.itemTypeID = data_item.itemTypeID;
-
-            this.preInit();
-            this.onInitWithData(item);
-            this.postInit();
-        }
-
-        protected virtual void onInitWithData(ITezSerializableItem item)
-        {
-
-        }
-
-        /// <summary>
         /// 数据初始化之前
         /// </summary>
         protected virtual void preInit()
         {
-            this.objectUID = TezObjectUID.generateID();
+            m_ObjectUID = TezObjectUID.generateID();
         }
 
         /// <summary>
@@ -92,14 +68,14 @@ namespace tezcat.Framework.ECS
         /// </summary>
         public override void close()
         {
-            TezObjectUID.recycleID(this.objectUID);
+            TezObjectUID.recycleID(m_ObjectUID);
             this.NID = null;
         }
 
         #region Override
         public override int GetHashCode()
         {
-            return this.objectUID.GetHashCode();
+            return m_ObjectUID.GetHashCode();
         }
 
         public override bool Equals(object other)
@@ -114,7 +90,7 @@ namespace tezcat.Framework.ECS
                 return false;
             }
 
-            return this.objectUID == other.objectUID;
+            return m_ObjectUID == other.m_ObjectUID;
         }
 
         public static bool operator ==(TezDataComponent a, TezDataComponent b)

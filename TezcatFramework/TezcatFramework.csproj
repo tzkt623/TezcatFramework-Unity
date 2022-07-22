@@ -50,9 +50,11 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="TezcatFramework\Game\Inventory\TezInventoryEntry.cs" />
     <Compile Include="TezcatFramework\Core\Tag\TezTags.cs" />
+    <Compile Include="TezcatFramework\DataBase\Category\ITezCategoryObject.cs" />
     <Compile Include="TezcatFramework\DataBase\TezItemTypeID.cs" />
-    <Compile Include="TezcatFramework\Game\Inventory\ITezInventoryItem.cs" />
+    <Compile Include="TezcatFramework\Game\Inventory\ITezInventoryObject.cs" />
     <Compile Include="TezcatFramework\EntitySystem\Component\TezInfoComponent.cs" />
     <Compile Include="TezcatFramework\Core\Value\Property\Lit\ITezLitProperty.cs" />
     <Compile Include="TezcatFramework\Core\Value\Property\Other\ITezModifierRefrenceProperty.cs" />

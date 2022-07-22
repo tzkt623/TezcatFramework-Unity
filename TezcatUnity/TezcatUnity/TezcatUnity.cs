@@ -4,11 +4,7 @@ using System.Collections.Generic;
 using tezcat.Framework.Core;
 using tezcat.Framework.Database;
 using tezcat.Framework.ECS;
-using tezcat.Framework.Event;
-using tezcat.Framework.GraphicSystem;
-using tezcat.Framework.Threading;
 using tezcat.Framework.UI;
-using tezcat.Framework.Utility;
 using UnityEngine;
 
 namespace tezcat.Framework
@@ -90,7 +86,7 @@ namespace tezcat.Framework
         protected virtual void registerComponent()
         {
             TezDataComponent.SComUID = TezComponentManager.register<TezDataComponent>();
-            TezInfoComponent.SComUID = TezComponentManager.register<TezInfoComponent>();
+//            TezInfoComponent.SComUID = TezComponentManager.register<TezInfoComponent>();
             TezRendererComponent.SComUID = TezComponentManager.register<TezRendererComponent>();
         }
 

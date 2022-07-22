@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using tezcat.Framework.Core;
 using tezcat.Framework.ECS;
 using tezcat.Framework.Utility;
@@ -19,14 +18,14 @@ namespace tezcat.Framework.Database
         /// 数据库ID
         /// 如果为-1则表示此类型没有分类类型
         /// </summary>
-        public int itemTypeID { get; private set; }
+        public int dbUID { get; private set; }
 
         /// <summary>
         /// 是否是模板物品
         /// </summary>
         public bool isTemplate
         {
-            get { return this.itemTypeID >= 0; }
+            get { return this.dbUID >= 0; }
         }
 
         /// <summary>
@@ -64,7 +63,7 @@ namespace tezcat.Framework.Database
         /// </summary>
         public void onRegister(int typeID)
         {
-            this.itemTypeID = typeID;
+            this.dbUID = typeID;
             this.customRegister();
         }
 
@@ -75,7 +74,7 @@ namespace tezcat.Framework.Database
         /// </summary>
         public void onRegister(int managerID, int typeID)
         {
-            this.itemTypeID = TezItemTypeID.generateID(managerID, typeID);
+            this.dbUID = TezItemTypeID.generateID(managerID, typeID);
             this.customRegister();
         }
 
@@ -107,12 +106,12 @@ namespace tezcat.Framework.Database
             writer.write(TezReadOnlyString.CID, this.CID);
             writer.write(TezReadOnlyString.NID, this.NID);
 
-            if (this.itemTypeID >= 0)
+            if (this.dbUID >= 0)
             {
-                writer.beginObject("ItemTypeID");
-                writer.write("MID", TezItemTypeID.getManagerID(this.itemTypeID));
-                writer.write("TID", TezItemTypeID.getTypeID(this.itemTypeID));
-                writer.endObject("ItemTypeID");
+                writer.beginObject("DBUID");
+                writer.write("MID", TezItemTypeID.getManagerID(this.dbUID));
+                writer.write("TID", TezItemTypeID.getTypeID(this.dbUID));
+                writer.endObject("DBUID");
             }
 
             if (this.stackCount >= 0)
@@ -126,16 +125,20 @@ namespace tezcat.Framework.Database
             this.CID = reader.readString(TezReadOnlyString.CID);
             this.NID = reader.readString(TezReadOnlyString.NID);
 
-            if (reader.tryBeginObject("ItemTypeID"))
+            if(reader.tryRead("Category", out string final_token))
             {
-                this.itemTypeID = TezItemTypeID.generateID(reader.readInt("MID"), reader.readInt("TID"));
-                reader.endObject("ItemTypeID");
+                this.category = TezCategorySystem.getCategory(final_token);
             }
 
+            if (reader.tryBeginObject("DBUID"))
+            {
+                this.dbUID = TezItemTypeID.generateID(reader.readInt("MID"), reader.readInt("TID"));
+                reader.endObject("DBUID");
+            }
 
             if (reader.tryRead("StackCount", out int stack_count))
             {
-                this.stackCount = stackCount;
+                this.stackCount = stack_count;
             }
             else
             {
@@ -147,12 +150,11 @@ namespace tezcat.Framework.Database
         {
             var entity = TezEntity.create();
 
-            var info = this.createInfoComponent();
-            info.loadItemData(this);
-            entity.addComponent(info);
+//             var info = this.createInfoComponent();
+//             info.loadItemData(this);
+//             entity.addComponent(info);
 
             var data = this.createDataComponent();
-            data.initWithData(this);
             entity.addComponent(data);
 
             return entity;
@@ -163,15 +165,15 @@ namespace tezcat.Framework.Database
             throw new Exception(string.Format("{0} : Please override this method!!!", this.GetType().Name));
         }
 
-        protected virtual TezInfoComponent createInfoComponent()
-        {
-            return new TezInfoComponent();
-        }
+//         protected virtual TezInfoComponent createInfoComponent()
+//         {
+//             return new TezInfoComponent();
+//         }
 
         #region 重写
         public override int GetHashCode()
         {
-            return this.itemTypeID.GetHashCode();
+            return this.dbUID.GetHashCode();
         }
 
         public override bool Equals(object other)
@@ -186,7 +188,7 @@ namespace tezcat.Framework.Database
                 return false;
             }
 
-            return itemTypeID.Equals(other.itemTypeID);
+            return dbUID.Equals(other.dbUID);
         }
 
         public static bool operator ==(TezDatabaseGameItem a, TezDatabaseGameItem b)

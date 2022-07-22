@@ -3,6 +3,7 @@ using tezcat.Framework.Game.Inventory;
 
 namespace tezcat.Framework.ECS
 {
+    /*
     public class TezInfoComponent
         : TezBaseComponent
         , ITezInventoryItem
@@ -45,4 +46,5 @@ namespace tezcat.Framework.ECS
             this.entity.close();
         }
     }
+    */
 }

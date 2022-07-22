@@ -70,6 +70,7 @@
     <Compile Include="Test\TestECS.cs" />
     <Compile Include="Test\TestGameMachine.cs" />
     <Compile Include="Test\TestHexSystem.cs" />
+    <Compile Include="Test\TestInventory.cs" />
     <Compile Include="Test\TestKeyConfig.cs" />
     <Compile Include="Test\TestProperty.cs" />
     <Compile Include="Test\TestRandomIndex.cs" />

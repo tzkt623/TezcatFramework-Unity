@@ -105,6 +105,11 @@ namespace tezcat.Framework.Database
         {
             return m_DatabaseList[id];
         }
+
+        public static TezDatabaseGameItem getItem(int itemID)
+        {
+            return m_DatabaseList[TezItemTypeID.getManagerID(itemID)].getItem(TezItemTypeID.getTypeID(itemID));
+        }
     }
 
 

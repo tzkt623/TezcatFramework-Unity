@@ -10,7 +10,7 @@ namespace tezcat.Framework.Game.Inventory
     /// </summary>
     public interface ITezInventoryVisualSelector
     {
-        void onSelect(ITezInventoryItem game_object);
+        void onSelect(ITezInventoryObject game_object);
         void onComplete();
     }
 

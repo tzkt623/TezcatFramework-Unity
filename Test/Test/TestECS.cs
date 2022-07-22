@@ -1,15 +1,50 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using tezcat.Framework.Database;
 using tezcat.Framework.ECS;
 
 namespace tezcat.Framework.Test
 {
-    class MyData : TezDataComponent
+    class MyData1
+        : TezDataComponent
+        , ITezDBItemObject
+        , ITezCategoryObject
     {
+        public int dbUID { get; private set; }
+        public TezCategory category { get; private set; }
 
+        /// <summary>
+        /// 使用物品模板初始化对象
+        /// </summary>
+        public void initWithData(ITezSerializableItem item)
+        {
+            var data_item = (TezDatabaseGameItem)item;
+            this.NID = data_item.NID;
+            this.dbUID = data_item.dbUID;
+            this.category = data_item.category;
+
+            this.preInit();
+            this.onInitWithData(item);
+            this.postInit();
+        }
+
+        protected virtual void onInitWithData(ITezSerializableItem item)
+        {
+
+        }
+
+        public bool compare(ITezCategoryObject categoryObject)
+        {
+            return this.category == categoryObject.category;
+        }
+
+        public bool compare(ITezDBItemObject dbItemObject)
+        {
+            if (this.dbUID < 0 || dbItemObject.dbUID < 0)
+            {
+                return false;
+            }
+
+            return this.dbUID == dbItemObject.dbUID;
+        }
     }
 
     class MyRenderer : TezRendererComponent
@@ -50,6 +85,7 @@ namespace tezcat.Framework.Test
 
         public void onRemove(TezEntity entity)
         {
+
         }
     }
 
@@ -60,8 +96,6 @@ namespace tezcat.Framework.Test
         /// </summary>
         public void registerComponent()
         {
-            TezDataComponent.SComUID = TezComponentManager.register<TezDataComponent>();
-            TezRendererComponent.SComUID = TezComponentManager.register<TezRendererComponent>();
             MyPhysics.SComUID = TezComponentManager.register<MyPhysics>();
         }
 
@@ -71,7 +105,7 @@ namespace tezcat.Framework.Test
         public void create()
         {
             var entity = TezEntity.create();
-            entity.addComponent(new MyData());
+            entity.addComponent(new MyData1());
             entity.addComponent(new MyRenderer());
             entity.addComponent(new MyPhysics());
         }

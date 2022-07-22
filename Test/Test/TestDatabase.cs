@@ -1,5 +1,6 @@
 using System;
 using tezcat.Framework.Database;
+using tezcat.Framework.ECS;
 
 namespace tezcat.Framework.Test
 {
@@ -39,7 +40,12 @@ namespace tezcat.Framework.Test
     #region Mult
     class MyItem1 : TezDatabaseGameItem
     {
-
+        protected override TezDataComponent createDataComponent()
+        {
+            var data = new MyData1();
+            data.initWithData(this);
+            return data;
+        }
     }
 
     class MyItem2 : TezDatabaseGameItem

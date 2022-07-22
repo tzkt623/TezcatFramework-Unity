@@ -48,10 +48,7 @@ namespace tezcat.Framework.BonusSystem
             while (temp != null)
             {
                 stack.Push(temp);
-                if (temp.parent != null)
-                {
-                    temp = temp.parent;
-                }
+                temp = temp.parent;
             }
 
             return new TezBonusPath()

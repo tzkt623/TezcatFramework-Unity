@@ -31,13 +31,17 @@ namespace tezcat.Framework.Database
         }
     }
 
-    public interface ITezItemTypeID
+    public interface ITezDBItemObject
     {
         /// <summary>
         /// 物品类型ID
         /// 如果此ID为-1
         /// 则表示此对象没有分类系统
         /// </summary>
-        int itemTypeID { get; }
+        int dbUID { get; }
+
+        void initWithData(ITezSerializableItem item);
+
+        bool compare(ITezDBItemObject other);
     }
 }

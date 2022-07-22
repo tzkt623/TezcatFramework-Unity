@@ -6,8 +6,15 @@ MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TezcatFramework", "TezcatFramework\TezcatFramework.csproj", "{22D8C2B7-9934-4822-B96C-67F90F9F694E}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TezcatUnity", "TezcatUnity\TezcatUnity.csproj", "{6E5A2033-6CE1-4887-9C81-596E33F3D6D3}"
+	ProjectSection(ProjectDependencies) = postProject
+		{22D8C2B7-9934-4822-B96C-67F90F9F694E} = {22D8C2B7-9934-4822-B96C-67F90F9F694E}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test", "Test\Test.csproj", "{6299B0B2-0A2F-4B94-B19A-03838E931DD9}"
+	ProjectSection(ProjectDependencies) = postProject
+		{6E5A2033-6CE1-4887-9C81-596E33F3D6D3} = {6E5A2033-6CE1-4887-9C81-596E33F3D6D3}
+		{22D8C2B7-9934-4822-B96C-67F90F9F694E} = {22D8C2B7-9934-4822-B96C-67F90F9F694E}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
