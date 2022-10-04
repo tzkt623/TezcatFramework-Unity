@@ -1,4 +1,4 @@
-﻿namespace tezcat.Framework.Core
+﻿namespace tezcat.Unity.Core
 {
     /// <summary>
     /// 偷懒类

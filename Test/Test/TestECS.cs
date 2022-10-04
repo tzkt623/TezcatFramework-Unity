@@ -14,7 +14,7 @@ namespace tezcat.Framework.Test
         /// <summary>
         /// 使用物品模板初始化对象
         /// </summary>
-        public void initWithData(ITezSerializableItem item)
+        public void initWithData(ITezSerializable item)
         {
             var data_item = (TezDatabaseGameItem)item;
             this.NID = data_item.NID;
@@ -26,7 +26,7 @@ namespace tezcat.Framework.Test
             this.postInit();
         }
 
-        protected virtual void onInitWithData(ITezSerializableItem item)
+        protected virtual void onInitWithData(ITezSerializable item)
         {
 
         }

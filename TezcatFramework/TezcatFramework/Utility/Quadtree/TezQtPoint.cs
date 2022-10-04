@@ -4,8 +4,9 @@ namespace tezcat.Framework.Utility
 {
     public class TezQtPoint : TezQtEntry
     {
+        TezPoint mPoint = new TezPoint();
         public override TezShape shape => point;
-        public TezPoint point { get; private set; } = new TezPoint();
+        public TezPoint point => mPoint;
 
         public TezQtPoint()
         {
@@ -14,14 +15,14 @@ namespace tezcat.Framework.Utility
 
         public TezQtPoint(int x, int y)
         {
-            this.point.originX = x;
-            this.point.originY = y;
+            mPoint.originX = x;
+            mPoint.originY = y;
         }
 
         public override void close()
         {
             base.close();
-            this.point = null;
+            mPoint = null;
         }
     }
 }

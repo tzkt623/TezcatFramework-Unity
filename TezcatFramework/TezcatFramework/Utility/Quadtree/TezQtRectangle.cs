@@ -4,8 +4,9 @@ namespace tezcat.Framework.Utility
 {
     public class TezQtRectangle : TezQtEntry
     {
+        TezRectangle mRectangle = new TezRectangle();
         public override TezShape shape => rectangle;
-        public TezRectangle rectangle { get; private set; } = new TezRectangle();
+        public TezRectangle rectangle => mRectangle;
 
         public TezQtRectangle()
         {
@@ -14,16 +15,16 @@ namespace tezcat.Framework.Utility
 
         public TezQtRectangle(int ox, int oy, int width, int height)
         {
-            this.rectangle.originX = ox;
-            this.rectangle.originY = oy;
-            this.rectangle.width = width;
-            this.rectangle.height = height;
+            mRectangle.originX = ox;
+            mRectangle.originY = oy;
+            mRectangle.width = width;
+            mRectangle.height = height;
         }
 
         public override void close()
         {
             base.close();
-            this.rectangle = null;
+            mRectangle = null;
         }
     }
 }

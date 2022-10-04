@@ -1,7 +1,4 @@
-﻿using UnityEngine;
-using System.Collections;
-
-namespace tezcat.Framework.Core
+﻿namespace tezcat.Framework.Core
 {
     public interface ITezRefObject : ITezCloseable
     {

@@ -1,5 +1,7 @@
 ﻿using tezcat.Framework.Database;
 using tezcat.Framework.Utility;
+using tezcat.Unity;
+using tezcat.Unity.Utility;
 using UnityEngine;
 
 namespace tezcat.Framework.Test
@@ -13,7 +15,7 @@ namespace tezcat.Framework.Test
 
         public void init()
         {
-            var logic = TezcatFramework.unityKeyConfigSystem.getOrCreateConfigLayer("Logic");
+            var logic = TezcatUnity.unityKeyConfigSystem.getOrCreateConfigLayer("Logic");
             logic.addConfig(new UnityAdvanceKeyConfig2(
                 "Test",
                 new UnityKeyPressWrapper()
@@ -25,7 +27,7 @@ namespace tezcat.Framework.Test
                     keyCode = KeyCode.G
                 }));
 
-            var sl = TezcatFramework.unityKeyConfigSystem.getOrCreateConfigLayer("SL");
+            var sl = TezcatUnity.unityKeyConfigSystem.getOrCreateConfigLayer("SL");
             sl.addConfig(new UnityBaseKeyConfig1(
                 "Save",
                 new UnityKeyPressWrapper()
@@ -40,7 +42,7 @@ namespace tezcat.Framework.Test
                     keyCode = KeyCode.L
                 }));
 
-            var change_key = TezcatFramework.unityKeyConfigSystem.getOrCreateConfigLayer("Option");
+            var change_key = TezcatUnity.unityKeyConfigSystem.getOrCreateConfigLayer("Option");
             change_key.addConfig(new UnityBaseKeyConfig1(
                 "ChangeKey",
                 new UnityKeyPressWrapper()
@@ -52,22 +54,22 @@ namespace tezcat.Framework.Test
 
         public void getConfigs()
         {
-            TezcatFramework.unityKeyConfigSystem.getOrCreateConfigLayer("Logic").tryGetConfig("Test", out TezKeyConfig keyConfig);
+            TezcatUnity.unityKeyConfigSystem.getOrCreateConfigLayer("Logic").tryGetConfig("Test", out TezKeyConfig keyConfig);
             m_Config = keyConfig;
 
-            TezcatFramework.unityKeyConfigSystem.getOrCreateConfigLayer("SL").tryGetConfig("Save", out TezKeyConfig sc);
+            TezcatUnity.unityKeyConfigSystem.getOrCreateConfigLayer("SL").tryGetConfig("Save", out TezKeyConfig sc);
             m_SaveConfig = sc;
 
-            TezcatFramework.unityKeyConfigSystem.getOrCreateConfigLayer("SL").tryGetConfig("Load", out TezKeyConfig lc);
+            TezcatUnity.unityKeyConfigSystem.getOrCreateConfigLayer("SL").tryGetConfig("Load", out TezKeyConfig lc);
             m_LoadConfig = lc;
 
-            TezcatFramework.unityKeyConfigSystem.getOrCreateConfigLayer("Option").tryGetConfig("ChangeKey", out TezKeyConfig ck);
+            TezcatUnity.unityKeyConfigSystem.getOrCreateConfigLayer("Option").tryGetConfig("ChangeKey", out TezKeyConfig ck);
             m_ChangeKeyConfig = ck;
         }
 
         public void changeKey()
         {
-            TezcatFramework.unityKeyConfigSystem.setChangeKey("Logic", "Test", 0);
+            TezcatUnity.unityKeyConfigSystem.setChangeKey("Logic", "Test", 0);
 ///OR           UnityKeyConfigManager.instance.setChangeKey(m_Config.getWrapper(0));
         }
 
@@ -81,14 +83,14 @@ namespace tezcat.Framework.Test
             if (m_SaveConfig.active())
             {
                 TezWriter writer = new TezJsonWriter();
-                TezcatFramework.unityKeyConfigSystem.writeToSave(writer);
+                TezcatUnity.unityKeyConfigSystem.writeToSave(writer);
             }
 
             if (m_LoadConfig.active())
             {
                 TezReader reader = new TezJsonReader();
                 reader.load("DataPath");
-                TezcatFramework.unityKeyConfigSystem.readFromSave(reader);
+                TezcatUnity.unityKeyConfigSystem.readFromSave(reader);
             }
 
             if(m_ChangeKeyConfig.active())
@@ -96,9 +98,9 @@ namespace tezcat.Framework.Test
                 this.changeKey();
             }
 
-            if(TezcatFramework.unityKeyConfigSystem.isWaitingChangeKey)
+            if(TezcatUnity.unityKeyConfigSystem.isWaitingChangeKey)
             {
-                TezcatFramework.unityKeyConfigSystem.waitingChangeKey();
+                TezcatUnity.unityKeyConfigSystem.waitingChangeKey();
             }
         }
     }

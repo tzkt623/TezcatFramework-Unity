@@ -26,15 +26,15 @@ namespace tezcat.Framework.Core
         public override T create<T>(ITezValueDescriptor descriptor)
         {
             var id = descriptor.ID;
+            if (m_List.Count <= id)
+            {
+                m_List.AddRange(new ITezProperty[id - m_List.Count + 1]);
+            }
+
             T property = (T)m_List[id];
             if (property != null)
             {
                 return property;
-            }
-
-            if (m_List.Count <= id)
-            {
-                m_List.AddRange(new ITezProperty[id - m_List.Count + 1]);
             }
 
             property = new T();

@@ -1,5 +1,4 @@
-﻿using tezcat.Framework.Core;
-using UnityEditor;
+﻿using UnityEditor;
 using UnityEngine;
 
 namespace tezcat.TEditor

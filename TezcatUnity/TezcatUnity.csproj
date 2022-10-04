@@ -62,24 +62,35 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="TezcatUnity\Core\Database\TezPrefabDatabase.cs" />
+    <Compile Include="TezcatUnity\Core\Object\TezGameRenderer.cs" />
+    <Compile Include="TezcatUnity\Core\Database\TezSprite.cs" />
+    <Compile Include="TezcatUnity\Core\Database\TezTextureDatabase.cs" />
     <Compile Include="TezcatUnity\Editor\TezLogEditor.cs" />
     <Compile Include="TezcatUnity\Editor\TezScrollRectEditor.cs" />
+    <Compile Include="TezcatUnity\Effect\Bloom.cs" />
     <Compile Include="TezcatUnity\EntitySystem\TezRendererComponent.cs" />
     <Compile Include="TezcatUnity\Core\Object\TezGameMonoObject.cs" />
     <Compile Include="TezcatUnity\Core\Object\TezMonoObject.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TezcatUnity\UI\TezTipController.cs" />
+    <Compile Include="TezcatUnity\GraphicSystem\TezBasicMesh.cs" />
+    <Compile Include="TezcatUnity\GraphicSystem\TezGraphicObject.cs" />
+    <Compile Include="TezcatUnity\GraphicSystem\TezGraphicSystem.cs" />
+    <Compile Include="TezcatUnity\GraphicSystem\TezRenderCommand.cs" />
     <Compile Include="TezcatUnity\TezcatUnity.cs" />
+    <Compile Include="TezcatUnity\Core\ITezRefresher.cs" />
     <Compile Include="TezcatUnity\UI\Base\ITezWidget.cs" />
-    <Compile Include="TezcatUnity\UI\Base\TezGameWindow.cs" />
+    <Compile Include="TezcatUnity\UI\Window\TezGameWindow.cs" />
     <Compile Include="TezcatUnity\UI\Base\TezLayer.cs" />
     <Compile Include="TezcatUnity\UI\Base\TezLayout.cs" />
     <Compile Include="TezcatUnity\UI\Base\TezNullGraphic.cs" />
     <Compile Include="TezcatUnity\UI\Base\TezOverlay.cs" />
-    <Compile Include="TezcatUnity\UI\Base\TezSubwindow.cs" />
+    <Compile Include="TezcatUnity\UI\Window\TezSubwindow.cs" />
     <Compile Include="TezcatUnity\UI\Base\TezTitle.cs" />
-    <Compile Include="TezcatUnity\UI\Base\TezToolWindow.cs" />
+    <Compile Include="TezcatUnity\UI\Window\TezToolWindow.cs" />
     <Compile Include="TezcatUnity\UI\Base\TezWidget.cs" />
-    <Compile Include="TezcatUnity\UI\Base\TezWindow.cs" />
+    <Compile Include="TezcatUnity\UI\Window\TezWindow.cs" />
     <Compile Include="TezcatUnity\UI\Button\TezButton.cs" />
     <Compile Include="TezcatUnity\UI\Button\TezGroupButton.cs" />
     <Compile Include="TezcatUnity\UI\Event\TezWidgetEvent.cs" />
@@ -96,6 +107,13 @@
     <Compile Include="TezcatUnity\UI\Tree\TezTreeData.cs" />
     <Compile Include="TezcatUnity\UI\Tree\TezTreeFoldButton.cs" />
     <Compile Include="TezcatUnity\UI\Tree\TezTreeNode.cs" />
+    <Compile Include="TezcatUnity\Utility\KeyConfigSystem\UnityBaseKeyConfig.cs" />
+    <Compile Include="TezcatUnity\Utility\KeyConfigSystem\UnityCombineKeyConfig.cs" />
+    <Compile Include="TezcatUnity\Utility\KeyConfigSystem\UnityKeyConfigSystem.cs" />
+    <Compile Include="TezcatUnity\Utility\KeyConfigSystem\UnityKeyDownWrapper.cs" />
+    <Compile Include="TezcatUnity\Utility\KeyConfigSystem\UnityKeyPressWrapper.cs" />
+    <Compile Include="TezcatUnity\Utility\KeyConfigSystem\UnityKeyUpWrapper.cs" />
+    <Compile Include="TezcatUnity\Utility\KeyConfigSystem\UnityKeyWrapper.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

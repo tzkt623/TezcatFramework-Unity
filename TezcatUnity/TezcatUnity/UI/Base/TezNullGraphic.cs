@@ -1,6 +1,6 @@
 ﻿using UnityEngine.UI;
 
-namespace tezcat.Framework.UI
+namespace tezcat.Unity.UI
 {
     public class TezNullGraphic : UnityEngine.UI.Graphic
     {

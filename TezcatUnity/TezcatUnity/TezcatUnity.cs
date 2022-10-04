@@ -1,32 +1,32 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using tezcat.Framework.Core;
-using tezcat.Framework.Database;
-using tezcat.Framework.ECS;
-using tezcat.Framework.UI;
+using tezcat.Framework;
+using tezcat.Unity.Core;
+using tezcat.Unity.Database;
+using tezcat.Unity.GraphicSystem;
+using tezcat.Unity.UI;
+using tezcat.Unity.Utility;
 using UnityEngine;
 
-namespace tezcat.Framework
+namespace tezcat.Unity
 {
     public abstract class TezcatUnity
         : TezUIWidget
     {
-        #region Instance
-        static TezcatUnity m_Instance = null;
-        public static TezcatUnity instance => m_Instance;
-        #endregion
-
         #region Engine
-        bool m_ResourceInited = false;
+        static TezcatUnity mInstance = null;
+        public static TezcatUnity instance => mInstance;
+
+        bool mResourceInited = false;
         protected override void preInit()
         {
-            if (m_Instance != null)
+            if (mInstance != null)
             {
                 Application.Quit();
             }
 
-            m_Instance = this;
+            mInstance = this;
             this.register();
         }
 
@@ -37,20 +37,25 @@ namespace tezcat.Framework
                 var layer = child.GetComponent<TezLayer>();
                 if (layer != null)
                 {
-                    this.addLayer(layer);
+                    TezLayer.register(layer);
                 }
             }
 
             TezLayer.sortLayers();
         }
 
+        protected override void onDelayInit()
+        {
+            if (!mResourceInited)
+            {
+                mResourceInited = true;
+                StartCoroutine(startGame());
+            }
+        }
+
         protected override void onRefresh()
         {
-            if (!m_ResourceInited)
-            {
-                m_ResourceInited = true;
-                StartCoroutine(loadResources());
-            }
+
         }
 
         protected override void onHide()
@@ -61,6 +66,26 @@ namespace tezcat.Framework
         public override void reset()
         {
 
+        }
+
+        protected virtual void Update() { }
+
+        protected virtual void LateUpdate()
+        {
+            while (sInitQueue.Count > 0)
+            {
+                sInitQueue.Dequeue().delayInit();
+            }
+
+            while (sUIRefreshQueue.Count > 0)
+            {
+                sUIRefreshQueue.Dequeue().refresh();
+            }
+
+            while (sRendererRefreshQueue.Count > 0)
+            {
+                sRendererRefreshQueue.Dequeue().refresh();
+            }
         }
         #endregion
 
@@ -75,6 +100,10 @@ namespace tezcat.Framework
 
         protected virtual void registerService()
         {
+            sUnityKeyConfigSystem = new UnityKeyConfigSystem();
+            sGraphicSystem = new TezGraphicSystem();
+            sPrefabDatabase = new TezPrefabDatabase();
+
             TezcatFramework.initService();
         }
 
@@ -85,9 +114,9 @@ namespace tezcat.Framework
 
         protected virtual void registerComponent()
         {
-            TezDataComponent.SComUID = TezComponentManager.register<TezDataComponent>();
+//            TezDataComponent.SComUID = TezComponentManager.register<TezDataComponent>();
 //            TezInfoComponent.SComUID = TezComponentManager.register<TezInfoComponent>();
-            TezRendererComponent.SComUID = TezComponentManager.register<TezRendererComponent>();
+//            TezRendererComponent.SComUID = TezComponentManager.register<TezRendererComponent>();
         }
 
         protected abstract void registerVersions();
@@ -102,70 +131,56 @@ namespace tezcat.Framework
         #endregion
 
         #region Loading
-        protected abstract IEnumerator onLoadResources();
-
-        private IEnumerator loadResources()
+        private IEnumerator startGame()
         {
-            yield return this.onLoadResources();
+            yield return this.loadResources();
             yield return this.startMyGame();
         }
 
-        public abstract IEnumerator startMyGame();
-        #endregion
+        protected abstract IEnumerator loadResources();
 
-        #region Layer
-        List<TezLayer> m_LayerList = new List<TezLayer>();
-        Dictionary<string, int> m_LayerDic = new Dictionary<string, int>();
-
-        public void addLayer(TezLayer layer)
-        {
-            TezLayer.register(layer);
-        }
+        protected abstract IEnumerator startMyGame();
         #endregion
 
         #region Renderer
-        public Renderer createRenderer<Renderer>(Transform parent)
-            where Renderer : TezRendererComponent, ITezSinglePrefab
+        public static Renderer createRenderer<Renderer>(Transform parent)
+            where Renderer : MonoBehaviour, ITezSinglePrefab
         {
-            var prefab = TezcatFramework.prefabDatabase.get<Renderer>();
-            var go = MonoBehaviour.Instantiate(prefab, parent);
-            return go;
+            var prefab = sPrefabDatabase.get<Renderer>();
+            return Instantiate(prefab, parent);
         }
 
-        public Renderer createRenderer<Renderer>(Transform parent, string prefab_name)
-            where Renderer : TezRendererComponent, ITezMultiPrefab
+        public static Renderer createRenderer<Renderer>(Transform parent, string prefabName)
+            where Renderer : MonoBehaviour, ITezMultiPrefab
         {
-            var prefab = TezcatFramework.prefabDatabase.get<Renderer>(prefab_name);
-            var go = MonoBehaviour.Instantiate(prefab, parent);
-            return go;
+            var prefab = sPrefabDatabase.get<Renderer>(prefabName);
+            return Instantiate(prefab, parent);
         }
 
-        public GameMonoObject createGMO<GameMonoObject>(Transform parent)
-            where GameMonoObject : TezGameMonoObject, ITezSinglePrefab
+        public static GMO createGMO<GMO>(Transform parent)
+            where GMO : TezGameMonoObject, ITezSinglePrefab
         {
-            var prefab = TezcatFramework.prefabDatabase.get<GameMonoObject>();
-            var go = MonoBehaviour.Instantiate(prefab, parent);
-            return go;
+            var prefab = sPrefabDatabase.get<GMO>();
+            return Instantiate(prefab, parent);
         }
         #endregion
 
         #region Window
-        List<TezWindow> m_WindowList = new List<TezWindow>();
-        Queue<int> m_FreeWindowID = new Queue<int>();
+        static List<TezWindow> sWindowList = new List<TezWindow>();
+        static Queue<int> sFreeWindowID = new Queue<int>();
+        static Dictionary<Type, TezBaseWidget> sWidgetWithType = new Dictionary<Type, TezBaseWidget>();
 
-        Dictionary<Type, TezBaseWidget> m_WidgetWithType = new Dictionary<Type, TezBaseWidget>();
-
-        private int giveID()
+        private static int giveID()
         {
             int id = -1;
-            if (m_FreeWindowID.Count > 0)
+            if (sFreeWindowID.Count > 0)
             {
-                id = m_FreeWindowID.Dequeue();
+                id = sFreeWindowID.Dequeue();
             }
             else
             {
-                id = m_WindowList.Count;
-                m_WindowList.Add(null);
+                id = sWindowList.Count;
+                sWindowList.Add(null);
             }
             return id;
         }
@@ -173,16 +188,16 @@ namespace tezcat.Framework
         /// <summary>
         /// 获得一个类型唯一的控件
         /// </summary>
-        public Widget getTypeOnlyWidget<Widget>() where Widget : TezBaseWidget, ITezSinglePrefab
+        public static Widget getTypeOnlyWidget<Widget>() where Widget : TezBaseWidget, ITezSinglePrefab
         {
-            m_WidgetWithType.TryGetValue(typeof(Widget), out TezBaseWidget widget);
+            sWidgetWithType.TryGetValue(typeof(Widget), out TezBaseWidget widget);
             return (Widget)widget;
         }
 
         /// <summary>
         /// 用Prefab创建一个Widget
         /// </summary>
-        public TezBaseWidget createWidget(TezBaseWidget prefab, RectTransform parent, TezWidgetLife life)
+        public static TezBaseWidget createWidget(TezBaseWidget prefab, RectTransform parent, TezWidgetLife life)
         {
             TezBaseWidget widget = null;
             switch (life)
@@ -192,7 +207,7 @@ namespace tezcat.Framework
                     break;
                 case TezWidgetLife.TypeOnly:
                     var type = prefab.GetType();
-                    if (m_WidgetWithType.TryGetValue(type, out widget))
+                    if (sWidgetWithType.TryGetValue(type, out widget))
                     {
                         widget.reset();
                         return widget;
@@ -200,7 +215,7 @@ namespace tezcat.Framework
                     else
                     {
                         widget = Instantiate(prefab, parent, false);
-                        m_WidgetWithType.Add(type, widget);
+                        sWidgetWithType.Add(type, widget);
                     }
                     break;
                 default:
@@ -218,17 +233,17 @@ namespace tezcat.Framework
         /// <param name="parent">父级</param>
         /// <param name="life">控件类型(普通类型,还是类型唯一类型)</param>
         /// <returns></returns>
-        public Widget createWidget<Widget>(RectTransform parent, TezWidgetLife life = TezWidgetLife.Normal) where Widget : TezBaseWidget, ITezSinglePrefab
+        public static Widget createWidget<Widget>(RectTransform parent, TezWidgetLife life = TezWidgetLife.Normal) where Widget : TezBaseWidget, ITezSinglePrefab
         {
-            return (Widget)this.createWidget(TezcatFramework.prefabDatabase.get<Widget>(), parent, life);
+            return (Widget)createWidget(sPrefabDatabase.get<Widget>(), parent, life);
         }
 
-        public Widget createWidget<Widget>(TezLayer layer, TezWidgetLife life = TezWidgetLife.Normal) where Widget : TezBaseWidget, ITezSinglePrefab
+        public static Widget createWidget<Widget>(TezLayer layer, TezWidgetLife life = TezWidgetLife.Normal) where Widget : TezBaseWidget, ITezSinglePrefab
         {
-            return this.createWidget<Widget>(layer.rectTransform, life);
+            return createWidget<Widget>(layer.rectTransform, life);
         }
 
-        private Window createWindow<Window>(Window prefab
+        private static Window createWindow<Window>(Window prefab
             , string name
             , TezLayer layer
             , TezWidgetLife life) where Window : TezWindow, ITezSinglePrefab
@@ -243,7 +258,7 @@ namespace tezcat.Framework
                 case TezWidgetLife.TypeOnly:
                     TezBaseWidget widget = null;
                     var type = typeof(Window);
-                    if (m_WidgetWithType.TryGetValue(type, out widget))
+                    if (sWidgetWithType.TryGetValue(type, out widget))
                     {
                         widget.reset();
                         return (Window)widget;
@@ -251,67 +266,84 @@ namespace tezcat.Framework
                     else
                     {
                         window = Instantiate(prefab, layer.transform, false);
-                        m_WidgetWithType.Add(type, window);
+                        sWidgetWithType.Add(type, window);
                     }
                     break;
                 default:
                     break;
             }
 
-            int id = this.giveID();
+            int id = giveID();
             window.windowID = id;
             window.windowName = name;
             window.layer = layer;
             window.life = life;
 
-            m_WindowList[id] = window;
+            sWindowList[id] = window;
             return (Window)window;
         }
 
-        public Window createWindow<Window>(string name, TezLayer layer, TezWidgetLife life = TezWidgetLife.Normal) where Window : TezWindow, ITezSinglePrefab
+        public static Window createWindow<Window>(string name, TezLayer layer, TezWidgetLife life = TezWidgetLife.Normal) where Window : TezWindow, ITezSinglePrefab
         {
-            return this.createWindow(TezcatFramework.prefabDatabase.get<Window>(), name, layer, life);
+            return createWindow(sPrefabDatabase.get<Window>(), name, layer, life);
         }
 
-        public TezWindow createWindow(TezWindow prefab, TezLayer layer, TezWidgetLife life = TezWidgetLife.Normal)
+        public static TezWindow createWindow(TezWindow prefab, TezLayer layer, TezWidgetLife life = TezWidgetLife.Normal)
         {
-            return this.createWindow(prefab, prefab.GetType().Name, layer, life);
+            return createWindow(prefab, prefab.GetType().Name, layer, life);
         }
 
-        public Window createWindow<Window>(TezLayer layer, TezWidgetLife life = TezWidgetLife.Normal) where Window : TezWindow, ITezSinglePrefab
+        public static Window createWindow<Window>(TezLayer layer, TezWidgetLife life = TezWidgetLife.Normal) where Window : TezWindow, ITezSinglePrefab
         {
-            return this.createWindow<Window>(typeof(Window).Name, layer, life);
+            return createWindow<Window>(typeof(Window).Name, layer, life);
         }
 
-        public void removeWindow(TezWindow window)
+        public static void removeWindow(TezWindow window)
         {
-            m_FreeWindowID.Enqueue(window.windowID);
-            m_WindowList[window.windowID] = null;
+            sFreeWindowID.Enqueue(window.windowID);
+            sWindowList[window.windowID] = null;
         }
 
-        public void removeTypeOnlyWidget(TezBaseWidget widget)
+        public static void removeTypeOnlyWidget(TezBaseWidget widget)
         {
-            m_WidgetWithType.Remove(widget.GetType());
+            sWidgetWithType.Remove(widget.GetType());
         }
         #endregion
 
         #region Refresh
-        Queue<ITezRefreshHandler> m_RefreshQueue = new Queue<ITezRefreshHandler>();
+        static Queue<ITezRefreshHandler> sUIRefreshQueue = new Queue<ITezRefreshHandler>();
+        static Queue<ITezRefreshHandler> sRendererRefreshQueue = new Queue<ITezRefreshHandler>();
+        static Queue<ITezDelayInitHandler> sInitQueue = new Queue<ITezDelayInitHandler>();
 
-        public void pushRefreshHandler(ITezRefreshHandler handler)
+        public static void pushRendererToRefresh(TezGameRenderer gameRenderer)
         {
-            m_RefreshQueue.Enqueue(handler);
+            sRendererRefreshQueue.Enqueue(gameRenderer);
+        }
+
+        public static void pushRefreshHandler(ITezRefreshHandler handler)
+        {
+            sUIRefreshQueue.Enqueue(handler);
+        }
+
+        public static void pushDelayInitHandler(ITezDelayInitHandler handler)
+        {
+            sInitQueue.Enqueue(handler);
         }
         #endregion
 
-        protected virtual void Update() { }
+        #region KeyConfig
+        static UnityKeyConfigSystem sUnityKeyConfigSystem = null;
+        public static UnityKeyConfigSystem unityKeyConfigSystem => sUnityKeyConfigSystem;
+        #endregion
 
-        protected virtual void LateUpdate()
-        {
-            while (m_RefreshQueue.Count > 0)
-            {
-                m_RefreshQueue.Dequeue().refresh();
-            }
-        }
+        #region Graphic
+        static TezGraphicSystem sGraphicSystem = null;
+        public static TezGraphicSystem graphicSystem => sGraphicSystem;
+        #endregion
+
+        #region Prefab
+        static TezPrefabDatabase sPrefabDatabase = null;
+        public static TezPrefabDatabase prefabDatabase => sPrefabDatabase;
+        #endregion
     }
 }

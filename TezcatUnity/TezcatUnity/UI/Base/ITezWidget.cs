@@ -1,8 +1,9 @@
 ﻿using tezcat.Framework.Core;
+using tezcat.Unity.Core;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-namespace tezcat.Framework.UI
+namespace tezcat.Unity.UI
 {
     /// <summary>
     /// 基础控件
@@ -17,6 +18,7 @@ namespace tezcat.Framework.UI
     public interface ITezUIWidget
         : ITezBaseWidget
         , ITezRefreshHandler
+        , ITezDelayInitHandler
     {
 
     }

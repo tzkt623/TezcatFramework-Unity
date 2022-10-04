@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 
-namespace tezcat.Framework.UI
+namespace tezcat.Unity.UI
 {
     public class TezGroupButton : MonoBehaviour
     {

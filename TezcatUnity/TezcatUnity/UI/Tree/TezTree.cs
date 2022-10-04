@@ -4,7 +4,7 @@ using tezcat.Framework.Extension;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace tezcat.Framework.UI
+namespace tezcat.Unity.UI
 {
     [RequireComponent(typeof(ScrollRect))]
     public class TezTree : TezUIWidget

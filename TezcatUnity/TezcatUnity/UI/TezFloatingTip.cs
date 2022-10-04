@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
-using tezcat.Framework.Database;
+using tezcat.Unity.Database;
 using UnityEngine;
 
-namespace tezcat.Framework.UI
+namespace tezcat.Unity.UI
 {
     /// <summary>
     /// 浮动Tip

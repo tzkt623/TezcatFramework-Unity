@@ -1,4 +1,4 @@
-﻿namespace tezcat.Framework.UI
+﻿namespace tezcat.Unity.UI
 {
     public interface ITezTreeData
     {

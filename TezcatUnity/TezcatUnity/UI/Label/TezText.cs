@@ -1,11 +1,10 @@
 ﻿using System.Collections.Generic;
-using tezcat.Framework.Core;
 using tezcat.Framework.Extension;
 using UnityEngine;
 using UnityEngine.UI;
 
 
-namespace tezcat.Framework.UI
+namespace tezcat.Unity.UI
 {
     [RequireComponent(typeof(Text))]
     public class TezText : TezUIWidget
@@ -81,7 +80,7 @@ namespace tezcat.Framework.UI
         public void setGetter(TezEventExtension.Function<string> getter)
         {
             m_Getter = getter;
-            this.refreshMask = true;
+            this.needRefresh();
         }
 
         protected override void onRefresh()

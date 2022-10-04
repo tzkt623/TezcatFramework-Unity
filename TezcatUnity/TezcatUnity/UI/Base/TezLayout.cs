@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace tezcat.Framework.UI
+namespace tezcat.Unity.UI
 {
     public static class TezLayout
     {

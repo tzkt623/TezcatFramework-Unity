@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using tezcat.Framework.TypeTraits;
 using tezcat.Framework.Utility;
 
 namespace tezcat.Framework.Core

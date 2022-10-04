@@ -4,7 +4,7 @@ using tezcat.Framework.Extension;
 using UnityEngine.EventSystems;
 using UnityEngine;
 
-namespace tezcat.Framework.UI
+namespace tezcat.Unity.UI
 {
     public class TezTitle
         : TezUIWidget

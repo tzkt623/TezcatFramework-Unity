@@ -3,7 +3,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-namespace tezcat.Framework.UI
+namespace tezcat.Unity.UI
 {
     public abstract class TezGridScrollRectListener : TezInfiniteScrollRectListener
     {

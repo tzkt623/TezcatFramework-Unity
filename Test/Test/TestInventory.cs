@@ -34,7 +34,7 @@ namespace tezcat.Framework.Test
             return this.dbUID == other.dbUID;
         }
 
-        public void initWithData(ITezSerializableItem item)
+        public void initWithData(ITezSerializable item)
         {
             var game_item = (TezDatabaseGameItem)item;
             this.dbUID = game_item.dbUID;

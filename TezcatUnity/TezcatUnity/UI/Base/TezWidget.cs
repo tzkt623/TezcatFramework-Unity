@@ -1,8 +1,8 @@
-﻿using tezcat.Framework.Core;
+﻿using tezcat.Unity.Core;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-namespace tezcat.Framework.UI
+namespace tezcat.Unity.UI
 {
     public enum TezWidgetLife
     {
@@ -17,23 +17,23 @@ namespace tezcat.Framework.UI
         public RectTransform rectTransform => (RectTransform)this.transform;
         public TezWidgetLife life { get; set; } = TezWidgetLife.Normal;
 
-        bool m_Interactable = true;
+        bool mInteractable = true;
 
         /// <summary>
         /// 是否允许交互
         /// </summary>
         public bool interactable
         {
-            get { return m_Interactable; }
+            get { return mInteractable; }
             set
             {
-                if (m_Interactable == value)
+                if (mInteractable == value)
                 {
                     return;
                 }
 
                 this.onInteractable(value);
-                m_Interactable = value;
+                mInteractable = value;
             }
         }
 
@@ -67,7 +67,7 @@ namespace tezcat.Framework.UI
             switch (life)
             {
                 case TezWidgetLife.TypeOnly:
-                    TezcatUnity.instance.removeTypeOnlyWidget(this);
+                    TezcatUnity.removeTypeOnlyWidget(this);
                     break;
                 default:
                     break;
@@ -104,28 +104,9 @@ namespace tezcat.Framework.UI
         : TezBaseWidget
         , ITezUIWidget
     {
-        bool m_Inited = false;
-        bool m_Closed = false;
-
-        TezRefreshPhase m_RefreshPhase = TezRefreshPhase.Ready;
-        bool m_RefreshMask = false;
-
-        /// <summary>
-        /// 通知UI刷新自己
-        /// </summary>
-        public bool refreshMask
-        {
-            set
-            {
-                if (this.gameObject.activeInHierarchy
-                    && m_Inited
-                    && !m_RefreshMask)
-                {
-                    m_RefreshMask = true;
-                    TezcatUnity.instance.pushRefreshHandler(this);
-                }
-            }
-        }
+        bool mInited = false;
+        bool mClosed = false;
+        bool mRefreshMask = false;
 
 
         /// <summary>
@@ -145,7 +126,7 @@ namespace tezcat.Framework.UI
             switch (life)
             {
                 case TezWidgetLife.TypeOnly:
-                    TezcatUnity.instance.removeTypeOnlyWidget(this);
+                    TezcatUnity.removeTypeOnlyWidget(this);
                     break;
                 default:
                     break;
@@ -154,8 +135,8 @@ namespace tezcat.Framework.UI
             ///设置关闭位
             ///这样是为了让控件可以立即释放资源
             ///而不是等到Destroy执行导致时间不确定
-            m_Closed = true;
-            this.onClose(m_Closed);
+            mClosed = true;
+            this.onClose(mClosed);
             Destroy(this.gameObject);
         }
 
@@ -163,32 +144,45 @@ namespace tezcat.Framework.UI
         /*
          * Awake(仅执行一次) -> OnEnable -> Start(仅执行一次)
          * 
-         * 当脚本第一次执行时 由于没有设置m_Inited 只会执行Start刷新 OnEnable中并不刷新
-         * Enable刷新必须在m_Inited之后才会执行 并且不再会执行Start刷新
+         * 当脚本第一次执行时 由于没有设置mInited 只会执行Start刷新 OnEnable中并不刷新
+         * Enable刷新必须在mInited之后才会执行 并且不再会执行Start刷新
          * 
          */
-
         protected sealed override void OnEnable()
         {
             base.OnEnable();
-            if (m_Inited)
+            if (mInited)
             {
                 this.onShow();
-                this.refreshMask = true;
+                this.needRefresh();
             }
         }
 
         protected sealed override void Start()
         {
             this.initWidget();
-            m_Inited = true;
-            this.refreshMask = true;
+            TezcatUnity.pushDelayInitHandler(this);
         }
+
+        /// <summary>
+        /// 延迟初始化
+        /// 
+        /// 处于initWidget之后
+        /// 会在队列中集中处理这个过程
+        /// 避免了unity的随机性
+        /// </summary>
+        void ITezDelayInitHandler.delayInit()
+        {
+            this.onDelayInit();
+            mInited = true;
+        }
+
+        protected virtual void onDelayInit() { }
 
         protected sealed override void OnDisable()
         {
             base.OnDisable();
-            if (m_Inited)
+            if (mInited)
             {
                 this.onHide();
             }
@@ -203,9 +197,9 @@ namespace tezcat.Framework.UI
             ///如果此控件没有设置关闭位
             ///说明没有手动销毁他
             ///他一定是被父级带动销毁的
-            if (!m_Closed)
+            if (!mClosed)
             {
-                this.onClose(m_Closed);
+                this.onClose(mClosed);
             }
         }
 
@@ -213,20 +207,26 @@ namespace tezcat.Framework.UI
 
         #region 刷新流程
         /// <summary>
+        /// 通知UI刷新自己
+        /// </summary>
+        public void needRefresh()
+        {
+            if (this.gameObject.activeInHierarchy
+//                && mInited
+                && !mRefreshMask)
+            {
+                mRefreshMask = true;
+                TezcatUnity.pushRefreshHandler(this);
+            }
+        }
+
+        /// <summary>
         /// 刷新
         /// </summary>
-        public void refresh()
+        void ITezRefreshHandler.refresh()
         {
-            //             for (byte i = 0; i < m_DirtyCount; i++)
-            //             {
-            //                 this.onRefresh(m_RefreshPhaseArray[i]);
-            //             }
-            // 
-            //             m_DirtyCount = 0;
-            //             m_DirtyMask = 0;
-
             this.onRefresh();
-            m_RefreshMask = false;
+            mRefreshMask = false;
         }
 
         /// <summary>
