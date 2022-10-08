@@ -8,40 +8,40 @@ namespace tezcat.Framework.AI
         where TState : TezBaseFSMState<TBlackboard>
         where TBlackboard : TezBaseFSMBlackboard
     {
-        public TState currentState => m_CurrentState;
-        public TBlackboard blackboard => m_Blackboard;
+        public TState currentState => mCurrentState;
+        public TBlackboard blackboard => mBlackboard;
 
-        protected TBlackboard m_Blackboard = null;
-        protected TState m_CurrentState = null;
+        protected TBlackboard mBlackboard = null;
+        protected TState mCurrentState = null;
 
         public virtual void setBlackboard(TBlackboard blackboard)
         {
-            m_Blackboard = blackboard;
-            m_Blackboard.init();
+            mBlackboard = blackboard;
+            mBlackboard.init();
         }
 
         public virtual void execute()
         {
-            m_CurrentState.execute(m_Blackboard);
+            mCurrentState.execute(mBlackboard);
         }
 
         public virtual void change(TState state)
         {
-            m_CurrentState?.exit(m_Blackboard);
-            m_CurrentState = state;
-            m_CurrentState.enter(m_Blackboard);
+            mCurrentState?.exit(mBlackboard);
+            mCurrentState = state;
+            mCurrentState.enter(mBlackboard);
         }
 
         public virtual void dispatchEvent(ITezEventData eventData)
         {
-            m_CurrentState.onEvent(eventData);
+            mCurrentState.onEvent(eventData);
         }
 
         public virtual void close()
         {
-            m_CurrentState.close();
-            m_Blackboard.close();
-            m_Blackboard = null;
+            mCurrentState.close();
+            mBlackboard.close();
+            mBlackboard = null;
         }
     }
 }

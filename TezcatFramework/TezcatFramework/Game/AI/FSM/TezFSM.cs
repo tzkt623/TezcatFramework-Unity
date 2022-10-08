@@ -13,7 +13,7 @@ namespace tezcat.Framework.AI
         public override void execute()
         {
             m_GlobalState?.execute(m_Blackboard);
-            m_CurrentState?.execute(m_Blackboard);
+            mCurrentState?.execute(m_Blackboard);
         }
 
         public void setGlobalState(TState state)
@@ -23,14 +23,14 @@ namespace tezcat.Framework.AI
 
         public void changeState(TState state)
         {
-            m_CurrentState?.exit(m_Blackboard);
-            m_CurrentState = state;
-            m_CurrentState.enter(m_Blackboard);
+            mCurrentState?.exit(m_Blackboard);
+            mCurrentState = state;
+            mCurrentState.enter(m_Blackboard);
         }
 
         public override void dispatchEvent(ITezEventData eventData)
         {
-            if (m_CurrentState != null && m_CurrentState.onEvent(eventData))
+            if (mCurrentState != null && mCurrentState.onEvent(eventData))
             {
                 return;
             }
