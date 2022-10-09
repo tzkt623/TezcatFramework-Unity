@@ -24,6 +24,8 @@ namespace tezcat.Framework.Utility
         public event TezEventExtension.Action<TState> eventPop;
         public event TezEventExtension.Action<TState, TState> eventChange;
 
+        public event TezEventExtension.Action eventRefresh;
+
         public IReadOnlyCollection<TState> stack => mStack;
         Stack<TState> mStack = new Stack<TState>();
 
@@ -40,6 +42,8 @@ namespace tezcat.Framework.Utility
             mCurrentState = Singleton<State>.instance;
             mCurrentState.gameMachine = this;
             mCurrentState.enter(mBlackboard);
+
+            eventRefresh?.Invoke();
         }
 
         /// <summary>
@@ -56,7 +60,7 @@ namespace tezcat.Framework.Utility
             //如果与当前状态不同,说明是标记弹出
             if (mCurrentState != Singleton<State>.instance)
             {
-//                throw new Exception(string.Format("TezGameMachine : Pop [Current:{0}] [YourWant:{1}]", mCurrentState.GetType().Name, typeof(State).Name));
+                //                throw new Exception(string.Format("TezGameMachine : Pop [Current:{0}] [YourWant:{1}]", mCurrentState.GetType().Name, typeof(State).Name));
 
                 //先弹出了再说
                 Singleton<State>.instance.markPop();
@@ -78,6 +82,8 @@ namespace tezcat.Framework.Utility
 
                 mCurrentState.resume(mBlackboard);
             }
+
+            eventRefresh?.Invoke();
         }
 
         public void change<State>() where State : TState, new()
