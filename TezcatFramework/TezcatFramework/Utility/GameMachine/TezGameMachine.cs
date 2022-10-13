@@ -52,9 +52,9 @@ namespace tezcat.Framework.Utility
         /// <typeparam name="State"></typeparam>
         public void pop<State>() where State : TState, new()
         {
-            if (mStack.Count == 1)
+            if (mStack.Count == 0)
             {
-                throw new Exception("TezGameMachine : Stack Count Must > 1");
+                throw new Exception("TezGameMachine : Stack Count Must > 0");
             }
 
             //如果与当前状态不同,说明是标记弹出
