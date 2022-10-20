@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace tezcat.Framework.AI
+﻿namespace tezcat.Framework.AI
 {
     /// <summary>
     /// 强制顺序运行节点
@@ -14,39 +12,37 @@ namespace tezcat.Framework.AI
             switch (result)
             {
                 case Result.Running:
+                    this.reportToParent(Result.Running);
                     break;
                 default:
-                    m_Index++;
-                    if (m_Index == m_List.Count)
+                    mIndex++;
+                    if (mIndex == mList.Count)
                     {
                         this.reset();
-                        this.report(Result.Success);
+                        this.reportToParent(Result.Success);
                     }
                     break;
             }
         }
 
-        public override Result newExecute()
+        public override void execute()
         {
-            switch (m_List[m_Index].newExecute())
+            mList[mIndex].execute();
+        }
+
+        public override Result imdExecute()
+        {
+            if (mList[mIndex].imdExecute() != Result.Running)
             {
-                case Result.Fail:
-                case Result.Success:
-                    m_Index++;
-                    if (m_Index == m_List.Count)
-                    {
-                        this.reset();
-                        return Result.Success;
-                    }
-                    break;
+                mIndex++;
+                if (mIndex == mList.Count)
+                {
+                    this.reset();
+                    return Result.Success;
+                }
             }
 
             return Result.Running;
-        }
-
-        public override void removeSelfFromTree()
-        {
-            m_List[m_Index].removeSelfFromTree();
         }
     }
 }

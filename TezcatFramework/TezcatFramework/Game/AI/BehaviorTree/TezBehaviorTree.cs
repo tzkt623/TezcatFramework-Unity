@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using tezcat.Framework.Core;
 using tezcat.Framework.Database;
 using tezcat.Framework.Extension;
 
@@ -10,24 +9,25 @@ namespace tezcat.Framework.AI
     /// 行为树
     /// <para>启动流程</para>
     /// <para>LoadConfig (or) ManualBuildTree->setContext->init</para>
-    /// 
+    /// <para>请参考TestBehaviorTree</para>
     /// <para>====节点介绍====</para>
     /// <para>组合节点(Composite)</para>
     /// <para>--顺序节点Sequence</para>
     /// <para>--选择节点Selector</para>
     /// <para>--随机选择节点RandomSelector</para>
     /// <para>--并行节点Parallel</para>
-    /// <para>--监察并行节点ObserveParallel</para>
     /// <para>--强制节点Force</para>
+    /// <para>==============</para>
     /// <para>修饰节点(Decorator)</para>
     /// <para>--翻转节点Inverter</para>
     /// <para>--成功节点Succeeder</para>
     /// <para>--失败节点Failure</para>
+    /// <para>==============</para>
     /// <para>行动节点(Action)</para>
     /// <para>--自己实现</para>
+    /// <para>==============</para>
     /// <para>条件节点(Condition)</para>
     /// <para>--自己实现</para>
-    /// <para>=============</para>
     /// </summary>
     public class TezBehaviorTree : TezBTNode
     {
@@ -66,7 +66,6 @@ namespace tezcat.Framework.AI
         {
             ///Composite
             register<TezBTParallel>("Parallel");
-            register<TezBTObserveParallel>("ObserveParallel");
             register<TezBTSequence>("Sequence");
             register<TezBTSelector>("Selector");
             register<TezBTRandomSelector>("RandomSelector");
@@ -76,51 +75,33 @@ namespace tezcat.Framework.AI
             register<TezBTInverter>("Inverter");
             register<TezBTSucceeder>("Succeeder");
             register<TezBTFailure>("Failure");
-
-
         }
         #endregion
 
         public event TezEventExtension.Action<Result> onTraversalComplete;
 
         public override Category category => throw new Exception("Tree Don`t has Category");
-        public ITezBTContext context => m_Context;
+        public ITezBTContext context => mContext;
 
-        ITezBTContext m_Context = null;
-        TezBTComposite m_Root = null;
-
-//         int m_ActionIDGenerator = 0;
-//         List<int> m_DeleteActionList = new List<int>();
-
-        List<TezBTNode> m_RunningActionList = new List<TezBTNode>();
-        List<TezBTCondition> m_RunningConditionList = new List<TezBTCondition>();
-
-        List<TezBTAction> m_ActionList = new List<TezBTAction>();
-
-        Stack<TezBTComposite> m_NodeStack = new Stack<TezBTComposite>();
-
-        public override void init()
-        {
-            //             if (m_Observer == null)
-            //             {
-            //                 m_Observer = TezBTObserver.empty;
-            //                 m_Observer.init();
-            //             }
-
-            m_Root.init();
-        }
+        ITezBTContext mContext = null;
+        TezBTComposite mRoot = null;
 
         public override void loadConfig(TezReader reader)
         {
-            m_Root = (TezBTComposite)create(reader.readString("CID"));
-            m_Root.tree = this;
-            m_Root.parent = this;
-            m_Root.loadConfig(reader);
+            mRoot = (TezBTComposite)create(reader.readString("CID"));
+            mRoot.tree = this;
+            mRoot.parent = this;
+            mRoot.loadConfig(reader);
+        }
+
+        public override void init()
+        {
+            mRoot.init();
         }
 
         public void setContext(ITezBTContext context)
         {
-            m_Context = context;
+            mContext = context;
         }
 
         public Context getContext<Context>() where Context : ITezBTContext
@@ -131,32 +112,19 @@ namespace tezcat.Framework.AI
         public Node createRoot<Node>() where Node : TezBTComposite, new()
         {
             var node = new Node();
-            m_Root = node;
-            m_Root.parent = this;
-            m_Root.tree = this;
+            mRoot = node;
+            mRoot.parent = this;
+            mRoot.tree = this;
             return node;
-        }
-
-        public void pushNode(TezBTComposite node)
-        {
-            m_NodeStack.Push(node);
-        }
-
-        public void popNode(TezBTComposite node)
-        {
-            if (node != m_NodeStack.Pop())
-            {
-                throw new Exception();
-            }
         }
 
         public void close()
         {
-            m_Root.close();
-            m_Context.close();
+            mRoot.close();
+            mContext.close();
 
-            m_Root = null;
-            m_Context = null;
+            mRoot = null;
+            mContext = null;
         }
 
         public override void reset()
@@ -172,90 +140,35 @@ namespace tezcat.Framework.AI
 
         public override void execute()
         {
-            m_Root.execute();
-#if false
-            ///如果没有正在Running状态的Node
-            ///则思考策略
-            if (m_RunningActionList.Count == 0)
-            {
-                m_Root.execute();
-            }
-
-            if(m_RunningConditionList.Count > 0)
-            {
-                for (int i = 0; i < m_RunningConditionList.Count; i++)
-                {
-                    m_RunningConditionList[i].execute();
-                }
-            }
-
-            ///如果有正在Running状态的Node
-            ///则执行当前任务
-            if (m_RunningActionList.Count > 0)
-            {
-                for (int i = 0; i < m_RunningActionList.Count; i++)
-                {
-                    m_RunningActionList[i].execute();
-                }
-            }
-#endif
+            mRoot.execute();
         }
 
-        public override Result newExecute()
+        public override Result imdExecute()
         {
-            switch (m_Root.newExecute())
+            switch (mRoot.imdExecute())
             {
                 case Result.Success:
                     this.reset();
                     onTraversalComplete?.Invoke(Result.Success);
-                    return Result.Success;
+                    break;
                 case Result.Fail:
                     this.reset();
                     onTraversalComplete?.Invoke(Result.Fail);
-                    return Result.Fail;
+                    break;
             }
 
             return Result.Running;
         }
 
-        public void addRunningNode(TezBTNode node)
-        {
-            m_RunningActionList.Add(node);
-        }
-
-        public bool removeRunningNode(TezBTNode node)
-        {
-            return m_RunningActionList.Remove(node);
-        }
-
-        public void addRunningConditionNode(TezBTCondition node)
-        {
-            m_RunningConditionList.Add(node);
-        }
-
-        public bool removeRunningConditionNode(TezBTCondition node)
-        {
-            return m_RunningConditionList.Remove(node);
-        }
-
-        public void registerAction(TezBTAction node)
-        {
-            node.actionIndex = m_ActionList.Count;
-            m_ActionList.Add(node);
-        }
-
         public override void onReport(TezBTNode node, Result result)
         {
+            ///如果没有在运行中
+            ///才返回状态给外界查询
             if (result != Result.Running)
             {
                 this.reset();
                 onTraversalComplete?.Invoke(result);
             }
-        }
-
-        public override void removeSelfFromTree()
-        {
-            throw new NotImplementedException();
         }
     }
 }

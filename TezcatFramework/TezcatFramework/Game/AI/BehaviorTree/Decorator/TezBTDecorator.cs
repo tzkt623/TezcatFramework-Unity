@@ -10,39 +10,34 @@ namespace tezcat.Framework.AI
     {
         public override Category category => Category.Decorator;
 
-        protected TezBTNode m_Child = null;
+        protected TezBTNode mChild = null;
 
         public override void execute()
         {
-            m_Child.execute();
+            mChild.execute();
         }
 
         public virtual void setChild(TezBTNode node)
         {
-            m_Child = node;
-        }
-
-        public override void removeSelfFromTree()
-        {
-            m_Child.removeSelfFromTree();
+            mChild = node;
         }
 
         public override void reset()
         {
-            m_Child.reset();
+            mChild.reset();
         }
 
         public override void close()
         {
             base.close();
-            m_Child = null;
+            mChild = null;
         }
 
         public override void loadConfig(TezReader reader)
         {
             reader.beginObject("Node");
-            m_Child = TezBehaviorTree.create(reader.readString("CID"));
-            m_Child.loadConfig(reader);
+            mChild = TezBehaviorTree.create(reader.readString("CID"));
+            mChild.loadConfig(reader);
             reader.endObject("Node");
         }
     }
@@ -54,17 +49,22 @@ namespace tezcat.Framework.AI
 
         }
 
-        public override Result newExecute()
+        public override Result imdExecute()
         {
-            switch (m_Child.newExecute())
+            switch (mChild.imdExecute())
             {
-                case Result.Success:
-                    return Result.Fail;
                 case Result.Fail:
                     return Result.Success;
+                case Result.Success:
+                    return Result.Fail;
             }
 
             return Result.Running;
+        }
+
+        public override void execute()
+        {
+            mChild.execute();
         }
 
         public override void onReport(TezBTNode node, Result result)
@@ -72,10 +72,10 @@ namespace tezcat.Framework.AI
             switch (result)
             {
                 case Result.Running:
-                    this.report(Result.Running);
+                    this.reportToParent(Result.Running);
                     break;
                 default:
-                    this.report(1 - result);
+                    this.reportToParent(1 - result);
                     break;
             }
         }
@@ -88,16 +88,19 @@ namespace tezcat.Framework.AI
 
         }
 
-        public override Result newExecute()
+        public override Result imdExecute()
         {
-            switch (m_Child.newExecute())
+            if (mChild.imdExecute() != Result.Running)
             {
-                case Result.Success:
-                case Result.Fail:
-                    return Result.Success;
+                return Result.Success;
             }
 
             return Result.Running;
+        }
+
+        public override void execute()
+        {
+            mChild.execute();
         }
 
         public override void onReport(TezBTNode node, Result result)
@@ -105,10 +108,10 @@ namespace tezcat.Framework.AI
             switch (result)
             {
                 case Result.Running:
-                    this.report(Result.Running);
+                    this.reportToParent(Result.Running);
                     break;
                 default:
-                    this.report(Result.Success);
+                    this.reportToParent(Result.Success);
                     break;
             }
         }
@@ -121,17 +124,19 @@ namespace tezcat.Framework.AI
 
         }
 
-        public override Result newExecute()
+        public override Result imdExecute()
         {
-            switch (m_Child.newExecute())
+            if (mChild.imdExecute() != Result.Running)
             {
-                case Result.Success:
-                case Result.Fail:
-                    return Result.Fail;
-
+                return Result.Fail;
             }
 
             return Result.Running;
+        }
+
+        public override void execute()
+        {
+            mChild.execute();
         }
 
         public override void onReport(TezBTNode node, Result result)
@@ -139,10 +144,10 @@ namespace tezcat.Framework.AI
             switch (result)
             {
                 case Result.Running:
-                    this.report(Result.Running);
+                    this.reportToParent(Result.Running);
                     break;
                 default:
-                    this.report(Result.Fail);
+                    this.reportToParent(Result.Fail);
                     break;
             }
         }

@@ -33,17 +33,19 @@
     /// </para>
     /// 
     /// </summary>
+
+#if false
     public class TezBTObserveParallel : TezBTComposite_List
     {
         int m_SuccessCount = 0;
-        int m_LastNode = 0;
+        int mLastNode = 0;
         bool m_Running = true;
 
 
         public override void init()
         {
             base.init();
-            m_LastNode = m_List.Count - 1;
+            mLastNode = mList.Count - 1;
         }
 
         public override void addNode(TezBTNode node)
@@ -66,13 +68,13 @@
                     if (m_SuccessCount == this.childrenCount)
                     {
                         this.reset();
-                        this.report(Result.Success);
+                        this.reportToParent(Result.Success);
                     }
                     break;
                 case Result.Fail:
                     m_Running = false;
                     this.reset();
-                    this.report(Result.Fail);
+                    this.reportToParent(Result.Fail);
                     break;
                 case Result.Running:
                     break;
@@ -83,9 +85,9 @@
 
         protected override void onExecute()
         {
-            while (m_Index < this.childrenCount)
+            while (mIndex < this.childrenCount)
             {
-                m_List[m_Index].execute();
+                mList[mIndex].execute();
                 if (m_Running)
                 {
                     break;
@@ -95,12 +97,12 @@
 
         public override Result newExecute()
         {
-            while (m_Index < this.childrenCount)
+            while (mIndex < this.childrenCount)
             {
-                switch (m_List[m_Index++].newExecute())
+                switch (mList[mIndex++].newExecute())
                 {
                     case Result.Success:
-                        if (m_Index == this.childrenCount)
+                        if (mIndex == this.childrenCount)
                         {
                             this.reset();
                             return Result.Success;
@@ -117,14 +119,6 @@
             return Result.Running;
         }
 
-        public override void removeSelfFromTree()
-        {
-            for (int i = 0; i < m_List.Count; i++)
-            {
-                m_List[i].removeSelfFromTree();
-            }
-        }
-
         public override void reset()
         {
             base.reset();
@@ -132,4 +126,5 @@
             m_Running = true;
         }
     }
+#endif
 }

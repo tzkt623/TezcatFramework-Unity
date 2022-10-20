@@ -1,36 +1,27 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace tezcat.Framework.AI
+﻿namespace tezcat.Framework.AI
 {
     /// <summary>
     /// 选择节点
-    /// 按照行为重要性优先级排序
     /// 
-    /// 运行直到某一个子节点返回Success 则返回Success
+    /// <para>
+    /// 运行直到某一个子节点返回Success
+    /// 则返回Success
+    /// 并且不再执行后续的节点
     /// 否则返回Fail
+    /// </para>
     /// 
-    /// 选择节点特殊性
-    /// 需要将所有子节点加入tree进行选择
-    /// 在选择成功后中断
-    /// 并且删除所有加入的节点
+    /// <para>
+    /// 也就是在一帧之内从子节点当中选一个可执行的出来
+    /// </para>
     /// 
-    /// 
-    /// 进入并行
-    /// 检测条件1-1
-    /// 如果成功,加入tree
-    /// 进入选择节点
-    /// 加入条件2-1
-    /// 进入选择节点
-    /// 加入条件3-1
-    /// 进入顺序节点
-    /// 加入节点1
-    /// 加入条件3-3
-    /// 加入条件2-3
+    /// 比如
+    /// 要么攻击,要么防御,要么逃跑,要么投降
     /// 
     /// </summary>
     public class TezBTSelector : TezBTComposite_List
     {
+        TezBTNode mRunning = null;
+
         /// <summary>
         /// 子节点向自己报告运行状态
         /// </summary>
@@ -39,62 +30,109 @@ namespace tezcat.Framework.AI
             switch (result)
             {
                 case Result.Success:
-                    ///如果有节点运行成功
-                    ///像父级报告运行成功
+                    ///如果有节点运行成功,立即中断并返回
                     this.reset();
-                    this.report(Result.Success);
+                    this.reportToParent(Result.Success);
                     break;
                 case Result.Fail:
                     ///如果有节点运行失败
                     ///测试下一个节点
-                    m_Index++;
-                    if (m_Index == m_List.Count)
+                    ///如果测试完了都没有成功,就返回失败
+                    mRunning = null;
+                    mIndex++;
+                    if (mIndex == mList.Count)
                     {
                         this.reset();
-                        this.report(Result.Fail);
+                        this.reportToParent(Result.Fail);
                     }
                     break;
                 case Result.Running:
+                    ///如果是running,就啥也不管
+                    mRunning = node;
+                    this.reportToParent(Result.Running);
                     break;
                 default:
                     break;
             }
         }
 
-        public override Result newExecute()
+        public override void execute()
         {
-            bool flag = true;
-            while (flag)
+            if (mRunning != null)
             {
-                switch (m_List[m_Index].newExecute())
+                mRunning.execute();
+            }
+            else
+            {
+                while (mRunning == null)
+                {
+                    mList[mIndex].execute();
+                }
+            }
+        }
+
+        public override Result imdExecute()
+        {
+            if (mRunning != null)
+            {
+                switch (mRunning.imdExecute())
                 {
                     case Result.Success:
-                        ///如果有节点运行成功
-                        ///像父级报告运行成功
+                        ///如果有节点运行成功,立即中断并返回
                         this.reset();
                         return Result.Success;
                     case Result.Fail:
                         ///如果有节点运行失败
                         ///测试下一个节点
-                        m_Index++;
-                        if (m_Index == m_List.Count)
+                        ///如果测试完了都没有成功,就返回失败
+                        mRunning = null;
+                        mIndex++;
+                        if (mIndex == mList.Count)
                         {
                             this.reset();
                             return Result.Fail;
                         }
                         break;
-                    case Result.Running:
-                        flag = false;
-                        break;
                 }
-            }
 
-            return Result.Running;
+                return Result.Running;
+            }
+            else
+            {
+                while (mRunning == null)
+                {
+                    switch (mList[mIndex].imdExecute())
+                    {
+                        case Result.Success:
+                            ///如果有节点运行成功,立即中断并返回
+                            this.reset();
+                            return Result.Success;
+                        case Result.Fail:
+                            ///如果有节点运行失败
+                            ///测试下一个节点
+                            ///如果测试完了都没有成功,就返回失败
+                            mIndex++;
+                            if (mIndex == mList.Count)
+                            {
+                                this.reset();
+                                return Result.Fail;
+                            }
+                            break;
+                        case Result.Running:
+                            ///如果是running,就啥也不管
+                            mRunning = mList[mIndex];
+                            break;
+                    }
+                }
+
+                return Result.Running;
+            }
         }
 
-        public override void removeSelfFromTree()
+        public override void reset()
         {
-            m_List[m_Index].removeSelfFromTree();
+            base.reset();
+            mRunning = null;
         }
     }
 }

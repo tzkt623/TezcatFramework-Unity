@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using tezcat.Framework.Extension;
+﻿using tezcat.Framework.Extension;
 
 namespace tezcat.Framework.AI
 {
@@ -10,7 +9,7 @@ namespace tezcat.Framework.AI
     /// </summary>
     public class TezBTRandomSelector : TezBTComposite_List
     {
-        bool m_Random = false;
+        bool mRandom = false;
 
         /// <summary>
         /// 子节点向自己报告运行状态
@@ -23,83 +22,73 @@ namespace tezcat.Framework.AI
                     ///如果有节点运行成功
                     ///像父级报告运行成功
                     this.reset();
-                    this.report(Result.Success);
+                    this.reportToParent(Result.Success);
                     break;
                 case Result.Fail:
                     ///如果有节点运行失败
                     ///测试下一个节点
-                    m_Index++;
-                    if (m_Index == m_List.Count)
+                    mIndex++;
+                    if (mIndex == mList.Count)
                     {
                         this.reset();
-                        this.report(Result.Fail);
+                        this.reportToParent(Result.Fail);
                     }
                     break;
                 case Result.Running:
+                    ///啥也不报告
+                    this.reportToParent(Result.Running);
                     break;
                 default:
                     break;
             }
         }
 
-        protected override void onExecute()
+        public override void execute()
         {
-            if (!m_Random)
+            if (!mRandom)
             {
-                m_Random = true;
-                m_List.shuffle();
+                mRandom = true;
+                mList.shuffle();
             }
 
-            m_List[m_Index].execute();
-            this.report(m_Result);
+            mList[mIndex].execute();
         }
 
-        public override Result newExecute()
+        public override Result imdExecute()
         {
-            if (!m_Random)
+            if (!mRandom)
             {
-                m_Random = true;
-                m_List.shuffle();
+                mRandom = true;
+                mList.shuffle();
             }
 
-            bool flag = true;
-            while (flag)
+            switch (mList[mIndex].imdExecute())
             {
-                switch (m_List[m_Index].newExecute())
-                {
-                    case Result.Success:
-                        ///如果有节点运行成功
-                        ///像父级报告运行成功
+                case Result.Success:
+                    ///如果有节点运行成功
+                    ///像父级报告运行成功
+                    this.reset();
+                    return Result.Success;
+                case Result.Fail:
+                    ///如果有节点运行失败
+                    ///测试下一个节点
+                    mIndex++;
+                    if (mIndex == mList.Count)
+                    {
                         this.reset();
-                        return Result.Success;
-                    case Result.Fail:
-                        ///如果有节点运行失败
-                        ///测试下一个节点
-                        m_Index++;
-                        if (m_Index == m_List.Count)
-                        {
-                            this.reset();
-                            return Result.Fail;
-                        }
-                        break;
-                    case Result.Running:
-                        flag = false;
-                        break;
-                }
+                        return Result.Fail;
+                    }
+                    break;
             }
 
             return Result.Running;
         }
 
+
         public override void reset()
         {
             base.reset();
-            m_Random = false;
-        }
-
-        public override void removeSelfFromTree()
-        {
-            m_List[m_Index].removeSelfFromTree();
+            mRandom = false;
         }
     }
 }

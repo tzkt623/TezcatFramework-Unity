@@ -7,7 +7,6 @@ namespace tezcat.Framework.AI
     {
         public override Category category => Category.Composite;
         public abstract int childrenCount { get; }
-        bool m_Locked = false;
 
         public virtual void addNode(TezBTNode node)
         {
@@ -16,34 +15,17 @@ namespace tezcat.Framework.AI
             node.deep = this.deep + 1;
         }
 
-        protected override void report(Result result)
+        public T createNode<T>() where T : TezBTNode, new()
+        {
+            var node = new T();
+            this.addNode(node);
+            return node;
+        }
+
+        protected override void reportToParent(Result result)
         {
             this.parent.onReport(this, result);
         }
-
-        public void unlockNode()
-        {
-            m_Locked = false;
-            this.tree.popNode(this);
-        }
-
-        public void lockNode()
-        {
-            m_Locked = true;
-            this.tree.pushNode(this);
-        }
-
-        public sealed override void execute()
-        {
-//             if(!m_Locked)
-//             {
-//                 this.lockNode();
-//             }
-
-            this.onExecute();
-        }
-
-        protected abstract void onExecute();
 
         public override void loadConfig(TezReader reader)
         {
@@ -68,16 +50,20 @@ namespace tezcat.Framework.AI
     /// </summary>
     public abstract class TezBTComposite_List : TezBTComposite
     {
-        public override int childrenCount => m_List.Count;
-        protected List<TezBTNode> m_List = new List<TezBTNode>();
-        protected int m_Index = 0;
+        public override int childrenCount => mList.Count;
+        protected List<TezBTNode> mList = new List<TezBTNode>();
+
+        /// <summary>
+        /// 索引值被动记录了当前正在运行的路径
+        /// </summary>
+        protected int mIndex = 0;
 
         public override void init()
         {
-            m_List.TrimExcess();
-            for (int i = 0; i < m_List.Count; i++)
+            mList.TrimExcess();
+            for (int i = 0; i < mList.Count; i++)
             {
-                m_List[i].init();
+                mList[i].init();
             }
         }
 
@@ -85,29 +71,24 @@ namespace tezcat.Framework.AI
         {
             base.close();
 
-            for (int i = 0; i < m_List.Count; i++)
+            for (int i = 0; i < mList.Count; i++)
             {
-                m_List[i].close();
+                mList[i].close();
             }
-            m_List.Clear();
-            m_List = null;
+            mList.Clear();
+            mList = null;
         }
 
         public override void addNode(TezBTNode node)
         {
             base.addNode(node);
-            node.index = m_List.Count;
-            m_List.Add(node);
+            node.index = mList.Count;
+            mList.Add(node);
         }
 
         public override void reset()
         {
-            m_Index = 0;
-        }
-
-        protected override void onExecute()
-        {
-            m_List[m_Index].execute();
+            mIndex = 0;
         }
     }
 }

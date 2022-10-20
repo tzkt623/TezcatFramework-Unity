@@ -50,6 +50,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="TezcatFramework\Exp\TezAwaitable.cs" />
     <Compile Include="TezcatFramework\Game\Inventory\TezInventoryEntry.cs" />
     <Compile Include="TezcatFramework\Core\Tag\TezTags.cs" />
     <Compile Include="TezcatFramework\Core\DataBase\Category\ITezCategoryObject.cs" />
