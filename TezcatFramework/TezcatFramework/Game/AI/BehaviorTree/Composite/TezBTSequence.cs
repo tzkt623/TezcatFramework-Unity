@@ -14,7 +14,8 @@ namespace tezcat.Framework.AI
     /// 先走到门边-开门-进入屋子-坐下-拿起遥控器-打开电视机-看电视
     /// 
     /// </summary>
-    public class TezBTSequence : TezBTComposite_List
+    [TezBTRegister(name = "Sequence")]
+    public class TezBTSequence : TezBTCompositeList
     {
         public override void onReport(TezBTNode node, Result result)
         {
@@ -54,15 +55,17 @@ namespace tezcat.Framework.AI
             switch (mList[mIndex].imdExecute())
             {
                 case Result.Success:
+                    mList[mIndex].reset();
                     mIndex++;
                     if (mIndex == mList.Count)
                     {
-                        this.reset();
+//                        this.reset();
                         return Result.Success;
                     }
                     break;
                 case Result.Fail:
-                    this.reset();
+                    //                    this.reset();
+                    mList[mIndex].reset();
                     return Result.Fail;
             }
 

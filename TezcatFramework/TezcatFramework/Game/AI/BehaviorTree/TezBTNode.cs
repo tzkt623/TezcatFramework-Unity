@@ -5,16 +5,16 @@ namespace tezcat.Framework.AI
 {
     public abstract class TezBTNode : ITezCloseable
     {
-        public enum Result
+        public enum Result : byte
         {
             Success = 0,
             Fail,
             Running
         }
 
-        public enum Category
+        public enum Category : byte
         {
-            Composite,
+            Composite = 0,
             Action,
             Condition,
             Decorator
@@ -29,13 +29,12 @@ namespace tezcat.Framework.AI
             set { mTree = value; }
         }
 
-        public TezBTNode parent { get; set; }
-
+        public TezBTNode parent { get; set; } = null;
         public int deep { get; set; } = 0;
         public int index { get; set; } = 0;
-        protected Result mResult = Result.Running;
 
         public abstract void init();
+
         public abstract void reset();
 
         public virtual void close()
@@ -47,7 +46,6 @@ namespace tezcat.Framework.AI
         public abstract Result imdExecute();
 
         public virtual void loadConfig(TezReader reader) { }
-
 
 
         [System.Obsolete("这套系统已经弃用,请使用[imdExecute]函数代替")]

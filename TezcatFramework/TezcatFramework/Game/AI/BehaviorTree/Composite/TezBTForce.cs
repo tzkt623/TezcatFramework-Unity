@@ -5,7 +5,8 @@
     /// 不论子节点成功失败都会运行
     /// 直到所有节点运行完毕返回Success
     /// </summary>
-    public class TezBTForce : TezBTComposite_List
+    [TezBTRegister(name = "Force")]
+    public class TezBTForce : TezBTCompositeList
     {
         public override void onReport(TezBTNode node, Result result)
         {
@@ -34,10 +35,11 @@
         {
             if (mList[mIndex].imdExecute() != Result.Running)
             {
+                mList[mIndex].reset();
                 mIndex++;
                 if (mIndex == mList.Count)
                 {
-                    this.reset();
+                    // this.reset();
                     return Result.Success;
                 }
             }

@@ -7,7 +7,8 @@ namespace tezcat.Framework.AI
     /// 随机运行直到某一个子节点返回Success 则返回Success
     /// 否则返回Fail
     /// </summary>
-    public class TezBTRandomSelector : TezBTComposite_List
+    [TezBTRegister(name = "RandomSelector")]
+    public class TezBTRandomSelector : TezBTCompositeList
     {
         bool mRandom = false;
 
@@ -67,15 +68,17 @@ namespace tezcat.Framework.AI
                 case Result.Success:
                     ///如果有节点运行成功
                     ///像父级报告运行成功
-                    this.reset();
+//                    this.reset();
+                    mList[mIndex].reset();
                     return Result.Success;
                 case Result.Fail:
                     ///如果有节点运行失败
                     ///测试下一个节点
+                    mList[mIndex].reset();
                     mIndex++;
                     if (mIndex == mList.Count)
                     {
-                        this.reset();
+//                        this.reset();
                         return Result.Fail;
                     }
                     break;

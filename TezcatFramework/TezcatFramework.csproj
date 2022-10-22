@@ -51,6 +51,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="TezcatFramework\Exp\TezAwaitable.cs" />
+    <Compile Include="TezcatFramework\Game\AI\BehaviorTree\TezBTRegisterAttribute.cs" />
     <Compile Include="TezcatFramework\Game\Inventory\TezInventoryEntry.cs" />
     <Compile Include="TezcatFramework\Core\Tag\TezTags.cs" />
     <Compile Include="TezcatFramework\Core\DataBase\Category\ITezCategoryObject.cs" />
@@ -74,7 +75,6 @@
     <Compile Include="TezcatFramework\Game\AI\BehaviorTree\ITezBTContext.cs" />
     <Compile Include="TezcatFramework\Game\AI\BehaviorTree\TezBehaviorTree.cs" />
     <Compile Include="TezcatFramework\Game\AI\BehaviorTree\TezBTNode.cs" />
-    <Compile Include="TezcatFramework\Game\AI\BehaviorTree\TezBTObserver.cs" />
     <Compile Include="TezcatFramework\Game\AI\FSM\TezBaseFSMBlackboard.cs" />
     <Compile Include="TezcatFramework\Game\AI\FSM\TezBaseFSMState.cs" />
     <Compile Include="TezcatFramework\Game\AI\FSM\TezBaseFSM.cs" />

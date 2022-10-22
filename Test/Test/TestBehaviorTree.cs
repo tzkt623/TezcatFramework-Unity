@@ -16,6 +16,7 @@ namespace tezcat.Framework.Test
         }
     }
 
+    [TezBTRegister(name = "NeedFoods")]
     class NeedFoods : TezBTCondition
     {
         //         public override void execute()
@@ -57,6 +58,7 @@ namespace tezcat.Framework.Test
         }
     }
 
+    [TezBTRegister(name = "NeedTools")]
     class NeedTools : TezBTCondition
     {
         //         public override void execute()
@@ -98,6 +100,7 @@ namespace tezcat.Framework.Test
         }
     }
 
+    [TezBTRegister(name = "GetFoods")]
     class GetFoods : TezBTAction
     {
         public override void init()
@@ -138,6 +141,7 @@ namespace tezcat.Framework.Test
         }
     }
 
+    [TezBTRegister(name = "GetTools")]
     class GetTools : TezBTAction
     {
         //         public override void execute()
@@ -178,6 +182,7 @@ namespace tezcat.Framework.Test
         }
     }
 
+    [TezBTRegister(name = "SteamRice")]
     class SteamRice : TezBTAction
     {
         public override void init()
@@ -235,6 +240,7 @@ namespace tezcat.Framework.Test
         }
     }
 
+    [TezBTRegister(name = "Cooking")]
     class Cooking : TezBTAction
     {
         public override void init()
@@ -292,6 +298,7 @@ namespace tezcat.Framework.Test
         }
     }
 
+    [TezBTRegister(name = "Eating")]
     class Eating : TezBTAction
     {
         public override void init()
@@ -353,6 +360,17 @@ namespace tezcat.Framework.Test
     {
         TezBehaviorTree mTree = new TezBehaviorTree();
 
+        static TestBehaviorTree()
+        {
+            TezBehaviorTree.register<NeedFoods>();
+            TezBehaviorTree.register<NeedTools>();
+
+            TezBehaviorTree.register<GetFoods>();
+            TezBehaviorTree.register<SteamRice>();
+            TezBehaviorTree.register<Cooking>();
+            TezBehaviorTree.register<Eating>();
+        }
+
         public void buildTree()
         {
             ///做饭
@@ -364,8 +382,9 @@ namespace tezcat.Framework.Test
             var root = mTree.createRoot<TezBTSequence>();
 
             var get_foods = root.createNode<TezBTSequence>();
-            get_foods.createNode<NeedFoods>();
-            get_foods.createNode<GetFoods>();
+
+            get_foods.addNode(TezBehaviorTree.create("NeedFoods"));
+            get_foods.addNode(TezBehaviorTree.create("GetFoods"));
 
             var get_tools = root.createNode<TezBTSequence>();
             get_tools.createNode<NeedTools>();

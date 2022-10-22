@@ -32,16 +32,23 @@ namespace tezcat.Framework.AI
     public class TezBehaviorTree : TezBTNode
     {
         #region Factory
-        static Dictionary<string, TezEventExtension.Function<TezBTNode>> m_Creator = new Dictionary<string, TezEventExtension.Function<TezBTNode>>();
+        static Dictionary<string, TezEventExtension.Function<TezBTNode>> sCreator = new Dictionary<string, TezEventExtension.Function<TezBTNode>>();
 
         public static void register<T>() where T : TezBTNode, new()
         {
-            register<T>(typeof(T).Name);
+            var objs = typeof(T).GetCustomAttributes(true);
+            if (objs.Length == 0)
+            {
+                throw new IndexOutOfRangeException(string.Format("TezBehaviorTree : You Must Use [{0}] to Register BTNode", typeof(TezBTRegisterAttribute).Name));
+            }
+
+            var meta = (TezBTRegisterAttribute)objs[0];
+            register<T>(meta.name);
         }
 
         public static void register<T>(string name) where T : TezBTNode, new()
         {
-            m_Creator.Add(name, () =>
+            sCreator.Add(name, () =>
             {
                 return new T();
             });
@@ -49,7 +56,7 @@ namespace tezcat.Framework.AI
 
         public static TezBTNode create(string name)
         {
-            if (m_Creator.TryGetValue(name, out var function))
+            if (sCreator.TryGetValue(name, out var function))
             {
                 return function();
             }
@@ -59,22 +66,24 @@ namespace tezcat.Framework.AI
 
         public static T create<T>() where T : TezBTNode
         {
-            return (T)create(typeof(T).Name);
+            var objs = typeof(T).GetCustomAttributes(true);
+            var meta = (TezBTRegisterAttribute)objs[0];
+            return (T)create(meta.name);
         }
 
         static TezBehaviorTree()
         {
             ///Composite
-            register<TezBTParallel>("Parallel");
-            register<TezBTSequence>("Sequence");
-            register<TezBTSelector>("Selector");
-            register<TezBTRandomSelector>("RandomSelector");
-            register<TezBTForce>("Force");
+            register<TezBTParallel>();
+            register<TezBTSequence>();
+            register<TezBTSelector>();
+            register<TezBTRandomSelector>();
+            register<TezBTForce>();
 
             ///Decorator
-            register<TezBTInverter>("Inverter");
-            register<TezBTSucceeder>("Succeeder");
-            register<TezBTFailure>("Failure");
+            register<TezBTInverter>();
+            register<TezBTSucceeder>();
+            register<TezBTFailure>();
         }
         #endregion
 
@@ -106,7 +115,7 @@ namespace tezcat.Framework.AI
 
         public Context getContext<Context>() where Context : ITezBTContext
         {
-            return (Context)this.context;
+            return (Context)mContext;
         }
 
         public Node createRoot<Node>() where Node : TezBTComposite, new()
@@ -138,26 +147,26 @@ namespace tezcat.Framework.AI
             //             m_RunningActionList.Clear();
         }
 
-        public override void execute()
-        {
-            mRoot.execute();
-        }
-
         public override Result imdExecute()
         {
             switch (mRoot.imdExecute())
             {
                 case Result.Success:
-                    this.reset();
+                    mRoot.reset();
                     onTraversalComplete?.Invoke(Result.Success);
                     break;
                 case Result.Fail:
-                    this.reset();
+                    mRoot.reset();
                     onTraversalComplete?.Invoke(Result.Fail);
                     break;
             }
 
             return Result.Running;
+        }
+
+        public override void execute()
+        {
+            mRoot.execute();
         }
 
         public override void onReport(TezBTNode node, Result result)

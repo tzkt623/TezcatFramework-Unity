@@ -10,15 +10,23 @@ namespace tezcat.Framework.Test
     {
         static void Main(string[] args)
         {
-            //             TestAwaitable testAwaitable = new TestAwaitable();
-            //             testAwaitable.test();
-            //             Console.ReadKey();
+            {
+//             TestAwaitable testAwaitable = new TestAwaitable();
+//             testAwaitable.test();
+//             Console.ReadKey();
+            }
 
-#if true
-            TestBehaviorTree behaviorTree = new TestBehaviorTree();
-            behaviorTree.buildTree();
-            behaviorTree.run();
-#endif
+            {
+                TestBehaviorTree behaviorTree = new TestBehaviorTree();
+                behaviorTree.buildTree();
+                behaviorTree.run();
+            }
+
+            {
+//                 TestSystemAttribute test = new TestSystemAttribute();
+//                 test.run();
+            }
+
         }
     }
 }

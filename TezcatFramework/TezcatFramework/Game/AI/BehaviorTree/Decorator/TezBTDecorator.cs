@@ -42,6 +42,7 @@ namespace tezcat.Framework.AI
         }
     }
 
+    [TezBTRegister(name = "Inverter")]
     public class TezBTInverter : TezBTDecorator
     {
         public override void init()
@@ -81,6 +82,7 @@ namespace tezcat.Framework.AI
         }
     }
 
+    [TezBTRegister(name = "Succeeder")]
     public class TezBTSucceeder : TezBTDecorator
     {
         public override void init()
@@ -117,6 +119,7 @@ namespace tezcat.Framework.AI
         }
     }
 
+    [TezBTRegister(name = "Failure")]
     public class TezBTFailure : TezBTDecorator
     {
         public override void init()

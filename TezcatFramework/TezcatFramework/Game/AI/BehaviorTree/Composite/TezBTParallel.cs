@@ -27,7 +27,8 @@ namespace tezcat.Framework.AI
     /// 那怎么排序都没有问题
     /// </para>
     /// </summary>
-    public class TezBTParallel : TezBTComposite_List
+    [TezBTRegister(name = "Parallel")]
+    public class TezBTParallel : TezBTCompositeList
     {
         List<TezBTNode> mRunningNodes = new List<TezBTNode>();
         int mSuccessCount = 0;
@@ -93,11 +94,13 @@ namespace tezcat.Framework.AI
                 {
                     ///如果有一个执行失败,就立即返回
                     case Result.Fail:
-                        this.reset();
+//                        this.reset();
+                        mList[mIndex].reset();
                         return Result.Fail;
                     ///不管是执行成功还是运行中
                     ///都要继续执行下一个
                     case Result.Success:
+                        mList[mIndex].reset();
                         mSuccessCount++;
                         break;
                 }
@@ -109,7 +112,7 @@ namespace tezcat.Framework.AI
             ///则返回成功
             if (mSuccessCount == mList.Count)
             {
-                this.reset();
+//                this.reset();
                 return Result.Success;
             }
 

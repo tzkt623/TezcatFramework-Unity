@@ -48,7 +48,7 @@ namespace tezcat.Framework.AI
     /// <summary>
     /// List
     /// </summary>
-    public abstract class TezBTComposite_List : TezBTComposite
+    public abstract class TezBTCompositeList : TezBTComposite
     {
         public override int childrenCount => mList.Count;
         protected List<TezBTNode> mList = new List<TezBTNode>();

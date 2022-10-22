@@ -18,7 +18,8 @@
     /// 要么攻击,要么防御,要么逃跑,要么投降
     /// 
     /// </summary>
-    public class TezBTSelector : TezBTComposite_List
+    [TezBTRegister(name = "Selector")]
+    public class TezBTSelector : TezBTCompositeList
     {
         TezBTNode mRunning = null;
 
@@ -79,17 +80,19 @@
                 {
                     case Result.Success:
                         ///如果有节点运行成功,立即中断并返回
-                        this.reset();
+                        //                        this.reset();
+                        mRunning.reset();
                         return Result.Success;
                     case Result.Fail:
                         ///如果有节点运行失败
                         ///测试下一个节点
                         ///如果测试完了都没有成功,就返回失败
+                        mRunning.reset();
                         mRunning = null;
                         mIndex++;
                         if (mIndex == mList.Count)
                         {
-                            this.reset();
+                            //                            this.reset();
                             return Result.Fail;
                         }
                         break;
@@ -105,16 +108,17 @@
                     {
                         case Result.Success:
                             ///如果有节点运行成功,立即中断并返回
-                            this.reset();
+                            //                            this.reset();
+                            mList[mIndex].reset();
                             return Result.Success;
                         case Result.Fail:
                             ///如果有节点运行失败
                             ///测试下一个节点
                             ///如果测试完了都没有成功,就返回失败
+                            mList[mIndex].reset();
                             mIndex++;
                             if (mIndex == mList.Count)
                             {
-                                this.reset();
                                 return Result.Fail;
                             }
                             break;
