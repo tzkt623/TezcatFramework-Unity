@@ -49,18 +49,22 @@ namespace tezcat.Framework.AI
 
 
         [System.Obsolete("这套系统已经弃用,请使用[imdExecute]函数代替")]
-        public virtual void execute() { }
+        public virtual void execute()
+        {
+            throw new System.Exception(string.Format("TezBTComposite : Obsolete Method {0}", nameof(execute)));
+        }
 
         [System.Obsolete("这套系统已经弃用,请使用[imdExecute]函数代替")]
         protected virtual void reportToParent(Result result)
         {
+            throw new System.Exception(string.Format("TezBTComposite : Obsolete Method {0}", nameof(reportToParent)));
             this.parent.onReport(this, result);
         }
 
         [System.Obsolete("这套系统已经弃用,请使用[imdExecute]函数代替")]
         public virtual void onReport(TezBTNode node, Result result)
         {
-
+            throw new System.Exception(string.Format("TezBTComposite : Obsolete Method {0}", nameof(onReport)));
         }
     }
 

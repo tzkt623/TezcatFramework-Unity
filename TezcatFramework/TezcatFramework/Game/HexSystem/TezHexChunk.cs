@@ -15,10 +15,10 @@ namespace tezcat.Framework.Game
         public int X { get; private set; }
         public int Y { get; private set; }
 
-        int m_Width = 0;
-        int m_Height = 0;
+        int mWidth = 0;
+        int mHeight = 0;
 
-        Block[,] m_BlockArray = null;
+        Block[,] mBlockArray = null;
 
         public void setPos(int x, int y)
         {
@@ -28,14 +28,14 @@ namespace tezcat.Framework.Game
 
         public void setSize(int width, int height)
         {
-            m_Width = width;
-            m_Height = height;
-            m_BlockArray = new Block[m_Width, m_Height];
+            mWidth = width;
+            mHeight = height;
+            mBlockArray = new Block[mWidth, mHeight];
         }
 
         public void set(int x, int y, Block block)
         {
-            m_BlockArray[x, y] = block;
+            mBlockArray[x, y] = block;
             this.onBlockSetted(block);
         }
 
@@ -46,17 +46,17 @@ namespace tezcat.Framework.Game
 
         public Block get(int x, int y)
         {
-            return m_BlockArray[x, y];
+            return mBlockArray[x, y];
         }
 
         public void initBlock(int localX, int localY, Block block)
         {
-            if (localX < 0 || localX >= m_Width || localY < 0 || localY >= m_Height)
+            if (localX < 0 || localX >= mWidth || localY < 0 || localY >= mHeight)
             {
                 throw new IndexOutOfRangeException("Position Out of range");
             }
 
-            m_BlockArray[localX, localY] = block;
+            mBlockArray[localX, localY] = block;
             this.onBlockInited(block);
         }
 
@@ -67,19 +67,19 @@ namespace tezcat.Framework.Game
 
         public bool tryGetBlock(int localX, int localY, out Block block)
         {
-            if (localX < 0 || localX >= m_Width || localY < 0 || localY >= m_Height)
+            if (localX < 0 || localX >= mWidth || localY < 0 || localY >= mHeight)
             {
                 block = null;
                 return false;
             }
 
-            block = m_BlockArray[localX, localY];
+            block = mBlockArray[localX, localY];
             return block != null;
         }
 
         public void foreachBlock(TezEventExtension.Action<Block> action)
         {
-            foreach (var block in m_BlockArray)
+            foreach (var block in mBlockArray)
             {
                 if (block != null)
                 {
@@ -90,7 +90,7 @@ namespace tezcat.Framework.Game
 
         public void foreachBlock(TezEventExtension.Function<bool, Block> function)
         {
-            foreach (var block in m_BlockArray)
+            foreach (var block in mBlockArray)
             {
                 if (block != null)
                 {
@@ -104,11 +104,11 @@ namespace tezcat.Framework.Game
 
         public virtual void close()
         {
-            foreach (var block in m_BlockArray)
+            foreach (var block in mBlockArray)
             {
                 block?.close();
             }
-            m_BlockArray = null;
+            mBlockArray = null;
         }
     }
 }

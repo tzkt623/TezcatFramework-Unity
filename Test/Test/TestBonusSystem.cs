@@ -129,6 +129,8 @@ namespace tezcat.Framework.Test
         public void test()
         {
             MyUnit myUnit = new MyUnit();
+            myUnit.init();
+            myUnit.addObject();
         }
     }
 }

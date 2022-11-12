@@ -1,4 +1,5 @@
-﻿using tezcat.Framework.BonusSystem;
+﻿using System;
+using tezcat.Framework.BonusSystem;
 using tezcat.Framework.Core;
 
 namespace tezcat.Framework.Test
@@ -46,7 +47,7 @@ namespace tezcat.Framework.Test
         public override int calculate(ITezProperty<int> property)
         {
             float result = (property.baseValue + m_SumBase) + property.baseValue * m_MultBase;
-            result = result + m_SumTotal + result * (1 + m_MultTotal);
+            result = m_SumTotal + result * (1 + m_MultTotal);
             return (int)System.Math.Round(result);
         }
 
@@ -132,7 +133,6 @@ namespace tezcat.Framework.Test
         {
             m_Min = min;
             m_Max = max;
-            this.dirty = true;
         }
 
         public override int calculate(ITezProperty<int> property)
@@ -183,9 +183,9 @@ namespace tezcat.Framework.Test
     {
         public MyPropertyManager propertyManager = new MyPropertyManager();
         public TezBonusAgent agent = new TezBonusAgent();
-        TezBonusPath bonusPath = TezBonusTokenCreator<MyPathes>.getPath(MyPathes.ArmorPlate);
+        public MyPropertyInt armorCapacity = null;
 
-        MyPropertyInt armorCapacity = null;
+        TezBonusPath bonusPath = TezBonusTokenCreator<MyPathes>.getPath(MyPathes.ArmorPlate);
 
         public void init()
         {
@@ -195,28 +195,27 @@ namespace tezcat.Framework.Test
             this.armorCapacity = this.propertyManager.getOrCreate<MyPropertyInt>(MyPropertyConfig.ArmorCapacity);
         }
 
-        private void onRemoveBonusObject(ITezBonusObject arg)
+        private void onAddBonusObject(ITezBonusObject evt)
         {
-            this.propertyManager.removeModifier((MyModifier)arg);
+            this.propertyManager.addModifier((ITezValueModifier)evt);
         }
 
-        private void onAddBonusObject(ITezBonusObject arg)
+        private void onRemoveBonusObject(ITezBonusObject evt)
         {
-            this.propertyManager.addModifier((MyModifier)arg);
+            this.propertyManager.removeModifier((ITezValueModifier)evt);
         }
     }
 
 
     class MyUnit2
     {
-        public MyBountyTree myTree = new MyBountyTree();
-
-        MyArmorPlate myArmorPlate = new MyArmorPlate();
+        public MyBountyTree tree = new MyBountyTree();
+        public MyArmorPlate armorPlate = new MyArmorPlate();
 
         public void init()
         {
-            myArmorPlate.init();
-            myTree.registerAgent(myArmorPlate.agent);
+            armorPlate.init();
+            tree.registerAgent(armorPlate.agent);
         }
     }
 
@@ -226,38 +225,50 @@ namespace tezcat.Framework.Test
         MyPropertyInt extraArmorPlate = new MyPropertyInt();
 
 
-        public void test()
+        public void run()
         {
             this.extraArmorPlate = new MyPropertyInt()
             {
                 descriptor = MyPropertyConfig.ArmorCapacity
             };
+            this.extraArmorPlate.baseValue = 10;
 
             MyModifier myModifier = new MyModifier()
             {
                 modifierConfig = new TezValueModifierConfig()
                 {
-                    assemble = MyValueModifierAssembleConfig.SumBase,
+                    assemble = TezValueModifierAssembleConfig.SumBase,
                     target = MyPropertyConfig.ArmorCapacity
                 },
                 bonusPath = TezBonusTokenCreator<MyPathes>.getPath(MyPathes.ArmorPlate),
-                source = this
+                source = this,
+                value = 5f
             };
 
             MyAgentModifier myAgentModifier = new MyAgentModifier(this.extraArmorPlate)
             {
                 modifierConfig = new TezValueModifierConfig()
                 {
-                    assemble = MyValueModifierAssembleConfig.SumBase,
+                    assemble = TezValueModifierAssembleConfig.SumBase,
                     target = MyPropertyConfig.ArmorCapacity
                 },
                 bonusPath = TezBonusTokenCreator<MyPathes>.getPath(MyPathes.ArmorPlate),
                 source = this
             };
 
+
             myUnit2.init();
-            myUnit2.myTree.addBonusObject(myModifier);
-            myUnit2.myTree.addBonusObject(myAgentModifier);
+            Console.WriteLine(string.Format("Armor: {0}", myUnit2.armorPlate.armorCapacity.value));
+
+            myUnit2.tree.addBonusObject(myModifier);
+            Console.WriteLine(string.Format("Armor: {0}", myUnit2.armorPlate.armorCapacity.value));
+
+            myUnit2.tree.addBonusObject(myAgentModifier);
+            Console.WriteLine(string.Format("Armor: {0}", myUnit2.armorPlate.armorCapacity.value));
+
+
+
+            Console.ReadKey();
         }
     }
 }

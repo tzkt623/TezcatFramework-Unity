@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using tezcat.Framework.Core;
 using tezcat.Framework.Extension;
@@ -68,7 +67,7 @@ namespace tezcat.Framework.Game
         #endregion
 
 
-        Dictionary<BlockData, Wrapper> m_SaveWrappers = new Dictionary<BlockData, Wrapper>();
+        Dictionary<BlockData, Wrapper> mSaveWrappers = new Dictionary<BlockData, Wrapper>();
 
         /// <summary>
         /// 路径找到
@@ -84,8 +83,8 @@ namespace tezcat.Framework.Game
             onPathFound = null;
             onPathNotFound = null;
 
-            m_SaveWrappers.Clear();
-            m_SaveWrappers = null;
+            mSaveWrappers.Clear();
+            mSaveWrappers = null;
         }
         /// <summary>
         /// 使用二叉堆加速型的find
@@ -197,7 +196,7 @@ namespace tezcat.Framework.Game
 
         protected Wrapper getOrCreateWrapper(BlockData blockData)
         {
-            if (m_SaveWrappers.TryGetValue(blockData, out Wrapper neighbor))
+            if (mSaveWrappers.TryGetValue(blockData, out Wrapper neighbor))
             {
                 if (!blockData.Equals(neighbor.blockData))
                 {
@@ -220,12 +219,12 @@ namespace tezcat.Framework.Game
         /// </summary>
         protected virtual void onPathFindComplete()
         {
-            foreach (var pair in m_SaveWrappers)
+            foreach (var pair in mSaveWrappers)
             {
                 pair.Value.close();
                 recycleWrapper(pair.Value);
             }
-            m_SaveWrappers.Clear();
+            mSaveWrappers.Clear();
         }
 
         protected virtual void onPathFindComplete(TezBinaryHeap<Wrapper> openSet, HashSet<Wrapper> closeSet)
@@ -239,7 +238,7 @@ namespace tezcat.Framework.Game
 
         private void saveWrapper(Wrapper wrapper)
         {
-            m_SaveWrappers.Add(wrapper.blockData, wrapper);
+            mSaveWrappers.Add(wrapper.blockData, wrapper);
         }
 
         /// <summary>

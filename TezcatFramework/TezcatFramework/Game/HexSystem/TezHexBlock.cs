@@ -14,8 +14,8 @@ namespace tezcat.Framework.Game
     {
         public TezHexCubeCoordinate coordinate;
 
-        bool m_NeedHash = true;
-        int m_HashCode = 0;
+        bool mNeedHash = true;
+        int mHashCode = 0;
 
         public virtual void close()
         {
@@ -28,13 +28,13 @@ namespace tezcat.Framework.Game
         /// </summary>
         public override int GetHashCode()
         {
-            if (m_NeedHash)
+            if (mNeedHash)
             {
-                m_NeedHash = false;
-                m_HashCode = this.coordinate.GetHashCode();
+                mNeedHash = false;
+                mHashCode = this.coordinate.GetHashCode();
             }
 
-            return m_HashCode;
+            return mHashCode;
         }
 
         /// <summary>

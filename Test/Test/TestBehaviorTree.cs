@@ -377,8 +377,6 @@ namespace tezcat.Framework.Test
             ///如果没有食物,先取得食物
             ///如果没有工具,取得工具,
             ///先蒸饭,再炒菜,最后吃饭
-
-
             var root = mTree.createRoot<TezBTSequence>();
 
             var get_foods = root.createNode<TezBTSequence>();

@@ -40,18 +40,18 @@ namespace tezcat.Framework.Test
 
     public class PathFinder : TezAStarSystem<PathWrapper, Block>
     {
-        TezBinaryHeap<PathWrapper> m_Heap = new TezBinaryHeap<PathWrapper>();
+        TezBinaryHeap<PathWrapper> mHeap = new TezBinaryHeap<PathWrapper>();
 
         public void find(Block start, Block end)
         {
-            m_Heap.clear();
+            mHeap.clear();
             var start_wrapper = createWrapper();
             start_wrapper.blockData = start;
 
             var end_wrapper = createWrapper();
             end_wrapper.blockData = end;
 
-            this.findPath(start_wrapper, end_wrapper, m_Heap);
+            this.findPath(start_wrapper, end_wrapper, mHeap);
             /*
             Debug.Log(string.Format("Total:[{0}] [{1}] [{2}] [{3}]", TezSamplePool<PathWrapper>.instance.createCount, TezSamplePool<HashSet<PathWrapper>>.instance.createCount, TezSamplePool<List<Block>>.instance.createCount, TezSamplePool<List<PathWrapper>>.instance.createCount));
             Debug.Log(string.Format("Recycle:[{0}] [{1}] [{2}] [{3}]", TezSamplePool<PathWrapper>.instance.recycleCount, TezSamplePool<HashSet<PathWrapper>>.instance.recycleCount, TezSamplePool<List<Block>>.instance.recycleCount, TezSamplePool<List<PathWrapper>>.instance.recycleCount));

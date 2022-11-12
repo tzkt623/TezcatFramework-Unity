@@ -71,59 +71,59 @@ namespace tezcat.Framework.BonusSystem
     /// <summary>
     /// 
     /// </summary>
-    /// <typeparam name="BountyMask">用于区别不同的加成系统</typeparam>
-    public static class TezBonusTokenCreator<BountyMask>
+    /// <typeparam name="BonusMask">用于区别不同的加成系统</typeparam>
+    public static class TezBonusTokenCreator<BonusMask>
     {
-        public static IReadOnlyList<TezBonusToken> tokenList => m_TokenList;
-        public static IReadOnlyDictionary<string, TezBonusToken> tokenDict => m_TokenDict;
-        public static IReadOnlyList<TezBonusPath> pathList => m_PathList;
+        public static IReadOnlyList<TezBonusToken> tokenList => sTokenList;
+        public static IReadOnlyDictionary<string, TezBonusToken> tokenDict => sTokenDict;
+        public static IReadOnlyList<TezBonusPath> pathList => sPathList;
 
 
-        static List<TezBonusToken> m_TokenList = new List<TezBonusToken>();
-        static Dictionary<string, TezBonusToken> m_TokenDict = new Dictionary<string, TezBonusToken>();
-        static List<TezBonusPath> m_PathList = new List<TezBonusPath>();
+        static List<TezBonusToken> sTokenList = new List<TezBonusToken>();
+        static Dictionary<string, TezBonusToken> sTokenDict = new Dictionary<string, TezBonusToken>();
+        static List<TezBonusPath> sPathList = new List<TezBonusPath>();
 
 
         public static TezBonusToken createToken(string name, TezBonusTokenType type, ITezBonusToken parent)
         {
-            if (m_TokenDict.ContainsKey(name))
+            if (sTokenDict.ContainsKey(name))
             {
-                throw new Exception(string.Format("TezBonusTokenCreator<{0}> : This name [{1}] is existed", typeof(BountyMask).Name, name));
+                throw new Exception(string.Format("TezBonusTokenCreator<{0}> : This name [{1}] is existed", typeof(BonusMask).Name, name));
             }
 
-            var id = m_TokenList.Count;
+            var id = sTokenList.Count;
             var token = new TezBonusToken(id, name, type, parent);
-            m_TokenList.Add(token);
-            m_TokenDict.Add(name, token);
-            m_PathList.Add(token.createPath());
+            sTokenList.Add(token);
+            sTokenDict.Add(name, token);
+            sPathList.Add(token.createPath());
 
             return token;
         }
 
         public static TezBonusPath getPath(ITezBonusToken token)
         {
-            return m_PathList[token.tokenID];
+            return sPathList[token.tokenID];
         }
 
         public static TezBonusPath getPath(string lastTokenName)
         {
-            return m_PathList[m_TokenDict[lastTokenName].tokenID];
+            return sPathList[sTokenDict[lastTokenName].tokenID];
         }
 
         public static TezBonusToken getToken(string name)
         {
             TezBonusToken token = null;
-            if (m_TokenDict.TryGetValue(name, out token))
+            if (sTokenDict.TryGetValue(name, out token))
             {
                 return token;
             }
 
-            throw new Exception(string.Format("TezBonusTokenCreator<{0}> : This name [{1}] not exist", typeof(BountyMask).Name, name));
+            throw new Exception(string.Format("TezBonusTokenCreator<{0}> : This name [{1}] not exist", typeof(BonusMask).Name, name));
         }
 
         public static TezBonusToken getToken(int index)
         {
-            return m_TokenList[index];
+            return sTokenList[index];
         }
     }
 }

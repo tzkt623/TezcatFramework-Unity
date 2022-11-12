@@ -24,7 +24,8 @@ namespace tezcat.Framework.AI
 
         protected override void reportToParent(Result result)
         {
-            this.parent.onReport(this, result);
+            throw new System.Exception(string.Format("TezBTComposite : Obsolete Method {0}", nameof(reportToParent)));
+//            this.parent.onReport(this, result);
         }
 
         public override void loadConfig(TezReader reader)

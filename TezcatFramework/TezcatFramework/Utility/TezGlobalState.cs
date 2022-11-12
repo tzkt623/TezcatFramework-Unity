@@ -5,7 +5,7 @@ namespace tezcat.Framework.Utility
     public class TezGlobalState
     {
         static Dictionary<string, uint> m_StateWithName = new Dictionary<string, uint>(32);
-        static uint m_Mask = 0;
+        static uint mMask = 0;
 
         public static uint createOrGet(string name)
         {
@@ -21,32 +21,32 @@ namespace tezcat.Framework.Utility
 
         public static void add(uint state_s)
         {
-            m_Mask |= state_s;
+            mMask |= state_s;
         }
 
         public static void remove(uint state_s)
         {
-            m_Mask &= ~state_s;
+            mMask &= ~state_s;
         }
 
         public static bool anyOf(uint state_s)
         {
-            return (m_Mask & state_s) > 0;
+            return (mMask & state_s) > 0;
         }
 
         public static bool noneOf(uint state_s)
         {
-            return (m_Mask & state_s) == 0;
+            return (mMask & state_s) == 0;
         }
 
         public static bool allOf(uint state_s)
         {
-            return (m_Mask & state_s) == state_s;
+            return (mMask & state_s) == state_s;
         }
 
         public static void reset()
         {
-            m_Mask = 0;
+            mMask = 0;
         }
     }
 }

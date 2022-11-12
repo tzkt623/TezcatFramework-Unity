@@ -17,6 +17,27 @@ namespace tezcat.Framework.AI
     [TezBTRegister(name = "Sequence")]
     public class TezBTSequence : TezBTCompositeList
     {
+        public override Result imdExecute()
+        {
+            switch (mList[mIndex].imdExecute())
+            {
+                case Result.Success:
+                    mList[mIndex].reset();
+                    mIndex++;
+                    if (mIndex == mList.Count)
+                    {
+//                        this.reset();
+                        return Result.Success;
+                    }
+                    break;
+                case Result.Fail:
+                    //                    this.reset();
+                    mList[mIndex].reset();
+                    return Result.Fail;
+            }
+
+            return Result.Running;
+        }
         public override void onReport(TezBTNode node, Result result)
         {
             switch (result)
@@ -50,26 +71,5 @@ namespace tezcat.Framework.AI
             mList[mIndex].execute();
         }
 
-        public override Result imdExecute()
-        {
-            switch (mList[mIndex].imdExecute())
-            {
-                case Result.Success:
-                    mList[mIndex].reset();
-                    mIndex++;
-                    if (mIndex == mList.Count)
-                    {
-//                        this.reset();
-                        return Result.Success;
-                    }
-                    break;
-                case Result.Fail:
-                    //                    this.reset();
-                    mList[mIndex].reset();
-                    return Result.Fail;
-            }
-
-            return Result.Running;
-        }
     }
 }

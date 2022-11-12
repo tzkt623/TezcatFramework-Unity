@@ -7,18 +7,18 @@ namespace tezcat.Framework.AI
         where TState : TezBaseFSMState<TBlackboard>
         where TBlackboard : TezBaseFSMBlackboard
     {
-        TState m_GlobalState = null;
+        TState mGlobalState = null;
         TBlackboard m_Blackboard = null;
 
         public override void execute()
         {
-            m_GlobalState?.execute(m_Blackboard);
+            mGlobalState?.execute(m_Blackboard);
             mCurrentState?.execute(m_Blackboard);
         }
 
         public void setGlobalState(TState state)
         {
-            m_GlobalState = state;
+            mGlobalState = state;
         }
 
         public void changeState(TState state)
@@ -35,7 +35,7 @@ namespace tezcat.Framework.AI
                 return;
             }
 
-            if (m_GlobalState != null && m_GlobalState.onEvent(eventData))
+            if (mGlobalState != null && mGlobalState.onEvent(eventData))
             {
                 return;
             }
@@ -45,8 +45,8 @@ namespace tezcat.Framework.AI
         {
             base.close();
 
-            m_GlobalState?.close();
-            m_GlobalState = null;
+            mGlobalState?.close();
+            mGlobalState = null;
         }
     }
 }

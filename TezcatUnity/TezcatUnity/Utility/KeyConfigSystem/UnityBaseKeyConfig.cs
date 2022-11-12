@@ -20,81 +20,81 @@ namespace tezcat.Unity.Utility
 
     public class UnityBaseKeyConfig1 : UnityBaseKeyConfig
     {
-        UnityKeyWrapper m_Wrapper;
+        UnityKeyWrapper mWrapper;
         public UnityBaseKeyConfig1(string name, UnityKeyWrapper wrapper) : base(name, 1)
         {
-            m_Wrapper = wrapper;
+            mWrapper = wrapper;
 
-            this.setWrapper(0, m_Wrapper);
+            this.setWrapper(0, mWrapper);
         }
 
         public override void close()
         {
             base.close();
-            m_Wrapper = null;
+            mWrapper = null;
         }
 
         public override bool active()
         {
-            return m_Wrapper.active();
+            return mWrapper.active();
         }
     }
 
     public class UnityBaseKeyConfig2 : UnityBaseKeyConfig
     {
-        UnityKeyWrapper m_Wrapper1;
-        UnityKeyWrapper m_Wrapper2;
+        UnityKeyWrapper mWrapper1;
+        UnityKeyWrapper mWrapper2;
 
         public UnityBaseKeyConfig2(string name, UnityKeyWrapper wrapper1, UnityKeyWrapper wrapper2) : base(name, 2)
         {
-            m_Wrapper1 = wrapper1;
-            m_Wrapper2 = wrapper2;
+            mWrapper1 = wrapper1;
+            mWrapper2 = wrapper2;
 
-            this.setWrapper(0, m_Wrapper1);
-            this.setWrapper(1, m_Wrapper2);
+            this.setWrapper(0, mWrapper1);
+            this.setWrapper(1, mWrapper2);
         }
 
         public override void close()
         {
             base.close();
-            m_Wrapper1 = null;
-            m_Wrapper2 = null;
+            mWrapper1 = null;
+            mWrapper2 = null;
         }
 
         public override bool active()
         {
-            return m_Wrapper1.active() && m_Wrapper2.active();
+            return mWrapper1.active() && mWrapper2.active();
         }
     }
 
     public class UnityBaseKeyConfig3 : UnityBaseKeyConfig
     {
-        UnityKeyWrapper m_Wrapper1;
-        UnityKeyWrapper m_Wrapper2;
-        UnityKeyWrapper m_Wrapper3;
+        UnityKeyWrapper mWrapper1;
+        UnityKeyWrapper mWrapper2;
+        UnityKeyWrapper mWrapper3;
 
         public UnityBaseKeyConfig3(string name, UnityKeyWrapper wrapper1, UnityKeyWrapper wrapper2, UnityKeyWrapper wrapper3) : base(name, 3)
         {
-            m_Wrapper1 = wrapper1;
-            m_Wrapper2 = wrapper2;
-            m_Wrapper3 = wrapper3;
+            mWrapper1 = wrapper1;
+            mWrapper2 = wrapper2;
+            mWrapper3 = wrapper3;
 
-            this.setWrapper(0, m_Wrapper1);
-            this.setWrapper(1, m_Wrapper2);
-            this.setWrapper(2, m_Wrapper3);
+            this.setWrapper(0, mWrapper1);
+            this.setWrapper(1, mWrapper2);
+            this.setWrapper(2, mWrapper3);
         }
 
         public override void close()
         {
             base.close();
-            m_Wrapper1 = null;
-            m_Wrapper2 = null;
-            m_Wrapper3 = null;
+            mWrapper1 = null;
+            mWrapper2 = null;
+            mWrapper3 = null;
         }
 
         public override bool active()
         {
-            return m_Wrapper1.active() && m_Wrapper2.active() && m_Wrapper3.active();
+            return mWrapper1.active() && mWrapper2.active() && mWrapper3.active();
         }
     }
 }

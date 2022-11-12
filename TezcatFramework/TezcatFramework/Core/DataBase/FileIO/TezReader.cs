@@ -15,8 +15,8 @@ namespace tezcat.Framework.Database
             String,
         }
 
-        private Stack<string> m_CheckStringKey = new Stack<string>();
-        private Stack<int> m_CheckIntKey = new Stack<int>();
+        private Stack<string> mCheckStringKey = new Stack<string>();
+        private Stack<int> mCheckIntKey = new Stack<int>();
 
         public abstract int count { get; }
 
@@ -41,7 +41,7 @@ namespace tezcat.Framework.Database
 
         public void beginArray(string key)
         {
-            m_CheckStringKey.Push(key);
+            mCheckStringKey.Push(key);
             this.onBeginArray(key);
         }
 
@@ -49,13 +49,13 @@ namespace tezcat.Framework.Database
 
         public void endArray(string key)
         {
-            if (m_CheckStringKey.Peek() != key)
+            if (mCheckStringKey.Peek() != key)
             {
                 throw new System.ArgumentException(string.Format("Error End Array : {0}", key));
             }
             else
             {
-                m_CheckStringKey.Pop();
+                mCheckStringKey.Pop();
                 this.onEndArray(key);
             }
         }
@@ -81,7 +81,7 @@ namespace tezcat.Framework.Database
 
         public void beginArray(int key)
         {
-            m_CheckIntKey.Push(key);
+            mCheckIntKey.Push(key);
             this.onBeginArray(key);
         }
 
@@ -89,13 +89,13 @@ namespace tezcat.Framework.Database
 
         public void endArray(int key)
         {
-            if (m_CheckIntKey.Peek() != key)
+            if (mCheckIntKey.Peek() != key)
             {
                 throw new System.ArgumentException(string.Format("Error End Array : {0}", key));
             }
             else
             {
-                m_CheckIntKey.Pop();
+                mCheckIntKey.Pop();
                 this.onEndArray(key);
             }
         }
@@ -122,7 +122,7 @@ namespace tezcat.Framework.Database
 
         public void beginObject(string key)
         {
-            m_CheckStringKey.Push(key);
+            mCheckStringKey.Push(key);
             this.onBeginObject(key);
         }
 
@@ -130,13 +130,13 @@ namespace tezcat.Framework.Database
 
         public void endObject(string key)
         {
-            if (m_CheckStringKey.Peek() != key)
+            if (mCheckStringKey.Peek() != key)
             {
                 throw new System.ArgumentException(string.Format("Error End Object : {0}", key));
             }
             else
             {
-                m_CheckStringKey.Pop();
+                mCheckStringKey.Pop();
                 this.onEndObject(key);
             }
         }
@@ -162,7 +162,7 @@ namespace tezcat.Framework.Database
 
         public void beginObject(int key)
         {
-            m_CheckIntKey.Push(key);
+            mCheckIntKey.Push(key);
             this.onBeginObject(key);
         }
 
@@ -170,13 +170,13 @@ namespace tezcat.Framework.Database
 
         public void endObject(int key)
         {
-            if (m_CheckIntKey.Peek() != key)
+            if (mCheckIntKey.Peek() != key)
             {
                 throw new System.ArgumentException(string.Format("Error End Object : {0}", key));
             }
             else
             {
-                m_CheckIntKey.Pop();
+                mCheckIntKey.Pop();
                 this.onEndObject(key);
             }
         }
@@ -216,11 +216,11 @@ namespace tezcat.Framework.Database
 
         public void close()
         {
-            m_CheckStringKey.Clear();
-            m_CheckIntKey.Clear();
+            mCheckStringKey.Clear();
+            mCheckIntKey.Clear();
 
-            m_CheckIntKey = null;
-            m_CheckStringKey = null;
+            mCheckIntKey = null;
+            mCheckStringKey = null;
         }
     }
 }

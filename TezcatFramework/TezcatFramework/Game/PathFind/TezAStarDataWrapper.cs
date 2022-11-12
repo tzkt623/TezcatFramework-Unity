@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using tezcat.Framework.Extension;
-using tezcat.Framework.Utility;
+﻿using tezcat.Framework.Utility;
 
 namespace tezcat.Framework.Game
 {

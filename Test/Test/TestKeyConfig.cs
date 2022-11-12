@@ -8,10 +8,10 @@ namespace tezcat.Framework.Test
 {
     public class TestKeyConfig
     {
-        TezKeyConfig m_Config;
-        TezKeyConfig m_SaveConfig;
-        TezKeyConfig m_LoadConfig;
-        TezKeyConfig m_ChangeKeyConfig;
+        TezKeyConfig mConfig;
+        TezKeyConfig mSaveConfig;
+        TezKeyConfig mLoadConfig;
+        TezKeyConfig mChangeKeyConfig;
 
         public void init()
         {
@@ -55,16 +55,16 @@ namespace tezcat.Framework.Test
         public void getConfigs()
         {
             TezcatUnity.unityKeyConfigSystem.getOrCreateConfigLayer("Logic").tryGetConfig("Test", out TezKeyConfig keyConfig);
-            m_Config = keyConfig;
+            mConfig = keyConfig;
 
             TezcatUnity.unityKeyConfigSystem.getOrCreateConfigLayer("SL").tryGetConfig("Save", out TezKeyConfig sc);
-            m_SaveConfig = sc;
+            mSaveConfig = sc;
 
             TezcatUnity.unityKeyConfigSystem.getOrCreateConfigLayer("SL").tryGetConfig("Load", out TezKeyConfig lc);
-            m_LoadConfig = lc;
+            mLoadConfig = lc;
 
             TezcatUnity.unityKeyConfigSystem.getOrCreateConfigLayer("Option").tryGetConfig("ChangeKey", out TezKeyConfig ck);
-            m_ChangeKeyConfig = ck;
+            mChangeKeyConfig = ck;
         }
 
         public void changeKey()
@@ -75,25 +75,25 @@ namespace tezcat.Framework.Test
 
         public void update()
         {
-            if (m_Config.active())
+            if (mConfig.active())
             {
                 ///Do someting......
             }
 
-            if (m_SaveConfig.active())
+            if (mSaveConfig.active())
             {
                 TezWriter writer = new TezJsonWriter();
                 TezcatUnity.unityKeyConfigSystem.writeToSave(writer);
             }
 
-            if (m_LoadConfig.active())
+            if (mLoadConfig.active())
             {
                 TezReader reader = new TezJsonReader();
                 reader.load("DataPath");
                 TezcatUnity.unityKeyConfigSystem.readFromSave(reader);
             }
 
-            if(m_ChangeKeyConfig.active())
+            if(mChangeKeyConfig.active())
             {
                 this.changeKey();
             }

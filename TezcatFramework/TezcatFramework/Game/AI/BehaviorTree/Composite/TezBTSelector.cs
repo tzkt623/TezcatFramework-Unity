@@ -23,55 +23,6 @@
     {
         TezBTNode mRunning = null;
 
-        /// <summary>
-        /// 子节点向自己报告运行状态
-        /// </summary>
-        public override void onReport(TezBTNode node, Result result)
-        {
-            switch (result)
-            {
-                case Result.Success:
-                    ///如果有节点运行成功,立即中断并返回
-                    this.reset();
-                    this.reportToParent(Result.Success);
-                    break;
-                case Result.Fail:
-                    ///如果有节点运行失败
-                    ///测试下一个节点
-                    ///如果测试完了都没有成功,就返回失败
-                    mRunning = null;
-                    mIndex++;
-                    if (mIndex == mList.Count)
-                    {
-                        this.reset();
-                        this.reportToParent(Result.Fail);
-                    }
-                    break;
-                case Result.Running:
-                    ///如果是running,就啥也不管
-                    mRunning = node;
-                    this.reportToParent(Result.Running);
-                    break;
-                default:
-                    break;
-            }
-        }
-
-        public override void execute()
-        {
-            if (mRunning != null)
-            {
-                mRunning.execute();
-            }
-            else
-            {
-                while (mRunning == null)
-                {
-                    mList[mIndex].execute();
-                }
-            }
-        }
-
         public override Result imdExecute()
         {
             if (mRunning != null)
@@ -130,6 +81,55 @@
                 }
 
                 return Result.Running;
+            }
+        }
+
+        /// <summary>
+        /// 子节点向自己报告运行状态
+        /// </summary>
+        public override void onReport(TezBTNode node, Result result)
+        {
+            switch (result)
+            {
+                case Result.Success:
+                    ///如果有节点运行成功,立即中断并返回
+                    this.reset();
+                    this.reportToParent(Result.Success);
+                    break;
+                case Result.Fail:
+                    ///如果有节点运行失败
+                    ///测试下一个节点
+                    ///如果测试完了都没有成功,就返回失败
+                    mRunning = null;
+                    mIndex++;
+                    if (mIndex == mList.Count)
+                    {
+                        this.reset();
+                        this.reportToParent(Result.Fail);
+                    }
+                    break;
+                case Result.Running:
+                    ///如果是running,就啥也不管
+                    mRunning = node;
+                    this.reportToParent(Result.Running);
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        public override void execute()
+        {
+            if (mRunning != null)
+            {
+                mRunning.execute();
+            }
+            else
+            {
+                while (mRunning == null)
+                {
+                    mList[mIndex].execute();
+                }
             }
         }
 

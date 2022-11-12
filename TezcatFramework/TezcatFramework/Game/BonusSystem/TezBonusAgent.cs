@@ -12,21 +12,30 @@ namespace tezcat.Framework.BonusSystem
         : ITezBonusAgent
         , ITezCloseable
     {
-        TezBonusPath m_BonusPath = null;
-        public TezBonusPath bonusPath => m_BonusPath;
+        TezBonusPath mBonusPath = null;
+        public TezBonusPath bonusPath => mBonusPath;
 
-        TezEventExtension.Action<ITezBonusObject> m_OnAddBonusObject = null;
-        TezEventExtension.Action<ITezBonusObject> m_OnRemoveBonusObject = null;
+        TezEventExtension.Action<ITezBonusObject> mOnAddBonusObject = null;
+        TezEventExtension.Action<ITezBonusObject> mOnRemoveBonusObject = null;
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="onAddBonusObject"></param>
+        /// <param name="onRemoveBonusObject"></param>
         public void setListener(TezEventExtension.Action<ITezBonusObject> onAddBonusObject, TezEventExtension.Action<ITezBonusObject> onRemoveBonusObject)
         {
-            m_OnAddBonusObject = onAddBonusObject;
-            m_OnRemoveBonusObject = onRemoveBonusObject;
+            mOnAddBonusObject = onAddBonusObject;
+            mOnRemoveBonusObject = onRemoveBonusObject;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="path"></param>
         public void setPath(TezBonusPath path)
         {
-            m_BonusPath = path;
+            mBonusPath = path;
         }
 
         /// <summary>
@@ -35,7 +44,7 @@ namespace tezcat.Framework.BonusSystem
         /// <param name="obj"></param>
         public void addBonusObject(ITezBonusObject obj)
         {
-            m_OnAddBonusObject(obj);
+            mOnAddBonusObject(obj);
         }
 
         /// <summary>
@@ -44,14 +53,14 @@ namespace tezcat.Framework.BonusSystem
         /// <param name="obj"></param>
         public void removeBonusObject(ITezBonusObject obj)
         {
-            m_OnRemoveBonusObject(obj);
+            mOnRemoveBonusObject(obj);
         }
 
         public void close()
         {
-            m_BonusPath = null;
-            m_OnAddBonusObject = null;
-            m_OnRemoveBonusObject = null;
+            mBonusPath = null;
+            mOnAddBonusObject = null;
+            mOnRemoveBonusObject = null;
         }
     }
 }

@@ -20,54 +20,54 @@ namespace tezcat.Framework.Game
         where Chunk : TezHexChunk<Block>, new()
         where Block : TezHexBlock, new()
     {
-        Chunk[,] m_ChunkArray = null;
+        Chunk[,] mChunkArray = null;
 
-        int m_Width;
-        public int width => m_Width;
+        int mWidth;
+        public int width => mWidth;
 
-        int m_Height;
-        public int height => m_Height;
+        int mHeight;
+        public int height => mHeight;
 
-        int m_ChunkSize;
-        public int chunkSize => m_ChunkSize;
+        int mChunkSize;
+        public int chunkSize => mChunkSize;
 
-        int m_HalfWidth;
-        public int halfWidth => m_HalfWidth;
+        int mHalfWidth;
+        public int halfWidth => mHalfWidth;
 
-        int m_HalfHeight;
-        public int halfHeight => m_HalfHeight;
+        int mHalfHeight;
+        public int halfHeight => mHalfHeight;
 
 
-        int m_ChunkXCount = 0;
-        int m_ChunkYCount = 0;
+        int mChunkXCount = 0;
+        int mChunkYCount = 0;
 
         /// <summary>
         /// 
         /// </summary>
         protected void initChunkArray(int areaWidth, int areaHeight, int chunkSize)
         {
-            m_Width = areaWidth;
-            m_Height = areaHeight;
+            mWidth = areaWidth;
+            mHeight = areaHeight;
 
-            m_HalfWidth = m_Width / 2;
-            m_HalfHeight = m_Height / 2;
+            mHalfWidth = mWidth / 2;
+            mHalfHeight = mHeight / 2;
 
-            m_ChunkSize = chunkSize;
-            m_ChunkXCount = Mathf.CeilToInt((float)m_Width / m_ChunkSize);
-            m_ChunkYCount = Mathf.CeilToInt((float)m_Height / m_ChunkSize);
+            mChunkSize = chunkSize;
+            mChunkXCount = Mathf.CeilToInt((float)mWidth / mChunkSize);
+            mChunkYCount = Mathf.CeilToInt((float)mHeight / mChunkSize);
 
-            m_ChunkArray = new Chunk[m_ChunkXCount, m_ChunkYCount];
+            mChunkArray = new Chunk[mChunkXCount, mChunkYCount];
 
-            for (int y = 0; y < m_ChunkYCount; y++)
+            for (int y = 0; y < mChunkYCount; y++)
             {
-                for (int x = 0; x < m_ChunkXCount; x++)
+                for (int x = 0; x < mChunkXCount; x++)
                 {
                     var chunk = new Chunk();
                     chunk.setPos(x, y);
-                    chunk.setSize(m_ChunkSize, m_ChunkSize);
+                    chunk.setSize(mChunkSize, mChunkSize);
                     this.onInitChunk(ref chunk);
 
-                    m_ChunkArray[x, y] = chunk;
+                    mChunkArray[x, y] = chunk;
                 }
             }
         }
@@ -83,13 +83,13 @@ namespace tezcat.Framework.Game
         public void initBlock(TezHexCubeCoordinate coordinate, TezHexGrid.Layout layout, Block block)
         {
             var array_index = this.toArrayIndex(coordinate.toOffset(layout));
-            if (array_index.isChunkOutOfRange(m_ChunkXCount, m_ChunkYCount))
+            if (array_index.isChunkOutOfRange(mChunkXCount, mChunkYCount))
             {
                 throw new IndexOutOfRangeException("Chunk Out Of Range");
             }
 
             block.coordinate = coordinate;
-            m_ChunkArray[array_index.chunkX, array_index.chunkY].initBlock(array_index.blockX, array_index.blockY, block);
+            mChunkArray[array_index.chunkX, array_index.chunkY].initBlock(array_index.blockX, array_index.blockY, block);
             this.onBlockInited(block);
         }
 
@@ -102,13 +102,13 @@ namespace tezcat.Framework.Game
         {
             var array_index = this.toArrayIndex(ref coordinate);
 
-            if (array_index.isChunkOutOfRange(m_ChunkXCount, m_ChunkYCount))
+            if (array_index.isChunkOutOfRange(mChunkXCount, mChunkYCount))
             {
                 block = null;
                 return false;
             }
 
-            return m_ChunkArray[array_index.chunkX, array_index.chunkY].tryGetBlock(
+            return mChunkArray[array_index.chunkX, array_index.chunkY].tryGetBlock(
                 array_index.blockX,
                 array_index.blockY,
                 out block);
@@ -116,65 +116,65 @@ namespace tezcat.Framework.Game
 
         protected TezHexArrayIndex toArrayIndex(TezHexOffsetCoordinate coordinate)
         {
-            var pos_x = m_HalfWidth + coordinate.q;
-            var pos_y = m_HalfHeight + coordinate.r;
+            var pos_x = mHalfWidth + coordinate.q;
+            var pos_y = mHalfHeight + coordinate.r;
 
             ///计算数组坐标在哪一个chunk的范围内
-            var chunk_x = pos_x / m_ChunkSize;
-            var chunk_y = pos_y / m_ChunkSize;
+            var chunk_x = pos_x / mChunkSize;
+            var chunk_y = pos_y / mChunkSize;
 
             ///计算chunk内的Block的数组坐标
-            var block_x = pos_x % m_ChunkSize;
-            var block_y = pos_y % m_ChunkSize;
+            var block_x = pos_x % mChunkSize;
+            var block_y = pos_y % mChunkSize;
 
             return new TezHexArrayIndex(chunk_x, chunk_y, block_x, block_y);
         }
 
         protected TezHexArrayIndex toArrayIndex(ref TezHexOffsetCoordinate coordinate)
         {
-            var pos_x = m_HalfWidth + coordinate.q;
-            var pos_y = m_HalfHeight + coordinate.r;
+            var pos_x = mHalfWidth + coordinate.q;
+            var pos_y = mHalfHeight + coordinate.r;
 
             ///计算数组坐标在哪一个chunk的范围内
-            var chunk_x = pos_x / m_ChunkSize;
-            var chunk_y = pos_y / m_ChunkSize;
+            var chunk_x = pos_x / mChunkSize;
+            var chunk_y = pos_y / mChunkSize;
 
             ///计算chunk内的Block的数组坐标
-            var block_x = pos_x % m_ChunkSize;
-            var block_y = pos_y % m_ChunkSize;
+            var block_x = pos_x % mChunkSize;
+            var block_y = pos_y % mChunkSize;
 
             return new TezHexArrayIndex(chunk_x, chunk_y, block_x, block_y);
         }
 
         protected Chunk getChunk(int x, int y)
         {
-            return m_ChunkArray[x, y];
+            return mChunkArray[x, y];
         }
 
         public void foreachChunk(TezEventExtension.Action<Chunk> action)
         {
-            var x_length = m_ChunkArray.GetLength(0);
-            var y_length = m_ChunkArray.GetLength(1);
+            var x_length = mChunkArray.GetLength(0);
+            var y_length = mChunkArray.GetLength(1);
 
             for (int y = 0; y < y_length; y++)
             {
                 for (int x = 0; x < x_length; x++)
                 {
-                    action(m_ChunkArray[x, y]);
+                    action(mChunkArray[x, y]);
                 }
             }
         }
 
         public void foreachChunk(TezEventExtension.Function<bool, Chunk> function)
         {
-            var x_length = m_ChunkArray.GetLength(0);
-            var y_length = m_ChunkArray.GetLength(1);
+            var x_length = mChunkArray.GetLength(0);
+            var y_length = mChunkArray.GetLength(1);
 
             for (int y = 0; y < y_length; y++)
             {
                 for (int x = 0; x < x_length; x++)
                 {
-                    if (function(m_ChunkArray[x, y]))
+                    if (function(mChunkArray[x, y]))
                     {
                         return;
                     }
@@ -184,11 +184,11 @@ namespace tezcat.Framework.Game
 
         public virtual void close()
         {
-            foreach (var chunk in m_ChunkArray)
+            foreach (var chunk in mChunkArray)
             {
                 chunk?.close();
             }
-            m_ChunkArray = null;
+            mChunkArray = null;
         }
     }
 }

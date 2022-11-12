@@ -76,6 +76,11 @@ namespace tezcat.Framework.Game
             this.z = r;
         }
 
+        public TezHexCubeCoordinate copy()
+        {
+            return new TezHexCubeCoordinate(this.q, this.r);
+        }
+
         public bool Equals(TezHexCubeCoordinate other)
         {
             return this.x == other.x && this.z == other.z;
@@ -192,6 +197,13 @@ namespace tezcat.Framework.Game
             this.x += x;
             this.y += y;
             this.z += z;
+        }
+
+        public void add(TezHexCubeCoordinate cubeCoordinate)
+        {
+            this.x += cubeCoordinate.x;
+            this.y += cubeCoordinate.y;
+            this.z += cubeCoordinate.z;
         }
 
         public void rotateLeft()

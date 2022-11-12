@@ -50,29 +50,29 @@ namespace tezcat.Framework.Database
 
     public class TezDatabase : ITezDatabase
     {
-        protected List<TezDatabaseGameItem> m_ItemList = new List<TezDatabaseGameItem>();
-        protected Dictionary<string, TezDatabaseGameItem> m_ItemDict = new Dictionary<string, TezDatabaseGameItem>();
+        protected List<TezDatabaseGameItem> mItemList = new List<TezDatabaseGameItem>();
+        protected Dictionary<string, TezDatabaseGameItem> mItemDict = new Dictionary<string, TezDatabaseGameItem>();
 
         public void registerItem(TezDatabaseGameItem item)
         {
-            if (m_ItemDict.ContainsKey(item.NID))
+            if (mItemDict.ContainsKey(item.NID))
             {
                 throw new Exception(string.Format("{0} : Item {1} had registered!!", this.GetType().Name, item.NID));
             }
 
-            item.onRegister(m_ItemList.Count);
-            m_ItemList.Add(item);
-            m_ItemDict.Add(item.NID, item);
+            item.onRegister(mItemList.Count);
+            mItemList.Add(item);
+            mItemDict.Add(item.NID, item);
         }
 
         public TezDatabaseGameItem getItem(int uid)
         {
-            return m_ItemList[uid];
+            return mItemList[uid];
         }
 
         public TezDatabaseGameItem getItem(string nid)
         {
-            return m_ItemDict[nid];
+            return mItemDict[nid];
         }
     }
 
@@ -83,31 +83,31 @@ namespace tezcat.Framework.Database
 
     public static class TezMultDatabase
     {
-        static List<ITezMultDatabase> m_DatabaseList = new List<ITezMultDatabase>();
+        static List<ITezMultDatabase> mDatabaseList = new List<ITezMultDatabase>();
 
         public static void register(ITezMultDatabase db)
         {
-            while (m_DatabaseList.Count <= db.UID)
+            while (mDatabaseList.Count <= db.UID)
             {
-                m_DatabaseList.Add(null);
+                mDatabaseList.Add(null);
             }
 
-            if (m_DatabaseList[db.UID] != null)
+            if (mDatabaseList[db.UID] != null)
             {
                 throw new Exception("This Database ID already existed");
             }
 
-            m_DatabaseList[db.UID] = db;
+            mDatabaseList[db.UID] = db;
         }
 
         public static ITezMultDatabase get(int id)
         {
-            return m_DatabaseList[id];
+            return mDatabaseList[id];
         }
 
         public static TezDatabaseGameItem getItem(int itemID)
         {
-            return m_DatabaseList[TezItemTypeID.getManagerID(itemID)].getItem(TezItemTypeID.getTypeID(itemID));
+            return mDatabaseList[TezItemTypeID.getManagerID(itemID)].getItem(TezItemTypeID.getTypeID(itemID));
         }
     }
 
@@ -122,8 +122,8 @@ namespace tezcat.Framework.Database
     {
         public int UID { get; }
 
-        protected Dictionary<string, Item> m_ItemDict = new Dictionary<string, Item>();
-        protected List<Item> m_ItemList = new List<Item>();
+        protected Dictionary<string, Item> mItemDict = new Dictionary<string, Item>();
+        protected List<Item> mItemList = new List<Item>();
 
         public TezMultDatabase(int uid)
         {
@@ -133,34 +133,34 @@ namespace tezcat.Framework.Database
 
         public void registerItem(Item item)
         {
-            if (m_ItemDict.ContainsKey(item.NID))
+            if (mItemDict.ContainsKey(item.NID))
             {
                 throw new Exception(string.Format("{0} : Item {1} had registered!!", this.GetType().Name, item.NID));
             }
 
-            item.onRegister(this.UID, m_ItemList.Count);
-            m_ItemList.Add(item);
-            m_ItemDict.Add(item.NID, item);
+            item.onRegister(this.UID, mItemList.Count);
+            mItemList.Add(item);
+            mItemDict.Add(item.NID, item);
         }
 
         public Item getItem(int uid)
         {
-            return m_ItemList[uid];
+            return mItemList[uid];
         }
 
         public Item getItem(string nid)
         {
-            return m_ItemDict[nid];
+            return mItemDict[nid];
         }
 
         TezDatabaseGameItem ITezDatabase.getItem(int uid)
         {
-            return m_ItemList[uid];
+            return mItemList[uid];
         }
 
         TezDatabaseGameItem ITezDatabase.getItem(string nid)
         {
-            return m_ItemDict[nid];
+            return mItemDict[nid];
         }
 
         void ITezDatabase.registerItem(TezDatabaseGameItem item)

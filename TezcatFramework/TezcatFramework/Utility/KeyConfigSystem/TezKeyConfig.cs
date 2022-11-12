@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections;
-using tezcat.Framework.Core;
+﻿using tezcat.Framework.Core;
 using tezcat.Framework.Database;
-using tezcat.Framework.Utility;
-using UnityEngine;
 
 namespace tezcat.Framework.Utility
 {
@@ -16,19 +12,19 @@ namespace tezcat.Framework.Utility
     {
         public string name { get; }
 
-        TezKeyWrapper[] m_Wrappers = null;
+        TezKeyWrapper[] mWrappers = null;
 
         public TezKeyConfig(string name, int keyCount)
         {
             this.name = name;
-            m_Wrappers = new TezKeyWrapper[keyCount];
+            mWrappers = new TezKeyWrapper[keyCount];
         }
 
         public abstract bool active();
 
         public void setWrapper(int index, TezKeyWrapper wrapper)
         {
-            m_Wrappers[index] = wrapper;
+            mWrappers[index] = wrapper;
         }
 
         public void resetToDefault(TezReader reader)
@@ -38,15 +34,15 @@ namespace tezcat.Framework.Utility
 
         public TezKeyWrapper getWrapper(int index)
         {
-            return m_Wrappers[index];
+            return mWrappers[index];
         }
 
         public void writeToSave(TezWriter writer)
         {
-            for (int i = 0; i < m_Wrappers.Length; i++)
+            for (int i = 0; i < mWrappers.Length; i++)
             {
                 writer.beginObject(i);
-                m_Wrappers[i].writeToSave(writer);
+                mWrappers[i].writeToSave(writer);
                 writer.endObject(i);
             }
         }
@@ -55,18 +51,18 @@ namespace tezcat.Framework.Utility
             for (int i = 0; i < reader.count; i++)
             {
                 reader.beginObject(i);
-                m_Wrappers[i].readFromSave(reader);
+                mWrappers[i].readFromSave(reader);
                 reader.endObject(i);
             }
         }
 
         public virtual void close()
         {
-            foreach (var item in m_Wrappers)
+            foreach (var item in mWrappers)
             {
                 item.close();
             }
-            m_Wrappers = null;
+            mWrappers = null;
         }
     }
 }

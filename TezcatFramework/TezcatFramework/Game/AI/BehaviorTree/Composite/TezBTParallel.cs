@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace tezcat.Framework.AI
+﻿namespace tezcat.Framework.AI
 {
     /// <summary>
     /// 并行节点
@@ -30,14 +28,52 @@ namespace tezcat.Framework.AI
     [TezBTRegister(name = "Parallel")]
     public class TezBTParallel : TezBTCompositeList
     {
-        List<TezBTNode> mRunningNodes = new List<TezBTNode>();
         int mSuccessCount = 0;
 
-
-        public override void init()
+        public override Result imdExecute()
         {
-            base.init();
+            mIndex = 0;
+            mSuccessCount = 0;
+            while (mIndex < mList.Count)
+            {
+                switch (mList[mIndex].imdExecute())
+                {
+                    ///如果有一个执行失败,就立即返回
+                    case Result.Fail:
+                        //                        this.reset();
+                        mList[mIndex].reset();
+                        return Result.Fail;
+                    ///不管是执行成功还是运行中
+                    ///都要继续执行下一个
+                    case Result.Success:
+                        mList[mIndex].reset();
+                        mSuccessCount++;
+                        break;
+                }
+
+                mIndex++;
+            }
+
+            ///所有节点全部执行成功
+            ///则返回成功
+            if (mSuccessCount == mList.Count)
+            {
+                //                this.reset();
+                return Result.Success;
+            }
+
+            return Result.Running;
         }
+
+        public override void reset()
+        {
+            base.reset();
+            mSuccessCount = 0;
+            //            mRunningNodes.Clear();
+        }
+
+        /*
+        List<TezBTNode> mRunningNodes = new List<TezBTNode>();
 
         public override void onReport(TezBTNode node, Result result)
         {
@@ -83,47 +119,6 @@ namespace tezcat.Framework.AI
                 mRunningNodes[mIndex].execute();
             }
         }
-
-        public override Result imdExecute()
-        {
-            mIndex = 0;
-            mSuccessCount = 0;
-            while (mIndex < mList.Count)
-            {
-                switch (mList[mIndex].imdExecute())
-                {
-                    ///如果有一个执行失败,就立即返回
-                    case Result.Fail:
-//                        this.reset();
-                        mList[mIndex].reset();
-                        return Result.Fail;
-                    ///不管是执行成功还是运行中
-                    ///都要继续执行下一个
-                    case Result.Success:
-                        mList[mIndex].reset();
-                        mSuccessCount++;
-                        break;
-                }
-
-                mIndex++;
-            }
-
-            ///所有节点全部执行成功
-            ///则返回成功
-            if (mSuccessCount == mList.Count)
-            {
-//                this.reset();
-                return Result.Success;
-            }
-
-            return Result.Running;
-        }
-
-        public override void reset()
-        {
-            base.reset();
-            mSuccessCount = 0;
-            mRunningNodes.Clear();
-        }
+        */
     }
 }

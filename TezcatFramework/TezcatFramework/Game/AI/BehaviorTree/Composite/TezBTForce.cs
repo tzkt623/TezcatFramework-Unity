@@ -8,6 +8,22 @@
     [TezBTRegister(name = "Force")]
     public class TezBTForce : TezBTCompositeList
     {
+        public override Result imdExecute()
+        {
+            if (mList[mIndex].imdExecute() != Result.Running)
+            {
+                mList[mIndex].reset();
+                mIndex++;
+                if (mIndex == mList.Count)
+                {
+                    // this.reset();
+                    return Result.Success;
+                }
+            }
+
+            return Result.Running;
+        }
+
         public override void onReport(TezBTNode node, Result result)
         {
             switch (result)
@@ -29,22 +45,6 @@
         public override void execute()
         {
             mList[mIndex].execute();
-        }
-
-        public override Result imdExecute()
-        {
-            if (mList[mIndex].imdExecute() != Result.Running)
-            {
-                mList[mIndex].reset();
-                mIndex++;
-                if (mIndex == mList.Count)
-                {
-                    // this.reset();
-                    return Result.Success;
-                }
-            }
-
-            return Result.Running;
         }
     }
 }

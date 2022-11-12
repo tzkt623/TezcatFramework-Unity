@@ -14,9 +14,12 @@ namespace tezcat.Framework.Core
         : TezValueWrapper<T>
         , ITezProperty<T>
     {
+        public sealed override TezWrapperType wrapperType => TezWrapperType.Property;
+
         public event TezEventExtension.Action<ITezProperty> onValueChanged;
 
-        protected T m_BaseValue = default(T);
+        private bool mDirty = false;
+        protected T mBaseValue = default(T);
         /// <summary>
         /// 基础数值
         /// 可以更改
@@ -27,22 +30,16 @@ namespace tezcat.Framework.Core
         {
             get
             {
-                return m_BaseValue;
+                return mBaseValue;
             }
             set
             {
-                m_ModifierCache.dirty = true;
-                m_BaseValue = value;
+                mDirty = true;
+                mBaseValue = value;
             }
         }
 
-        /// <summary>
-        /// 当前数值被更改时所保存的旧值
-        /// </summary>
-//        public T oldValue { get; protected set; }
-
-
-        private T m_TrueValue;
+        private T mTrueValue = default(T);
 
         /// <summary>
         /// 实际数值
@@ -54,12 +51,8 @@ namespace tezcat.Framework.Core
         {
             get
             {
-                if (m_ModifierCache.dirty)
-                {
-                    m_ModifierCache.dirty = false;
-                    this.calculateValue();
-                }
-                return m_TrueValue;
+                this.calculateValue();
+                return mTrueValue;
             }
             set
             {
@@ -67,15 +60,14 @@ namespace tezcat.Framework.Core
             }
         }
 
-        protected TezBaseValueModifierCache<T> m_ModifierCache = null;
-        public override TezWrapperType wrapperType => TezWrapperType.Property;
+        protected TezBaseValueModifierCache<T> mModifierCache = null;
 
         /// <summary>
         /// 
         /// </summary>
         protected TezProperty(ITezValueDescriptor name, TezBaseValueModifierCache<T> cache) : base(name)
         {
-            m_ModifierCache = cache;
+            mModifierCache = cache;
         }
 
         /// <summary>
@@ -83,39 +75,62 @@ namespace tezcat.Framework.Core
         /// </summary>
         protected TezProperty(TezBaseValueModifierCache<T> cache) : base()
         {
-            m_ModifierCache = cache;
+            mModifierCache = cache;
         }
 
         public void addModifier(ITezValueModifier modifier)
         {
-            m_ModifierCache.addModifier(modifier);
-            this.afterAddModifier(modifier);
+            mDirty = true;
+            mModifierCache.addModifier(modifier);
+            this.onAddModifier(modifier);
         }
 
         /// <summary>
         /// 加入Modifier之后
         /// </summary>
-        protected virtual void afterAddModifier(ITezValueModifier modifier) { }
+        protected virtual void onAddModifier(ITezValueModifier modifier) { }
 
         public bool removeModifier(ITezValueModifier modifier)
         {
-            var flag = m_ModifierCache.removeModifier(modifier);
-            if (flag)
+            if (mModifierCache.removeModifier(modifier))
             {
-                this.afterRemoveModifier(modifier);
+                mDirty = true;
+                this.onRemoveModifier(modifier);
+                return true;
             }
-            return flag;
+
+            return false;
         }
 
         /// <summary>
         /// 成功删除modifier之后
         /// </summary>
-        protected virtual void afterRemoveModifier(ITezValueModifier modifier) { }
+        protected virtual void onRemoveModifier(ITezValueModifier modifier) { }
+
+        public bool removeAllModifiersFrom(object obj)
+        {
+            if (mModifierCache.removeAllModifiersFrom(obj))
+            {
+                mDirty = true;
+                return true;
+            }
+
+            return false;
+        }
+
+        public void clearModifiers()
+        {
+            mDirty = true;
+            mModifierCache.clearModifiers();
+        }
 
         private void calculateValue()
         {
-            //            this.oldValue = m_TrueValue;
-            m_TrueValue = m_ModifierCache.calculate(this);
+            if (mDirty)
+            {
+                mDirty = false;
+                mTrueValue = mModifierCache.calculate(this);
+            }
         }
 
         /// <summary>
@@ -124,11 +139,7 @@ namespace tezcat.Framework.Core
         /// </summary>
         public void update()
         {
-            if (m_ModifierCache.dirty)
-            {
-                m_ModifierCache.dirty = false;
-                this.calculateValue();
-            }
+            this.calculateValue();
             this.onValueChanged?.Invoke(this);
         }
 
@@ -138,18 +149,19 @@ namespace tezcat.Framework.Core
             ///这里不适用基类方法是因为
             ///在Property中
             ///Value不可以被Set
-            m_ModifierCache.close();
-            m_TrueValue = default;
-            m_BaseValue = default;
+            mModifierCache.close();
+            mTrueValue = default;
+            mBaseValue = default;
+            mDirty = false;
 
-            m_ModifierCache = null;
+            mModifierCache = null;
             this.descriptor = null;
             this.onValueChanged = null;
         }
 
         public virtual string baseValueToString()
         {
-            return m_BaseValue.ToString();
+            return mBaseValue.ToString();
         }
     }
 }

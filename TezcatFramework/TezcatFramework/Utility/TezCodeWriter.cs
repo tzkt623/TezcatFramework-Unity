@@ -5,20 +5,20 @@ namespace tezcat.Framework.Utility
 {
     public class TezCodeWriter
     {
-        private List<string> m_Lines = new List<string>();
+        private List<string> mLines = new List<string>();
 
-        private string m_Path;
+        private string mPath;
 
-        private int m_Indent;
+        private int mIndent;
 
         public TezCodeWriter(string path)
         {
-            this.m_Path = path;
+            mPath = path;
         }
 
         public void comment(string text)
         {
-            this.m_Lines.Add("// " + text);
+            mLines.Add("// " + text);
         }
 
         public void beginPartialClass(string class_name, string parent_name = null)
@@ -30,7 +30,7 @@ namespace tezcat.Framework.Utility
             }
             this.line(text);
             this.line("{");
-            this.m_Indent++;
+            mIndent++;
         }
 
         public void beginClass(string class_name, string parent_name = null)
@@ -42,12 +42,12 @@ namespace tezcat.Framework.Utility
             }
             this.line(text);
             this.line("{");
-            this.m_Indent++;
+            mIndent++;
         }
 
         public void endClass()
         {
-            this.m_Indent--;
+            mIndent--;
             this.line("}");
         }
 
@@ -55,12 +55,12 @@ namespace tezcat.Framework.Utility
         {
             this.line("namespace " + name);
             this.line("{");
-            this.m_Indent++;
+            mIndent++;
         }
 
         public void endNameSpace()
         {
-            this.m_Indent--;
+            mIndent--;
             this.line("}");
         }
 
@@ -68,12 +68,12 @@ namespace tezcat.Framework.Utility
         {
             this.line("new " + name);
             this.line("{");
-            this.m_Indent++;
+            mIndent++;
         }
 
         public void endArrayStructureInitialization(bool last_item)
         {
-            this.m_Indent--;
+            mIndent--;
             if (!last_item)
             {
                 this.line("},");
@@ -88,12 +88,12 @@ namespace tezcat.Framework.Utility
         {
             this.line(array_name + " = new " + array_type + "[]");
             this.line("{");
-            this.m_Indent++;
+            mIndent++;
         }
 
         public void endArrayArrayInitialization(bool last_item)
         {
-            this.m_Indent--;
+            mIndent--;
             if (last_item)
             {
                 this.line("}");
@@ -108,12 +108,12 @@ namespace tezcat.Framework.Utility
         {
             this.line("public " + name + "()");
             this.line("{");
-            this.m_Indent++;
+            mIndent++;
         }
 
         public void endConstructor()
         {
-            this.m_Indent--;
+            mIndent--;
             this.line("}");
         }
 
@@ -121,12 +121,12 @@ namespace tezcat.Framework.Utility
         {
             this.line(array_name + " = new " + array_type + "[]");
             this.line("{");
-            this.m_Indent++;
+            mIndent++;
         }
 
         public void endArrayAssignment()
         {
-            this.m_Indent--;
+            mIndent--;
             this.line("};");
         }
 
@@ -139,12 +139,12 @@ namespace tezcat.Framework.Utility
         {
             this.line(name + "=delegate()");
             this.line("{");
-            this.m_Indent++;
+            mIndent++;
         }
 
         public void endStructureDelegateFieldInitializer()
         {
-            this.m_Indent--;
+            mIndent--;
             this.line("},");
         }
 
@@ -152,21 +152,21 @@ namespace tezcat.Framework.Utility
         {
             this.line("if(" + condition + ")");
             this.line("{");
-            this.m_Indent++;
+            mIndent++;
         }
 
         public void beginElseIf(string condition)
         {
-            this.m_Indent--;
+            mIndent--;
             this.line("}");
             this.line("else if(" + condition + ")");
             this.line("{");
-            this.m_Indent++;
+            mIndent++;
         }
 
         public void endIf()
         {
-            this.m_Indent--;
+            mIndent--;
             this.line("}");
         }
 
@@ -174,35 +174,35 @@ namespace tezcat.Framework.Utility
         {
             this.line(string.Concat(new string[]
             {
-            "public ",
-            return_type,
-            " ",
-            name,
-            "(",
-            parameter,
-            ")"
+                "public ",
+                return_type,
+                " ",
+                name,
+                "(",
+                parameter,
+                ")"
             }));
             this.line("{");
-            this.m_Indent++;
+            mIndent++;
         }
 
         public void beginFunctionDeclaration(string name, string return_type)
         {
             this.line(string.Concat(new string[]
             {
-            "public ",
-            return_type,
-            " ",
-            name,
-            "()"
+                "public ",
+                return_type,
+                " ",
+                name,
+                "()"
             }));
             this.line("{");
-            this.m_Indent++;
+            mIndent++;
         }
 
         public void endFunctionDeclaration()
         {
-            this.m_Indent--;
+            mIndent--;
             this.line("}");
         }
 
@@ -240,12 +240,12 @@ namespace tezcat.Framework.Utility
         {
             this.line(name);
             this.line("(");
-            this.m_Indent++;
+            mIndent++;
         }
 
         public void endFunctionCall()
         {
-            this.m_Indent--;
+            mIndent--;
             this.line(");");
         }
 
@@ -285,16 +285,16 @@ namespace tezcat.Framework.Utility
 
         public void line(string text = "")
         {
-            for (int i = 0; i < this.m_Indent; i++)
+            for (int i = 0; i < mIndent; i++)
             {
                 text = "\t" + text;
             }
-            this.m_Lines.Add(text);
+            mLines.Add(text);
         }
 
         public void flush()
         {
-            File.WriteAllLines(this.m_Path, this.m_Lines.ToArray());
+            File.WriteAllLines(mPath, mLines.ToArray());
         }
     }
 }

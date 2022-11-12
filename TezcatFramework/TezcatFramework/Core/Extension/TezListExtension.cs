@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using tezcat.Framework.Event;
 
 namespace tezcat.Framework.Extension
 {
@@ -148,6 +147,8 @@ namespace tezcat.Framework.Extension
         public static void shuffle<T>(this List<T> list)
         {
             Random random = new Random();
+
+            
             var count = list.Count;
             while (count > 1)
             {

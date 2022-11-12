@@ -1,4 +1,6 @@
-﻿namespace tezcat.Framework.Utility
+﻿using System.Collections.Generic;
+
+namespace tezcat.Framework.Utility
 {
     /// <summary>
     /// ID生成器
@@ -7,21 +9,50 @@
     /// </summary>
     public static class TezIDCreator<T>
     {
-        static int m_ID = 0;
+        static int mID = 0;
 
         public static int count
         {
-            get { return m_ID; }
+            get { return mID; }
         }
 
         public static int next()
         {
-            return m_ID++;
+            return mID++;
         }
 
         public static void reset()
         {
-            m_ID = 0;
+            mID = 0;
+        }
+    }
+
+    /// <summary>
+    /// 池ID
+    /// </summary>
+    public class TezPUID<T>
+    {
+        static Queue<int> sPool = new Queue<int>();
+        static int sID = 0;
+
+        int mUID = -1;
+        public int UID => mUID;
+
+        public TezPUID()
+        {
+            if (sPool.Count > 0)
+            {
+                mUID = sPool.Dequeue();
+            }
+            else
+            {
+                mUID = sID++;
+            }
+        }
+
+        ~TezPUID()
+        {
+            sPool.Enqueue(mUID);
         }
     }
 }

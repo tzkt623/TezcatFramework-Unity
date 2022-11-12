@@ -38,14 +38,14 @@ namespace tezcat.Framework.Event
             }
         }
 
-        List<Dictionary<object, TezEventExtension.Action<ITezEventData>>> m_Listeners = new List<Dictionary<object, TezEventExtension.Action<ITezEventData>>>();
-        Queue<QueuePair> m_Queue = new Queue<QueuePair>();
-        Queue<KeyValuePair<int, object>> m_DeleteQueue = new Queue<KeyValuePair<int, object>>();
+        List<Dictionary<object, TezEventExtension.Action<ITezEventData>>> mListeners = new List<Dictionary<object, TezEventExtension.Action<ITezEventData>>>();
+        Queue<QueuePair> mQueue = new Queue<QueuePair>();
+        Queue<KeyValuePair<int, object>> mDeleteQueue = new Queue<KeyValuePair<int, object>>();
 
         private void register<EventData>() where EventData : ITezEventData
         {
-            EventID<EventData>.setID(m_Listeners.Count);
-            m_Listeners.Add(new Dictionary<object, TezEventExtension.Action<ITezEventData>>());
+            EventID<EventData>.setID(mListeners.Count);
+            mListeners.Add(new Dictionary<object, TezEventExtension.Action<ITezEventData>>());
         }
 
         public void subscribe<EventData>(object listener, TezEventExtension.Action<ITezEventData> function) where EventData : ITezEventData
@@ -55,12 +55,12 @@ namespace tezcat.Framework.Event
                 this.register<EventData>();
             }
 
-            m_Listeners[EventID<EventData>.ID].Add(listener, function);
+            mListeners[EventID<EventData>.ID].Add(listener, function);
         }
 
         public void unsubscribe<EventData>(object listener) where EventData : ITezEventData
         {
-            m_DeleteQueue.Enqueue(new KeyValuePair<int, object>(EventID<EventData>.ID, listener));
+            mDeleteQueue.Enqueue(new KeyValuePair<int, object>(EventID<EventData>.ID, listener));
 
             /*            m_Listeners[EventID<EventData>.ID].Remove(obj);*/
         }
@@ -86,7 +86,7 @@ namespace tezcat.Framework.Event
 #if UNITY_EDITOR
             Debug.Log(string.Format("{0}", data.name));
 #endif
-            var dic = m_Listeners[id];
+            var dic = mListeners[id];
             foreach (var pair in dic)
             {
                 pair.Value(data);
@@ -94,10 +94,10 @@ namespace tezcat.Framework.Event
 
             data.close();
 
-            while (m_DeleteQueue.Count > 0)
+            while (mDeleteQueue.Count > 0)
             {
-                var pair = m_DeleteQueue.Dequeue();
-                m_Listeners[pair.Key].Remove(pair.Value);
+                var pair = mDeleteQueue.Dequeue();
+                mListeners[pair.Key].Remove(pair.Value);
             }
         }
 
@@ -112,16 +112,16 @@ namespace tezcat.Framework.Event
                     data.close();
                     break;
                 default:
-                    m_Queue.Enqueue(new QueuePair(EventID<EventData>.ID, data));
+                    mQueue.Enqueue(new QueuePair(EventID<EventData>.ID, data));
                     break;
             }
         }
 
         public void update()
         {
-            while (m_Queue.Count > 0)
+            while (mQueue.Count > 0)
             {
-                var pair = m_Queue.Dequeue();
+                var pair = mQueue.Dequeue();
                 this.dispatchEvent(pair.ID, pair.data);
                 pair.close();
             }
@@ -129,15 +129,15 @@ namespace tezcat.Framework.Event
 
         public void close()
         {
-            foreach (var listener in m_Listeners)
+            foreach (var listener in mListeners)
             {
                 listener.Clear();
             }
-            m_Listeners.Clear();
-            m_Queue.Clear();
+            mListeners.Clear();
+            mQueue.Clear();
 
-            m_Listeners = null;
-            m_Queue = null;
+            mListeners = null;
+            mQueue = null;
         }
     }
 }

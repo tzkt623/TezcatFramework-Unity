@@ -9,9 +9,6 @@ namespace tezcat.Framework.Database
     /// 舰船装备--炮台和发射器--射弹炮台--自动加农炮--中型 ===> 舰船装备--自动加农炮
     /// 舰船装备--武器升级--散热槽 ===> 舰船装备--散热槽
     /// 舰船--巡洋舰--标准巡洋舰--米玛塔尔 ===> 舰船--巡洋舰
-    /// 
-    /// 
-    /// 
     /// </summary>
     public static class TezItemTypeID
     {

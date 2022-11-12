@@ -1,4 +1,3 @@
-using System;
 using tezcat.Framework.Core;
 using tezcat.Framework.Database;
 using tezcat.Framework.Extension;
@@ -6,9 +5,7 @@ using tezcat.Framework.Extension;
 namespace tezcat.Framework.Utility
 {
     /// <summary>
-    /// °´¼ü°ü×°²ã
-    /// ÓÃÓÚ·ÖÀë¾ßÌå°´¼üÓë²Ù×÷µÄÇ¿ñîºÏ
-    /// Ê¹×Ô¶¨Òå°´¼ü³ÉÎª¿ÉÄÜ
+    /// æŒ‰é”®åŒ…è£…å™¨
     /// </summary>
     public abstract class TezKeyWrapper : ITezCloseable
     {

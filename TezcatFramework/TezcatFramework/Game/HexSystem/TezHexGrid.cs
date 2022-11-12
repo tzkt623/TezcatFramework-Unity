@@ -9,10 +9,6 @@ namespace tezcat.Framework.Game
     public class TezHexGrid
     {
         #region Config
-        public static readonly float Sqrt3 = Mathf.Sqrt(3);
-        public static readonly float Sqrt3D2 = Mathf.Sqrt(3) / 2;
-        public static readonly float Sqrt3D3 = Mathf.Sqrt(3) / 3;
-
         /// <summary>
         /// 朝向
         /// 格式为
@@ -21,7 +17,7 @@ namespace tezcat.Framework.Game
         /// Z右上
         /// Y中下
         /// </summary>
-        public enum Direction : int
+        public enum Direction : byte
         {
             /// <summary>
             /// Z[0]_X[+]Y[-]
@@ -61,7 +57,11 @@ namespace tezcat.Framework.Game
          *
          *    y
          */
-        public static readonly TezHexCubeCoordinate[] Directions = new TezHexCubeCoordinate[6]
+        public static readonly float Sqrt3 = Mathf.Sqrt(3);
+        public static readonly float Sqrt3D2 = Mathf.Sqrt(3) / 2;
+        public static readonly float Sqrt3D3 = Mathf.Sqrt(3) / 3;
+
+        public static readonly TezHexCubeCoordinate[] sDirections = new TezHexCubeCoordinate[6]
         {
             new TezHexCubeCoordinate(1, -1, 0),
             new TezHexCubeCoordinate(1, 0, -1),
@@ -71,7 +71,7 @@ namespace tezcat.Framework.Game
             new TezHexCubeCoordinate(0, -1, 1)
         };
 
-        public static readonly int[] HexTriangleIndices = new int[]
+        public static readonly int[] sHexTriangleIndices = new int[]
         {
             0, 6, 5,
             0, 5, 4,
@@ -81,7 +81,7 @@ namespace tezcat.Framework.Game
             0, 1, 6
         };
 
-        public static readonly int[] BorderTriangleIndices = new int[]
+        public static readonly int[] sBorderTriangleIndices = new int[]
         {
             0,  5,  11,
             5,  4,  10,
@@ -98,6 +98,43 @@ namespace tezcat.Framework.Game
             7,  1,  6
         };
 
+
+        const int cPoolCount = 20;
+        static List<TezHexCubeCoordinate>[] sRangePool = new List<TezHexCubeCoordinate>[cPoolCount];
+        static List<TezHexCubeCoordinate>[] sRangeWithoutSelfPool = new List<TezHexCubeCoordinate>[cPoolCount];
+        static List<TezHexCubeCoordinate>[] sRingPool = new List<TezHexCubeCoordinate>[cPoolCount];
+
+        static TezHexGrid()
+        {
+            var center = TezHexCubeCoordinate.zero;
+            ///缓存RangePool
+            for (int i = 0; i < cPoolCount; i++)
+            {
+                int range = i;
+                sRangePool[i] = new List<TezHexCubeCoordinate>(getRangeBlockCount(range));
+                sRangePool[i].Add(center);
+                getRangeWithStepRing(ref center, ref range, ref sRangePool[i]);
+            }
+
+            ///缓存RangeWithoutSelfPool
+            for (int i = 0; i < cPoolCount; i++)
+            {
+                int range = i;
+                sRangeWithoutSelfPool[i] = new List<TezHexCubeCoordinate>(getRangeWithoutSelfBlockCount(range));
+                getRangeWithStepRing(ref center, ref range, ref sRangeWithoutSelfPool[i]);
+            }
+
+            ///缓存RingPool
+            for (int i = 0; i < cPoolCount; i++)
+            {
+                int radius = i;
+                sRingPool[i] = new List<TezHexCubeCoordinate>(6 * radius);
+                getRing(ref center, ref radius, ref sRingPool[i]);
+            }
+        }
+
+
+
         public static TezHexCubeCoordinate calculateCoordinate(TezHexCubeCoordinate center, TezHexCubeCoordinate dir)
         {
             return new TezHexCubeCoordinate(center.x + dir.x, center.z + dir.z);
@@ -108,12 +145,17 @@ namespace tezcat.Framework.Game
             return new TezHexCubeCoordinate(center.x + dir.x, center.z + dir.z);
         }
 
+        public static TezHexCubeCoordinate neighbor(ref TezHexCubeCoordinate center, ref TezHexCubeCoordinate dir)
+        {
+            return new TezHexCubeCoordinate(center.x + dir.x, center.z + dir.z);
+        }
+
         public static TezHexCubeCoordinate[] neighbors(TezHexCubeCoordinate center)
         {
             TezHexCubeCoordinate[] coordinates = new TezHexCubeCoordinate[6];
-            for (int i = 0; i < Directions.Length; i++)
+            for (int i = 0; i < sDirections.Length; i++)
             {
-                coordinates[i] = center + Directions[i];
+                coordinates[i] = center + sDirections[i];
             }
 
             return coordinates;
@@ -126,42 +168,178 @@ namespace tezcat.Framework.Game
 
         public static TezHexCubeCoordinate getDirection(Direction direction)
         {
-            return Directions[(int)direction];
+            return sDirections[(int)direction];
         }
+
 
         /// <summary>
         /// 取得一个范围的块(包含center自己)
         /// </summary>
         public static List<TezHexCubeCoordinate> range(TezHexCubeCoordinate center, int range)
         {
-            List<TezHexCubeCoordinate> list = new List<TezHexCubeCoordinate>();
-            list.Capacity = (1 + range) * range / 2 * 6 + 1;
-
-            for (int z = -range; z <= range; z++)
+            if (range < cPoolCount)
             {
-                for (int y = -range; y <= range; y++)
+                var pool = sRangePool[range];
+                List<TezHexCubeCoordinate> list = new List<TezHexCubeCoordinate>(pool.Capacity);
+                foreach (var item in pool)
                 {
-                    for (int x = -range; x <= range; x++)
-                    {
-                        if (x + y + z != 0)
-                        {
-                            continue;
-                        }
+                    list.Add(item + center);
+                }
+                return list;
+            }
+            else
+            {
+                List<TezHexCubeCoordinate> list = new List<TezHexCubeCoordinate>(getRangeBlockCount(range));
+                list.Add(center);
+                getRangeWithStepRing(ref center, ref range, ref list);
 
-                        list.Add(new TezHexCubeCoordinate(center.x + x, center.z + z));
+                /*
+                for (int z = -range; z <= range; z++)
+                {
+                    for (int y = -range; y <= range; y++)
+                    {
+                        for (int x = -range; x <= range; x++)
+                        {
+                            if (x + y + z != 0)
+                            {
+                                continue;
+                            }
+
+                            list.Add(new TezHexCubeCoordinate(center.x + x, center.z + z));
+                        }
                     }
                 }
-            }
+                */
 
-            return list;
+                return list;
+            }
         }
 
+        /// <summary>
+        /// 取得一个范围的块(不包含center自己)
+        /// </summary>
+        public static List<TezHexCubeCoordinate> rangeWithoutSelf(TezHexCubeCoordinate center, int range)
+        {
+            if (range < cPoolCount)
+            {
+                var pool = sRangeWithoutSelfPool[range];
+                List<TezHexCubeCoordinate> list = new List<TezHexCubeCoordinate>(pool.Capacity);
+                foreach (var item in pool)
+                {
+                    list.Add(item + center);
+                }
+                return list;
+            }
+            else
+            {
+                List<TezHexCubeCoordinate> list = new List<TezHexCubeCoordinate>(getRangeWithoutSelfBlockCount(range));
+                getRangeWithStepRing(ref center, ref range, ref list);
+
+                /*
+                for (int range_step = 1; range_step <= range; range_step++)
+                {
+                    var begin = Directions[(int)Direction.Y_ZX].copy();
+                    begin.scale(range_step);
+                    begin.add(center.x, center.y, center.z);
+
+                    for (int edge_index = 0; edge_index < 6; edge_index++)
+                    {
+                        for (int j = 0; j < range_step; j++)
+                        {
+                            list.Add(begin);
+                            begin = neighbor(begin, Directions[edge_index]);
+                        }
+                    }
+                }
+                */
+
+
+                /*
+                for (int z = -range; z <= range; z++)
+                {
+                    for (int y = -range; y <= range; y++)
+                    {
+                        for (int x = -range; x <= range; x++)
+                        {
+                            if (x + y + z != 0)
+                            {
+                                continue;
+                            }
+
+                            if (x == 0 && y == 0 && z == 0)
+                            {
+                                continue;
+                            }
+
+                            list.Add(new TezHexCubeCoordinate(center.x + x, center.z + z));
+                        }
+                    }
+                }
+                */
+                return list;
+            }
+        }
+
+
+
+        /// <summary>
+        /// 取得一个环
+        /// </summary>
         public static List<TezHexCubeCoordinate> ring(TezHexCubeCoordinate center, int radius)
         {
-            List<TezHexCubeCoordinate> list = new List<TezHexCubeCoordinate>();
-            list.Capacity = 6 * radius;
+            if (radius < cPoolCount)
+            {
+                var pool = sRingPool[radius];
+                List<TezHexCubeCoordinate> list = new List<TezHexCubeCoordinate>(pool.Capacity);
+                foreach (var item in pool)
+                {
+                    list.Add(item + center);
+                }
+                return list;
+            }
+            else
+            {
+                List<TezHexCubeCoordinate> list = new List<TezHexCubeCoordinate>(6 * radius);
+                getRing(ref center, ref radius, ref list);
+                return list;
+            }
+        }
 
-            var begin = Directions[(int)Direction.Y_ZX];
+        private static int getRangeBlockCount(int range)
+        {
+            return (1 + range) * range / 2 * 6 + 1;
+        }
+
+        private static int getRangeWithoutSelfBlockCount(int range)
+        {
+            return (1 + range) * range / 2 * 6;
+        }
+
+        private static void getRangeWithStepRing(ref TezHexCubeCoordinate center, ref int range, ref List<TezHexCubeCoordinate> list)
+        {
+            for (int range_step = 1; range_step <= range; range_step++)
+            {
+                getRing(ref center, ref range_step, ref list);
+                /*
+                var begin = Directions[(int)Direction.Y_ZX].copy();
+                begin.scale(range_step);
+                begin.add(center.x, center.y, center.z);
+
+                for (int edge_index = 0; edge_index < 6; edge_index++)
+                {
+                    for (int j = 0; j < range_step; j++)
+                    {
+                        list.Add(begin);
+                        begin = neighbor(begin, Directions[edge_index]);
+                    }
+                }
+                */
+            }
+        }
+
+        private static void getRing(ref TezHexCubeCoordinate center, ref int radius, ref List<TezHexCubeCoordinate> list)
+        {
+            var begin = sDirections[(int)Direction.Y_ZX];
             begin.scale(radius);
             begin.add(center.x, center.y, center.z);
 
@@ -170,11 +348,9 @@ namespace tezcat.Framework.Game
                 for (int j = 0; j < radius; j++)
                 {
                     list.Add(begin);
-                    begin = neighbor(begin, Directions[i]);
+                    begin = neighbor(ref begin, ref sDirections[i]);
                 }
             }
-
-            return list;
         }
         #endregion
 
@@ -185,24 +361,24 @@ namespace tezcat.Framework.Game
             Flat
         }
 
-        public Layout layout => m_Layout;
-        Layout m_Layout = Layout.Pointy;
+        public Layout layout => mLayout;
+        Layout mLayout = Layout.Pointy;
 
 
-        public float size => m_Size;
-        float m_Size = 1;
+        public float size => mSize;
+        float mSize = 1;
 
-        public float cellHeight => m_CellHeight;
-        float m_CellHeight = 0;
+        public float cellHeight => mCellHeight;
+        float mCellHeight = 0;
 
-        public float cellWidth => m_CellWidth;
-        float m_CellWidth = 0;
+        public float cellWidth => mCellWidth;
+        float mCellWidth = 0;
 
-        public float vDistance => m_VDistance;
-        float m_VDistance = 0;
+        public float vDistance => mVDistance;
+        float mVDistance = 0;
 
-        public float hDistance => m_HDistance;
-        float m_HDistance = 0;
+        public float hDistance => mHDistance;
+        float mHDistance = 0;
 
 
         public TezHexGrid(float size, Layout layout)
@@ -212,24 +388,24 @@ namespace tezcat.Framework.Game
 
         private void init(float size, Layout layout)
         {
-            this.m_Size = size;
-            this.m_Layout = layout;
+            mSize = size;
+            mLayout = layout;
 
             switch (layout)
             {
                 case Layout.Pointy:
-                    m_CellHeight = size * 2;
-                    m_CellWidth = Sqrt3 / 2 * m_CellHeight;
+                    mCellHeight = size * 2;
+                    mCellWidth = Sqrt3 / 2 * mCellHeight;
 
-                    m_VDistance = m_CellHeight * 3 / 4;
-                    m_HDistance = m_CellWidth;
+                    mVDistance = mCellHeight * 3 / 4;
+                    mHDistance = mCellWidth;
                     break;
                 case Layout.Flat:
-                    m_CellWidth = size * 2;
-                    m_CellHeight = Sqrt3 / 2 * m_CellWidth;
+                    mCellWidth = size * 2;
+                    mCellHeight = Sqrt3 / 2 * mCellWidth;
 
-                    m_VDistance = m_CellHeight;
-                    m_HDistance = m_CellWidth * 3 / 4;
+                    mVDistance = mCellHeight;
+                    mHDistance = mCellWidth * 3 / 4;
                     break;
             }
         }
@@ -280,7 +456,7 @@ namespace tezcat.Framework.Game
             float x = 0;
             float y = 0;
 
-            switch (m_Layout)
+            switch (mLayout)
             {
                 /*
                  function hex_to_pixel(hex):
@@ -289,8 +465,8 @@ namespace tezcat.Framework.Game
                     return Point(x, y)
                  */
                 case Layout.Pointy:
-                    x = m_Size * Sqrt3 * (q + r / 2.0f);
-                    y = m_Size * 3 / 2 * r;
+                    x = mSize * Sqrt3 * (q + r / 2.0f);
+                    y = mSize * 3 / 2 * r;
                     break;
 
                 /*
@@ -300,8 +476,8 @@ namespace tezcat.Framework.Game
                     return Point(x, y)
                  */
                 case Layout.Flat:
-                    x = m_Size * 3 / 2 * q;
-                    y = m_Size * Sqrt3 * (r + q / 2.0f);
+                    x = mSize * 3 / 2 * q;
+                    y = mSize * Sqrt3 * (r + q / 2.0f);
                     break;
             }
 
@@ -319,7 +495,7 @@ namespace tezcat.Framework.Game
             float q = 0;
             float r = 0;
 
-            switch (m_Layout)
+            switch (mLayout)
             {
                 /*
                  function pixel_to_hex(x, y):
@@ -328,8 +504,8 @@ namespace tezcat.Framework.Game
                     return hex_round(Hex(q, r)) 
                  */
                 case Layout.Pointy:
-                    q = (position.x * Sqrt3D3 - position.y / 3) / m_Size;
-                    r = position.y * 2 / 3 / m_Size;
+                    q = (position.x * Sqrt3D3 - position.y / 3) / mSize;
+                    r = position.y * 2 / 3 / mSize;
                     break;
                 /*
                  function pixel_to_hex(x, y):
@@ -338,8 +514,8 @@ namespace tezcat.Framework.Game
                     return hex_round(Hex(q, r))
                  */
                 case Layout.Flat:
-                    q = position.x * 2 / 3 / m_Size;
-                    r = (-position.x / 3 + Sqrt3D3 * position.y) / m_Size;
+                    q = position.x * 2 / 3 / mSize;
+                    r = (-position.x / 3 + Sqrt3D3 * position.y) / mSize;
                     break;
             }
 
@@ -350,7 +526,7 @@ namespace tezcat.Framework.Game
         {
             float angle_deg = 0;
 
-            switch (m_Layout)
+            switch (mLayout)
             {
                 case Layout.Pointy:
                     angle_deg = 60 * index + 30;
@@ -363,9 +539,9 @@ namespace tezcat.Framework.Game
             var angle_rad = Mathf.Deg2Rad * angle_deg;
 
             return new Vector3(
-                corner.x + m_Size * Mathf.Cos(angle_rad),
+                corner.x + mSize * Mathf.Cos(angle_rad),
                 corner.y,
-                corner.z + m_Size * Mathf.Sin(angle_rad)) * scale;
+                corner.z + mSize * Mathf.Sin(angle_rad)) * scale;
         }
         #endregion
 
@@ -374,7 +550,7 @@ namespace tezcat.Framework.Game
         {
             TezHexMesh mesh = new TezHexMesh();
             mesh.vertices.Capacity = 7;
-            mesh.indices.Capacity = HexTriangleIndices.Length;
+            mesh.indices.Capacity = sHexTriangleIndices.Length;
 
             mesh.vertices.Add(center);
             mesh.vertices.Add(this.createCorner(0, center));
@@ -384,9 +560,9 @@ namespace tezcat.Framework.Game
             mesh.vertices.Add(this.createCorner(4, center));
             mesh.vertices.Add(this.createCorner(5, center));
 
-            for (int i = 0; i < HexTriangleIndices.Length; i++)
+            for (int i = 0; i < sHexTriangleIndices.Length; i++)
             {
-                mesh.indices.Add(HexTriangleIndices[i]);
+                mesh.indices.Add(sHexTriangleIndices[i]);
             }
 
             return mesh;
@@ -396,7 +572,7 @@ namespace tezcat.Framework.Game
         {
             TezHexMesh mesh = new TezHexMesh();
             mesh.vertices.Capacity = 7 * centerList.Count;
-            mesh.indices.Capacity = centerList.Count * HexTriangleIndices.Length;
+            mesh.indices.Capacity = centerList.Count * sHexTriangleIndices.Length;
 
             for (int i = 0; i < centerList.Count; i++)
             {
@@ -410,9 +586,9 @@ namespace tezcat.Framework.Game
                 mesh.vertices.Add(this.createCorner(5, center));
 
                 var offset = 7 * i;
-                for (int j = 0; j < HexTriangleIndices.Length; j++)
+                for (int j = 0; j < sHexTriangleIndices.Length; j++)
                 {
-                    mesh.indices.Add(HexTriangleIndices[j] + offset);
+                    mesh.indices.Add(sHexTriangleIndices[j] + offset);
                 }
             }
 
@@ -422,7 +598,7 @@ namespace tezcat.Framework.Game
         {
             TezHexMesh mesh = new TezHexMesh();
             mesh.vertices.Capacity = 12;
-            mesh.indices.Capacity = BorderTriangleIndices.Length;
+            mesh.indices.Capacity = sBorderTriangleIndices.Length;
 
             for (int i = 0; i < 6; i++)
             {
@@ -434,9 +610,9 @@ namespace tezcat.Framework.Game
                 mesh.vertices.Add(this.createCorner(i, center, borderScale));
             }
 
-            for (int i = 0; i < BorderTriangleIndices.Length; i++)
+            for (int i = 0; i < sBorderTriangleIndices.Length; i++)
             {
-                mesh.indices.Add(BorderTriangleIndices[i]);
+                mesh.indices.Add(sBorderTriangleIndices[i]);
             }
 
             return mesh;
@@ -446,7 +622,7 @@ namespace tezcat.Framework.Game
         {
             TezHexMesh mesh = new TezHexMesh();
             mesh.vertices.Capacity = centerList.Count * 12;
-            mesh.indices.Capacity = centerList.Count * BorderTriangleIndices.Length;
+            mesh.indices.Capacity = centerList.Count * sBorderTriangleIndices.Length;
 
             for (int center_index = 0; center_index < centerList.Count; center_index++)
             {
@@ -466,9 +642,9 @@ namespace tezcat.Framework.Game
                 }
 
                 var offset = 12 * center_index;
-                for (int i = 0; i < BorderTriangleIndices.Length; i++)
+                for (int i = 0; i < sBorderTriangleIndices.Length; i++)
                 {
-                    mesh.indices.Add(BorderTriangleIndices[i] + offset);
+                    mesh.indices.Add(sBorderTriangleIndices[i] + offset);
                 }
             }
 

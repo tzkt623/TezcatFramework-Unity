@@ -9,16 +9,16 @@ namespace tezcat.Framework.Database
 {
     public class TezSaveManager : ITezService
     {
-        List<ITezSerializable> m_List = new List<ITezSerializable>();
+        List<ITezSerializable> mList = new List<ITezSerializable>();
 
-        TezWriter m_Writer = new TezJsonWriter();
-        TezReader m_Reader = new TezJsonReader();
+        TezWriter mWriter = new TezJsonWriter();
+        TezReader mReader = new TezJsonReader();
 
         public int readCount
         {
             get
             {
-                return this.m_Reader.count;
+                return this.mReader.count;
             }
         }
 
@@ -34,11 +34,11 @@ namespace tezcat.Framework.Database
 
         public ITezSerializable get(int index)
         {
-            if (m_List.Count < index)
+            if (mList.Count < index)
             {
                 throw new ArgumentOutOfRangeException("index");
             }
-            return m_List[index];
+            return mList[index];
         }
 
         public T get<T>(int index) where T : ITezSerializable
@@ -69,7 +69,7 @@ namespace tezcat.Framework.Database
         private void saveDB()
         {
             this.beginWriteArray("DB");
-            for (int i = 0; i < m_List.Count; i++)
+            for (int i = 0; i < mList.Count; i++)
             {
                 this.beginWriteObject(i);
                 this.write("DBID", i);
@@ -78,13 +78,13 @@ namespace tezcat.Framework.Database
             this.endWriteArray("DB");
         }
 
-        public void save(string full_path)
+        public void save(string fullPath)
         {
             this.saveDB();
 
-            this.m_Writer.save(full_path);
-            this.m_Writer.close();
-            this.m_Writer = null;
+            this.mWriter.save(fullPath);
+            this.mWriter.close();
+            this.mWriter = null;
         }
 
         public void loadDB(string path)
@@ -116,7 +116,7 @@ namespace tezcat.Framework.Database
 
         public void reset()
         {
-            m_List.Clear();
+            mList.Clear();
         }
 
         public void close()
@@ -126,7 +126,7 @@ namespace tezcat.Framework.Database
 
         public void begin(int index)
         {
-            m_Reader.beginObject(index);
+            mReader.beginObject(index);
         }
 
         public void saveItem(TezDataComponent my_object)
@@ -136,201 +136,201 @@ namespace tezcat.Framework.Database
 
         public void begin(string name)
         {
-            m_Reader.beginObject(name);
+            mReader.beginObject(name);
         }
 
         public void end(int index)
         {
-            m_Reader.endObject(index);
+            mReader.endObject(index);
         }
 
         public void end(string name)
         {
-            m_Reader.endObject(name);
+            mReader.endObject(name);
         }
 
         #region write
         public void newSave()
         {
-            this.m_Writer = new TezJsonWriter();
+            this.mWriter = new TezJsonWriter();
         }
 
         public void beginWriteArray(string name)
         {
-            m_Writer.beginArray(name);
+            mWriter.beginArray(name);
         }
 
         public void endWriteArray(string name)
         {
-            m_Writer.endArray(name);
+            mWriter.endArray(name);
         }
 
         public void beginWriteArray(int index)
         {
-            m_Writer.beginArray(index);
+            mWriter.beginArray(index);
         }
 
         public void endWriteArray(int index)
         {
-            m_Writer.endArray(index);
+            mWriter.endArray(index);
         }
 
         public void beginWriteObject(string name)
         {
-            m_Writer.beginObject(name);
+            mWriter.beginObject(name);
         }
 
         public void endWriteObject(string name)
         {
-            m_Writer.endObject(name);
+            mWriter.endObject(name);
         }
 
         public void beginWriteObject(int index)
         {
-            m_Writer.beginObject(index);
+            mWriter.beginObject(index);
         }
 
         public void endWriteObject(int index)
         {
-            m_Writer.endObject(index);
+            mWriter.endObject(index);
         }
 
         public void write(string name, bool value)
         {
-            m_Writer.write(name, value);
+            mWriter.write(name, value);
         }
 
         public void write(string name, int value)
         {
-            m_Writer.write(name, value);
+            mWriter.write(name, value);
         }
 
         public void write(string name, float value)
         {
-            m_Writer.write(name, value);
+            mWriter.write(name, value);
         }
 
         public void write(string name, string value)
         {
-            m_Writer.write(name, value);
+            mWriter.write(name, value);
         }
 
         public void write(bool value)
         {
-            m_Writer.write(value);
+            mWriter.write(value);
         }
 
         public void write(int value)
         {
-            m_Writer.write(value);
+            mWriter.write(value);
         }
 
         public void write(float value)
         {
-            m_Writer.write(value);
+            mWriter.write(value);
         }
 
         public void write(string value)
         {
-            m_Writer.write(value);
+            mWriter.write(value);
         }
 
         public void writeProperty(TezValueWrapper vw)
         {
-            m_Writer.writeProperty(vw);
+            mWriter.writeProperty(vw);
         }
         #endregion
 
         #region Read
         public void newLoad(string path)
         {
-            this.m_Reader = new TezJsonReader();
-            m_Reader.load(path);
+            this.mReader = new TezJsonReader();
+            mReader.load(path);
         }
 
         public void beginReadObject(string name)
         {
-            this.m_Reader.beginObject(name);
+            this.mReader.beginObject(name);
         }
 
         public void endReadObject(string name)
         {
-            this.m_Reader.endObject(name);
+            this.mReader.endObject(name);
         }
 
         public void beginReadObject(int index)
         {
-            this.m_Reader.beginObject(index);
+            this.mReader.beginObject(index);
         }
 
         public void endReadObject(int index)
         {
-            this.m_Reader.endObject(index);
+            this.mReader.endObject(index);
         }
 
         public void beginReadArray(string name)
         {
-            this.m_Reader.beginArray(name);
+            this.mReader.beginArray(name);
         }
 
         public void endReadArray(string name)
         {
-            this.m_Reader.endArray(name);
+            this.mReader.endArray(name);
         }
 
         public void beginReadArray(int index)
         {
-            this.m_Reader.beginArray(index);
+            this.mReader.beginArray(index);
         }
 
         public void endReadArray(int index)
         {
-            this.m_Reader.endArray(index);
+            this.mReader.endArray(index);
         }
 
         public bool readBool(string name)
         {
-            return this.m_Reader.readBool(name);
+            return this.mReader.readBool(name);
         }
 
         public int readInt(string name)
         {
-            return this.m_Reader.readInt(name);
+            return this.mReader.readInt(name);
         }
 
         public float readFloat(string name)
         {
-            return this.m_Reader.readFloat(name);
+            return this.mReader.readFloat(name);
         }
 
         public string readString(string name)
         {
-            return this.m_Reader.readString(name);
+            return this.mReader.readString(name);
         }
 
         public bool readBool(int index)
         {
-            return this.m_Reader.readBool(index);
+            return this.mReader.readBool(index);
         }
 
         public int readInt(int index)
         {
-            return this.m_Reader.readInt(index);
+            return this.mReader.readInt(index);
         }
 
         public float readFloat(int index)
         {
-            return this.m_Reader.readFloat(index);
+            return this.mReader.readFloat(index);
         }
 
         public string readString(int index)
         {
-            return this.m_Reader.readString(index);
+            return this.mReader.readString(index);
         }
 
         public void readProperty(TezValueWrapper vw)
         {
-            this.m_Reader.readProperty(vw);
+            this.mReader.readProperty(vw);
         }
         #endregion
     }

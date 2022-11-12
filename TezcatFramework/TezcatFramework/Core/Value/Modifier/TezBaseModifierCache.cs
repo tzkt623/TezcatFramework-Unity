@@ -4,22 +4,20 @@ namespace tezcat.Framework.Core
 {
     public abstract class TezBaseModifierCache : ITezCloseable
     {
-        public bool dirty { get; set; } = false;
-        List<ITezModifier> m_Modifiers = new List<ITezModifier>();
+        //        public bool dirty { get; set; } = false;
+        List<ITezModifier> mModifiers = new List<ITezModifier>();
 
         public void addModifier(ITezModifier modifier)
         {
-            this.dirty = true;
             this.onModifierAdded(modifier);
-            m_Modifiers.Add(modifier);
+            mModifiers.Add(modifier);
         }
 
         public bool removeModifier(ITezModifier modifier)
         {
-            if (m_Modifiers.Remove(modifier))
+            if (mModifiers.Remove(modifier))
             {
                 this.onModifierRemoved(modifier);
-                this.dirty = true;
                 return true;
             }
 
@@ -28,36 +26,29 @@ namespace tezcat.Framework.Core
 
         public bool removeAllModifiersFrom(object source)
         {
-            bool flag = false;
-            for (int i = m_Modifiers.Count - 1; i >= 0; i--)
+            int count = mModifiers.Count;
+            for (int i = mModifiers.Count - 1; i >= 0; i--)
             {
-                if (m_Modifiers[i].source == source)
+                if (mModifiers[i].source == source)
                 {
-                    this.onModifierRemoved(m_Modifiers[i]);
-                    m_Modifiers.RemoveAt(i);
-                    flag = true;
+                    this.onModifierRemoved(mModifiers[i]);
+                    mModifiers.RemoveAt(i);
                 }
             }
 
-            if (flag)
-            {
-                this.dirty = flag;
-            }
-
-            return flag;
+            return count != mModifiers.Count;
         }
 
         /// <summary>
         /// 清理cache到初始状态
         /// </summary>
-        public virtual void clear()
+        public virtual void clearModifiers()
         {
-            foreach (var modifier in m_Modifiers)
+            foreach (var modifier in mModifiers)
             {
                 this.onModifierClear(modifier);
             }
-            m_Modifiers.Clear();
-            this.dirty = true;
+            mModifiers.Clear();
         }
 
         /// <summary>
@@ -67,12 +58,12 @@ namespace tezcat.Framework.Core
         /// </summary>
         public virtual void close()
         {
-            foreach (var modifier in m_Modifiers)
+            foreach (var modifier in mModifiers)
             {
                 this.onModifierClear(modifier);
             }
-            m_Modifiers.Clear();
-            m_Modifiers = null;
+            mModifiers.Clear();
+            mModifiers = null;
         }
 
         protected abstract void onModifierAdded(ITezModifier modifier);
@@ -110,7 +101,6 @@ namespace tezcat.Framework.Core
         private void changeModifier(ITezValueModifier modifier, float oldValue)
         {
             this.onModifierChanged(modifier, oldValue);
-            this.dirty = true;
         }
 
         protected abstract void onModifierAdded(ITezValueModifier valueModifier);

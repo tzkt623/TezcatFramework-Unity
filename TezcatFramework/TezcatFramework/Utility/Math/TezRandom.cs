@@ -1,6 +1,4 @@
-﻿using tezcat.Framework.Core;
-
-namespace tezcat.Framework.Math
+﻿namespace tezcat.Framework.Math
 {
     /// <summary>
     /// 
@@ -12,36 +10,36 @@ namespace tezcat.Framework.Math
         private static uint DefaultSeed = (uint)"DefaultSeed".GetHashCode();
         private const double MAX_MASK_DOUBLE = uint.MaxValue + 1d;
 
-        private uint m_Seed;
+        private uint mSeed;
 
         public TezRandom()
         {
-            m_Seed = DefaultSeed;
+            mSeed = DefaultSeed;
         }
 
         public TezRandom(string seed)
         {
-            m_Seed = (uint)seed.GetHashCode();
+            mSeed = (uint)seed.GetHashCode();
         }
 
         public TezRandom(uint seed)
         {
-            m_Seed = seed;
+            mSeed = seed;
         }
 
         public void setSeed(uint seed)
         {
-            m_Seed = seed;
+            mSeed = seed;
         }
 
         public void setSeed(string seed)
         {
-            m_Seed = (uint)seed.GetHashCode();
+            mSeed = (uint)seed.GetHashCode();
         }
 
         public uint getSeed()
         {
-            return m_Seed;
+            return mSeed;
         }
 
         /// <summary>
@@ -49,8 +47,8 @@ namespace tezcat.Framework.Math
         /// </summary>
         public uint nextUInt()
         {
-            m_Seed = this.xorShift32(m_Seed);
-            return m_Seed;
+            mSeed = this.xorShift32(mSeed);
+            return mSeed;
         }
 
         /// <summary>

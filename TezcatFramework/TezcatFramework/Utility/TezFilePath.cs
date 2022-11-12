@@ -8,18 +8,18 @@ namespace tezcat.Framework.Utility
 {
     public class TezFilePath
     {
-        private static Regex m_RelativePathCleaner = new Regex("\\/[^\\/]*[^:]\\/\\.\\.");
+        private static Regex mRelativePathCleaner = new Regex("\\/[^\\/]*[^:]\\/\\.\\.");
 
-        static string m_RootPath = null;
+        static string mRootPath = null;
         public static string rootPath
         {
             get
             {
-                if (string.IsNullOrEmpty(m_RootPath))
+                if (string.IsNullOrEmpty(mRootPath))
                 {
-                    m_RootPath = TezFilePath.cleanPath(Application.dataPath + "/..");
+                    mRootPath = TezFilePath.cleanPath(Application.dataPath + "/..");
                 }
-                return m_RootPath;
+                return mRootPath;
             }
         }
 
@@ -35,7 +35,7 @@ namespace tezcat.Framework.Utility
             do
             {
                 path = text;
-                text = m_RelativePathCleaner.Replace(path, string.Empty);
+                text = mRelativePathCleaner.Replace(path, string.Empty);
             }
             while (full && text != path);
 

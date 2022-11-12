@@ -45,12 +45,18 @@ namespace tezcat.Framework.Game
             this.orientation = orientation;
         }
 
+        /// <summary>
+        /// 尖头布局
+        /// </summary>
         public static readonly TezHexOrientation Pointy = new TezHexOrientation(
             Mathf.Sqrt(3.0f), Mathf.Sqrt(3.0f) / 2.0f, 0.0f, 3.0f / 2.0f,
             Mathf.Sqrt(3.0f) / 3.0f, -1.0f / 3.0f, 0.0f, 2.0f / 3.0f,
             0.5f,
             Orientation.Pointy);
 
+        /// <summary>
+        /// 平头布局
+        /// </summary>
         public static readonly TezHexOrientation Flat = new TezHexOrientation(
             3.0f / 2.0f, 0.0f, Mathf.Sqrt(3.0f) / 2.0f, Mathf.Sqrt(3.0f),
             2.0f / 3.0f, 0.0f, -1.0f / 3.0f, Mathf.Sqrt(3.0f) / 3.0f,

@@ -17,29 +17,29 @@ namespace tezcat.Framework.BonusSystem
 
         public int length
         {
-            get { return m_Path.Length; }
+            get { return mPath.Length; }
         }
 
         public ITezBonusToken[] path
         {
             set
             {
-                m_Path = value;
-                m_LastIndex = m_Path.Length - 1;
+                mPath = value;
+                mLastIndex = mPath.Length - 1;
             }
         }
 
-        public ITezBonusToken lastToken => m_Path[m_LastIndex];
+        public ITezBonusToken lastToken => mPath[mLastIndex];
 
-        ITezBonusToken[] m_Path = DefaultPrimaryPath;
-        int m_LastIndex = -1;
+        ITezBonusToken[] mPath = DefaultPrimaryPath;
+        int mLastIndex = -1;
 
         public TezBonusPath() { }
 
         public TezBonusPath(ITezBonusToken[] path)
         {
-            m_Path = path;
-            m_LastIndex = m_Path.Length - 1;
+            mPath = path;
+            mLastIndex = mPath.Length - 1;
         }
 
         /// <summary>
@@ -47,7 +47,7 @@ namespace tezcat.Framework.BonusSystem
         /// </summary>
         public ITezBonusToken getToken(int index)
         {
-            return m_Path[index];
+            return mPath[index];
         }
 
         /// <summary>
@@ -55,9 +55,9 @@ namespace tezcat.Framework.BonusSystem
         /// </summary>
         public bool contains(ITezBonusToken token)
         {
-            if (token.layer < m_Path.Length)
+            if (token.layer < mPath.Length)
             {
-                return m_Path[token.layer].tokenID == token.tokenID;
+                return mPath[token.layer].tokenID == token.tokenID;
             }
 
             return false;

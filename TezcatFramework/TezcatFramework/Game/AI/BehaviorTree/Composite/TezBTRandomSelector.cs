@@ -12,6 +12,43 @@ namespace tezcat.Framework.AI
     {
         bool mRandom = false;
 
+        public override Result imdExecute()
+        {
+            if (!mRandom)
+            {
+                mRandom = true;
+                mList.shuffle();
+            }
+
+            switch (mList[mIndex].imdExecute())
+            {
+                case Result.Success:
+                    ///如果有节点运行成功
+                    ///像父级报告运行成功
+//                    this.reset();
+                    mList[mIndex].reset();
+                    return Result.Success;
+                case Result.Fail:
+                    ///如果有节点运行失败
+                    ///测试下一个节点
+                    mList[mIndex].reset();
+                    mIndex++;
+                    if (mIndex == mList.Count)
+                    {
+//                        this.reset();
+                        return Result.Fail;
+                    }
+                    break;
+            }
+
+            return Result.Running;
+        }
+
+        public override void reset()
+        {
+            base.reset();
+            mRandom = false;
+        }
         /// <summary>
         /// 子节点向自己报告运行状态
         /// </summary>
@@ -55,43 +92,5 @@ namespace tezcat.Framework.AI
             mList[mIndex].execute();
         }
 
-        public override Result imdExecute()
-        {
-            if (!mRandom)
-            {
-                mRandom = true;
-                mList.shuffle();
-            }
-
-            switch (mList[mIndex].imdExecute())
-            {
-                case Result.Success:
-                    ///如果有节点运行成功
-                    ///像父级报告运行成功
-//                    this.reset();
-                    mList[mIndex].reset();
-                    return Result.Success;
-                case Result.Fail:
-                    ///如果有节点运行失败
-                    ///测试下一个节点
-                    mList[mIndex].reset();
-                    mIndex++;
-                    if (mIndex == mList.Count)
-                    {
-//                        this.reset();
-                        return Result.Fail;
-                    }
-                    break;
-            }
-
-            return Result.Running;
-        }
-
-
-        public override void reset()
-        {
-            base.reset();
-            mRandom = false;
-        }
     }
 }

@@ -41,7 +41,7 @@ namespace tezcat.Framework.Core
         /// <summary>
         /// 
         /// </summary>
-        protected float m_Value;
+        protected float mValue;
 
         /// <summary>
         /// 加成数据
@@ -50,12 +50,12 @@ namespace tezcat.Framework.Core
         {
             get
             {
-                return m_Value;
+                return mValue;
             }
             set
             {
-                var old = m_Value;
-                m_Value = value;
+                var old = mValue;
+                mValue = value;
                 onChanged?.Invoke(this, old);
             }
         }

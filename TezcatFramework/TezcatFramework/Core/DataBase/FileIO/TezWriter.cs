@@ -15,7 +15,7 @@ namespace tezcat.Framework.Database
                 this.name = null;
             }
         }
-        private Stack<Checker> m_Checker = new Stack<Checker>();
+        private Stack<Checker> mChecker = new Stack<Checker>();
 
         public abstract void save(string path);
 
@@ -25,7 +25,7 @@ namespace tezcat.Framework.Database
         /// </summary>
         public void beginArray(string key)
         {
-            m_Checker.Push(new Checker() { name = key });
+            mChecker.Push(new Checker() { name = key });
             this.onBeginArray(key);
         }
 
@@ -36,7 +36,7 @@ namespace tezcat.Framework.Database
         /// </summary>
         public void endArray(string key)
         {
-            var checker = m_Checker.Pop();
+            var checker = mChecker.Pop();
             if (!string.IsNullOrEmpty(key) && checker.name == key)
             {
                 this.onEndArray(checker.name);
@@ -57,7 +57,7 @@ namespace tezcat.Framework.Database
         /// </summary>
         public void beginArray(int key)
         {
-            m_Checker.Push(new Checker() { index = key });
+            mChecker.Push(new Checker() { index = key });
             this.onBeginArray(key);
         }
 
@@ -68,7 +68,7 @@ namespace tezcat.Framework.Database
         /// </summary>
         public void endArray(int key)
         {
-            var checker = m_Checker.Pop();
+            var checker = mChecker.Pop();
             if (checker.index == key)
             {
                 this.onEndArray(checker.index);
@@ -88,7 +88,7 @@ namespace tezcat.Framework.Database
         /// </summary>
         public void beginObject(string key)
         {
-            m_Checker.Push(new Checker() { name = key });
+            mChecker.Push(new Checker() { name = key });
             this.onBeginObject(key);
         }
 
@@ -99,7 +99,7 @@ namespace tezcat.Framework.Database
         /// </summary>
         public void endObject(string key)
         {
-            var checker = m_Checker.Pop();
+            var checker = mChecker.Pop();
             if (!string.IsNullOrEmpty(key) && checker.name == key)
             {
                 this.onEndObject(checker.name);
@@ -119,7 +119,7 @@ namespace tezcat.Framework.Database
         /// </summary>
         public void beginObject(int key)
         {
-            m_Checker.Push(new Checker() { index = key });
+            mChecker.Push(new Checker() { index = key });
             this.onBeginObject(key);
         }
 
@@ -130,7 +130,7 @@ namespace tezcat.Framework.Database
         /// </summary>
         public void endObject(int key)
         {
-            var checker = m_Checker.Pop();
+            var checker = mChecker.Pop();
             if (checker.index == key)
             {
                 this.onEndObject(checker.index);
@@ -163,17 +163,17 @@ namespace tezcat.Framework.Database
 
         public void clear()
         {
-            foreach (var checker in m_Checker)
+            foreach (var checker in mChecker)
             {
                 checker.close();
             }
-            m_Checker.Clear();
+            mChecker.Clear();
         }
 
         public void close()
         {
             this.clear();
-            m_Checker = null;
+            mChecker = null;
         }
     }
 }
