@@ -4,44 +4,43 @@ namespace tezcat.Framework.Utility
 {
     public class TezGlobalState
     {
-        static Dictionary<string, uint> m_StateWithName = new Dictionary<string, uint>(32);
+        static Dictionary<string, uint> mStateWithName = new Dictionary<string, uint>(32);
         static uint mMask = 0;
 
         public static uint createOrGet(string name)
         {
-            uint state;
-            if (!m_StateWithName.TryGetValue(name, out state))
+            if (!mStateWithName.TryGetValue(name, out var state))
             {
-                state = 1u << m_StateWithName.Count;
-                m_StateWithName.Add(name, state);
+                state = 1u << mStateWithName.Count;
+                mStateWithName.Add(name, state);
             }
 
             return state;
         }
 
-        public static void add(uint state_s)
+        public static void add(uint states)
         {
-            mMask |= state_s;
+            mMask |= states;
         }
 
-        public static void remove(uint state_s)
+        public static void remove(uint states)
         {
-            mMask &= ~state_s;
+            mMask &= ~states;
         }
 
-        public static bool anyOf(uint state_s)
+        public static bool anyOf(uint states)
         {
-            return (mMask & state_s) > 0;
+            return (mMask & states) > 0;
         }
 
-        public static bool noneOf(uint state_s)
+        public static bool noneOf(uint states)
         {
-            return (mMask & state_s) == 0;
+            return (mMask & states) == 0;
         }
 
-        public static bool allOf(uint state_s)
+        public static bool allOf(uint states)
         {
-            return (mMask & state_s) == state_s;
+            return (mMask & states) == states;
         }
 
         public static void reset()

@@ -10,21 +10,30 @@ namespace tezcat.Framework.Database
     /// 舰船装备--武器升级--散热槽 ===> 舰船装备--散热槽
     /// 舰船--巡洋舰--标准巡洋舰--米玛塔尔 ===> 舰船--巡洋舰
     /// </summary>
-    public static class TezItemTypeID
+    public static class TezDBIDGenerator
     {
-        public static int generateID(int managerID, int typeID)
+        /// <summary>
+        /// 生成ID
+        /// </summary>
+        public static int generateID(int cellID, int typeID)
         {
-            return (managerID << 16) & typeID;
+            return (cellID << 24) & typeID;
         }
 
-        public static int getManagerID(int itemTypeID)
+        /// <summary>
+        /// 获得细胞数据库ID
+        /// </summary>
+        public static int getCellID(int DBID)
         {
-            return itemTypeID >> 16;
+            return DBID >> 24;
         }
 
-        public static int getTypeID(int itemTypeID)
+        /// <summary>
+        /// 获得物品类型ID
+        /// </summary>
+        public static int getTypeID(int DBID)
         {
-            return itemTypeID & 0x0000_ffff;
+            return DBID & 0x00ff_ffff;
         }
     }
 

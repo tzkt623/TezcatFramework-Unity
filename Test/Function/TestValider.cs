@@ -5,10 +5,16 @@ namespace tezcat.Framework.Test
 {
     public class Ship
     {
-        public TezValider<Ship> valider = new TezValider<Ship>();
-        public TezStateValider<Ship> valider2 = new TezStateValider<Ship>();
+        public TezLifeDetector<Ship> valider = null;
+        public TezStateValider<Ship> valider2 = null;
 
         public int health = 10;
+
+        public Ship()
+        {
+            this.valider = new TezLifeDetector<Ship>(this);
+            this.valider2 = new TezStateValider<Ship>(this);
+        }
 
         public void update()
         {
@@ -22,7 +28,7 @@ namespace tezcat.Framework.Test
 
     public class Missle
     {
-        public TezValider<Ship> target = null;
+        public TezLifeDetector<Ship> target = null;
 
         public void update()
         {
@@ -40,7 +46,7 @@ namespace tezcat.Framework.Test
 
         public void setTarget(Ship ship)
         {
-            this.target = new TezValider<Ship>(ship.valider);
+            this.target = new TezLifeDetector<Ship>(ship.valider);
         }
 
         private void findOtherTarget()
@@ -57,6 +63,7 @@ namespace tezcat.Framework.Test
     public class TestValider
     {
         Ship m_Ship = new Ship();
+
         Missle m_Missle = new Missle();
 
         public void init()
@@ -69,6 +76,11 @@ namespace tezcat.Framework.Test
             m_Ship.update();
 
             m_Missle.update();
+        }
+
+        public void run()
+        {
+            throw new NotImplementedException();
         }
     }
 }

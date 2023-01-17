@@ -8,15 +8,15 @@ namespace tezcat.Framework.ECS
         : TezBaseComponent
         , ITezInventoryItem
     {
-        public static int SComUID;
-        public override int comUID => SComUID;
+        public static init SComUID;
+        public override init comUID => SComUID;
 
         /// <summary>
         /// 等于0为不允许堆叠
         /// </summary>
-        public int stackCount { get; private set; } = 0;
+        public init stackCount { get; private set; } = 0;
 
-        public int itemTypeID { get; private set; } = -1;
+        public init itemTypeID { get; private set; } = -1;
 
         /// <summary>
         /// 使用物品模板初始化对象

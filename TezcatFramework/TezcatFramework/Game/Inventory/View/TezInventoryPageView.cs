@@ -1,9 +1,5 @@
-﻿using UnityEngine;
-using System.Collections;
-using tezcat.Framework.Core;
+﻿using tezcat.Framework.Extension;
 using tezcat.Framework.Utility;
-using System;
-using tezcat.Framework.Extension;
 
 namespace tezcat.Framework.Game.Inventory
 {
@@ -17,28 +13,28 @@ namespace tezcat.Framework.Game.Inventory
         /// </summary>
         public event TezEventExtension.Action<TezInventoryViewSlot> onSlotRefresh;
 
-        TezStepArray<TezInventoryViewSlot> m_Slots = null;
-        int m_BeginPos = 0;
+        TezStepArray<TezInventoryViewSlot> mSlots = null;
+        int mBeginPos = 0;
 
         public int capacity
         {
-            get { return m_Slots.capacity; }
+            get { return mSlots.capacity; }
         }
 
         public TezInventoryViewSlot this[int index]
         {
-            get { return m_Slots[index]; }
+            get { return mSlots[index]; }
         }
 
         public override void close()
         {
-            foreach (var item in m_Slots)
+            foreach (var item in mSlots)
             {
                 item.close();
             }
-            m_Slots.close();
+            mSlots.close();
 
-            m_Slots = null;
+            mSlots = null;
             onSlotRefresh = null;
 
             base.close();
@@ -46,20 +42,20 @@ namespace tezcat.Framework.Game.Inventory
 
         public void setPageCapacity(int capacity)
         {
-            m_Slots = new TezStepArray<TezInventoryViewSlot>(capacity);
+            mSlots = new TezStepArray<TezInventoryViewSlot>(capacity);
             for (int i = 0; i < capacity; i++)
             {
-                m_Slots.add(new TezInventoryViewSlot() { index = i });
+                mSlots.add(new TezInventoryViewSlot() { index = i });
             }
         }
 
         public void paging(int beginPos)
         {
-            m_BeginPos = beginPos;
-            for (int i = 0; i < m_Slots.capacity; i++)
+            mBeginPos = beginPos;
+            for (int i = 0; i < mSlots.capacity; i++)
             {
-                var index = m_BeginPos + i;
-                var view_slot = m_Slots[i];
+                var index = mBeginPos + i;
+                var view_slot = mSlots[i];
                 if (index < this.filterManager.count)
                 {
                     view_slot.itemSlot = this.filterManager[index].itemSlot;
@@ -76,9 +72,9 @@ namespace tezcat.Framework.Game.Inventory
         protected override void onItemChanged(TezInventoryDataSlot dataSlot)
         {
             var slot_index = dataSlot.index;
-            if ((slot_index >= m_BeginPos) && (slot_index < m_BeginPos + m_Slots.capacity))
+            if ((slot_index >= mBeginPos) && (slot_index < mBeginPos + mSlots.capacity))
             {
-                var view_slot = m_Slots[slot_index - m_BeginPos];
+                var view_slot = mSlots[slot_index - mBeginPos];
                 view_slot.itemSlot = dataSlot.itemSlot;
                 onSlotRefresh?.Invoke(view_slot);
             }

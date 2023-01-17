@@ -13,17 +13,17 @@ namespace tezcat.Framework.Utility
         class Ref
         {
             public T myObject;
-            private int m_Ref = 0;
+            private int mRef = 0;
 
             public void retain()
             {
-                m_Ref += 1;
+                mRef += 1;
             }
 
             public void release()
             {
-                m_Ref -= 1;
-                if (m_Ref == 0)
+                mRef -= 1;
+                if (mRef == 0)
                 {
                     myObject.close();
                     myObject = default;
@@ -32,14 +32,14 @@ namespace tezcat.Framework.Utility
 
         }
 
-        Ref m_Ref = null;
+        Ref mRef = null;
 
         /// <summary>
         /// 实际包含的对象
         /// </summary>
         public T value
         {
-            get { return m_Ref.myObject; }
+            get { return mRef.myObject; }
         }
 
         /// <summary>
@@ -47,8 +47,8 @@ namespace tezcat.Framework.Utility
         /// </summary>
         public TezSmartObject(T value)
         {
-            m_Ref = new Ref() { myObject = value };
-            m_Ref.retain();
+            mRef = new Ref() { myObject = value };
+            mRef.retain();
         }
 
         /// <summary>
@@ -56,8 +56,8 @@ namespace tezcat.Framework.Utility
         /// </summary>
         public TezSmartObject(TezSmartObject<T> other)
         {
-            m_Ref = other.m_Ref;
-            m_Ref.retain();
+            mRef = other.mRef;
+            mRef.retain();
         }
 
         /// <summary>
@@ -65,9 +65,9 @@ namespace tezcat.Framework.Utility
         /// </summary>
         public void set(T value)
         {
-            m_Ref?.release();
-            m_Ref = new Ref() { myObject = value };
-            m_Ref.retain();
+            mRef?.release();
+            mRef = new Ref() { myObject = value };
+            mRef.retain();
         }
 
         /// <summary>
@@ -75,15 +75,15 @@ namespace tezcat.Framework.Utility
         /// </summary>
         public void set(TezSmartObject<T> other)
         {
-            m_Ref?.release();
-            m_Ref = other.m_Ref;
-            m_Ref.retain();
+            mRef?.release();
+            mRef = other.mRef;
+            mRef.retain();
         }
 
         public void close()
         {
-            m_Ref.release();
-            m_Ref = null;
+            mRef.release();
+            mRef = null;
         }
     }
 }

@@ -12,7 +12,7 @@ namespace tezcat.Framework.Database
         List<ITezSerializable> mList = new List<ITezSerializable>();
 
         TezWriter mWriter = new TezJsonWriter();
-        TezReader mReader = new TezJsonReader();
+        TezFileReader mReader = new TezJsonReader();
 
         public int readCount
         {
@@ -29,7 +29,7 @@ namespace tezcat.Framework.Database
 
         public T createObject<T>(string CID) where T : class
         {
-            return TezClassFactory.instance.create<T>(CID);
+            return TezcatFramework.classFactory.create<T>(CID);
         }
 
         public ITezSerializable get(int index)
@@ -56,10 +56,10 @@ namespace tezcat.Framework.Database
         public int cache(ITezSerializable serializable)
         {
             int id = -1;
-            //             if (!m_Dic.TryGetValue(serializable.RUID, out id))
+            //             if (!mDict.TryGetValue(serializable.RUID, out id))
             //             {
             //                 id = m_List.Count;
-            //                 m_Dic.Add(serializable.RUID, id);
+            //                 mDict.Add(serializable.RUID, id);
             //                 m_List.Add(serializable);
             //             }
 
@@ -97,12 +97,12 @@ namespace tezcat.Framework.Database
                 {
                     reader.beginObject(i);
                     var CID = reader.readString(TezReadOnlyString.CID);
-                    var obj = TezClassFactory.instance.create<TezDataComponent>(CID);
+                    var obj = TezcatFramework.classFactory.create<TezDataComponent>(CID);
                     if (obj != null)
                     {
                         obj.initNew();
 
-//                        m_Dic.Add(obj.GUID, m_List.Count);
+//                        mDict.Add(obj.GUID, m_List.Count);
 //                        m_List.Add(obj);
                     }
                     else
@@ -244,7 +244,7 @@ namespace tezcat.Framework.Database
         #region Read
         public void newLoad(string path)
         {
-            this.mReader = new TezJsonReader();
+            mReader = new TezJsonReader();
             mReader.load(path);
         }
 

@@ -359,22 +359,30 @@ namespace LitJson
             }
         }
 
-        public bool tryGet(string obj_name, out JsonData data)
+        /// <summary>
+        /// 尝试获得
+        /// 我加的
+        /// </summary>
+        public bool tryGet(string name, out JsonData data)
         {
             if (type == JsonType.Object)
             {
-                return inst_object.TryGetValue(obj_name, out data);
+                return inst_object.TryGetValue(name, out data);
             }
 
             data = null;
             return false;
         }
 
-        public bool tryGet(int obj_index, out JsonData data)
+        /// <summary>
+        /// 尝试获得
+        /// 我加的
+        /// </summary>
+        public bool tryGet(int index, out JsonData data)
         {
-            if (type == JsonType.Array && obj_index < inst_array.Count)
+            if (type == JsonType.Array && index < inst_array.Count)
             {
-                data = inst_array[obj_index];
+                data = inst_array[index];
                 return true;
             }
 
@@ -383,29 +391,31 @@ namespace LitJson
         }
 
         /// <summary>
-        /// �����Ƿ������IndexKey
+        /// 是否包含IndexKey
+        /// 我加的
         /// </summary>
-        public bool contains(int obj_index)
+        public bool contains(int index)
         {
             if (type != JsonType.Array)
             {
                 return false;
             }
 
-            return obj_index < inst_array.Count;
+            return index < inst_array.Count;
         }
 
         /// <summary>
-        /// �����Ƿ������StringKey
+        /// 是否包含StringKey
+        /// 我加的
         /// </summary>
-        public bool contains(string obj_name)
+        public bool contains(string name)
         {
             if (type != JsonType.Object)
             {
                 return false;
             }
 
-            return inst_object.ContainsKey(obj_name);
+            return inst_object.ContainsKey(name);
         }
         #endregion
 

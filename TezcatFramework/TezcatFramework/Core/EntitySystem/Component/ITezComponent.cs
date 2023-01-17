@@ -10,9 +10,9 @@ namespace tezcat.Framework.ECS
     /// <para>class Component</para>
     /// <para>{</para>
     /// <para>声明一个静态变量用于标识Component的静态ID</para>
-    /// <para>public static int SComUID;</para>
+    /// <para>public static init SComUID;</para>
     /// <para>重写</para>
-    /// <para>int comUID { get; } = SComUID</para>
+    /// <para>init comUID { get; } = SComUID</para>
     /// <para>}</para>
     /// 
     /// </summary>

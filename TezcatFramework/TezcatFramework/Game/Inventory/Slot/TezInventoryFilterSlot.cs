@@ -8,8 +8,8 @@ namespace tezcat.Framework.Game.Inventory
 
         public override Category category => Category.Filter;
 
-        TezInventoryItemSlot m_ItemSlot = null;
-        public override TezInventoryItemSlot itemSlot => m_ItemSlot;
+        TezInventoryItemSlot mItemSlot = null;
+        public override TezInventoryItemSlot itemSlot => mItemSlot;
 
         public static TezInventoryFilterSlot create()
         {
@@ -18,14 +18,14 @@ namespace tezcat.Framework.Game.Inventory
 
         public void bindItemSlot(TezInventoryItemSlot slot)
         {
-            m_ItemSlot = slot;
+            mItemSlot = slot;
         }
 
         public override void close()
         {
             base.close();
             this.indexInFilter = -1;
-            m_ItemSlot = null;
+            mItemSlot = null;
             TezSamplePool<TezInventoryFilterSlot>.instance.recycle(this);
         }
     }

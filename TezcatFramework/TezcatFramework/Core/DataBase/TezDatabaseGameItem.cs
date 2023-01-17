@@ -15,20 +15,6 @@ namespace tezcat.Framework.Database
         , ITezCloseable
     {
         /// <summary>
-        /// 数据库ID
-        /// 如果为-1则表示此类型没有分类类型
-        /// </summary>
-        public int dbUID { get; private set; }
-
-        /// <summary>
-        /// 是否是模板物品
-        /// </summary>
-        public bool isTemplate
-        {
-            get { return this.dbUID >= 0; }
-        }
-
-        /// <summary>
         /// Class ID
         /// </summary>
         public string CID { get; private set; }
@@ -39,9 +25,28 @@ namespace tezcat.Framework.Database
         public string NID { get; set; }
 
         /// <summary>
+        /// 数据库ID
+        /// 用于固定数据库
+        /// </summary>
+        public int DBID => mItemID.fixedID;
+
+        /// <summary>
+        /// 重定义ID
+        /// 用于运行时数据库
+        /// </summary>
+        public int ModifiedID => mItemID.modifiedID;
+
+        TezItemID mItemID = null;
+        /// <summary>
+        /// 物品ID
+        /// </summary>
+        public TezItemID itemID => mItemID;
+
+        protected TezCategory mCategory = null;
+        /// <summary>
         /// 分类系统
         /// </summary>
-        public TezCategory category { get; protected set; }
+        public TezCategory category => mCategory;
 
         /// <summary>
         /// Tags用于对Item进行分类
@@ -50,35 +55,56 @@ namespace tezcat.Framework.Database
         /// </summary>
         public string[] TAGS = null;
 
+        protected int mStackCount = -1;
         /// <summary>
         /// 可堆叠数量
         /// 大于0表示可以堆叠
         /// 等于0表示不允许堆叠
         /// 等于-1表示没有这个属性
         /// </summary>
-        public int stackCount { get; private set; } = -1;
+        public int stackCount => mStackCount;
 
+        int mModifiedRefCount = 0;
         /// <summary>
-        /// 单数据库存储方式
+        /// 重定义引用
         /// </summary>
-        public void onRegister(int typeID)
+        public int refModifiedCount => mModifiedRefCount;
+
+        public void retainModifiedItem()
         {
-            this.dbUID = typeID;
-            this.customRegister();
+            mModifiedRefCount++;
+        }
+
+        public bool releaseModifiedItem()
+        {
+            mModifiedRefCount--;
+            if (mModifiedRefCount == 0)
+            {
+                return true;
+            }
+
+            return false;
         }
 
         /// <summary>
-        /// 多数据库存储方式
-        /// manager_id为一级分类
-        /// type_id为二级分类
+        /// 注册数据库ID
         /// </summary>
-        public void onRegister(int managerID, int typeID)
+        public void onRegister(int dbID)
         {
-            this.dbUID = TezItemTypeID.generateID(managerID, typeID);
-            this.customRegister();
+            TezItemID.create(ref mItemID, dbID);
+            this.postRegister();
         }
 
-        protected virtual void customRegister()
+        /// <summary>
+        /// 注册运行时数据库ID
+        /// </summary>
+        public void onRuntimeRegister(int dbID, int modifiedID)
+        {
+            TezItemID.create(ref mItemID, dbID, modifiedID);
+            this.postRegister();
+        }
+
+        protected virtual void postRegister()
         {
 
         }
@@ -95,7 +121,10 @@ namespace tezcat.Framework.Database
 
         public virtual void close()
         {
-            this.category = null;
+            mItemID.close();
+
+            mItemID = null;
+            mCategory = null;
             this.NID = null;
             this.CID = null;
             this.TAGS = null;
@@ -106,17 +135,17 @@ namespace tezcat.Framework.Database
             writer.write(TezReadOnlyString.CID, this.CID);
             writer.write(TezReadOnlyString.NID, this.NID);
 
-            if (this.dbUID >= 0)
-            {
-                writer.beginObject("DBUID");
-                writer.write("MID", TezItemTypeID.getManagerID(this.dbUID));
-                writer.write("TID", TezItemTypeID.getTypeID(this.dbUID));
-                writer.endObject("DBUID");
-            }
+            writer.beginObject(TezReadOnlyString.ItemID);
+            writer.write(TezReadOnlyString.CellID, TezDBIDGenerator.getCellID(mItemID.fixedID));
+            writer.write(TezReadOnlyString.TypeID, TezDBIDGenerator.getTypeID(mItemID.fixedID));
+            writer.write(TezReadOnlyString.MDID, mItemID.modifiedID);
+            writer.endObject(TezReadOnlyString.ItemID);
 
-            if (this.stackCount >= 0)
+            writer.write(TezReadOnlyString.StackCount, mStackCount);
+
+            if (object.ReferenceEquals(mCategory, null))
             {
-                writer.write("StackCount", this.stackCount);
+                writer.write(TezReadOnlyString.Category, mCategory.finalToken.name);
             }
         }
 
@@ -125,24 +154,17 @@ namespace tezcat.Framework.Database
             this.CID = reader.readString(TezReadOnlyString.CID);
             this.NID = reader.readString(TezReadOnlyString.NID);
 
-            if(reader.tryRead("Category", out string final_token))
-            {
-                this.category = TezCategorySystem.getCategory(final_token);
-            }
+            reader.beginObject(TezReadOnlyString.ItemID);
+            var cell_id = reader.readInt(TezReadOnlyString.CellID);
+            var type_id = reader.readInt(TezReadOnlyString.TypeID);
+            TezItemID.create(ref mItemID, TezDBIDGenerator.generateID(cell_id, type_id), reader.readInt(TezReadOnlyString.MDID));
+            reader.endObject(TezReadOnlyString.ItemID);
 
-            if (reader.tryBeginObject("DBUID"))
-            {
-                this.dbUID = TezItemTypeID.generateID(reader.readInt("MID"), reader.readInt("TID"));
-                reader.endObject("DBUID");
-            }
+            mStackCount = reader.readInt(TezReadOnlyString.StackCount);
 
-            if (reader.tryRead("StackCount", out int stack_count))
+            if (reader.tryRead(TezReadOnlyString.Category, out string final_token))
             {
-                this.stackCount = stack_count;
-            }
-            else
-            {
-                this.stackCount = -1;
+                mCategory = TezCategorySystem.getCategory(final_token);
             }
         }
 
@@ -150,9 +172,9 @@ namespace tezcat.Framework.Database
         {
             var entity = TezEntity.create();
 
-//             var info = this.createInfoComponent();
-//             info.loadItemData(this);
-//             entity.addComponent(info);
+            //             var info = this.createInfoComponent();
+            //             info.loadItemData(this);
+            //             entity.addComponent(info);
 
             var data = this.createDataComponent();
             entity.addComponent(data);
@@ -165,11 +187,11 @@ namespace tezcat.Framework.Database
             throw new Exception(string.Format("{0} : Please override this method[createDataComponent]", this.GetType().Name));
         }
 
-
         public virtual TezGameObject createGameObject()
         {
             throw new Exception(string.Format("{0} : Please override this method[createGameObject]", this.GetType().Name));
         }
+
         //         protected virtual TezInfoComponent createInfoComponent()
         //         {
         //             return new TezInfoComponent();
@@ -178,7 +200,7 @@ namespace tezcat.Framework.Database
         #region 重写
         public override int GetHashCode()
         {
-            return this.dbUID.GetHashCode();
+            return mItemID.GetHashCode();
         }
 
         public override bool Equals(object other)
@@ -193,7 +215,7 @@ namespace tezcat.Framework.Database
                 return false;
             }
 
-            return dbUID.Equals(other.dbUID);
+            return mItemID.sameAs(other.mItemID);
         }
 
         public static bool operator ==(TezDatabaseGameItem a, TezDatabaseGameItem b)

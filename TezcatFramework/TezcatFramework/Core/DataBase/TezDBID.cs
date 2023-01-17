@@ -11,26 +11,26 @@ namespace tezcat.Framework.Database
         : ITezNonCloseable
         , IEquatable<TezDBID>
     {
-        int m_UID;
+        int mUID;
         /// <summary>
         /// 全局唯一ID
         /// </summary>
-        public int UID => m_UID;
+        public int UID => mUID;
 
         /// <summary>
-        /// 在多类型数据库存储模式下才会生效
+        /// 多类型数据库存储模式下才会生效
         /// </summary>
         public int managerID
         {
-            get { return m_UID >> 16; }
+            get { return mUID >> 16; }
         }
 
         /// <summary>
-        /// 
+        /// 多类型数据库存储模式下才会生效
         /// </summary>
         public int indexID
         {
-            get { return m_UID & 0x0000_ffff; }
+            get { return mUID & 0x0000_ffff; }
         }
 
         /// <summary>
@@ -39,22 +39,22 @@ namespace tezcat.Framework.Database
         /// <param name="uid">32bit UID</param>
         public TezDBID(int uid)
         {
-            m_UID = uid;
+            mUID = uid;
         }
 
         /// <summary>
         /// 多类型数据库存储方式
         /// </summary>
-        /// <param name="manager_id">first 16bit ID</param>
-        /// <param name="uid">last 16bit ID</param>
-        public TezDBID(int manager_id, int uid)
+        /// <param name="managerID">first 16bit ID</param>
+        /// <param name="UID">last 16bit ID</param>
+        public TezDBID(int managerID, int UID)
         {
-            m_UID = (manager_id << 16) | uid;
+            mUID = (managerID << 16) | UID;
         }
 
         public override int GetHashCode()
         {
-            return m_UID.GetHashCode();
+            return mUID.GetHashCode();
         }
 
         public override bool Equals(object obj)
@@ -69,16 +69,16 @@ namespace tezcat.Framework.Database
                 return false;
             }
 
-            return m_UID == other.m_UID;
+            return this.sameAs(other);
         }
 
         /// <summary>
         /// 快速比较
         /// 保证输入参数不为空
         /// </summary>
-        public bool fastEquals(TezDBID other)
+        public bool sameAs(TezDBID other)
         {
-            return m_UID == other.m_UID;
+            return mUID == other.mUID;
         }
 
         /// <summary>
@@ -91,7 +91,7 @@ namespace tezcat.Framework.Database
                 return false;
             }
 
-            return a.UID == b.UID;
+            return a.sameAs(b);
         }
 
         /// <summary>

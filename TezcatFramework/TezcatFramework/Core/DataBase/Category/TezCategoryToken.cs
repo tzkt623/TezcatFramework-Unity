@@ -13,6 +13,11 @@ namespace tezcat.Framework.Database
     public interface ITezCategoryBaseToken : ITezNonCloseable
     {
         /// <summary>
+        /// 名称
+        /// </summary>
+        string name { get; }
+
+        /// <summary>
         /// Token的UID
         /// 用于比较两个Token是否相同
         /// </summary>
@@ -22,12 +27,7 @@ namespace tezcat.Framework.Database
         /// Token存在的层
         /// 即在Category系统里TokenArray中的Index
         /// </summary>
-        int layer { get; }
-
-        /// <summary>
-        /// 名称
-        /// </summary>
-        string name { get; }
+        int layerID { get; }
 
         /// <summary>
         /// Token的int值
@@ -35,12 +35,13 @@ namespace tezcat.Framework.Database
         int intValue { get; }
 
         /// <summary>
-        /// 分类
+        /// Token分类
         /// </summary>
         TezCategoryTokenType tokenType { get; }
 
         /// <summary>
         /// 父级
+        /// 用于回溯
         /// Root没有父级
         /// </summary>
         ITezCategoryBaseToken parent { get; }
@@ -59,10 +60,11 @@ namespace tezcat.Framework.Database
     public interface ITezCategoryFinalToken : ITezCategoryBaseToken
     {
         /// <summary>
-        /// 索引的全局ID
-        /// 用于与各个Category建立联系
+        /// 全局ID
+        /// 无差别赋予的ID
+        /// 可用于索引
         /// </summary>
-        int indexUID { get; }
+        int globalID { get; }
     }
 
     public abstract class TezCategoryBaseToken<Self, TEnumValue>
@@ -79,17 +81,17 @@ namespace tezcat.Framework.Database
         /// <summary>
         /// 路径中的层级
         /// </summary>
-        public int layer { get; }
+        public int layerID { get; }
         public int UID { get; } = -1;
 
         public ITezCategoryBaseToken parent { get; }
 
-        protected TezCategoryBaseToken(TEnumValue value, int layer, ITezCategoryBaseToken parent)
+        protected TezCategoryBaseToken(TEnumValue enumValue, int layer, ITezCategoryBaseToken parent)
         {
-            this.enumValue = value;
+            this.enumValue = enumValue;
             this.intValue = Convert.ToInt32(this.enumValue);
 
-            this.layer = layer;
+            this.layerID = layer;
             this.parent = parent;
 
             this.name = Enum.GetName(typeof(TEnumValue), this.enumValue);
@@ -135,7 +137,7 @@ namespace tezcat.Framework.Database
         /// 用于创建PathToken
         /// </summary>
         /// <param name="parentToken">Path中的上一级</param>
-        protected TezCategoryPathToken(TValue value, ITezCategoryBaseToken parentToken) : base(value, parentToken.layer + 1, parentToken)
+        protected TezCategoryPathToken(TValue value, ITezCategoryBaseToken parentToken) : base(value, parentToken.layerID + 1, parentToken)
         {
 
         }
@@ -154,17 +156,22 @@ namespace tezcat.Framework.Database
     {
         public sealed override TezCategoryTokenType tokenType => TezCategoryTokenType.Final;
 
-        int m_IndexUID = -1;
-        public int indexUID => m_IndexUID;
+        int mGlobalID = -1;
+        /// <summary>
+        /// 全局ID
+        /// 无差别赋予的ID
+        /// 可用于索引
+        /// </summary>
+        public int globalID => mGlobalID;
 
-        protected TezCategoryFinalToken(TValue value, ITezCategoryBaseToken parentToken) : base(value, parentToken.layer + 1, parentToken)
+        protected TezCategoryFinalToken(TValue value, ITezCategoryBaseToken parentToken) : base(value, parentToken.layerID + 1, parentToken)
         {
 
         }
 
         protected void registerID()
         {
-            m_IndexUID = TezCategorySystem.registerFinalToken(this);
+            mGlobalID = TezCategorySystem.registerFinalToken(this);
             TezCategorySystem.createCategory(this);
         }
     }

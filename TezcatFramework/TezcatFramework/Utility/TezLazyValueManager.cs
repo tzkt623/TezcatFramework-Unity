@@ -12,16 +12,16 @@ namespace tezcat.Framework.Utility
             public string sValue;
         }
 
-        public IReadOnlyDictionary<string, Value> values => m_Dic;
-        Dictionary<string, Value> m_Dic = new Dictionary<string, Value>();
+        public IReadOnlyDictionary<string, Value> values => mDict;
+        Dictionary<string, Value> mDict = new Dictionary<string, Value>();
 
         #region Add
         public void set(string name, bool value)
         {
-            if (!m_Dic.TryGetValue(name, out var slot))
+            if (!mDict.TryGetValue(name, out var slot))
             {
                 slot = new Value();
-                m_Dic.Add(name, slot);
+                mDict.Add(name, slot);
             }
 
             slot.iValue = value ? 1 : 0;
@@ -29,10 +29,10 @@ namespace tezcat.Framework.Utility
 
         public void set(string name, int value)
         {
-            if (!m_Dic.TryGetValue(name, out var slot))
+            if (!mDict.TryGetValue(name, out var slot))
             {
                 slot = new Value();
-                m_Dic.Add(name, slot);
+                mDict.Add(name, slot);
             }
 
             slot.iValue = value;
@@ -40,10 +40,10 @@ namespace tezcat.Framework.Utility
 
         public void set(string name, float value)
         {
-            if (!m_Dic.TryGetValue(name, out var slot))
+            if (!mDict.TryGetValue(name, out var slot))
             {
                 slot = new Value();
-                m_Dic.Add(name, slot);
+                mDict.Add(name, slot);
             }
 
             slot.fValue = value;
@@ -51,10 +51,10 @@ namespace tezcat.Framework.Utility
 
         public void set(string name, string value)
         {
-            if (!m_Dic.TryGetValue(name, out var slot))
+            if (!mDict.TryGetValue(name, out var slot))
             {
                 slot = new Value();
-                m_Dic.Add(name, slot);
+                mDict.Add(name, slot);
             }
 
             slot.sValue = value;
@@ -64,7 +64,7 @@ namespace tezcat.Framework.Utility
         #region Get
         public bool getBool(string name, bool def = default)
         {
-            if (m_Dic.TryGetValue(name, out Value value))
+            if (mDict.TryGetValue(name, out Value value))
             {
                 return value.iValue > 0;
             }
@@ -74,7 +74,7 @@ namespace tezcat.Framework.Utility
 
         public string getString(string name, string def = default)
         {
-            if (m_Dic.TryGetValue(name, out Value value))
+            if (mDict.TryGetValue(name, out Value value))
             {
                 return value.sValue;
             }
@@ -84,7 +84,7 @@ namespace tezcat.Framework.Utility
 
         public float getFloat(string name, float def = default)
         {
-            if (m_Dic.TryGetValue(name, out Value value))
+            if (mDict.TryGetValue(name, out Value value))
             {
                 return value.fValue;
             }
@@ -94,7 +94,7 @@ namespace tezcat.Framework.Utility
 
         public int getInt(string name, int def = default)
         {
-            if (m_Dic.TryGetValue(name, out Value value))
+            if (mDict.TryGetValue(name, out Value value))
             {
                 return value.iValue;
             }
@@ -105,13 +105,13 @@ namespace tezcat.Framework.Utility
 
         public void close()
         {
-            foreach (var item in m_Dic)
+            foreach (var item in mDict)
             {
                 item.Value.sValue = null;
             }
 
-            m_Dic.Clear();
-            m_Dic = null;
+            mDict.Clear();
+            mDict = null;
         }
     }
 }

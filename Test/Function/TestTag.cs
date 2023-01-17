@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using tezcat.Framework.Core;
+﻿using tezcat.Framework.Core;
 
 namespace tezcat.Framework.Test
 {

@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using tezcat.Framework.ECS;
+﻿using tezcat.Framework.Core;
 
 namespace tezcat.Framework.Game.Inventory
 {
@@ -28,16 +26,22 @@ namespace tezcat.Framework.Game.Inventory
 
         public bool picked { get; set; } = false;
 
-        TezInventory m_Inventory = null;
+        TezInventory mInventory = null;
         /// <summary>
         /// 格子属于的Inventory
         /// </summary>
-        public TezInventory inventory => m_Inventory;
+        public TezInventory inventory => mInventory;
 
+
+        TezItemableObject mItem = null;
         /// <summary>
         /// 装的Item
         /// </summary>
-        public ITezInventoryObject item { get; set; } = null;
+        public TezItemableObject item
+        {
+            get { return mItem; }
+            set { mItem = value; }
+        }
 
         /// <summary>
         /// Item的数量
@@ -45,41 +49,54 @@ namespace tezcat.Framework.Game.Inventory
         /// </summary>
         public int count { get; set; } = -1;
 
+
+        /// <summary>
+        /// 上一个
+        /// </summary>
+        public TezInventoryItemSlot preSlot { get; set; }
+        /// <summary>
+        /// 下一个
+        /// </summary>
+        public TezInventoryItemSlot nextSlot { get; set; }
+
         /// <summary>
         /// 转换Item
         /// 转换失败返回Null
-        public T getItem<T>() where T : ITezInventoryObject
+        /// </summary>
+        public T getItem<T>() where T : TezItemableObject
         {
-            return (T)this.item;
+            return (T)mItem;
         }
 
         public TezInventoryItemSlot(TezInventory inventory)
         {
-            m_Inventory = inventory;
+            mInventory = inventory;
             this.picked = false;
         }
 
         public override void close()
         {
             base.close();
-            this.item = null;
-            m_Inventory = null;
+            mItem = null;
+            mInventory = null;
+            this.preSlot = null;
+            this.nextSlot = null;
         }
 
         /// <summary>
         /// 拿出
         /// </summary>
-        public ITezInventoryObject take()
+        public TezItemableObject take()
         {
-            return m_Inventory.take(this.index);
+            return mInventory.take(this.index);
         }
 
         /// <summary>
         /// 存入
         /// </summary>
-        public void store(ITezInventoryObject item, int count)
+        public void store(TezItemableObject item, int count)
         {
-            m_Inventory.store(this.index, item, count);
+            mInventory.store(this.index, item, count);
         }
     }
 }

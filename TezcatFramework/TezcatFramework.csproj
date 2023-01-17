@@ -50,13 +50,19 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="TezcatFramework\Core\DataBase\FileIO\TezJsonObjectReader.cs" />
+    <Compile Include="TezcatFramework\Core\DataBase\TezItemInfo.cs" />
+    <Compile Include="TezcatFramework\Core\Object\TezGameObject.cs" />
+    <Compile Include="TezcatFramework\Core\DataBase\TezItemID.cs" />
+    <Compile Include="TezcatFramework\Core\Object\TezItemableObject.cs" />
+    <Compile Include="TezcatFramework\Core\Object\TezSmartRef.cs" />
     <Compile Include="TezcatFramework\Exp\TezAwaitable.cs" />
     <Compile Include="TezcatFramework\Game\AI\BehaviorTree\TezBTRegisterAttribute.cs" />
-    <Compile Include="TezcatFramework\Game\Inventory\TezInventoryEntry.cs" />
+    <Compile Include="TezcatFramework\Game\Inventory\TezStorableInfo.cs" />
     <Compile Include="TezcatFramework\Core\Tag\TezTags.cs" />
     <Compile Include="TezcatFramework\Core\DataBase\Category\ITezCategoryObject.cs" />
-    <Compile Include="TezcatFramework\Core\DataBase\TezItemTypeID.cs" />
-    <Compile Include="TezcatFramework\Game\Inventory\ITezInventoryObject.cs" />
+    <Compile Include="TezcatFramework\Core\DataBase\TezDBIDGenerator.cs" />
+    <Compile Include="TezcatFramework\Game\Inventory\ITezItemableObject.cs" />
     <Compile Include="TezcatFramework\Core\EntitySystem\Component\TezInfoComponent.cs" />
     <Compile Include="TezcatFramework\Core\Value\Property\Lit\ITezLitProperty.cs" />
     <Compile Include="TezcatFramework\Core\Value\Property\Other\ITezModifierRefrenceProperty.cs" />
@@ -90,7 +96,7 @@
     <Compile Include="TezcatFramework\Core\DataBase\Category\TezCategorySystem.cs" />
     <Compile Include="TezcatFramework\Core\DataBase\Category\TezCategoryToken.cs" />
     <Compile Include="TezcatFramework\Core\Object\ITezCloseable.cs" />
-    <Compile Include="TezcatFramework\Core\Object\TezRefObject.cs" />
+    <Compile Include="TezcatFramework\Core\Object\TezFlagable.cs" />
     <Compile Include="TezcatFramework\Core\Value\Property\Lit\TezLitPropertyManager.cs" />
     <Compile Include="TezcatFramework\Core\Value\Property\Lit\TezLitPropertySortList.cs" />
     <Compile Include="TezcatFramework\Core\Value\TezValueSortList.cs" />
@@ -139,11 +145,11 @@
     <Compile Include="TezcatFramework\Utility\KeyConfigSystem\TezKeyConfigSystem.cs" />
     <Compile Include="TezcatFramework\Utility\KeyConfigSystem\TezKeyWrapper.cs" />
     <Compile Include="TezcatFramework\Utility\Math\TezRemap.cs" />
-    <Compile Include="TezcatFramework\Core\TezClassFactory.cs" />
+    <Compile Include="TezcatFramework\Utility\TezClassFactory.cs" />
     <Compile Include="TezcatFramework\Core\Extension\TezBitMaskExtension.cs" />
     <Compile Include="TezcatFramework\Utility\TezLazyValueManager.cs" />
     <Compile Include="TezcatFramework\Utility\TezRandomIndex.cs" />
-    <Compile Include="TezcatFramework\Utility\TezReadOnlyString.cs" />
+    <Compile Include="TezcatFramework\Core\TezReadOnlyString.cs" />
     <Compile Include="TezcatFramework\Core\DataBase\TezSaveManager.cs" />
     <Compile Include="TezcatFramework\Core\TezService.cs" />
     <Compile Include="TezcatFramework\Core\Tag\TezTagGenerator.cs" />
@@ -237,7 +243,7 @@
     <Compile Include="TezcatFramework\Utility\SamplePool\ITezSamplePool.cs" />
     <Compile Include="TezcatFramework\Utility\SamplePool\TezSamplePoolManager.cs" />
     <Compile Include="TezcatFramework\Utility\TezIDCreator.cs" />
-    <Compile Include="TezcatFramework\Utility\TezStaticString.cs" />
+    <Compile Include="TezcatFramework\Core\Value\TezString.cs" />
     <Compile Include="TezcatFramework\Utility\TezPageController.cs" />
     <Compile Include="TezcatFramework\Utility\Quadtree\TezQtEntry.cs" />
     <Compile Include="TezcatFramework\Utility\Quadtree\TezQtPoint.cs" />
@@ -250,14 +256,17 @@
     <Compile Include="TezcatFramework\Utility\TezGlobalState.cs" />
     <Compile Include="TezcatFramework\Utility\Container\TezList.cs" />
     <Compile Include="TezcatFramework\Utility\TezNoise.cs" />
-    <Compile Include="TezcatFramework\Utility\TezFilePath.cs" />
+    <Compile Include="TezcatFramework\Core\DataBase\FileIO\TezFilePath.cs" />
     <Compile Include="TezcatFramework\Utility\SamplePool\TezSamplePool.cs" />
     <Compile Include="TezcatFramework\Utility\TezSingleton.cs" />
     <Compile Include="TezcatFramework\Utility\TezSmartObject.cs" />
     <Compile Include="TezcatFramework\Utility\Container\TezTuple.cs" />
     <Compile Include="TezcatFramework\Utility\Valider\TezBitValider.cs" />
-    <Compile Include="TezcatFramework\Utility\Valider\TezValider.cs" />
+    <Compile Include="TezcatFramework\Utility\Valider\TezLifeDetector.cs" />
     <Compile Include="TezcatFramework\Utility\Valider\TezStateValider.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <WCFMetadata Include="Connected Services\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

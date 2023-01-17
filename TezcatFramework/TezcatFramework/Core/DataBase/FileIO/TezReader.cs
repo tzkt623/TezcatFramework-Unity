@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using tezcat.Framework.Core;
 
 namespace tezcat.Framework.Database
 {
@@ -20,7 +21,6 @@ namespace tezcat.Framework.Database
 
         public abstract int count { get; }
 
-        public abstract bool load(string path);
 
         #region Array
         public bool tryBeginArray(string key)
@@ -214,7 +214,7 @@ namespace tezcat.Framework.Database
         public abstract ValueType getValueType(string key);
         public abstract ValueType getValueType(int index);
 
-        public void close()
+        public virtual void close()
         {
             mCheckStringKey.Clear();
             mCheckIntKey.Clear();
@@ -222,5 +222,36 @@ namespace tezcat.Framework.Database
             mCheckIntKey = null;
             mCheckStringKey = null;
         }
+    }
+
+
+    public abstract class TezFileReader : TezReader
+    {
+        public abstract bool load(string path);
+    }
+
+    public abstract class TezReaderObject : ITezCloseable
+    {
+        public abstract bool readBool(int key);
+        public abstract int readInt(int key);
+        public abstract float readFloat(int key);
+        public abstract string readString(int key);
+
+        public abstract bool readBool(string key);
+        public abstract int readInt(string key);
+        public abstract float readFloat(string key);
+        public abstract string readString(string key);
+
+        public abstract bool tryRead(int key, out bool result);
+        public abstract bool tryRead(int key, out int result);
+        public abstract bool tryRead(int key, out float result);
+        public abstract bool tryRead(int key, out string result);
+
+        public abstract bool tryRead(string key, out bool result);
+        public abstract bool tryRead(string key, out int result);
+        public abstract bool tryRead(string key, out float result);
+        public abstract bool tryRead(string key, out string result);
+
+        public abstract void close();
     }
 }

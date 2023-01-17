@@ -48,56 +48,64 @@ namespace tezcat.Framework.Database
         : ITezNonCloseable
         , IEquatable<TezCategory>
     {
-        public string name => m_Tokens[m_Last].name;
+        /// <summary>
+        /// 最后一个Token的Name
+        /// </summary>
+        public string name => mFinalToken.name;
 
         /// <summary>
         /// 主Token
         /// 此类型的最上级分类
         /// </summary>
-        public ITezCategoryRootToken rootToken => (ITezCategoryRootToken)m_Tokens[0];
+        public ITezCategoryRootToken rootToken => mRootToken;
 
         /// <summary>
         /// 最终Token
         /// 此类型的最下级分类
         /// 用于比较
         /// </summary>
-        public ITezCategoryFinalToken finalToken => (ITezCategoryFinalToken)m_Tokens[m_Last];
-
-
-        private int lastTokenUID => m_Tokens[m_Last].intValue;
+        public ITezCategoryFinalToken finalToken => mFinalToken;
 
         /// <summary>
         /// 总分类等级
         /// </summary>
         public int count
         {
-            get { return m_Tokens.Length; }
+            get { return mTokens.Length; }
         }
 
-        private int m_Last = -1;
-        private ITezCategoryBaseToken[] m_Tokens = null;
+        //        private init mLast = -1;
+        private ITezCategoryBaseToken[] mTokens = null;
+        private ITezCategoryRootToken mRootToken = null;
+        private ITezCategoryFinalToken mFinalToken = null;
 
 
         public ITezCategoryBaseToken this[int index]
         {
-            get { return m_Tokens[index]; }
+            get { return mTokens[index]; }
         }
 
         public void setToken(List<ITezCategoryBaseToken> list)
         {
-            m_Tokens = list.ToArray();
-            m_Last = m_Tokens.Length - 1;
+            mTokens = list.ToArray();
+            var last = mTokens.Length - 1;
+
+            mRootToken = (ITezCategoryRootToken)mTokens[0];
+            mFinalToken = (ITezCategoryFinalToken)mTokens[last];
         }
 
         public void setToken(params ITezCategoryBaseToken[] tokens)
         {
-            m_Tokens = tokens;
-            m_Last = m_Tokens.Length - 1;
+            mTokens = tokens;
+            var last = mTokens.Length - 1;
+
+            mRootToken = (ITezCategoryRootToken)mTokens[0];
+            mFinalToken = (ITezCategoryFinalToken)mTokens[last];
         }
 
         public int get(int index)
         {
-            return m_Tokens[index].intValue;
+            return mTokens[index].intValue;
         }
 
         /// <summary>
@@ -105,9 +113,9 @@ namespace tezcat.Framework.Database
         /// </summary>
         public bool contains(ITezCategoryBaseToken token)
         {
-            if (token.layer < m_Tokens.Length)
+            if (token.layerID < mTokens.Length)
             {
-                return m_Tokens[token.layer].UID == token.UID;
+                return mTokens[token.layerID].UID == token.UID;
             }
 
             return false;
@@ -116,14 +124,14 @@ namespace tezcat.Framework.Database
         /// <summary>
         /// 快速比较,不判断参数是否为空
         /// </summary>
-        public bool fastCompare(TezCategory other)
+        public bool sameAs(TezCategory other)
         {
-            return lastTokenUID == other.lastTokenUID;
+            return mFinalToken.UID == other.mFinalToken.UID;
         }
 
         public override int GetHashCode()
         {
-            return base.GetHashCode();
+            return mFinalToken.globalID;
         }
 
         public override bool Equals(object other)
@@ -138,9 +146,16 @@ namespace tezcat.Framework.Database
                 return false;
             }
 
-            return lastTokenUID == other.lastTokenUID;
+            return this.sameAs(other);
         }
 
+        /// <summary>
+        /// 此类不允许有空类存在
+        /// 所以只要有其中一个对象是空
+        /// 那就一定返回false
+        /// 也就是null和null的运算符比较,不能判定为相等,因为他们不是存在的类型
+        /// 如果要进行空判断 请使用object.ReferenceEquals
+        /// </summary>
         public static bool operator ==(TezCategory a, TezCategory b)
         {
             if (object.ReferenceEquals(a, null) || object.ReferenceEquals(b, null))
@@ -148,9 +163,16 @@ namespace tezcat.Framework.Database
                 return false;
             }
 
-            return a.lastTokenUID == b.lastTokenUID;
+            return a.sameAs(b);
         }
 
+        /// <summary>
+        /// 此类不允许有空类存在
+        /// 所以只要有其中一个对象是空
+        /// 那就一定返回false
+        /// 也就是null和null的运算符比较,不能判定为相等,因为他们不是存在的类型
+        /// 如果要进行空判断 请使用object.ReferenceEquals
+        /// </summary>
         public static bool operator !=(TezCategory a, TezCategory b)
         {
             return !(a == b);

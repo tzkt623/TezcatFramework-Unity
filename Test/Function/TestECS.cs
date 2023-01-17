@@ -18,7 +18,7 @@ namespace tezcat.Framework.Test
         {
             var data_item = (TezDatabaseGameItem)item;
             this.NID = data_item.NID;
-            this.dbUID = data_item.dbUID;
+            this.dbUID = data_item.DBID;
             this.category = data_item.category;
 
             this.preInit();
@@ -31,11 +31,6 @@ namespace tezcat.Framework.Test
 
         }
 
-        public bool compare(ITezCategoryObject categoryObject)
-        {
-            return this.category == categoryObject.category;
-        }
-
         public bool compare(ITezDBItemObject dbItemObject)
         {
             if (this.dbUID < 0 || dbItemObject.dbUID < 0)
@@ -44,6 +39,16 @@ namespace tezcat.Framework.Test
             }
 
             return this.dbUID == dbItemObject.dbUID;
+        }
+
+        public override void serialize(TezWriter writer)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public override void deserialize(TezReader reader)
+        {
+            throw new System.NotImplementedException();
         }
     }
 
@@ -89,8 +94,12 @@ namespace tezcat.Framework.Test
         }
     }
 
-    class Main
+    class TestECS : TezBaseTest
     {
+        public TestECS() : base("ECS-System")
+        {
+        }
+
         /// <summary>
         /// must first invoke
         /// </summary>
@@ -108,6 +117,11 @@ namespace tezcat.Framework.Test
             entity.addComponent(new MyData1());
             entity.addComponent(new MyRenderer());
             entity.addComponent(new MyPhysics());
+        }
+
+        public override void run()
+        {
+
         }
     }
 }

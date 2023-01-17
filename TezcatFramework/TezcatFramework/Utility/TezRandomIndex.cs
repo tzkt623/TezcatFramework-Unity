@@ -12,63 +12,63 @@ namespace tezcat.Framework.Utility
     /// </summary>
     public class TezRandomIndex : ITezCloseable
     {
-        int[] m_Data;
-        int m_Size;
-        TezEventExtension.Function<int, int, int> m_Generator;
+        int[] mData;
+        int mSize;
+        TezEventExtension.Function<int, int, int> mGenerator;
 
         public TezRandomIndex(int count, TezEventExtension.Function<int, int, int> randomGenerator)
         {
-            m_Data = new int[count];
-            for (int i = 0; i < m_Data.Length; i++)
+            mData = new int[count];
+
+            for (int i = 0; i < mData.Length; i++)
             {
-                m_Data[i] = i;
+                mData[i] = i;
             }
 
-            m_Size = m_Data.Length;
-            m_Generator = randomGenerator;
+            mSize = mData.Length;
+            mGenerator = randomGenerator;
         }
 
         public TezRandomIndex(int[] sequence, TezEventExtension.Function<int, int, int> randomGenerator)
         {
-            m_Data = sequence;
-            m_Size = m_Data.Length;
-            m_Generator = randomGenerator;
-
+            mData = sequence;
+            mSize = mData.Length;
+            mGenerator = randomGenerator;
         }
 
         public void close()
         {
-            m_Data = null;
-            m_Generator = null;
+            mData = null;
+            mGenerator = null;
         }
 
         public int nextIndex()
         {
-            if (m_Size == 0)
+            if (mSize == 0)
             {
-                m_Size = m_Data.Length;
+                mSize = mData.Length;
             }
 
-            if (m_Size == 1)
+            if (mSize == 1)
             {
-                return m_Data[0];
+                return mData[0];
             }
 
-            var data_index = m_Generator(0, m_Size);
-            var temp = m_Data[data_index];
+            var data_index = mGenerator(0, mSize);
+            var temp = mData[data_index];
 
             ///交换
-            var last = m_Data[m_Size - 1];
-            m_Data[m_Size - 1] = temp;
-            m_Data[data_index] = last;
-            m_Size--;
+            var last = mData[mSize - 1];
+            mData[mSize - 1] = temp;
+            mData[data_index] = last;
+            mSize--;
 
             return temp;
         }
 
         public void reset()
         {
-            m_Size = m_Data.Length;
+            mSize = mData.Length;
         }
     }
 }

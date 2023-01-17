@@ -1,13 +1,28 @@
-﻿using LitJson;
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using LitJson;
 
 namespace tezcat.Framework.Database
 {
-    public class TezJsonReader : TezReader
+
+
+    /// <summary>
+    /// Json数据读取器
+    /// 
+    /// Json数据库的格式一般来说应该为Array
+    /// 
+    /// [
+    ///     {
+    ///         "CID:"xxx",
+    ///         "NID":"XXX"
+    ///     }
+    /// ]
+    /// 
+    /// </summary>
+    public class TezJsonReader : TezFileReader
     {
         /// <summary>
         /// 用于抛出错误
@@ -38,6 +53,7 @@ namespace tezcat.Framework.Database
         }
 
         private JsonData mCurrent = null;
+        private JsonData mRootObject = null;
         private Stack<Data> mPreRoot = new Stack<Data>();
         private string mPath;
 
@@ -51,10 +67,28 @@ namespace tezcat.Framework.Database
             get { return mCurrent.Count; }
         }
 
+        public override void close()
+        {
+            base.close();
+            mRootObject.Clear();
+
+            mRootObject = null;
+            mCurrent = null;
+        }
+
         public bool loadContent(string jsonString)
         {
-            mCurrent = JsonMapper.ToObject(jsonString);
-            return mCurrent.IsArray | mCurrent.IsObject;
+            var temp = JsonMapper.ToObject(jsonString);
+            if (temp.IsArray || temp.IsObject)
+            {
+                mCurrent = temp;
+                mRootObject = temp;
+                return true;
+            }
+
+            mCurrent = null;
+            mRootObject = null;
+            return false;
         }
 
         public override bool load(string path)
@@ -88,7 +122,7 @@ namespace tezcat.Framework.Database
         private string throwInfo(string functionName, string position)
         {
             StringBuilder content = new StringBuilder();
-            content.AppendLine(string.Format("{0}:{1} Error", functionName, position));
+            content.AppendLine($"{functionName}:{position} Error");
             if (mPreRoot.Count > 0)
             {
                 content.AppendLine("From This Path:");
@@ -350,7 +384,7 @@ namespace tezcat.Framework.Database
 
         /// <summary>
         /// 尝试读取int
-        /// 失败则赋值为 int.MinValue
+        /// 失败则赋值为 init.MinValue
         /// </summary>
         public override bool tryRead(int key, out int result)
         {
@@ -418,7 +452,7 @@ namespace tezcat.Framework.Database
 
         /// <summary>
         /// 尝试读取int
-        /// 失败则赋值为 int.MinValue
+        /// 失败则赋值为 init.MinValue
         /// </summary>
         public override bool tryRead(string key, out int result)
         {

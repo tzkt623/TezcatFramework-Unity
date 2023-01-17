@@ -1,52 +1,52 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using tezcat.Framework.Utility;
+using tezcat.Framework.Core;
 
 namespace tezcat.Framework.Database
 {
     public static class TezCategorySystem
     {
         #region RootToken
-        static List<ITezCategoryRootToken> m_RootTokenList = new List<ITezCategoryRootToken>();
-        static Dictionary<string, ITezCategoryRootToken> m_RootTokenDict = new Dictionary<string, ITezCategoryRootToken>();
+        static List<ITezCategoryRootToken> mRootTokenList = new List<ITezCategoryRootToken>();
+        static Dictionary<string, ITezCategoryRootToken> mRootTokenDict = new Dictionary<string, ITezCategoryRootToken>();
 
         public static void registerRootToken(ITezCategoryRootToken token)
         {
-            while (token.intValue >= m_RootTokenList.Count)
+            while (token.intValue >= mRootTokenList.Count)
             {
-                m_RootTokenList.Add(null);
+                mRootTokenList.Add(null);
             }
 
-            m_RootTokenList[token.intValue] = token;
-            m_RootTokenDict.Add(token.name, token);
+            mRootTokenList[token.intValue] = token;
+            mRootTokenDict.Add(token.name, token);
         }
 
         public static ITezCategoryRootToken getRootToken(string name)
         {
-            return m_RootTokenDict[name];
+            return mRootTokenDict[name];
         }
 
         public static ITezCategoryRootToken getRootToken(int index)
         {
-            return m_RootTokenList[index];
+            return mRootTokenList[index];
         }
         #endregion
 
         #region FinalToken
-        static List<ITezCategoryFinalToken> m_FinalTokenList = new List<ITezCategoryFinalToken>();
-        static Dictionary<string, ITezCategoryFinalToken> m_FinalTokenDict = new Dictionary<string, ITezCategoryFinalToken>();
+        static List<ITezCategoryFinalToken> mFinalTokenList = new List<ITezCategoryFinalToken>();
+        static Dictionary<string, ITezCategoryFinalToken> mFinalTokenDict = new Dictionary<string, ITezCategoryFinalToken>();
         public static int registerFinalToken(ITezCategoryFinalToken finalToken)
         {
-            int uid = m_FinalTokenList.Count;
-            m_FinalTokenDict.Add(finalToken.name, finalToken);
-            m_FinalTokenList.Add(finalToken);
+            int uid = mFinalTokenList.Count;
+            mFinalTokenDict.Add(finalToken.name, finalToken);
+            mFinalTokenList.Add(finalToken);
             return uid;
         }
 
         public static ITezCategoryFinalToken getFinalToken(string name)
         {
-            if (m_FinalTokenDict.TryGetValue(name, out var token))
+            if (mFinalTokenDict.TryGetValue(name, out var token))
             {
                 return token;
             }
@@ -60,13 +60,13 @@ namespace tezcat.Framework.Database
         class Slot
         {
             List<TezCategory> m_List = new List<TezCategory>();
-            Dictionary<string, TezCategory> m_Dic = new Dictionary<string, TezCategory>();
+            Dictionary<string, TezCategory> mDict = new Dictionary<string, TezCategory>();
             public void generate(ITezCategoryFinalToken finalToken, out TezCategory category, TezEventExtension.Function<TezCategory> onGenerate)
             {
-                if (!m_Dic.TryGetValue(finalToken.toName, out category))
+                if (!mDict.TryGetValue(finalToken.toName, out category))
                 {
                     category = onGenerate();
-                    m_Dic.Add(finalToken.toName, category);
+                    mDict.Add(finalToken.toName, category);
                     while (finalToken.toID >= m_List.Count)
                     {
                         m_List.Add(null);
@@ -77,10 +77,10 @@ namespace tezcat.Framework.Database
 
             public TezCategory getCategory(string finalName)
             {
-                return m_Dic[finalName];
+                return mDict[finalName];
             }
 
-            public TezCategory getCategory(int finalIndex)
+            public TezCategory getCategory(init finalIndex)
             {
                 return m_List[finalIndex];
             }
@@ -99,7 +99,7 @@ namespace tezcat.Framework.Database
             throw new Exception();
         }
 
-        public static TezCategory getCategory(int rootID, int finalID)
+        public static TezCategory getCategory(init rootID, init finalID)
         {
             return m_SlotList[rootID].getCategory(finalID);
         }
@@ -121,19 +121,19 @@ namespace tezcat.Framework.Database
         }
         */
 
-        static Dictionary<string, ITezCategoryBaseToken> m_TokenDict = new Dictionary<string, ITezCategoryBaseToken>();
-        static List<ITezCategoryBaseToken> m_TokenList = new List<ITezCategoryBaseToken>();
+        static Dictionary<string, ITezCategoryBaseToken> mTokenDict = new Dictionary<string, ITezCategoryBaseToken>();
+        static List<ITezCategoryBaseToken> mTokenList = new List<ITezCategoryBaseToken>();
         public static int registerToken(ITezCategoryBaseToken baseToken)
         {
-            var id = m_TokenList.Count;
-            m_TokenList.Add(baseToken);
-            m_TokenDict.Add(baseToken.name, baseToken);
+            var id = mTokenList.Count;
+            mTokenList.Add(baseToken);
+            mTokenDict.Add(baseToken.name, baseToken);
             return id;
         }
 
         public static ITezCategoryBaseToken getToken(string tokenName)
         {
-            if (m_TokenDict.TryGetValue(tokenName, out var baseToken))
+            if (mTokenDict.TryGetValue(tokenName, out var baseToken))
             {
                 return baseToken;
             }
@@ -143,14 +143,14 @@ namespace tezcat.Framework.Database
 
         public static ITezCategoryBaseToken getToken(int index)
         {
-            return m_TokenList[index];
+            return mTokenList[index];
         }
 
-        static Dictionary<string, TezCategory> m_CategoryDict = new Dictionary<string, TezCategory>();
-        static List<TezCategory> m_CategoryList = new List<TezCategory>();
+        static Dictionary<string, TezCategory> mCategoryDict = new Dictionary<string, TezCategory>();
+        static List<TezCategory> mCategoryList = new List<TezCategory>();
         public static TezCategory getCategory(string finalToken)
         {
-            if (m_CategoryDict.TryGetValue(finalToken, out var category))
+            if (mCategoryDict.TryGetValue(finalToken, out var category))
             {
                 return category;
             }
@@ -160,7 +160,7 @@ namespace tezcat.Framework.Database
 
         public static TezCategory getCategory(ITezCategoryFinalToken finalToken)
         {
-            return m_CategoryList[finalToken.indexUID];
+            return mCategoryList[finalToken.globalID];
         }
 
         /// <summary>
@@ -179,13 +179,13 @@ namespace tezcat.Framework.Database
 
             TezCategory category = new TezCategory();
             category.setToken(stack.ToArray());
-            m_CategoryDict.Add(finalToken.name, category);
+            mCategoryDict.Add(finalToken.name, category);
 
-            while (m_CategoryList.Count <= finalToken.indexUID)
+            while (mCategoryList.Count <= finalToken.globalID)
             {
-                m_CategoryList.Add(null);
+                mCategoryList.Add(null);
             }
-            m_CategoryList[finalToken.indexUID] = category;
+            mCategoryList[finalToken.globalID] = category;
         }
         #endregion
 

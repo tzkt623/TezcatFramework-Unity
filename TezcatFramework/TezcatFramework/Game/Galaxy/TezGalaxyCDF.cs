@@ -131,7 +131,7 @@ namespace tezcat.Framework.Game.Galaxy
 
             //  printf("fVal=%2.2f; h=%2.2f; i=%d; m_vVal[i]=%2.2f; m_vAsc[i]=%2.2f;\n", fVal, h, i, m_vVal[i], m_vAsc[i]);
 
-            //           assert(i >= 0 && i < (int)m_vM1.size());
+            //           assert(i >= 0 && i < (init)m_vM1.size());
             return (m_vY1[i] + m_vM1[i] * remainder) /* / m_vVal.back()*/;
         }
 
@@ -147,7 +147,7 @@ namespace tezcat.Framework.Game.Galaxy
             int i = (int)(fVal / h);
             float remainder = fVal - i * h;
 
-            //            assert(i >= 0 && i < (int)m_vM2.size());
+            //            assert(i >= 0 && i < (init)m_vM2.size());
             return (m_vY2[i] + m_vM2[i] * remainder) /* / m_vVal.back()*/;
         }
 

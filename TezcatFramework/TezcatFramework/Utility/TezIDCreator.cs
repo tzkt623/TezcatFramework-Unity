@@ -27,6 +27,36 @@ namespace tezcat.Framework.Utility
         }
     }
 
+    public static class TezIDPool<T>
+    {
+        static Queue<int> sPool = new Queue<int>();
+        static int sID = 0;
+
+        public static int count
+        {
+            get { return sID; }
+        }
+
+        public static int next()
+        {
+            if (sPool.Count > 0)
+            {
+                return sPool.Dequeue();
+            }
+            return sID++;
+        }
+
+        public static void recycle(int id)
+        {
+            sPool.Enqueue(id);
+        }
+
+        public static void reset()
+        {
+            sID = 0;
+        }
+    }
+
     /// <summary>
     /// 池ID
     /// </summary>

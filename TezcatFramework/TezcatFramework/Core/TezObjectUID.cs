@@ -1,27 +1,52 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using tezcat.Framework.Extension;
 
 namespace tezcat.Framework.Core
 {
     /// <summary>
     /// 实体对象的唯一ID
     /// </summary>
-    public class TezObjectUID
-        : ITezCloseable
-        , IEquatable<TezObjectUID>
+    public static class TezObjectUID
+    //         : ITezCloseable
+    //         , IEquatable<TezObjectUID>
     {
+        /// <summary>
+        /// 对象被创建时
+        /// </summary>
+        public static event TezEventExtension.Action<uint> evtObjectGenerated;
+        /// <summary>
+        /// 对象被回收时
+        /// </summary>
+        public static event TezEventExtension.Action<uint> evtObjectRecycled;
+
+        /// <summary>
+        /// 错误UID
+        /// </summary>
+        public const uint cErrorUID = 0;
+
         #region 统计
         static Queue<uint> IDPool = new Queue<uint>();
+        static uint mIDGenerate = 0;
 
-        public static readonly TezBindable<uint> TotalUID = new TezBindable<uint>();
-        public static readonly TezObjectUID Error = new TezObjectUID();
+        //public static readonly TezBindable<uint> TotalUID = new TezBindable<uint>();
+        //public static readonly TezObjectUID Error = new TezObjectUID();
+
+        public static uint totalCount => mIDGenerate;
+
+        /// <summary>
+        /// 激活的
+        /// </summary>
+        public static uint activedCount
+        {
+            get { return mIDGenerate - (uint)IDPool.Count; }
+        }
 
         /// <summary>
         /// 被回收的UID数量
         /// </summary>
-        public static int freeCount
+        public static uint freeCount
         {
-            get { return IDPool.Count; }
+            get { return (uint)IDPool.Count; }
         }
 
         public static uint generateID()
@@ -31,24 +56,28 @@ namespace tezcat.Framework.Core
                 return IDPool.Dequeue();
             }
 
-            return ++TotalUID.value;
+            mIDGenerate++;
+            evtObjectGenerated?.Invoke(mIDGenerate);
+            return mIDGenerate;
         }
 
         public static void recycleID(uint uid)
         {
-            if (uid != 0)
+            if (uid != cErrorUID)
             {
                 IDPool.Enqueue(uid);
+                evtObjectRecycled?.Invoke(uid);
             }
         }
         #endregion
 
-        uint m_RTID;
-        public uint RTID => m_RTID;
+        /*
+        uint mRTID;
+        public uint RTID => mRTID;
 
         public TezObjectUID()
         {
-            m_RTID = generateID();
+            mRTID = generateID();
         }
 
         /// <summary>
@@ -61,17 +90,17 @@ namespace tezcat.Framework.Core
                 return false;
             }
 
-            return m_RTID == other.m_RTID;
+            return mRTID == other.mRTID;
         }
 
         public void close()
         {
-            IDPool.Enqueue(m_RTID);
+            IDPool.Enqueue(mRTID);
         }
 
-        public override int GetHashCode()
+        public override init GetHashCode()
         {
-            return m_RTID.GetHashCode();
+            return mRTID.GetHashCode();
         }
 
         public override bool Equals(object other)
@@ -104,5 +133,6 @@ namespace tezcat.Framework.Core
         {
             return !(a == b);
         }
+        */
     }
 }

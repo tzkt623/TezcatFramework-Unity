@@ -1,27 +1,25 @@
-﻿using UnityEngine;
-using System.Collections;
-using tezcat.Framework.Core;
+﻿using tezcat.Framework.Core;
 
 namespace tezcat.Framework.Game.Inventory
 {
     public abstract class TezInventoryBaseView : ITezCloseable
     {
-        public TezInventory inventory => m_InventoryRef.get();
-        protected TezWeakRef<TezInventory> m_InventoryRef = null;
+        public TezInventory inventory => mInventoryRef.get();
+        protected TezFlagableRef<TezInventory> mInventoryRef = null;
 
-        TezInventoryFilter m_FilterManager = new TezInventoryFilter();
-        public TezInventoryFilter filterManager => m_FilterManager;
+        TezInventoryFilter mFilterManager = new TezInventoryFilter();
+        public TezInventoryFilter filterManager => mFilterManager;
 
         public TezInventoryBaseView()
         {
-            m_FilterManager.onItemChanged += this.onItemChanged;
-            m_FilterManager.onFilterChanged += this.onFilterChanged;
+            mFilterManager.onItemChanged += this.onItemChanged;
+            mFilterManager.onFilterChanged += this.onFilterChanged;
         }
 
         public virtual void setInventory(TezInventory inventory)
         {
-            m_InventoryRef = inventory;
-            m_FilterManager.setInventory(inventory);
+            mInventoryRef = new TezFlagableRef<TezInventory>(inventory);
+            mFilterManager.setInventory(inventory);
         }
 
         protected abstract void onItemChanged(TezInventoryDataSlot dataSlot);
@@ -29,11 +27,11 @@ namespace tezcat.Framework.Game.Inventory
 
         public virtual void close()
         {
-            m_InventoryRef.close();
-            m_InventoryRef = null;
+            mInventoryRef.close();
+            mInventoryRef = null;
 
-            m_FilterManager.close();
-            m_FilterManager = null;
+            mFilterManager.close();
+            mFilterManager = null;
         }
     }
 }

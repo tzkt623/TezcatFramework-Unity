@@ -10,7 +10,7 @@ namespace tezcat.Framework.Database
             public int stackCount = 0;
         }
 
-        static Config s_Default = new Config()
+        static Config sDefault = new Config()
         {
             name = "#DefaultItemConfig",
             stackCount = 0
@@ -26,7 +26,7 @@ namespace tezcat.Framework.Database
         public static Config createConfig(ITezCategoryRootToken rootToken, ITezCategoryFinalToken finalToken)
         {
             var rid = rootToken.intValue;
-            var findex = finalToken.indexUID;
+            var findex = finalToken.globalID;
 
             while (m_ConfigList.Count <= rid)
             {
@@ -52,7 +52,7 @@ namespace tezcat.Framework.Database
         public static Config getConfig(ITezCategoryRootToken rootToken, ITezCategoryFinalToken finalToken)
         {
             var rid = rootToken.intValue;
-            var findex = finalToken.indexUID;
+            var findex = finalToken.globalID;
             if (rid < m_ConfigList.Count)
             {
                 var list = m_ConfigList[rid];
@@ -62,7 +62,7 @@ namespace tezcat.Framework.Database
                 }
             }
 
-            return s_Default;
+            return sDefault;
         }
     }
 }

@@ -9,8 +9,8 @@ namespace tezcat.Framework.Utility
     /// </summary>
     public class TezPageController : ITezCloseable
     {
-        TezEventExtension.Action<int, int> m_OnPageChanged;
-        TezEventExtension.Action m_OnPageEmpty;
+        TezEventExtension.Action<int, int> mOnPageChanged;
+        TezEventExtension.Action mOnPageEmpty;
 
         /// <summary>
         /// 当前页码
@@ -31,20 +31,20 @@ namespace tezcat.Framework.Utility
         /// <summary>
         /// 每页开始的位置
         /// </summary>
-        int m_CurrentPageBegin;
+        int mCurrentPageBegin;
 
-        int m_Count;
+        int mCount;
         /// <summary>
         /// 总数量
         /// 设置总数量以计算总页面
         /// </summary>
         public int count
         {
-            get { return m_Count; }
+            get { return mCount; }
             set
             {
-                m_Count = value;
-                this.maxPage = Mathf.CeilToInt(m_Count / (float)this.pageCapacity);
+                mCount = value;
+                this.maxPage = Mathf.CeilToInt(mCount / (float)this.pageCapacity);
             }
         }
 
@@ -56,8 +56,8 @@ namespace tezcat.Framework.Utility
         /// <param name="on_page_empty"></param>
         public void setListener(TezEventExtension.Action<int, int> on_page_changed, TezEventExtension.Action on_page_empty)
         {
-            m_OnPageChanged = on_page_changed;
-            m_OnPageEmpty = on_page_empty;
+            mOnPageChanged = on_page_changed;
+            mOnPageEmpty = on_page_empty;
         }
 
         /// <summary>
@@ -65,9 +65,9 @@ namespace tezcat.Framework.Utility
         /// </summary>
         public void pageUp()
         {
-            if (m_Count == 0)
+            if (mCount == 0)
             {
-                m_OnPageEmpty();
+                mOnPageEmpty();
                 return;
             }
 
@@ -86,9 +86,9 @@ namespace tezcat.Framework.Utility
         /// </summary>
         public void pageDown()
         {
-            if (m_Count == 0)
+            if (mCount == 0)
             {
-                m_OnPageEmpty();
+                mOnPageEmpty();
                 return;
             }
 
@@ -108,10 +108,10 @@ namespace tezcat.Framework.Utility
         public void setPage(int page)
         {
             ///如果没有数量用于分页
-            if (m_Count == 0)
+            if (mCount == 0)
             {
                 this.currentPage = 1;
-                m_OnPageEmpty();
+                mOnPageEmpty();
                 return;
             }
 
@@ -133,14 +133,14 @@ namespace tezcat.Framework.Utility
 
         private void refresh()
         {
-            m_CurrentPageBegin = (this.currentPage - 1) * pageCapacity;
-            m_OnPageChanged(m_CurrentPageBegin, this.pageCapacity);
+            mCurrentPageBegin = (this.currentPage - 1) * pageCapacity;
+            mOnPageChanged(mCurrentPageBegin, this.pageCapacity);
         }
 
         public void close()
         {
-            m_OnPageChanged = null;
-            m_OnPageEmpty = null;
+            mOnPageChanged = null;
+            mOnPageEmpty = null;
         }
     }
 }

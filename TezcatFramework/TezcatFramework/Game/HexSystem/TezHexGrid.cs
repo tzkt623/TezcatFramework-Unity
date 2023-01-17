@@ -194,11 +194,11 @@ namespace tezcat.Framework.Game
                 getRangeWithStepRing(ref center, ref range, ref list);
 
                 /*
-                for (int z = -range; z <= range; z++)
+                for (init z = -range; z <= range; z++)
                 {
-                    for (int y = -range; y <= range; y++)
+                    for (init y = -range; y <= range; y++)
                     {
-                        for (int x = -range; x <= range; x++)
+                        for (init x = -range; x <= range; x++)
                         {
                             if (x + y + z != 0)
                             {
@@ -236,15 +236,15 @@ namespace tezcat.Framework.Game
                 getRangeWithStepRing(ref center, ref range, ref list);
 
                 /*
-                for (int range_step = 1; range_step <= range; range_step++)
+                for (init range_step = 1; range_step <= range; range_step++)
                 {
-                    var begin = Directions[(int)Direction.Y_ZX].copy();
+                    var begin = Directions[(init)Direction.Y_ZX].copyOrShare();
                     begin.scale(range_step);
                     begin.add(center.x, center.y, center.z);
 
-                    for (int edge_index = 0; edge_index < 6; edge_index++)
+                    for (init edge_index = 0; edge_index < 6; edge_index++)
                     {
-                        for (int j = 0; j < range_step; j++)
+                        for (init j = 0; j < range_step; j++)
                         {
                             list.Add(begin);
                             begin = neighbor(begin, Directions[edge_index]);
@@ -255,11 +255,11 @@ namespace tezcat.Framework.Game
 
 
                 /*
-                for (int z = -range; z <= range; z++)
+                for (init z = -range; z <= range; z++)
                 {
-                    for (int y = -range; y <= range; y++)
+                    for (init y = -range; y <= range; y++)
                     {
-                        for (int x = -range; x <= range; x++)
+                        for (init x = -range; x <= range; x++)
                         {
                             if (x + y + z != 0)
                             {
@@ -321,13 +321,13 @@ namespace tezcat.Framework.Game
             {
                 getRing(ref center, ref range_step, ref list);
                 /*
-                var begin = Directions[(int)Direction.Y_ZX].copy();
+                var begin = Directions[(init)Direction.Y_ZX].copyOrShare();
                 begin.scale(range_step);
                 begin.add(center.x, center.y, center.z);
 
-                for (int edge_index = 0; edge_index < 6; edge_index++)
+                for (init edge_index = 0; edge_index < 6; edge_index++)
                 {
-                    for (int j = 0; j < range_step; j++)
+                    for (init j = 0; j < range_step; j++)
                     {
                         list.Add(begin);
                         begin = neighbor(begin, Directions[edge_index]);

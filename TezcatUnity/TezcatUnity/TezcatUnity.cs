@@ -2,6 +2,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using tezcat.Framework;
+using tezcat.Framework.Core;
+using tezcat.Framework.Database;
 using tezcat.Unity.Core;
 using tezcat.Unity.Database;
 using tezcat.Unity.GraphicSystem;
@@ -92,8 +94,14 @@ namespace tezcat.Unity
         #region Register
         private void register()
         {
+            TezFilePath.setUnityPath(Application.dataPath);
+
             this.registerVersions();
             this.registerService();
+
+            TezcatFramework.initBuildinService();
+            this.registerFramework();
+
             this.registerComponent();
             this.registerClassFactory();
         }
@@ -103,8 +111,17 @@ namespace tezcat.Unity
             sUnityKeyConfigSystem = new UnityKeyConfigSystem();
             sGraphicSystem = new TezGraphicSystem();
             sPrefabDatabase = new TezPrefabDatabase();
+        }
 
-            TezcatFramework.initService();
+        /// <summary>
+        /// 必须要对framework里的工具进行初始化
+        /// </summary>
+        protected virtual void registerFramework()
+        {
+            TezcatFramework.set(new TezFileDatabase());
+            TezcatFramework.set(new TezMainDatabase());
+            TezcatFramework.set(new TezMultiDatabase());
+            TezcatFramework.set(new TezRunTimeDatabase());
         }
 
         protected virtual void registerClassFactory()
@@ -114,9 +131,9 @@ namespace tezcat.Unity
 
         protected virtual void registerComponent()
         {
-//            TezDataComponent.SComUID = TezComponentManager.register<TezDataComponent>();
-//            TezInfoComponent.SComUID = TezComponentManager.register<TezInfoComponent>();
-//            TezRendererComponent.SComUID = TezComponentManager.register<TezRendererComponent>();
+            //            TezDataComponent.SComUID = TezComponentManager.register<TezDataComponent>();
+            //            TezInfoComponent.SComUID = TezComponentManager.register<TezInfoComponent>();
+            //            TezRendererComponent.SComUID = TezComponentManager.register<TezRendererComponent>();
         }
 
         protected abstract void registerVersions();

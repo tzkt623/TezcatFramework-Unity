@@ -88,7 +88,7 @@ namespace tezcat.Framework.Test
 
             if (mLoadConfig.active())
             {
-                TezReader reader = new TezJsonReader();
+                TezFileReader reader = new TezJsonReader();
                 reader.load("DataPath");
                 TezcatUnity.unityKeyConfigSystem.readFromSave(reader);
             }

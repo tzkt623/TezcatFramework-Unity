@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using tezcat.Framework.Core;
-using tezcat.Framework.ECS;
 using tezcat.Framework.Extension;
 
 namespace tezcat.Framework.Game.Inventory
@@ -10,7 +9,7 @@ namespace tezcat.Framework.Game.Inventory
     /// </summary>
     public interface ITezInventoryVisualSelector
     {
-        void onSelect(ITezInventoryObject game_object);
+        void onSelect(TezItemableObject itemableObject);
         void onComplete();
     }
 
@@ -29,18 +28,18 @@ namespace tezcat.Framework.Game.Inventory
 
         public TezInventoryItemSlot sourceSlot { get; private set; }
 
-        ITezInventoryVisualSelector m_VisualSelector = null;
+        ITezInventoryVisualSelector mVisualSelector = null;
 
         public void setVisualSelector(ITezInventoryVisualSelector visualSelector)
         {
-            m_VisualSelector = visualSelector;
+            mVisualSelector = visualSelector;
         }
 
         public void setSlot(TezInventoryItemSlot slot)
         {
             this.sourceSlot = slot;
             this.sourceInventory = slot.inventory;
-            m_VisualSelector.onSelect(slot.item);
+            mVisualSelector.onSelect(slot.item);
         }
 
         public void putToTarget(int count = 1)
@@ -56,7 +55,7 @@ namespace tezcat.Framework.Game.Inventory
 
         public void complete()
         {
-            m_VisualSelector.onComplete();
+            mVisualSelector.onComplete();
             this.sourceInventory = null;
             this.targetInventory = null;
             this.sourceSlot = null;

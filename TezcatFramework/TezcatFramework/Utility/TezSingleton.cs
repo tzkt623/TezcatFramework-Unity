@@ -5,7 +5,7 @@
     /// 
     /// 另一个单例管理器为Service
     /// </summary>
-    public abstract class TezSingleton<T> where T : class, new()
+    public class TezSingleton<T> where T : class, new()
     {
         public static readonly T instance = new T();
 
@@ -15,7 +15,7 @@
             {
                 if (instance != this)
                 {
-                    throw new System.Exception(string.Format("{0} : Can not new Singleton Class!!", typeof(T).Name));
+                    throw new System.Exception($"{typeof(T).Name} : Can not new Singleton Class!!");
                 }
             }
         }

@@ -140,7 +140,7 @@ namespace tezcat.Framework.AI
         {
             //             m_DeleteActionList.Clear();
             // 
-            //             for (int i = 0; i < m_RunningActionList.Count; i++)
+            //             for (init i = 0; i < m_RunningActionList.Count; i++)
             //             {
             //                 m_RunningActionList[i].reset();
             //             }

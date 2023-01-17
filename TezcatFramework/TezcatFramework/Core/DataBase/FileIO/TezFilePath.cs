@@ -4,7 +4,7 @@ using System.IO;
 using System.Text.RegularExpressions;
 using UnityEngine;
 
-namespace tezcat.Framework.Utility
+namespace tezcat.Framework.Core
 {
     public class TezFilePath
     {
@@ -15,12 +15,17 @@ namespace tezcat.Framework.Utility
         {
             get
             {
-                if (string.IsNullOrEmpty(mRootPath))
-                {
-                    mRootPath = TezFilePath.cleanPath(Application.dataPath + "/..");
-                }
                 return mRootPath;
             }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="path">Application.dataPath</param>
+        public static void setUnityPath(string path)
+        {
+            mRootPath = TezFilePath.cleanPath(path + "/..");
         }
 
         public static string cleanPath(string path, bool full = true)

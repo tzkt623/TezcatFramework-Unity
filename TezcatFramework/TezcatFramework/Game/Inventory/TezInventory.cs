@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using tezcat.Framework.Core;
+using tezcat.Framework.Database;
 using tezcat.Framework.Extension;
 
 namespace tezcat.Framework.Game.Inventory
@@ -8,23 +9,9 @@ namespace tezcat.Framework.Game.Inventory
     /// 
     /// 背包系统
     /// 
-    /// 不可堆叠加入
-    /// 说明每一个物品
-    /// 在底层上都是不同的数据
-    /// 一个单独的存在
-    /// 就算他的ID是一样的
-    /// 
-    /// 可堆叠加入
-    /// 说明物品在底层上都是同一个物品
-    /// 即引用同一个数据
-    /// 就算ID不同
-    /// 
-    /// #待解决问题
-    /// 如何共享可堆叠物品的对象
-    /// 
     /// </summary>
     public class TezInventory
-        : TezRefObject
+        : TezFlagable
     {
         public event TezEventExtension.Action<TezInventoryItemSlot> onItemAdded;
         public event TezEventExtension.Action<TezInventoryItemSlot> onItemRemoved;
@@ -34,10 +21,11 @@ namespace tezcat.Framework.Game.Inventory
         /// </summary>
         public int count
         {
-            get { return m_Slots.Count; }
+            get { return mSlots.Count; }
         }
 
-        List<TezInventoryItemSlot> m_Slots = new List<TezInventoryItemSlot>();
+        protected List<TezInventoryItemSlot> mSlots = new List<TezInventoryItemSlot>();
+        protected Dictionary<long, TezInventoryItemSlot> mStackItemTable = new Dictionary<long, TezInventoryItemSlot>();
 
         /// <summary>
         /// 获得一个Slot
@@ -46,7 +34,7 @@ namespace tezcat.Framework.Game.Inventory
         {
             get
             {
-                return m_Slots[index];
+                return mSlots[index];
             }
         }
 
@@ -59,175 +47,274 @@ namespace tezcat.Framework.Game.Inventory
         }
 
         /// <summary>
-        /// 存入
-        /// 不允许堆叠
+        /// 存入1个
         /// </summary>
-        public void store(ITezInventoryObject item)
+        public void store(TezItemableObject item)
         {
-            TezInventoryItemSlot result_slot = this.findSlotUnstackable();
+            this.store(item, 1);
+        }
 
-            ///找到空格子
-            if (result_slot != null)
+        /// <summary>
+        /// 加入多个相同item
+        /// </summary>
+        public void store(TezItemableObject item, int count)
+        {
+            TezInventoryItemSlot result_slot;
+            TezBaseItemInfo item_info;
+
+            //说明是运行时数据库
+            if (item.itemID.modifiedID > -1)
             {
-                result_slot.item = item;
-                result_slot.count = -1;
+                item_info = TezcatFramework.rtDB.getItem(item.itemID.modifiedID);
             }
-            ///没有找到空格子
             else
             {
-                result_slot = this.createItemSlot();
-                result_slot.item = item;
-                result_slot.count = -1;
-                result_slot.index = m_Slots.Count;
+                item_info = TezcatFramework.mainDB.getItem(item.itemID.fixedID);
+            }
 
-                m_Slots.Add(result_slot);
+
+            var stack_max_count = item_info.stackCount;
+            bool stackable = stack_max_count > 0;
+            if (stackable)
+            {
+                TezInventoryItemSlot pre_slot = null;
+                bool has_root = mStackItemTable.TryGetValue(item.itemID.ID, out result_slot);
+                int remain;
+                while (count > 0)
+                {
+                    //如果当前slot为空
+                    if (result_slot == null)
+                    {
+                        if (!this.findEmptySlot(out result_slot))
+                        {
+                            result_slot = this.createItemSlot();
+                            result_slot.index = mSlots.Count;
+
+                            mSlots.Add(result_slot);
+                        }
+                        result_slot.count = 0;
+
+                        //第一次加入搜索table
+                        if (!has_root)
+                        {
+                            has_root = true;
+                            mStackItemTable.Add(item.itemID.ID, result_slot);
+                        }
+
+                        //如果有前一个slot
+                        //把这两个slot连接起来
+                        if (pre_slot != null)
+                        {
+                            pre_slot.nextSlot = result_slot;
+                            result_slot.preSlot = pre_slot;
+                        }
+                    }
+
+                    //计算剩余空位
+                    remain = stack_max_count - result_slot.count;
+                    if (remain >= count)
+                    {
+                        //如果剩余空位大于等于加入数量
+                        //直接加入
+                        result_slot.count += count;
+                        count = 0;
+//                        item.recycleStorableObject();
+                    }
+                    else
+                    {
+                        //如果剩余空间小于加入数量
+                        //计算当前slot可以添加多少个
+                        //以及剩余多少个
+                        result_slot.count = stack_max_count;
+                        count -= remain;
+
+                        //记录当前slot
+                        pre_slot = result_slot;
+                        //取得下一个连接slot
+                        result_slot = result_slot.nextSlot;
+                    }
+                }
+            }
+            else
+            {
+                //找到格子
+                if (this.findEmptySlot(out result_slot))
+                {
+                    result_slot.item = item;
+                    result_slot.count = -1;
+                }
+                //没有找到格子
+                else
+                {
+                    result_slot = this.createItemSlot();
+                    result_slot.item = item;
+                    result_slot.count = -1;
+                    result_slot.index = mSlots.Count;
+                    mSlots.Add(result_slot);
+                }
             }
 
             onItemAdded?.Invoke(result_slot);
         }
 
         /// <summary>
-        /// 堆叠型加入
+        /// 添加多个Item到某个位置上
+        /// 由于数量可能会超过堆叠
         /// </summary>
-        public void store(ITezInventoryObject item, int count)
+        public void store(int slotIndex, TezItemableObject item, int count)
         {
-            var stack_max_count = item.inventoryEntry.stackCount;
-            TezInventoryItemSlot result_slot = this.findSlotStackable(item);
+            TezBaseItemInfo item_info;
 
-            ///找到格子
-            if (result_slot != null)
+            //说明是运行时数据库
+            if (item.itemID.modifiedID > -1)
             {
-                if (result_slot.item != null)
-                {
-                    result_slot.count += count;
-                    var remain = result_slot.count - stack_max_count;
-                    if (remain > 0)
-                    {
-                        result_slot.count = stack_max_count;
-                        this.store(item, remain);
-                    }
-                    else
-                    {
-                        item.inventoryEntry.recycle();
-                    }
-                }
-                else
-                {
-                    result_slot.item = item;
-                    if (count > stack_max_count)
-                    {
-                        result_slot.count = stack_max_count;
-                        this.store(item, count - stack_max_count);
-                    }
-                    else
-                    {
-                        result_slot.count = count;
-                    }
-                }
+                item_info = TezcatFramework.rtDB.getItem(item.itemID.modifiedID);
             }
-            ///没有找到格子
             else
             {
-                result_slot = this.createItemSlot();
-                result_slot.item = item;
-                result_slot.count = count;
-                result_slot.index = m_Slots.Count;
-
-                m_Slots.Add(result_slot);
+                item_info = TezcatFramework.mainDB.getItem(item.itemID.fixedID);
             }
 
-            onItemAdded?.Invoke(result_slot);
-        }
+            var stack_max_count = item_info.stackCount;
+            bool stackable = stack_max_count > 0;
+            var slot = mSlots[slotIndex];
 
-        public void store(int slotIndex, ITezInventoryObject item, int count)
-        {
-            var slot = m_Slots[slotIndex];
-            slot.item = item;
+            if (stackable)
+            {
+                slot.item = item;
+            }
+
             slot.count += count;
+
+            //可堆叠
+            if (item_info.stackCount > 0)
+            {
+
+            }
+
+            if (slot.count >= item_info.stackCount)
+            {
+
+            }
 
             onItemAdded?.Invoke(slot);
         }
 
         /// <summary>
-        /// 从包裹里取出
-        /// 理论上
-        /// 你应该知道精确的位置
-        /// 才能从包裹里面取出物品
+        /// 从精确的位置上取出精确个数的物品
         /// </summary>
-        public ITezInventoryObject take(int slotIndex, int count)
+        public TezItemableObject take(int slotIndex, int count)
         {
-            var slot = m_Slots[slotIndex];
+            var slot = mSlots[slotIndex];
             var item = slot.item;
 
-            slot.count -= count;
-            if (slot.count == 0)
+
+            if (slot.count < 0)
             {
+                //不允许堆叠
                 slot.item = null;
+            }
+            else
+            {
+                //允许堆叠
+                slot.count -= count;
+                if (slot.count == 0)
+                {
+                    if (slot.preSlot != null)
+                    {
+                        //如果有前一个节点
+                        //说明当前节点是在链表中间位置
+                        //需要重新连接前后两个Slot
+                        if (slot.nextSlot != null)
+                        {
+                            slot.preSlot.nextSlot = slot.nextSlot;
+                            slot.nextSlot.preSlot = slot.preSlot;
+                        }
+                        else
+                        {
+                            slot.preSlot.nextSlot = null;
+                        }
+                    }
+                    else
+                    {
+                        //如果没有前一个节点
+                        //说明此节点存在于索引中
+                        //需要重新建立索引
+                        if (slot.nextSlot != null)
+                        {
+                            //如果下一个节点存在
+                            //则把下一个节点变成索引的Root节点
+                            slot.nextSlot.preSlot = null;
+                            mStackItemTable[slot.item.itemID.ID] = slot.nextSlot;
+                        }
+                        else
+                        {
+                            //如果下一个节点也为空
+                            //说明此物品不存在物品栏中
+                            //删除索引
+                            mStackItemTable.Remove(slot.item.itemID.ID);
+                        }
+                    }
+
+                    slot.item = null;
+                }
             }
 
             onItemRemoved?.Invoke(slot);
-
             return item;
         }
 
         /// <summary>
-        /// 从包裹里取出
-        /// 理论上
-        /// 你应该知道精确的位置
-        /// 才能从包裹里面取出物品
+        /// 从精确的位置上取出1个物品
         /// </summary>
-        public ITezInventoryObject take(int slotIndex)
+        public TezItemableObject take(int slotIndex)
         {
-            var slot = m_Slots[slotIndex];
-            var item = slot.item;
-
-            slot.item = null;
-            slot.count = -1;
-
-            onItemRemoved?.Invoke(slot);
-
-            return item;
+            return this.take(slotIndex, 1);
         }
 
-        private TezInventoryItemSlot findSlotUnstackable()
+        private bool findEmptySlot(out TezInventoryItemSlot slot)
         {
             int result_index = 0;
 
-            while (result_index < m_Slots.Count)
+            while (result_index < mSlots.Count)
             {
-                var slot = m_Slots[result_index];
+                slot = mSlots[result_index];
                 ///找空格子
                 if (slot.item == null)
                 {
-                    return slot;
+                    return true;
                 }
                 result_index++;
             }
 
-            return null;
+            slot = null;
+            return false;
         }
 
-        private TezInventoryItemSlot findSlotStackable(ITezInventoryObject item)
+        private TezInventoryItemSlot findSlotStackable(TezItemableObject item, int stackCount, int count)
         {
             TezInventoryItemSlot result_slot = null;
 
             int result_index = 0;
-            while (result_index < m_Slots.Count)
+            while (result_index < mSlots.Count)
             {
-                var slot = m_Slots[result_index];
-                ///找空格子
+                var slot = mSlots[result_index];
+                //找空格子
                 if (result_slot == null && slot.item == null)
                 {
                     result_slot = slot;
                 }
 
-                ///找相同格子
-                ///可堆叠的物品
-                ///他们的模板相同
-                if (slot.item != null && slot.item.inventoryEntry.templateAs(item.inventoryEntry))
+                //找相同格子
+                //可堆叠的物品
+                //他们的模板相同
+                if (slot.item != null && slot.item.itemID.sameAs(item.itemID))
                 {
-                    result_slot = slot;
-                    break;
+                    if (slot.count < stackCount)
+                    {
+                        result_slot = slot;
+                        break;
+                    }
                 }
 
                 result_index++;
@@ -237,14 +324,25 @@ namespace tezcat.Framework.Game.Inventory
         }
 
         /// <summary>
-        /// 从包裹里面查询是否有某个物品
+        /// 从包裹里面查询是否有某个特定物品
         /// 返回-1表示没有
         /// </summary>
-        public int find(ITezInventoryObject gameObject)
+        public int find(TezItemableObject storableObject)
         {
-            return m_Slots.FindIndex((TezInventoryItemSlot slot) =>
+            return mSlots.FindIndex((TezInventoryItemSlot slot) =>
             {
-                return slot.item == gameObject;
+                return slot.item == storableObject;
+            });
+        }
+
+        /// <summary>
+        /// 从包裹里面查询是否有某个特定类型的物品
+        /// </summary>
+        public int find(TezCategory category)
+        {
+            return mSlots.FindIndex((TezInventoryItemSlot slot) =>
+            {
+                return slot.item.category == category;
             });
         }
 
@@ -252,12 +350,12 @@ namespace tezcat.Framework.Game.Inventory
         {
             base.close();
 
-            for (int i = 0; i < m_Slots.Count; i++)
+            for (int i = 0; i < mSlots.Count; i++)
             {
-                m_Slots[i].close();
+                mSlots[i].close();
             }
-            m_Slots.Clear();
-            m_Slots = null;
+            mSlots.Clear();
+            mSlots = null;
 
             onItemAdded = null;
             onItemRemoved = null;
