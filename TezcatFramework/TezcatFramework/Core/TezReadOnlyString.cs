@@ -23,6 +23,11 @@
         public const string MDID = "MDID";
 
         /// <summary>
+        /// 只读类
+        /// </summary>
+        public const string ReadOnly = "ReadOnly";
+
+        /// <summary>
         /// StackCount
         /// </summary>
         public const string StackCount = "StackCount";

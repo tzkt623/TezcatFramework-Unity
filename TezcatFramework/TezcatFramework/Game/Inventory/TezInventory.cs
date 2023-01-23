@@ -60,22 +60,12 @@ namespace tezcat.Framework.Game.Inventory
         public void store(TezItemableObject item, int count)
         {
             TezInventoryItemSlot result_slot;
-            TezBaseItemInfo item_info;
-
-            //说明是运行时数据库
-            if (item.itemID.modifiedID > -1)
-            {
-                item_info = TezcatFramework.rtDB.getItem(item.itemID.modifiedID);
-            }
-            else
-            {
-                item_info = TezcatFramework.mainDB.getItem(item.itemID.fixedID);
-            }
-
+            TezBaseItemInfo item_info = TezcatFramework.fileDB.getItemInfo(item.itemID);
 
             var stack_max_count = item_info.stackCount;
             bool stackable = stack_max_count > 0;
-            if (stackable)
+
+            if (stackable)//如果可以堆叠
             {
                 TezInventoryItemSlot pre_slot = null;
                 bool has_root = mStackItemTable.TryGetValue(item.itemID.ID, out result_slot);
@@ -118,7 +108,6 @@ namespace tezcat.Framework.Game.Inventory
                         //直接加入
                         result_slot.count += count;
                         count = 0;
-//                        item.recycleStorableObject();
                     }
                     else
                     {
@@ -135,7 +124,7 @@ namespace tezcat.Framework.Game.Inventory
                     }
                 }
             }
-            else
+            else//如果不可以堆叠
             {
                 //找到格子
                 if (this.findEmptySlot(out result_slot))
@@ -160,41 +149,29 @@ namespace tezcat.Framework.Game.Inventory
         /// <summary>
         /// 添加多个Item到某个位置上
         /// 由于数量可能会超过堆叠
+        /// 不可堆叠的物品不会超过堆叠
         /// </summary>
         public void store(int slotIndex, TezItemableObject item, int count)
         {
-            TezBaseItemInfo item_info;
-
-            //说明是运行时数据库
-            if (item.itemID.modifiedID > -1)
-            {
-                item_info = TezcatFramework.rtDB.getItem(item.itemID.modifiedID);
-            }
-            else
-            {
-                item_info = TezcatFramework.mainDB.getItem(item.itemID.fixedID);
-            }
+            TezBaseItemInfo item_info = TezcatFramework.fileDB.getItemInfo(item.itemID);
 
             var stack_max_count = item_info.stackCount;
             bool stackable = stack_max_count > 0;
-            var slot = mSlots[slotIndex];
 
+            var slot = mSlots[slotIndex];
+            slot.item = item;
             if (stackable)
             {
-                slot.item = item;
+                slot.count += count;
+                if (slot.count >= stack_max_count)
+                {
+                    var remain = slot.count - stack_max_count;
+                    this.store(item, remain);
+                }
             }
-
-            slot.count += count;
-
-            //可堆叠
-            if (item_info.stackCount > 0)
+            else
             {
-
-            }
-
-            if (slot.count >= item_info.stackCount)
-            {
-
+                slot.count = -1;
             }
 
             onItemAdded?.Invoke(slot);
@@ -207,7 +184,6 @@ namespace tezcat.Framework.Game.Inventory
         {
             var slot = mSlots[slotIndex];
             var item = slot.item;
-
 
             if (slot.count < 0)
             {

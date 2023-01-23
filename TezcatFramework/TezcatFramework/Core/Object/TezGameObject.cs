@@ -8,7 +8,7 @@ namespace tezcat.Framework.Core
     public abstract class TezGameObject
         : TezBaseObject
     {
-        //         protected TezString<TezGameObject> mNID = TezString<TezGameObject>.create();
+        //         protected TezString<TezGameObject> mNID = TezString<TezGameObject>.copyFrom();
         //         public TezString<TezGameObject> NID => mNID;
 
 
@@ -16,24 +16,36 @@ namespace tezcat.Framework.Core
         protected TezCategory mCategory = null;
         public TezCategory category => mCategory;
 
+        /// <summary>
+        /// 生成默认对象
+        /// </summary>
         public void init()
         {
             this.preInit();
-            this.initNew();
+            this.initDefault();
             this.postInit();
         }
 
+        /// <summary>
+        /// 在初始化之前做点什么
+        /// </summary>
         protected virtual void preInit()
         {
 
         }
 
+        /// <summary>
+        /// 初始化之后做点什么
+        /// </summary>
         protected virtual void postInit()
         {
 
         }
 
-        protected virtual void initNew()
+        /// <summary>
+        /// 生成默认对象
+        /// </summary>
+        protected virtual void initDefault()
         {
 
         }

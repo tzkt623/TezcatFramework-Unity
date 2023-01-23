@@ -1,5 +1,4 @@
 ﻿using System;
-using LitJson;
 using tezcat.Framework.Database;
 
 namespace tezcat.Framework.Core
@@ -25,7 +24,7 @@ namespace tezcat.Framework.Core
         public uint objectUID => mObjectUID;
 
         /// <summary>
-        /// 删除Object时调用
+        /// 销毁对象
         /// </summary>
         public virtual void close()
         {
@@ -33,7 +32,14 @@ namespace tezcat.Framework.Core
             mObjectUID = 0;
         }
 
+        /// <summary>
+        /// 序列化对象
+        /// </summary>
         public abstract void serialize(TezWriter writer);
+
+        /// <summary>
+        /// 反序列化对象
+        /// </summary>
         public abstract void deserialize(TezReader reader);
 
 

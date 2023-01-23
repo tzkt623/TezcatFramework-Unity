@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using static tezcat.Framework.Utility.TezClassFactory;
 
 namespace tezcat.Framework.Utility
 {
@@ -21,7 +22,7 @@ namespace tezcat.Framework.Utility
         public void register<T>(Creator<T> function) where T : class
         {
             var name = typeof(T).Name;
-            if(mDictWithName.ContainsKey(name))
+            if (mDictWithName.ContainsKey(name))
             {
                 throw new Exception($"{name} : this type is registered");
             }
@@ -41,6 +42,16 @@ namespace tezcat.Framework.Utility
             {
                 throw new Exception(string.Format("{0} : this type is not registered", name));
             }
+        }
+
+        public Creator<object> getCreator(string name)
+        {
+            return mDictWithName[name];
+        }
+
+        public Creator<T> getCreator<T>(string name) where T : class
+        {
+            return (Creator<T>)mDictWithName[name];
         }
 
         public void close()

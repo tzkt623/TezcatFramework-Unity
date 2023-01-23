@@ -1,35 +1,27 @@
 ﻿using tezcat.Framework.Core;
-using tezcat.Framework.Database;
 using tezcat.Framework.Game.Inventory;
 
 namespace tezcat.Framework.Test
 {
-    class MyGameItem : TezDatabaseGameItem
+    class MyPotion : TezReadOnlyObject
     {
+        public int healthAdd;
 
-    }
-
-    class MyPotion
-        : TezNonCopyableObject
-    {
-        protected override TezItemableObject cloneThisObject(TezBaseItemInfo itemInfo)
+        protected override TezItemableObject copyThisObject()
         {
-            var temp = new MyShip();
-            temp.init(this);
-            return temp;
+            var copy = new MyPotion();
+            copy.healthAdd = this.healthAdd;
+            return copy;
         }
     }
 
-    class MyShip : TezCopyableObject
+    class MyShip : TezUniqueObject
     {
-        protected override TezItemableObject cloneThisObject(TezBaseItemInfo itemInfo)
+        protected override TezItemableObject copyThisObject()
         {
-            var temp = new MyShip();
-            temp.init(this);
-            return temp;
+            throw new System.NotImplementedException();
         }
     }
-
 
     class TestInventory : TezBaseTest
     {
@@ -42,9 +34,9 @@ namespace tezcat.Framework.Test
 
         public override void run()
         {
-            var obj1 = new MyShip();
-            obj1.deserialize(TezcatFramework.fileDB.getItemData("Frigate001"));
-            this.inventory.store(obj1);
+            var info = TezcatFramework.fileDB.getItemInfo("Frigate001");
+            var obj = info.getObject<MyShip>();
+            this.inventory.store(obj);
         }
     }
 }

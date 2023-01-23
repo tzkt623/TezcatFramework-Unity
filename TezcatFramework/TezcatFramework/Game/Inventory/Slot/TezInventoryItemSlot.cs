@@ -45,9 +45,11 @@ namespace tezcat.Framework.Game.Inventory
 
         /// <summary>
         /// Item的数量
-        /// 为-1表示不可堆叠
+        /// ==0: 初始化
+        /// ==-1: 表示不可堆叠
+        /// >=1: 表示可以堆叠
         /// </summary>
-        public int count { get; set; } = -1;
+        public int count { get; set; } = 0;
 
 
         /// <summary>

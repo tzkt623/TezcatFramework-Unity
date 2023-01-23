@@ -238,7 +238,7 @@ namespace tezcat.Framework.Game
                 /*
                 for (init range_step = 1; range_step <= range; range_step++)
                 {
-                    var begin = Directions[(init)Direction.Y_ZX].copyOrShare();
+                    var begin = Directions[(init)Direction.Y_ZX].share();
                     begin.scale(range_step);
                     begin.add(center.x, center.y, center.z);
 
@@ -321,7 +321,7 @@ namespace tezcat.Framework.Game
             {
                 getRing(ref center, ref range_step, ref list);
                 /*
-                var begin = Directions[(init)Direction.Y_ZX].copyOrShare();
+                var begin = Directions[(init)Direction.Y_ZX].share();
                 begin.scale(range_step);
                 begin.add(center.x, center.y, center.z);
 

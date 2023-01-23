@@ -22,15 +22,18 @@ namespace LitJson
     public class JsonData : IJsonWrapper, IEquatable<JsonData>
     {
         #region Fields
+        private string json;
+        private JsonType type;
+
         private IList<JsonData> inst_array;
+        private IDictionary<string, JsonData> inst_object;
+
         private bool inst_boolean;
         private double inst_double;
         private int inst_int;
         private long inst_long;
-        private IDictionary<string, JsonData> inst_object;
         private string inst_string;
-        private string json;
-        private JsonType type;
+
 
         // Used to implement the IOrderedDictionary interface
         private IList<KeyValuePair<string, JsonData>> object_list;

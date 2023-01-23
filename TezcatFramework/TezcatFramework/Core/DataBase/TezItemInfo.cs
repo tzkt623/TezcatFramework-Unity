@@ -1,6 +1,6 @@
 using System;
 using tezcat.Framework.Core;
-using UnityEngine.Networking.Types;
+using tezcat.Framework.Utility;
 
 namespace tezcat.Framework.Database
 {
@@ -9,7 +9,12 @@ namespace tezcat.Framework.Database
         protected TezItemID mItemID = TezItemID.EmptyID;
         public TezItemID itemID => mItemID;
 
+        TezReader mDataReader = null;
+        public TezReader dataReader => mDataReader;
+
         public string NID { get; set; } = "$ErrorItem$";
+
+        bool mReadOnly = false;
 
         /*
          * #堆叠性质
@@ -33,26 +38,40 @@ namespace tezcat.Framework.Database
          */
 
         /// <summary>
-        /// ==0 : 物品不可堆叠,物品生成的对象数据独立,必须克隆模板数据
+        /// ==0 : 初始化
+        /// ==-1 : 物品不可堆叠,物品生成的对象数据独立,必须克隆模板数据
         /// >=1 : 物品可以堆叠,物品生成的对象数据共享,仅对模板数据只读
         /// </summary>
-        public int stackCount { get; set; } = 1;
+        public int stackCount { get; set; } = 0;
 
         protected TezItemableObject mTemplate = null;
-        /// <summary>
-        /// 获得一份模板数据
-        /// 此模板数据
-        /// 要么是克隆数据
-        /// 要么是共享数据
-        /// </summary>
-        public TezItemableObject template
-        {
-            set { mTemplate = value; }
-            get { return mTemplate.copyOrShare(); }
-        }
+        TezClassFactory.Creator<TezItemableObject> mCreator = null;
 
         protected int mVersion = 0;
         public int version => mVersion;
+
+        protected TezBaseItemInfo() { }
+
+        public TezBaseItemInfo(TezReader dataReader)
+        {
+            mDataReader = dataReader;
+            this.NID = dataReader.readString(TezReadOnlyString.NID);
+            this.stackCount = dataReader.readInt(TezReadOnlyString.StackCount);
+            TezItemID.create(ref mItemID,
+                             dataReader.readInt(TezReadOnlyString.FDID),
+                             dataReader.readInt(TezReadOnlyString.MDID));
+
+            mReadOnly = dataReader.readBool(TezReadOnlyString.ReadOnly);
+            if (mReadOnly)
+            {
+                mTemplate = TezcatFramework.classFactory.create<TezItemableObject>(dataReader.readString(TezReadOnlyString.CID));
+                mTemplate.init(dataReader);
+            }
+            else
+            {
+                mCreator = TezcatFramework.classFactory.getCreator<TezItemableObject>(dataReader.readString(TezReadOnlyString.CID));
+            }
+        }
 
         public bool isTemplate(TezItemableObject other)
         {
@@ -64,13 +83,77 @@ namespace tezcat.Framework.Database
             return mItemID.GetHashCode();
         }
 
-        public abstract void close();
+        public void setTemplate(TezItemableObject result)
+        {
+            mTemplate = result;
+        }
+
+        /// <summary>
+        /// 获得当前数据所提供的对象
+        /// 此模板数据
+        /// 要么是克隆数据
+        /// 要么是共享数据
+        /// </summary>
+        public TezItemableObject getObject()
+        {
+            if (mReadOnly)
+            {
+                return mTemplate.share();
+            }
+            else
+            {
+                var obj = mCreator();
+                obj.init(this.dataReader);
+                return obj;
+            }
+        }
+
+        public T getObject<T>() where T : TezItemableObject
+        {
+            if (mReadOnly)
+            {
+                return (T)mTemplate.share();
+            }
+            else
+            {
+                T obj = (T)mCreator();
+                obj.init(this.dataReader);
+                return obj;
+            }
+        }
+
+        public virtual void close()
+        {
+
+        }
+
         public abstract TezMItemInfo remodify();
+
+        /// <summary>
+        /// 记录MDID次数
+        /// </summary>
         public abstract void retainModifiedRef();
 
         public static bool isError(TezBaseItemInfo info)
         {
             return info.itemID.fixedID == -1;
+        }
+
+
+        public static TezBaseItemInfo createItemInfo(TezReader reader)
+        {
+            TezBaseItemInfo result;
+            var mid = reader.readInt(TezReadOnlyString.MDID);
+            if (mid >= 0)
+            {
+                result = new TezMItemInfo(reader);
+            }
+            else
+            {
+                result = new TezItemInfo(reader);
+            }
+
+            return result;
         }
     }
 
@@ -79,35 +162,36 @@ namespace tezcat.Framework.Database
     /// </summary>
     public class TezItemInfo : TezBaseItemInfo
     {
-        public TezItemInfo()
+        public TezItemInfo(TezReader dataReader)
+            : base(dataReader)
         {
 
         }
 
-        public TezItemInfo(TezItemableObject template, string NID, int stackCount, int FDID, int MDID = -1)
-        {
-            mTemplate = template;
-            this.NID = NID;
-            this.stackCount = stackCount;
-
-            mItemID.close();
-            mItemID = TezItemID.create(FDID, MDID);
-        }
+        //         public TezItemInfo(TezItemableObject template, string NID, int stackCount, int FDID)
+        //         {
+        //             mTemplate = template;
+        //             this.NID = NID;
+        //             this.stackCount = stackCount;
+        // 
+        //             mItemID.close();
+        //             mItemID = TezItemID.copyFrom(FDID);
+        //         }
 
         /// <summary>
         /// 使用另一个物品对象进行初始化
         /// 用于运行时自定义物品的生成
         /// </summary>
-        public TezItemInfo(TezItemInfo source)
-        {
-            //克隆出信息
-            //并且生成新的ItemID
-            this.NID = source.NID;
-            this.stackCount = source.stackCount;
-
-            mItemID.close();
-            mItemID = TezItemID.create(source.itemID.fixedID, TezcatFramework.rtDB.generateID());
-        }
+        //         public TezItemInfo(TezItemInfo source)
+        //         {
+        //             //克隆出信息
+        //             //并且生成新的ItemID
+        //             this.NID = source.NID;
+        //             this.stackCount = source.stackCount;
+        // 
+        //             mItemID.close();
+        //             mItemID = TezItemID.copyFrom(source.itemID.fixedID, TezcatFramework.rtDB.generateID());
+        //         }
 
         public override void close()
         {
@@ -147,10 +231,17 @@ namespace tezcat.Framework.Database
         /// </summary>
         public int refModifiedCount => mModifiedRefCount;
 
+        public TezMItemInfo(TezReader dataReader)
+            : base(dataReader)
+        {
+
+        }
+
         /// <summary>
         /// 由ItemInfo生成MItemInfo时调用
         /// </summary>
         public TezMItemInfo(TezItemInfo source)
+            : base(source.dataReader)
         {
             mParent = source;
             this.init();
@@ -160,6 +251,7 @@ namespace tezcat.Framework.Database
         /// 由MItemInfo生成MItemInfo时调用
         /// </summary>
         public TezMItemInfo(TezMItemInfo source)
+            : base(source.dataReader)
         {
             mParent = source.mParent;
             this.init();
@@ -171,8 +263,9 @@ namespace tezcat.Framework.Database
 
             this.stackCount = mParent.stackCount;
             this.NID = $"{mParent.NID}_M{mVersion}";
-            mItemID.close();
-            mItemID = TezItemID.create(mParent.itemID.fixedID, TezcatFramework.rtDB.generateID());
+            TezItemID.create(ref mItemID,
+                             mParent.itemID.fixedID,
+                             TezcatFramework.fileDB.generateMDID());
         }
 
         public override TezMItemInfo remodify()
@@ -190,7 +283,7 @@ namespace tezcat.Framework.Database
             mModifiedRefCount--;
             if (mModifiedRefCount <= 0)
             {
-                TezcatFramework.rtDB.unregisterItem(mItemID.modifiedID);
+                TezcatFramework.fileDB.unregisterItem(mItemID.modifiedID);
 
                 mItemID.close();
                 mItemID = null;
@@ -199,11 +292,14 @@ namespace tezcat.Framework.Database
                 this.NID = null;
             }
         }
+
+
     }
 
     public class TezErrorItemInfo : TezBaseItemInfo
     {
         public TezErrorItemInfo()
+            : base()
         {
 
         }

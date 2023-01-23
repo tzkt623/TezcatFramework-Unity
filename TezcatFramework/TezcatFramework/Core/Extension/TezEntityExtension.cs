@@ -20,7 +20,7 @@ namespace tezcat.Framework.Extension
 //         public static ObjectCom register<ObjectCom>() where ObjectCom : TezComData, new()
 //         {
 //             ObjectCom data = new ObjectCom();
-//             data.initNew();
+//             data.initDefault();
 // 
 //             var entity = TezEntity.register();
 //             entity.addComponent(data);

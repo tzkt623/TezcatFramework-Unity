@@ -17,19 +17,19 @@ namespace tezcat.Framework.Database
         public static readonly TezItemID EmptyID = new TezItemID();
         static Queue<TezItemID> sPool = new Queue<TezItemID>();
 
-        public static bool create(ref TezItemID itemID)
-        {
-            itemID?.close();
-
-            if (sPool.Count > 0)
-            {
-                itemID = sPool.Dequeue();
-                return false;
-            }
-
-            itemID = new TezItemID();
-            return true;
-        }
+//         public static bool create(ref TezItemID itemID)
+//         {
+//             itemID?.close();
+// 
+//             if (sPool.Count > 0)
+//             {
+//                 itemID = sPool.Dequeue();
+//                 return false;
+//             }
+// 
+//             itemID = new TezItemID();
+//             return true;
+//         }
 
         /// <summary>
         /// 返回True表示新建了新的ID对象
@@ -58,38 +58,40 @@ namespace tezcat.Framework.Database
         /// 返回True表示新建了新的ID对象
         /// 返回False表示使用了回收的对象
         /// </summary>
-        public static void create(ref TezItemID itemID, TezItemID source)
+        public static bool copyFrom(ref TezItemID target, TezItemID source)
         {
-            itemID?.close();
+            target?.close();
 
             if (sPool.Count > 0)
             {
-                itemID = sPool.Dequeue();
+                target = sPool.Dequeue();
+                target.mID = source.mID;
+                return false;
             }
             else
             {
-                itemID = new TezItemID();
+                target = new TezItemID();
+                target.mID = source.mID;
+                return true;
             }
-
-            itemID.mID = source.mID;
         }
 
 
         public static TezItemID create(int FDID, int MDID = -1)
         {
-            TezItemID item_id = null;
+            TezItemID result = null;
             if (sPool.Count > 0)
             {
-                item_id = sPool.Dequeue();
+                result = sPool.Dequeue();
             }
             else
             {
-                item_id = new TezItemID();
+                result = new TezItemID();
             }
 
-            item_id.mFixedID = FDID;
-            item_id.mModifiedID = MDID;
-            return item_id;
+            result.mFixedID = FDID;
+            result.mModifiedID = MDID;
+            return result;
         }
         #endregion
 
