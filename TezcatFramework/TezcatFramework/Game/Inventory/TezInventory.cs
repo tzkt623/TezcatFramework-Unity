@@ -68,6 +68,7 @@ namespace tezcat.Framework.Game.Inventory
             if (stackable)//如果可以堆叠
             {
                 TezInventoryItemSlot pre_slot = null;
+
                 bool has_root = mStackItemTable.TryGetValue(item.itemID.ID, out result_slot);
                 int remain;
                 while (count > 0)

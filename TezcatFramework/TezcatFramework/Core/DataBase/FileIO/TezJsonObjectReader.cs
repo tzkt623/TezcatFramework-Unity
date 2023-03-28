@@ -46,42 +46,44 @@ namespace tezcat.Framework.Database
 
         public override bool readBool(int key)
         {
-            return (bool)mCurrent[key];
+            return (bool)this.readAny(key);
         }
 
         public override bool readBool(string key)
         {
-            return (bool)mCurrent[key];
+            return (bool)this.readAny(key);
         }
 
         public override float readFloat(int key)
         {
-            return (float)mCurrent[key];
+            return (float)this.readAny(key);
         }
 
         public override float readFloat(string key)
         {
-            return (float)mCurrent[key];
+            return (float)this.readAny(key);
         }
 
         public override int readInt(int key)
         {
-            return (int)mCurrent[key];
+            //            return (int)mCurrent[key];
+            return (int)this.readAny(key);
         }
 
         public override int readInt(string key)
         {
-            return (int)mCurrent[key];
+//            return (int)mCurrent[key];
+            return (int)this.readAny(key);
         }
 
         public override string readString(int key)
         {
-            return (string)mCurrent[key];
+            return (string)this.readAny(key);
         }
 
         public override string readString(string key)
         {
-            return (string)mCurrent[key];
+            return (string)this.readAny(key);
         }
 
         public override bool tryRead(int key, out bool result)

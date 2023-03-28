@@ -21,6 +21,10 @@
         /// ModifiedID
         /// </summary>
         public const string MDID = "MDID";
+        /// <summary>
+        /// VersionID
+        /// </summary>
+        public const string VID = "VID";
 
         /// <summary>
         /// 只读类

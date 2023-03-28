@@ -24,6 +24,7 @@
     <WarningLevel>4</WarningLevel>
     <DocumentationFile>bin\Debug\TezcatFramework.xml</DocumentationFile>
     <LangVersion>7.1</LangVersion>
+    <GenerateSerializationAssemblies>Auto</GenerateSerializationAssemblies>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -50,8 +51,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="TezcatFramework\Core\DataBase\TezFileDatabase.cs" />
     <Compile Include="TezcatFramework\Core\DataBase\FileIO\TezJsonObjectReader.cs" />
-    <Compile Include="TezcatFramework\Core\DataBase\TezItemInfo.cs" />
+    <Compile Include="TezcatFramework\Core\DataBase\TezFixedItemInfo.cs" />
     <Compile Include="TezcatFramework\Core\Object\TezGameObject.cs" />
     <Compile Include="TezcatFramework\Core\DataBase\TezItemID.cs" />
     <Compile Include="TezcatFramework\Core\Object\TezItemableObject.cs" />

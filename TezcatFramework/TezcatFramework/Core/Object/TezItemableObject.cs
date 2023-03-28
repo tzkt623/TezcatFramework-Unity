@@ -8,25 +8,10 @@ namespace tezcat.Framework.Core
     public abstract class TezItemableObject
         : TezGameObject
     {
+        protected TezBaseItemInfo mItemInfo = null;
+        public TezBaseItemInfo itemInfo => mItemInfo;
+        public TezItemID itemID => mItemInfo.itemID;
 
-        //        protected TezBaseItemInfo mItemInfo = TezcatFramework.emptyItemInfo;
-        //        public TezBaseItemInfo itemInfo => mItemInfo;
-        public TezItemID mItemID = TezItemID.EmptyID;
-        public TezItemID itemID => mItemID;
-        public TezBaseItemInfo itemInfo => TezcatFramework.fileDB.getItemInfo(mItemID);
-        //         {
-        //             get
-        //             {
-        //                 if (mItemID.modifiedID > -1)
-        //                 {
-        //                     return TezcatFramework.rtDB.getItem(mItemID.modifiedID);
-        //                 }
-        //                 else
-        //                 {
-        //                     return TezcatFramework.mainDB.getItem(mItemID.fixedID);
-        //                 }
-        //             }
-        //         }
 
         public abstract bool isReadOnly { get; }
 
@@ -47,7 +32,7 @@ namespace tezcat.Framework.Core
 
         protected virtual void initWithTemplate(TezItemableObject template)
         {
-            TezItemID.copyFrom(ref mItemID, template.itemID);
+            mItemInfo = template.mItemInfo;
             mCategory = template.mCategory;
         }
 
@@ -75,8 +60,8 @@ namespace tezcat.Framework.Core
         public override void close()
         {
             base.close();
-            mItemID.close();
-            mItemID = null;
+            mItemInfo.close();
+            mItemInfo = null;
         }
 
         /// <summary>
@@ -90,8 +75,8 @@ namespace tezcat.Framework.Core
             writer.write(TezReadOnlyString.StackCount, item_info.stackCount);
             writer.write(TezReadOnlyString.ReadOnly, this.isReadOnly);
 
-            writer.write(TezReadOnlyString.FDID, mItemID.fixedID);
-            writer.write(TezReadOnlyString.MDID, mItemID.modifiedID);
+            writer.write(TezReadOnlyString.FDID, this.itemID.fixedID);
+            writer.write(TezReadOnlyString.MDID, this.itemID.modifiedID);
         }
 
         /// <summary>
@@ -101,15 +86,19 @@ namespace tezcat.Framework.Core
         {
             base.deserialize(reader);
 
+            int fdid = reader.readInt(TezReadOnlyString.FDID);
             if (!reader.tryRead(TezReadOnlyString.MDID, out int mdid))
             {
                 mdid = -1;
             }
 
-            TezItemID.create(ref mItemID,
-                             reader.readInt(TezReadOnlyString.FDID),
-                             mdid);
+            mItemInfo = TezcatFramework.fileDB.getItemInfo(fdid, mdid);
         }
+
+        /// <summary>
+        /// 复制一个当前对象
+        /// </summary>
+        protected abstract TezItemableObject copyThisObject();
 
         /*
          * #可堆叠物品的运行时重定义
@@ -122,33 +111,23 @@ namespace tezcat.Framework.Core
          * 2.让模板拷贝一份自己
          */
         /// <summary>
-        /// 以此对象为模板重新生成新定义对象
+        /// 重定义这个物品的元数据信息
         /// </summary>
-        public TezItemableObject modifyByThis()
+        public void remodifyItemInfo()
         {
-            TezItemableObject result = this.copyThisObject();
-            result.initWithTemplate(this);
-
-            var item_info = this.itemInfo;
             //生成新的模板信息数据
-            var new_info = item_info.remodify();
-            //关闭原本的数据
-            item_info.close();
+            var new_info = mItemInfo.remodify();
 
-            //设定新模板
-            new_info.setTemplate(result);
-            new_info.retainModifiedRef();
+            //关闭原本的数据
+            new_info.close();
+
+            new_info.setTemplate(this);
+            new_info.addRef();
+
             //注册
             TezcatFramework.fileDB.registerItem(new_info);
-
-            return result;
+            mItemInfo = new_info;
         }
-
-        /// <summary>
-        /// 复制一个当前对象
-        /// </summary>
-        /// <returns></returns>
-        protected abstract TezItemableObject copyThisObject();
 
         /// <summary>
         /// 共享数据
@@ -188,10 +167,9 @@ namespace tezcat.Framework.Core
     /// 所以鱼雷类应该包装一下鱼雷数据类
     /// </para>
     /// 
-    /// <para>例如</para>
     /// <para>
-    /// 类Torpedo包含一个ReadOnly类TorpedoData作为共享数据
-    /// 类Torpedo本身单独拥有health属性进行血量计算
+    /// 例如,Torpedo类(Unique)包含一个TorpedoData(ReadOnly)作为共享数据
+    /// Torpedo本身单独拥有health属性进行血量计算
     /// </para>
     /// 
     /// </summary>
@@ -206,7 +184,7 @@ namespace tezcat.Framework.Core
 
         protected virtual TezItemableObject shareThisObject()
         {
-            this.itemInfo.retainModifiedRef();
+            mItemInfo.addRef();
             return this;
         }
     }
@@ -224,9 +202,8 @@ namespace tezcat.Framework.Core
     /// 因为每一个此类对象都是一个独立的个体
     /// </para>
     /// 
-    /// <para>例如</para>
     /// <para>
-    /// 例如EVE里的舰船
+    /// 例如,EVE里的舰船
     /// 乌鸦级的数据都是一样的
     /// 但是每个玩家驾驶的乌鸦,血量单独计算(同一个数据的副本)
     /// 有一万个玩家就要new一万个对象

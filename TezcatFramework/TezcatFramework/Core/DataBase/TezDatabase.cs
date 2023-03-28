@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
-using LitJson;
 using tezcat.Framework.Core;
 
 namespace tezcat.Framework.Database
@@ -18,220 +16,6 @@ namespace tezcat.Framework.Database
         TezGameObject getItem(string nid);
 #endif
 
-    }
-
-    //     public class TezDBItemWrapper
-    //     {
-    //         public TezReader dataReader { get; }
-    // 
-    //         public string NID { get; }
-    //         public int stackCount { get; }
-    //         public TezItemableObject template { get; }
-    // 
-    //         public TezDBItemWrapper(TezReader dataReader)
-    //         {
-    //             this.dataReader = dataReader;
-    //             this.NID = dataReader.readString(TezReadOnlyString.NID);
-    //             this.stackCount = dataReader.readInt(TezReadOnlyString.StackCount);
-    // 
-    //             if (dataReader.readBool(TezReadOnlyString.ReadOnly))
-    //             {
-    //                 this.template = TezcatFramework.classFactory.copyFrom<TezItemableObject>(dataReader.readString(TezReadOnlyString.CID));
-    //             }
-    //         }
-    //     }
-
-    /*
-     * #数据库操作流程
-     * 
-     * 从本地文件中读取所有物品文件数据添加到FileDatabase中
-     * =>读取过程中,如果读取到只读对象物品,就初始化一个对象并添加到共享物品数
-     * =>读取过程中,如果读取到唯一对象物品,就只记录信息并不初始化对象到缓存中
-     * ==>
-     * 
-     * 
-     * 数据库格式
-     * 
-     * 多个数组模式
-     * array:
-     * [
-     *  {
-     *    "CID": "xxx",
-     *    "NID": "xxx"
-     *  }
-     * ]
-     * 
-     * 单个文件模式
-     * object:
-     * {
-     *   "CID": "xxx",
-     *   "NID": "xxx"
-     * }
-     * 
-     */
-    public class TezFileDatabase
-    {
-        protected Dictionary<string, TezBaseItemInfo> mFileData = new Dictionary<string, TezBaseItemInfo>();
-        protected List<TezBaseItemInfo> mFixedList = new List<TezBaseItemInfo>();
-        protected List<TezBaseItemInfo> mModifiedList = new List<TezBaseItemInfo>();
-        private Queue<int> mFreeIndex = new Queue<int>();
-
-
-        public void loadFile(string path)
-        {
-            if (!File.Exists(path))
-            {
-                throw new Exception("FileData path Error!!!");
-            }
-
-            try
-            {
-                string content = File.ReadAllText(path);
-                var json_root = JsonMapper.ToObject(content);
-
-                switch (json_root.GetJsonType())
-                {
-                    case JsonType.Array:
-                        {
-                            for (int i = 0; i < json_root.Count; i++)
-                            {
-                                var item = json_root[i];
-                                if (item.IsObject)
-                                {
-                                    this.add(item, path);
-                                }
-                                else
-                                {
-                                    throw new Exception($"FileData must a JsonObject");
-                                }
-                            }
-
-                            //关掉数组头
-                            json_root.Clear();
-                        }
-                        break;
-                    case JsonType.Object:
-                        {
-                            this.add(json_root, path);
-                        }
-                        break;
-                    default:
-                        throw new Exception($"TezFileDatabase=> Error FileData Type [{path}]");
-                }
-            }
-            catch (Exception e)
-            {
-                //e.Message;
-            }
-        }
-
-        private void add(JsonData jsonData, string path)
-        {
-            var reader = new TezJsonObjectReader(jsonData);
-            var info = TezBaseItemInfo.createItemInfo(reader);
-
-            var fixed_id = info.itemID.fixedID;
-            while (fixed_id >= mFixedList.Count)
-            {
-                mFixedList.Add(null);
-            }
-
-            if (mFixedList[fixed_id] != null)
-            {
-                throw new Exception($"This item slot has registered! [{info.NID}: {fixed_id}] ==> {path}");
-            }
-
-            mFixedList[fixed_id] = info;
-            mFileData.Add(info.NID, info);
-        }
-
-        /// <summary>
-        /// 取得文件数据
-        /// </summary>
-        public TezReader getItemReader(string name)
-        {
-            return mFileData[name].dataReader;
-        }
-
-        public TezReader getItemReader(TezItemID itemID)
-        {
-            return this.getItemInfo(itemID).dataReader;
-        }
-
-        /// <summary>
-        /// 尝试取得文件数据
-        /// </summary>
-        public bool tryGetItemReader(string name, out TezReader dataReader)
-        {
-            if (mFileData.TryGetValue(name, out var wrapper))
-            {
-                dataReader = wrapper.dataReader;
-                return true;
-            }
-
-            dataReader = null;
-            return false;
-        }
-
-        /// <summary>
-        /// 获得信息
-        /// </summary>
-        public TezBaseItemInfo getItemInfo(TezItemID itemID)
-        {
-            if (itemID.modifiedID >= 0)
-            {
-                return mModifiedList[itemID.modifiedID];
-            }
-
-            return mFixedList[itemID.fixedID];
-        }
-
-        public TezBaseItemInfo getItemInfo(string name)
-        {
-            return mFileData[name];
-        }
-
-        public bool tryGetItemInfo(string name, out TezBaseItemInfo itemInfo)
-        {
-            return mFileData.TryGetValue(name, out itemInfo);
-        }
-
-
-        #region Modified
-        public int generateMDID()
-        {
-            int index;
-            if (mFreeIndex.Count > 0)
-            {
-                index = mFreeIndex.Dequeue();
-            }
-            else
-            {
-                index = mModifiedList.Count;
-                mModifiedList.Add(null);
-            }
-
-            return index;
-        }
-
-        public bool registerItem(TezMItemInfo info)
-        {
-            var modified_id = info.itemID.modifiedID;
-            if (mModifiedList[modified_id] != null)
-            {
-                return false;
-            }
-
-            mModifiedList[modified_id] = info;
-            return true;
-        }
-
-        public void unregisterItem(int modifiedID)
-        {
-            mFreeIndex.Enqueue(modifiedID);
-            mModifiedList[modifiedID] = null;
-        }
-        #endregion
     }
 
 
@@ -301,7 +85,7 @@ namespace tezcat.Framework.Database
             //数据库信息应该由数据库文件定义
             //这里只需要读取保存好的文件然后放到指定的位置中即可
             //也可以在这里做更复杂的分类
-            var info = (TezItemInfo)gameObject.itemInfo;
+            var info = (TezFixedItemInfo)gameObject.itemInfo;
             var item_id = info.itemID;
 
             while (item_id.fixedID >= mFixedList.Count)
@@ -328,37 +112,37 @@ namespace tezcat.Framework.Database
             //             mFixedDict.Add(info.NID, info);
         }
 
-        public TezItemInfo getItem(int dbid)
+        public TezFixedItemInfo getItem(int dbid)
         {
-            return (TezItemInfo)mFixedList[dbid];
+            return (TezFixedItemInfo)mFixedList[dbid];
         }
 
-        public bool tryGetItem(int dbid, out TezItemInfo info)
+        public bool tryGetItem(int dbid, out TezFixedItemInfo info)
         {
             if (dbid < 0 || dbid > mFixedList.Count)
             {
-                info = (TezItemInfo)mFixedList[0];
+                info = (TezFixedItemInfo)mFixedList[0];
                 return false;
             }
 
-            info = (TezItemInfo)mFixedList[dbid];
+            info = (TezFixedItemInfo)mFixedList[dbid];
             return true;
         }
 
-        public TezItemInfo getItem(string nid)
+        public TezFixedItemInfo getItem(string nid)
         {
-            return (TezItemInfo)mFixedDict[nid];
+            return (TezFixedItemInfo)mFixedDict[nid];
         }
 
-        public bool tryGetItem(string nid, out TezItemInfo info)
+        public bool tryGetItem(string nid, out TezFixedItemInfo info)
         {
             if (mFixedDict.TryGetValue(nid, out var temp))
             {
-                info = (TezItemInfo)temp;
+                info = (TezFixedItemInfo)temp;
                 return true;
             }
 
-            info = (TezItemInfo)mFixedList[0];
+            info = (TezFixedItemInfo)mFixedList[0];
             return false;
         }
 
@@ -459,7 +243,7 @@ namespace tezcat.Framework.Database
             return mItemList[modifiedID] != null;
         }
 #else
-        protected List<TezMItemInfo> mItemList = new List<TezMItemInfo>();
+        protected List<TezRuntimeItemInfo> mItemList = new List<TezRuntimeItemInfo>();
         private Queue<int> mFreeIndex = new Queue<int>();
 
         public int generateID()
@@ -478,7 +262,7 @@ namespace tezcat.Framework.Database
             return index;
         }
 
-        public bool registerItem(TezMItemInfo info)
+        public bool registerItem(TezRuntimeItemInfo info)
         {
             var modified_id = info.itemID.modifiedID;
             if (mItemList[modified_id] != null)
@@ -496,7 +280,7 @@ namespace tezcat.Framework.Database
             mItemList[modifiedID] = null;
         }
 
-        public TezMItemInfo getItem(int modifiedID)
+        public TezRuntimeItemInfo getItem(int modifiedID)
         {
             var info = mItemList[modifiedID];
             return info;

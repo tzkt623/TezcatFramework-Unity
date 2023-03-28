@@ -5,12 +5,12 @@ using System.Runtime.InteropServices;
 // 有关程序集的一般信息由以下
 // 控制。更改这些特性值可修改
 // 与程序集关联的信息。
-[assembly: AssemblyTitle("TezcatUUI")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyTitle("TezcatUnity")]
+[assembly: AssemblyDescription("特兹卡特(Tezcat)的Unity游戏库")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("TezcatUUI")]
-[assembly: AssemblyCopyright("Copyright ©  2022")]
+[assembly: AssemblyCompany("TezcatStudio")]
+[assembly: AssemblyProduct("TezcatFramework-Unity")]
+[assembly: AssemblyCopyright("Copyright © 特兹卡特(Tezcat) QQ:276323490")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

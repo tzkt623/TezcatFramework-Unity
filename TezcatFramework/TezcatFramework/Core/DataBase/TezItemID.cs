@@ -7,6 +7,9 @@ namespace tezcat.Framework.Database
 {
     /// <summary>
     /// 物品ID
+    /// 用于判断两个物品是不是同一类型
+    /// 此类应该是共享数据类
+    /// 不需要存在两份相同的数据
     /// </summary>
     [StructLayout(LayoutKind.Explicit)]
     public class TezItemID
@@ -17,19 +20,19 @@ namespace tezcat.Framework.Database
         public static readonly TezItemID EmptyID = new TezItemID();
         static Queue<TezItemID> sPool = new Queue<TezItemID>();
 
-//         public static bool create(ref TezItemID itemID)
-//         {
-//             itemID?.close();
-// 
-//             if (sPool.Count > 0)
-//             {
-//                 itemID = sPool.Dequeue();
-//                 return false;
-//             }
-// 
-//             itemID = new TezItemID();
-//             return true;
-//         }
+        //         public static bool create(ref TezItemID itemID)
+        //         {
+        //             itemID?.close();
+        // 
+        //             if (sPool.Count > 0)
+        //             {
+        //                 itemID = sPool.Dequeue();
+        //                 return false;
+        //             }
+        // 
+        //             itemID = new TezItemID();
+        //             return true;
+        //         }
 
         /// <summary>
         /// 返回True表示新建了新的ID对象
@@ -93,9 +96,8 @@ namespace tezcat.Framework.Database
             result.mModifiedID = MDID;
             return result;
         }
+
         #endregion
-
-
         /// <summary>
         /// 是否运行存储
         /// </summary>
@@ -105,15 +107,14 @@ namespace tezcat.Framework.Database
         long mID;
         public long ID => mID;
 
-
         [FieldOffset(0)]
         int mFixedID = -1;
         /// <summary>
         /// 固定ID
+        /// 存在于数据库中的物品的ID
         /// 范围值为[0, int32.Max]
         /// </summary>
         public int fixedID => mFixedID;
-
 
         [FieldOffset(4)]
         int mModifiedID = -1;
@@ -121,6 +122,14 @@ namespace tezcat.Framework.Database
         /// 重定义ID
         /// 用于当物品被修改时用于确定物品是否相同
         /// ID范围值为[int32.Max+1, int64.Max]
+        /// 
+        /// <para>
+        /// 例如
+        /// RPG游戏里面掉落的一个装备
+        /// 圣神之强化的坚固盔甲
+        /// 虽然有不同的词缀,但是都是坚固盔甲
+        /// </para>
+        /// 
         /// </summary>
         public int modifiedID => mModifiedID;
 
@@ -128,21 +137,16 @@ namespace tezcat.Framework.Database
 
         public void close()
         {
-            if (mFixedID == -1)
-            {
-                return;
-            }
-
             mID = -1;
             sPool.Enqueue(this);
         }
 
         public bool sameAs(TezItemID other)
         {
-            if (mFixedID == -1 || other.mFixedID == -1)
-            {
-                return false;
-            }
+            //             if (mFixedID == -1 || other.mFixedID == -1)
+            //             {
+            //                 return false;
+            //             }
 
             return mID == other.mID;
         }

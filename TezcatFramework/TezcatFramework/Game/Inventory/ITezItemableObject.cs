@@ -20,6 +20,6 @@ namespace tezcat.Framework.Game.Inventory
         /// <summary>
         /// 物品信息
         /// </summary>
-        TezItemInfo itemInfo { get; }
+        TezFixedItemInfo itemInfo { get; }
     }
 }
