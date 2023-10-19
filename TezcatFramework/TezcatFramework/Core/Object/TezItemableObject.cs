@@ -1,30 +1,69 @@
+using System;
 using tezcat.Framework.Database;
+using tezcat.Framework.Game.Inventory;
 
 namespace tezcat.Framework.Core
 {
+    /*
+     * 游戏对象设计
+     * 
+     * 1.共享对象
+     *   共享对象拥有唯一一个实体数据
+     *   此类对象在复制时只需要复制引用
+     * 2.唯一对象
+     *   唯一对象每一个都是一个实体数据
+     *   此类对象生在复制时需要生成一个新对象出来
+     *   
+     * 游戏接口
+     * 1.共享对象接口
+     * 2.唯一对象接口
+     * 
+     * 
+     * 物品栏的比较不应该直接与基础对象绑定
+     * 应该利用物品接口进行存储,比较,过滤等
+     * 
+     * 
+     */
+
     /// <summary>
     /// 可装入数据库的游戏对象
     /// </summary>
     public abstract class TezItemableObject
         : TezGameObject
+        , ITezInventoryItem
     {
-        protected TezBaseItemInfo mItemInfo = null;
-        public TezBaseItemInfo itemInfo => mItemInfo;
+        protected TezGameItemInfo mItemInfo = null;
+        public TezGameItemInfo itemInfo => mItemInfo;
         public TezItemID itemID => mItemInfo.itemID;
 
-
-        public abstract bool isReadOnly { get; }
+        /// <summary>
+        /// 是否是共享对象
+        /// </summary>
+        public bool isShared => mItemInfo.stackCount > 0;
 
         /// <summary>
         /// 模板物品
         /// </summary>
-        public bool isTemplate => itemInfo.isTemplate(this);
+        public bool isPrototype => itemInfo.isPrototype(this);
+
+        public void init(TezItemableObject template, TezGameItemInfo itemInfo)
+        {
+            mItemInfo = itemInfo;
+            mCategory = template.category;
+
+            this.preInit();
+            this.initWithTemplate(template);
+            this.postInit();
+        }
 
         /// <summary>
         /// 使用模板对象初始化
         /// </summary>
         public void init(TezItemableObject template)
         {
+            mItemInfo = itemInfo;
+            mCategory = template.category;
+
             this.preInit();
             this.initWithTemplate(template);
             this.postInit();
@@ -32,8 +71,7 @@ namespace tezcat.Framework.Core
 
         protected virtual void initWithTemplate(TezItemableObject template)
         {
-            mItemInfo = template.mItemInfo;
-            mCategory = template.mCategory;
+
         }
 
         /// <summary>
@@ -65,18 +103,17 @@ namespace tezcat.Framework.Core
         }
 
         /// <summary>
-        /// 像数据库保存数据
+        /// 向数据库保存数据
         /// </summary>
         public override void serialize(TezWriter writer)
         {
             base.serialize(writer);
             var item_info = this.itemInfo;
-            writer.write(TezReadOnlyString.NID, item_info.NID);
+            writer.write(TezReadOnlyString.NameID, item_info.NID);
             writer.write(TezReadOnlyString.StackCount, item_info.stackCount);
-            writer.write(TezReadOnlyString.ReadOnly, this.isReadOnly);
 
-            writer.write(TezReadOnlyString.FDID, this.itemID.fixedID);
-            writer.write(TezReadOnlyString.MDID, this.itemID.modifiedID);
+            writer.write(TezReadOnlyString.FixedID, this.itemID.fixedID);
+            writer.write(TezReadOnlyString.ModifiedID, this.itemID.modifiedID);
         }
 
         /// <summary>
@@ -86,54 +123,29 @@ namespace tezcat.Framework.Core
         {
             base.deserialize(reader);
 
-            int fdid = reader.readInt(TezReadOnlyString.FDID);
-            if (!reader.tryRead(TezReadOnlyString.MDID, out int mdid))
+            reader.beginObject("ItemInfo");
+
+            int fdid = reader.readInt(TezReadOnlyString.FixedID);
+            if (!reader.tryRead(TezReadOnlyString.ModifiedID, out int mdid))
             {
                 mdid = -1;
             }
 
-            mItemInfo = TezcatFramework.fileDB.getItemInfo(fdid, mdid);
+            mItemInfo = new TezGameItemInfo
+                ( reader.readString(TezReadOnlyString.NameID)
+                , reader.readInt(TezReadOnlyString.StackCount)
+                , fdid
+                , mdid);
+            mItemInfo.setPrototype(this);
+
+            reader.endObject("ItemInfo");
         }
 
         /// <summary>
-        /// 复制一个当前对象
-        /// </summary>
-        protected abstract TezItemableObject copyThisObject();
-
-        /*
-         * #可堆叠物品的运行时重定义
-         * 
-         * 1.先复制一份模板
-         * 2.进行数据的更改
-         * 3.注册到运行时数据库当中
-         * =======================
-         * 1.可堆叠物品使用的都是同一个数据的引用
-         * 2.让模板拷贝一份自己
-         */
-        /// <summary>
-        /// 重定义这个物品的元数据信息
-        /// </summary>
-        public void remodifyItemInfo()
-        {
-            //生成新的模板信息数据
-            var new_info = mItemInfo.remodify();
-
-            //关闭原本的数据
-            new_info.close();
-
-            new_info.setTemplate(this);
-            new_info.addRef();
-
-            //注册
-            TezcatFramework.fileDB.registerItem(new_info);
-            mItemInfo = new_info;
-        }
-
-        /// <summary>
-        /// 共享数据
+        /// 双份数据
         /// 
         /// <para>
-        /// 如果是ReadonlyObject会共享此对象的数据
+        /// 如果是SharedObject会共享此对象的数据
         /// </para>
         /// 
         /// <para>
@@ -141,11 +153,11 @@ namespace tezcat.Framework.Core
         /// </para>
         /// 
         /// </summary>
-        public abstract TezItemableObject share();
+        public abstract TezItemableObject duplicate();
     }
 
     /// <summary>
-    /// <para> 只读对象
+    /// <para> 共享对象
     /// 每个对象在共享时都是使用同一份共享数据进行计算
     /// 此对象在关闭(close)时不会真正销毁
     /// 因为此类的对象是作为共享对象存在
@@ -173,18 +185,16 @@ namespace tezcat.Framework.Core
     /// </para>
     /// 
     /// </summary>
-    public abstract class TezReadOnlyObject : TezItemableObject
+    public abstract class TezSharedObject : TezItemableObject
     {
-        public sealed override bool isReadOnly => true;
-
-        public sealed override TezItemableObject share()
-        {
-            return this.shareThisObject();
-        }
-
-        protected virtual TezItemableObject shareThisObject()
+        public override TezItemableObject duplicate()
         {
             mItemInfo.addRef();
+            return this.share();
+        }
+
+        protected virtual TezItemableObject share()
+        {
             return this;
         }
     }
@@ -212,11 +222,21 @@ namespace tezcat.Framework.Core
     /// </summary>
     public abstract class TezUniqueObject : TezItemableObject
     {
-        public sealed override bool isReadOnly => false;
-
-        public sealed override TezItemableObject share()
+        public override TezItemableObject duplicate()
         {
-            return this.copyThisObject();
+            var newinfo = mItemInfo.remodify();
+
+            var obj = this.copy();
+            obj.init(this, newinfo);
+
+            newinfo.setPrototype(obj);
+
+            return obj;
         }
+
+        /// <summary>
+        /// 复制一个当前对象
+        /// </summary>
+        protected abstract TezItemableObject copy();
     }
 }

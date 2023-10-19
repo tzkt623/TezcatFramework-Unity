@@ -118,9 +118,7 @@ namespace tezcat.Unity
         /// </summary>
         protected virtual void registerFramework()
         {
-            TezcatFramework.set(new TezFileDatabase());
-            TezcatFramework.set(new TezMainDatabase());
-            TezcatFramework.set(new TezMultiDatabase());
+            TezcatFramework.set(new TezFixedDatabase());
             TezcatFramework.set(new TezRunTimeDatabase());
         }
 

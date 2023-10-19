@@ -82,14 +82,14 @@ namespace tezcat.Framework.Utility
             {
                 var capacity = (m_Data.Length == 0) ? 4 : m_Data.Length * 2;
 
-                if (capacity > int.MaxValue)
-                {
-                    capacity = int.MaxValue;
-                }
-
                 if (capacity < count)
                 {
                     capacity = count;
+                }
+
+                if (capacity > int.MaxValue)
+                {
+                    throw new ArgumentOutOfRangeException(nameof(capacity));
                 }
 
                 T[] array = new T[capacity];
@@ -159,7 +159,7 @@ namespace tezcat.Framework.Utility
         {
             if (index >= m_Count || index < 0)
             {
-                throw new IndexOutOfRangeException();
+                throw new IndexOutOfRangeException(nameof(index));
             }
 
             m_Count--;
@@ -182,7 +182,7 @@ namespace tezcat.Framework.Utility
         {
             if (index >= m_Count || index < 0)
             {
-                throw new IndexOutOfRangeException();
+                throw new IndexOutOfRangeException(nameof(index));
             }
 
             m_Count--;
@@ -225,7 +225,7 @@ namespace tezcat.Framework.Utility
 
         int IList<T>.IndexOf(T item)
         {
-            for (int i = 0; i < count; i++)
+            for (int i = 0; i < m_Count; i++)
             {
                 if (object.Equals(item, m_Data[i]))
                 {
@@ -252,13 +252,14 @@ namespace tezcat.Framework.Utility
 
         int ICollection<T>.Count
         {
-            get { return count; }
+            get { return m_Count; }
         }
 
         bool ICollection<T>.IsReadOnly
         {
             get { return false; }
         }
+
         void ICollection<T>.Add(T item)
         {
             this.add(item);
@@ -271,8 +272,7 @@ namespace tezcat.Framework.Utility
 
         bool ICollection<T>.Contains(T item)
         {
-            var count = m_Data.Length;
-            for (int i = 0; i < count; i++)
+            for (int i = 0; i < m_Count; i++)
             {
                 if (object.Equals(item, m_Data[i]))
                 {
@@ -285,7 +285,7 @@ namespace tezcat.Framework.Utility
 
         void ICollection<T>.CopyTo(T[] array, int arrayIndex)
         {
-            if (arrayIndex >= count || arrayIndex < 0)
+            if (arrayIndex >= m_Count || arrayIndex < 0)
             {
                 throw new IndexOutOfRangeException();
             }
@@ -295,8 +295,7 @@ namespace tezcat.Framework.Utility
 
         bool ICollection<T>.Remove(T item)
         {
-            var count = m_Data.Length;
-            for (int i = 0; i < count; i++)
+            for (int i = 0; i < m_Count; i++)
             {
                 if (object.Equals(item, m_Data[i]))
                 {

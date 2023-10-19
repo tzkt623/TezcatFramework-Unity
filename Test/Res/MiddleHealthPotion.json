@@ -1,0 +1,10 @@
+{
+    "CID": "HealthPotion",
+    "CTG": "HealthPotion",
+    "ItemInfo": {
+        "NID": "MiddleHealthPotion",
+        "FID": 1,
+        "StackCount": 10
+    },
+    "HealthAdd": 10
+}

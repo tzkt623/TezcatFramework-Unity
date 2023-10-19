@@ -64,15 +64,12 @@
     <Compile Include="TestProgram.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Function\TestFieldOffset.cs" />
-    <Compile Include="Function\Rebuild.cs" />
-    <Compile Include="Framework\TestFramework.cs" />
     <Compile Include="Function\TestSystemAttribute.cs" />
     <Compile Include="Function\TestBehaviorTree.cs" />
     <Compile Include="Function\TestAwaitable.cs" />
     <Compile Include="Function\TestAStartSystem.cs" />
     <Compile Include="Function\TestBonusSystem.cs" />
     <Compile Include="Function\TestCategory.cs" />
-    <Compile Include="Function\TestDatabase.cs" />
     <Compile Include="Function\TestECS.cs" />
     <Compile Include="Function\TestGameMachine.cs" />
     <Compile Include="Function\TestHexSystem.cs" />

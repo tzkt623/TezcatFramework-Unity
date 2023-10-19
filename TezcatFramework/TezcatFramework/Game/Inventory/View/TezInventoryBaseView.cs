@@ -1,4 +1,5 @@
-﻿using tezcat.Framework.Core;
+﻿using System.Collections.Generic;
+using tezcat.Framework.Core;
 
 namespace tezcat.Framework.Game.Inventory
 {
@@ -7,31 +8,38 @@ namespace tezcat.Framework.Game.Inventory
         public TezInventory inventory => mInventoryRef.get();
         protected TezFlagableRef<TezInventory> mInventoryRef = null;
 
-        TezInventoryFilter mFilterManager = new TezInventoryFilter();
+        protected TezInventoryFilter mFilterManager = new TezInventoryFilter();
         public TezInventoryFilter filterManager => mFilterManager;
 
         public TezInventoryBaseView()
         {
-            mFilterManager.onItemChanged += this.onItemChanged;
             mFilterManager.onFilterChanged += this.onFilterChanged;
         }
 
         public virtual void setInventory(TezInventory inventory)
         {
             mInventoryRef = new TezFlagableRef<TezInventory>(inventory);
-            mFilterManager.setInventory(inventory);
         }
 
-        protected abstract void onItemChanged(TezInventoryDataSlot dataSlot);
-        protected abstract void onFilterChanged(TezInventoryFilter filterManager);
+        public virtual void setInventory(TezInventory inventory, List<TezInventoryUniqueItemInfo> uniqueList, Dictionary<long, TezInventoryStackedItemInfo> stackedDict)
+        {
+            mInventoryRef = new TezFlagableRef<TezInventory>(inventory);
+        }
+
+        protected abstract void onFilterChanged();
 
         public virtual void close()
         {
-            mInventoryRef.close();
-            mInventoryRef = null;
-
+            mFilterManager.onFilterChanged -= this.onFilterChanged;
             mFilterManager.close();
             mFilterManager = null;
+
+            mInventoryRef.close();
+            mInventoryRef = null;
         }
+
+        public abstract void updateViewSlotData(int index);
+        public abstract void addViewSlotData(ITezInventoryViewSlotData data);
+        public abstract void removeViewSlotData(ITezInventoryViewSlotData data);
     }
 }

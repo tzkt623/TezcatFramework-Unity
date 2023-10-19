@@ -1,341 +1,359 @@
 ﻿using System.Collections.Generic;
 using tezcat.Framework.Core;
 using tezcat.Framework.Database;
-using tezcat.Framework.Extension;
 
 namespace tezcat.Framework.Game.Inventory
 {
     /// <summary>
+    /// 可放入Inventory的对象
+    /// 需要使用ItemInfo里面的数据进行操作
+    /// </summary>
+    public interface ITezInventoryItem
+    {
+        TezGameItemInfo itemInfo { get; }
+    }
+
+    /// <summary>
+    /// 基础物品信息
+    /// </summary>
+    public abstract class TezInventoryBaseItemInfo : ITezCloseable
+    {
+        public abstract bool stacked { get; }
+        public virtual int count { get; set; }
+        public ITezInventoryItem item { get; set; } = null;
+        public virtual void close()
+        {
+            this.item = null;
+        }
+    }
+
+    /// <summary>
+    /// 唯一物品信息
+    /// </summary>
+    public class TezInventoryUniqueItemInfo
+        : TezInventoryBaseItemInfo
+        , ITezInventoryViewSlotData
+        , ITezInventoryFilterData
+    {
+        public override bool stacked => false;
+        public int viewIndex { get; set; }
+        public int filterIndex { get; set; }
+        public override int count
+        {
+            get { return -1; }
+            set { }
+        }
+        public TezInventory inventory { get; set; }
+
+        public override void close()
+        {
+            base.close();
+            this.inventory = null;
+        }
+    }
+
+    /// <summary>
+    /// 可堆叠物品信息
+    /// </summary>
+    public class TezInventoryStackedItemInfo
+        : TezInventoryBaseItemInfo
+    {
+        public override bool stacked => true;
+
+        public List<TezInventoryStackedItemData> list { get; set; } = new List<TezInventoryStackedItemData>();
+    }
+
+    /// <summary>
+    /// 可堆叠物品分格数据
+    /// </summary>
+    public class TezInventoryStackedItemData
+        : ITezInventoryViewSlotData
+        , ITezInventoryFilterData
+    {
+        TezInventoryStackedItemInfo mInfo;
+        public TezInventory inventory { get; set; }
+
+        public int count { get; set; }
+        public int viewIndex { get; set; }
+        public int filterIndex { get; set; }
+
+        public ITezInventoryItem item => mInfo.item;
+
+        public TezInventoryStackedItemData(TezInventoryStackedItemInfo info)
+        {
+            mInfo = info;
+            mInfo.list.Add(this);
+        }
+
+        public void close()
+        {
+            mInfo = null;
+            this.inventory = null;
+        }
+    }
+
+    /// <summary>
     /// 
     /// 背包系统
+    /// 
+    /// 功能设计
+    /// 
+    /// 1.可堆叠物品
+    /// 2.不可堆叠物品
+    /// 3.过滤器
+    /// 
+    /// 物品栏中每种物品只占一个格子
+    /// 可堆叠的也只堆叠到一个格子中
+    /// 
+    /// 只在显示层才会按照可堆叠个数进行分割
+    /// 
+    /// 
+    /// Data层
+    /// 用于储存item的概览数据
+    /// 一个列表用于统计不可堆叠的信息
+    /// 一个Dict用于统计可堆叠的物品信息
+    /// 每当添加一个item进来时,向view发送消息进行更新
+    /// 
+    /// view层
+    /// 用于保存物品在inventory中的排列顺序
+    /// 负责给信的item赋予slot
     /// 
     /// </summary>
     public class TezInventory
         : TezFlagable
     {
-        public event TezEventExtension.Action<TezInventoryItemSlot> onItemAdded;
-        public event TezEventExtension.Action<TezInventoryItemSlot> onItemRemoved;
+        protected List<TezInventoryUniqueItemInfo> mUniqueItemList = new List<TezInventoryUniqueItemInfo>();
+        protected Dictionary<long, TezInventoryStackedItemInfo> mStackedItemDict = new Dictionary<long, TezInventoryStackedItemInfo>();
 
-        /// <summary>
-        /// 物品数量
-        /// </summary>
-        public int count
+        protected TezInventoryBaseView mView = null;
+
+        public void setView(TezInventoryBaseView view)
         {
-            get { return mSlots.Count; }
+            mView = view;
+            mView.setInventory(this, mUniqueItemList, mStackedItemDict);
         }
 
-        protected List<TezInventoryItemSlot> mSlots = new List<TezInventoryItemSlot>();
-        protected Dictionary<long, TezInventoryItemSlot> mStackItemTable = new Dictionary<long, TezInventoryItemSlot>();
-
-        /// <summary>
-        /// 获得一个Slot
-        /// </summary>
-        public TezInventoryItemSlot this[int index]
+        public void store(ITezInventoryItem item, int count = -1)
         {
-            get
+            TezGameItemInfo item_info = item.itemInfo;
+            var stack_count = item.itemInfo.stackCount;
+
+            //可堆叠物品
+            if (stack_count > 0)
             {
-                return mSlots[index];
-            }
-        }
-
-        /// <summary>
-        /// 可以自己修改Slot
-        /// </summary>
-        protected virtual TezInventoryItemSlot createItemSlot()
-        {
-            return new TezInventoryItemSlot(this);
-        }
-
-        /// <summary>
-        /// 存入1个
-        /// </summary>
-        public void store(TezItemableObject item)
-        {
-            this.store(item, 1);
-        }
-
-        /// <summary>
-        /// 加入多个相同item
-        /// </summary>
-        public void store(TezItemableObject item, int count)
-        {
-            TezInventoryItemSlot result_slot;
-            TezBaseItemInfo item_info = TezcatFramework.fileDB.getItemInfo(item.itemID);
-
-            var stack_max_count = item_info.stackCount;
-            bool stackable = stack_max_count > 0;
-
-            if (stackable)//如果可以堆叠
-            {
-                TezInventoryItemSlot pre_slot = null;
-
-                bool has_root = mStackItemTable.TryGetValue(item.itemID.ID, out result_slot);
-                int remain;
-                while (count > 0)
+                if (!mStackedItemDict.TryGetValue(item_info.itemID.ID, out var stack_info))
                 {
-                    //如果当前slot为空
-                    if (result_slot == null)
+                    stack_info = new TezInventoryStackedItemInfo()
                     {
-                        if (!this.findEmptySlot(out result_slot))
-                        {
-                            result_slot = this.createItemSlot();
-                            result_slot.index = mSlots.Count;
+                        item = item,
+                        count = count
+                    };
 
-                            mSlots.Add(result_slot);
-                        }
-                        result_slot.count = 0;
-
-                        //第一次加入搜索table
-                        if (!has_root)
-                        {
-                            has_root = true;
-                            mStackItemTable.Add(item.itemID.ID, result_slot);
-                        }
-
-                        //如果有前一个slot
-                        //把这两个slot连接起来
-                        if (pre_slot != null)
-                        {
-                            pre_slot.nextSlot = result_slot;
-                            result_slot.preSlot = pre_slot;
-                        }
-                    }
-
-                    //计算剩余空位
-                    remain = stack_max_count - result_slot.count;
-                    if (remain >= count)
-                    {
-                        //如果剩余空位大于等于加入数量
-                        //直接加入
-                        result_slot.count += count;
-                        count = 0;
-                    }
-                    else
-                    {
-                        //如果剩余空间小于加入数量
-                        //计算当前slot可以添加多少个
-                        //以及剩余多少个
-                        result_slot.count = stack_max_count;
-                        count -= remain;
-
-                        //记录当前slot
-                        pre_slot = result_slot;
-                        //取得下一个连接slot
-                        result_slot = result_slot.nextSlot;
-                    }
+                    mStackedItemDict.Add(item_info.itemID.ID, stack_info);
                 }
-            }
-            else//如果不可以堆叠
-            {
-                //找到格子
-                if (this.findEmptySlot(out result_slot))
-                {
-                    result_slot.item = item;
-                    result_slot.count = -1;
-                }
-                //没有找到格子
                 else
                 {
-                    result_slot = this.createItemSlot();
-                    result_slot.item = item;
-                    result_slot.count = -1;
-                    result_slot.index = mSlots.Count;
-                    mSlots.Add(result_slot);
+                    stack_info.count += count;
                 }
-            }
 
-            onItemAdded?.Invoke(result_slot);
-        }
-
-        /// <summary>
-        /// 添加多个Item到某个位置上
-        /// 由于数量可能会超过堆叠
-        /// 不可堆叠的物品不会超过堆叠
-        /// </summary>
-        public void store(int slotIndex, TezItemableObject item, int count)
-        {
-            TezBaseItemInfo item_info = TezcatFramework.fileDB.getItemInfo(item.itemID);
-
-            var stack_max_count = item_info.stackCount;
-            bool stackable = stack_max_count > 0;
-
-            var slot = mSlots[slotIndex];
-            slot.item = item;
-            if (stackable)
-            {
-                slot.count += count;
-                if (slot.count >= stack_max_count)
+                var slot_list = stack_info.list;
+                int index = 0;
+                while (true)
                 {
-                    var remain = slot.count - stack_max_count;
-                    this.store(item, remain);
-                }
-            }
-            else
-            {
-                slot.count = -1;
-            }
-
-            onItemAdded?.Invoke(slot);
-        }
-
-        /// <summary>
-        /// 从精确的位置上取出精确个数的物品
-        /// </summary>
-        public TezItemableObject take(int slotIndex, int count)
-        {
-            var slot = mSlots[slotIndex];
-            var item = slot.item;
-
-            if (slot.count < 0)
-            {
-                //不允许堆叠
-                slot.item = null;
-            }
-            else
-            {
-                //允许堆叠
-                slot.count -= count;
-                if (slot.count == 0)
-                {
-                    if (slot.preSlot != null)
+                    if (index < slot_list.Count)
                     {
-                        //如果有前一个节点
-                        //说明当前节点是在链表中间位置
-                        //需要重新连接前后两个Slot
-                        if (slot.nextSlot != null)
+                        var slot = slot_list[index];
+                        if (slot.count < stack_count)
                         {
-                            slot.preSlot.nextSlot = slot.nextSlot;
-                            slot.nextSlot.preSlot = slot.preSlot;
+                            int remain = stack_count - slot.count;
+                            if (remain >= count)
+                            {
+                                slot.count += count;
+                                mView.updateViewSlotData(slot.viewIndex);
+                                break;
+                            }
+                            else
+                            {
+                                slot.count += remain;
+                                count -= remain;
+                                mView.updateViewSlotData(slot.viewIndex);
+
+                                if (count == 0)
+                                {
+                                    break;
+                                }
+                            }
                         }
-                        else
-                        {
-                            slot.preSlot.nextSlot = null;
-                        }
+
+                        index++;
                     }
                     else
                     {
-                        //如果没有前一个节点
-                        //说明此节点存在于索引中
-                        //需要重新建立索引
-                        if (slot.nextSlot != null)
+                        var data = new TezInventoryStackedItemData(stack_info);
+                        mView.addViewSlotData(data);
+                    }
+                }
+
+            }
+            //不可堆叠物品
+            else
+            {
+                var info = new TezInventoryUniqueItemInfo()
+                {
+                    item = item
+                };
+                mUniqueItemList.Add(info);
+                mView.addViewSlotData(info);
+            }
+        }
+
+        public void take(TezInventoryBaseItemInfo info, int count)
+        {
+            if (info.stacked)
+            {
+                info.count -= count;
+                if (info.count == 0)
+                {
+                    mStackedItemDict.Remove(info.item.itemInfo.itemID.ID);
+                    info.close();
+                }
+            }
+            else
+            {
+                var uinfo = (TezInventoryUniqueItemInfo)info;
+                mUniqueItemList.Remove(uinfo);
+                uinfo.close();
+            }
+        }
+
+        public void take(ITezInventoryItem item, int count = -1)
+        {
+            if (item.itemInfo.stackCount > 0)
+            {
+                if (mStackedItemDict.TryGetValue(item.itemInfo.itemID.ID, out var stack_info) && stack_info.item == item)
+                {
+                    stack_info.count -= count;
+
+                    var list = stack_info.list;
+                    for (int i = list.Count - 1; i >= 0; i--)
+                    {
+                        var info = list[i];
+                        if (info.count >= count)
                         {
-                            //如果下一个节点存在
-                            //则把下一个节点变成索引的Root节点
-                            slot.nextSlot.preSlot = null;
-                            mStackItemTable[slot.item.itemID.ID] = slot.nextSlot;
+                            info.count -= count;
+
+                            if (info.count == 0)
+                            {
+                                mView.removeViewSlotData(info);
+                                info.close();
+                                list.RemoveAt(i);
+                            }
+                            else
+                            {
+                                mView.updateViewSlotData(info.viewIndex);
+                            }
+
+                            break;
                         }
                         else
                         {
-                            //如果下一个节点也为空
-                            //说明此物品不存在物品栏中
-                            //删除索引
-                            mStackItemTable.Remove(slot.item.itemID.ID);
+                            count -= info.count;
+                            info.count = 0;
+                            mView.removeViewSlotData(info);
+                            info.close();
+                            list.RemoveAt(i);
                         }
                     }
-
-                    slot.item = null;
                 }
             }
-
-            onItemRemoved?.Invoke(slot);
-            return item;
-        }
-
-        /// <summary>
-        /// 从精确的位置上取出1个物品
-        /// </summary>
-        public TezItemableObject take(int slotIndex)
-        {
-            return this.take(slotIndex, 1);
-        }
-
-        private bool findEmptySlot(out TezInventoryItemSlot slot)
-        {
-            int result_index = 0;
-
-            while (result_index < mSlots.Count)
+            else
             {
-                slot = mSlots[result_index];
-                ///找空格子
-                if (slot.item == null)
+                for (int i = 0; i < mUniqueItemList.Count; i++)
                 {
-                    return true;
-                }
-                result_index++;
-            }
-
-            slot = null;
-            return false;
-        }
-
-        private TezInventoryItemSlot findSlotStackable(TezItemableObject item, int stackCount, int count)
-        {
-            TezInventoryItemSlot result_slot = null;
-
-            int result_index = 0;
-            while (result_index < mSlots.Count)
-            {
-                var slot = mSlots[result_index];
-                //找空格子
-                if (result_slot == null && slot.item == null)
-                {
-                    result_slot = slot;
-                }
-
-                //找相同格子
-                //可堆叠的物品
-                //他们的模板相同
-                if (slot.item != null && slot.item.itemID.sameAs(item.itemID))
-                {
-                    if (slot.count < stackCount)
+                    if (mUniqueItemList[i].item == item)
                     {
-                        result_slot = slot;
+                        var info = mUniqueItemList[i];
+                        mUniqueItemList.RemoveAt(i);
+                        mView.removeViewSlotData(info);
+                        info.close();
                         break;
                     }
                 }
-
-                result_index++;
             }
-
-            return result_slot;
         }
 
         /// <summary>
         /// 从包裹里面查询是否有某个特定物品
         /// 返回-1表示没有
         /// </summary>
-        public int find(TezItemableObject storableObject)
+        public TezInventoryBaseItemInfo find(ITezInventoryItem item)
         {
-            return mSlots.FindIndex((TezInventoryItemSlot slot) =>
+            if (item.itemInfo.stackCount > 0)
             {
-                return slot.item == storableObject;
-            });
+                if (mStackedItemDict.TryGetValue(item.itemInfo.itemID.ID, out var result))
+                {
+                    return result;
+                }
+            }
+            else
+            {
+                return mUniqueItemList.Find((TezInventoryUniqueItemInfo info) =>
+                {
+                    return info.item == item;
+                });
+            }
+
+            return null;
         }
 
         /// <summary>
         /// 从包裹里面查询是否有某个特定类型的物品
         /// </summary>
-        public int find(TezCategory category)
+        public TezInventoryBaseItemInfo find(TezCategory category)
         {
-            return mSlots.FindIndex((TezInventoryItemSlot slot) =>
+            TezInventoryBaseItemInfo result = mUniqueItemList.Find((TezInventoryUniqueItemInfo info) =>
             {
-                return slot.item.category == category;
+                return info.item.itemInfo.category == category;
             });
+
+            if (result != null)
+            {
+                return result;
+            }
+
+            foreach (var pair in mStackedItemDict)
+            {
+                if (pair.Value.item.itemInfo.category == category)
+                {
+                    return pair.Value;
+                }
+            }
+
+            return null;
         }
 
         public override void close()
         {
             base.close();
 
-            for (int i = 0; i < mSlots.Count; i++)
-            {
-                mSlots[i].close();
-            }
-            mSlots.Clear();
-            mSlots = null;
+            mView.close();
+            mView = null;
 
-            onItemAdded = null;
-            onItemRemoved = null;
+            for (int i = 0; i < mUniqueItemList.Count; i++)
+            {
+                mUniqueItemList[i].close();
+            }
+            mUniqueItemList.Clear();
+
+            foreach (var pair in mStackedItemDict)
+            {
+                pair.Value.close();
+            }
+            mStackedItemDict.Clear();
+
+
+            mUniqueItemList = null;
+            mStackedItemDict = null;
         }
     }
 }

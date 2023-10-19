@@ -356,11 +356,11 @@ namespace tezcat.Framework.Test
         }
     }
 
-    public class TestBehaviorTree
+    public class TestBehaviorTree : TezBaseTest
     {
         TezBehaviorTree mTree = new TezBehaviorTree();
 
-        static TestBehaviorTree()
+        public TestBehaviorTree() : base("BehaviorTree")
         {
             TezBehaviorTree.register<NeedFoods>();
             TezBehaviorTree.register<NeedTools>();
@@ -369,6 +369,8 @@ namespace tezcat.Framework.Test
             TezBehaviorTree.register<SteamRice>();
             TezBehaviorTree.register<Cooking>();
             TezBehaviorTree.register<Eating>();
+
+            this.buildTree();
         }
 
         public void buildTree()
@@ -399,8 +401,9 @@ namespace tezcat.Framework.Test
         }
 
 
-        public void run()
+        public override void run()
         {
+            Console.WriteLine("Press Any key to run, Press SpaceBar to exit");
             while (Console.ReadKey(true).Key != ConsoleKey.Spacebar)
             {
                 mTree.imdExecute();

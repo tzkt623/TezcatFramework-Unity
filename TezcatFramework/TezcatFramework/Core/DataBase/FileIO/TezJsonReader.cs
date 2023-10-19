@@ -7,20 +7,8 @@ using LitJson;
 
 namespace tezcat.Framework.Database
 {
-
-
     /// <summary>
     /// Json数据读取器
-    /// 
-    /// Json数据库的格式一般来说应该为Array
-    /// 
-    /// [
-    ///     {
-    ///         "CID:"xxx",
-    ///         "NID":"XXX"
-    ///     }
-    /// ]
-    /// 
     /// </summary>
     public class TezJsonReader : TezFileReader
     {

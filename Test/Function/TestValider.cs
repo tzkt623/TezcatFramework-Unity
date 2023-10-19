@@ -1,5 +1,4 @@
-﻿using System;
-using tezcat.Framework.Utility;
+﻿using tezcat.Framework.Utility;
 
 namespace tezcat.Framework.Test
 {
@@ -60,27 +59,20 @@ namespace tezcat.Framework.Test
         }
     }
 
-    public class TestValider
+    public class TestValider : TezBaseTest
     {
-        Ship m_Ship = new Ship();
+        Ship mShip = new Ship();
+        Missle mMissle = new Missle();
 
-        Missle m_Missle = new Missle();
-
-        public void init()
+        public TestValider() : base("Valider")
         {
-            m_Missle.setTarget(m_Ship);
+            mMissle.setTarget(mShip);
         }
 
-        public void update()
+        public override void run()
         {
-            m_Ship.update();
-
-            m_Missle.update();
-        }
-
-        public void run()
-        {
-            throw new NotImplementedException();
+            mShip.update();
+            mMissle.update();
         }
     }
 }

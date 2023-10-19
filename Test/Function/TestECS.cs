@@ -16,10 +16,10 @@ namespace tezcat.Framework.Test
         /// </summary>
         public void initWithData(ITezSerializable item)
         {
-            var data_item = (TezDatabaseGameItem)item;
-            this.NID = data_item.NID;
-            this.dbUID = data_item.DBID;
-            this.category = data_item.category;
+//             var data_item = (ITezDBItemObject)item;
+//             this.NID = data_item.NID;
+//             this.dbUID = data_item.DBID;
+//             this.category = data_item.category;
 
             this.preInit();
             this.onInitWithData(item);

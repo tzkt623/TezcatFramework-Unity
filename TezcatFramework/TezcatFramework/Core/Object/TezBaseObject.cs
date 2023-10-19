@@ -72,7 +72,7 @@ namespace tezcat.Framework.Core
 
         /// <summary>
         /// 比较的是UID而不是内存地址
-        /// 如需比较内存地址请使用
+        /// 如需比较内存地址请使用object.ReferenceEquals
         /// </summary>
         public static bool operator ==(TezBaseObject a, TezBaseObject b)
         {

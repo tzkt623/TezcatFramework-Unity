@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Text.RegularExpressions;
-using UnityEngine;
 
 namespace tezcat.Framework.Core
 {
@@ -11,13 +10,7 @@ namespace tezcat.Framework.Core
         private static Regex mRelativePathCleaner = new Regex("\\/[^\\/]*[^:]\\/\\.\\.");
 
         static string mRootPath = null;
-        public static string rootPath
-        {
-            get
-            {
-                return mRootPath;
-            }
-        }
+        public static string rootPath => mRootPath;
 
         /// <summary>
         /// 
@@ -49,7 +42,7 @@ namespace tezcat.Framework.Core
                 text += '/';
             }
 
-            return path;
+            return text;
         }
 
         public static string combineFullPath(string path)
@@ -146,6 +139,11 @@ namespace tezcat.Framework.Core
         public static DirectoryInfo createDirectory(string path)
         {
             return Directory.CreateDirectory(path);
+        }
+
+        public static string getProjectPath()
+        {
+            return Directory.GetCurrentDirectory();
         }
     }
 }

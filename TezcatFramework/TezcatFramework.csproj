@@ -51,20 +51,17 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="TezcatFramework\Core\DataBase\TezFileDatabase.cs" />
     <Compile Include="TezcatFramework\Core\DataBase\FileIO\TezJsonObjectReader.cs" />
-    <Compile Include="TezcatFramework\Core\DataBase\TezFixedItemInfo.cs" />
+    <Compile Include="TezcatFramework\Core\DataBase\TezDBItemInfo.cs" />
     <Compile Include="TezcatFramework\Core\Object\TezGameObject.cs" />
     <Compile Include="TezcatFramework\Core\DataBase\TezItemID.cs" />
     <Compile Include="TezcatFramework\Core\Object\TezItemableObject.cs" />
     <Compile Include="TezcatFramework\Core\Object\TezSmartRef.cs" />
     <Compile Include="TezcatFramework\Exp\TezAwaitable.cs" />
     <Compile Include="TezcatFramework\Game\AI\BehaviorTree\TezBTRegisterAttribute.cs" />
-    <Compile Include="TezcatFramework\Game\Inventory\TezStorableInfo.cs" />
     <Compile Include="TezcatFramework\Core\Tag\TezTags.cs" />
     <Compile Include="TezcatFramework\Core\DataBase\Category\ITezCategoryObject.cs" />
     <Compile Include="TezcatFramework\Core\DataBase\TezDBIDGenerator.cs" />
-    <Compile Include="TezcatFramework\Game\Inventory\ITezItemableObject.cs" />
     <Compile Include="TezcatFramework\Core\EntitySystem\Component\TezInfoComponent.cs" />
     <Compile Include="TezcatFramework\Core\Value\Property\Lit\ITezLitProperty.cs" />
     <Compile Include="TezcatFramework\Core\Value\Property\Other\ITezModifierRefrenceProperty.cs" />
@@ -111,7 +108,6 @@
     <Compile Include="TezcatFramework\Core\TezObjectUID.cs" />
     <Compile Include="TezcatFramework\Core\Value\Property\Other\TezBindable.cs" />
     <Compile Include="TezcatFramework\Core\DataBase\TezDBID.cs" />
-    <Compile Include="TezcatFramework\Core\DataBase\TezDatabaseGameItem.cs" />
     <Compile Include="TezcatFramework\Core\DataBase\TezDatabaseItemConfig.cs" />
     <Compile Include="TezcatFramework\Core\DataBase\TezDatabase.cs" />
     <Compile Include="TezcatFramework\Game\BonusSystem\ITezBonusObjectHandler.cs" />
@@ -127,17 +123,13 @@
     <Compile Include="TezcatFramework\Core\EntitySystem\Component\TezComponentManager.cs" />
     <Compile Include="TezcatFramework\Core\EntitySystem\Entity\TezEntityManager.cs" />
     <Compile Include="TezcatFramework\Game\HexSystem\TezHexMesh.cs" />
-    <Compile Include="TezcatFramework\Game\Inventory\Slot\TezInventoryBaseSlot.cs" />
-    <Compile Include="TezcatFramework\Game\Inventory\Slot\TezInventoryDataSlot.cs" />
-    <Compile Include="TezcatFramework\Game\Inventory\Slot\TezInventoryFilterSlot.cs" />
-    <Compile Include="TezcatFramework\Game\Inventory\Slot\TezInventoryViewSlot.cs" />
+    <Compile Include="TezcatFramework\Game\Inventory\View\TezInventoryViewSlot.cs" />
     <Compile Include="TezcatFramework\Game\Inventory\TezInventory.cs" />
     <Compile Include="TezcatFramework\Game\Inventory\TezInventoryFilter.cs" />
     <Compile Include="TezcatFramework\Game\Inventory\View\TezInventoryBaseView.cs" />
     <Compile Include="TezcatFramework\Game\Inventory\View\TezInventoryDefaultView.cs" />
     <Compile Include="TezcatFramework\Game\Inventory\View\TezInventoryPageView.cs" />
-    <Compile Include="TezcatFramework\Game\Inventory\TezInventorySelector.cs" />
-    <Compile Include="TezcatFramework\Game\Inventory\Slot\TezInventoryItemSlot.cs" />
+    <Compile Include="TezcatFramework\Game\Inventory\TezInventoryPicker.cs" />
     <Compile Include="TezcatFramework\Game\PathFind\ITezAStarDataWrapper.cs" />
     <Compile Include="TezcatFramework\Game\PathFind\TezAStarDataWrapper.cs" />
     <Compile Include="TezcatFramework\Game\Planet\TezPlanetData.cs" />

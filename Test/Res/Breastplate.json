@@ -1,0 +1,10 @@
+{
+    "CID": "Armor",
+    "CTG": "Breastplate",
+    "ItemInfo": {
+        "NID": "H355",
+        "FID": 3,
+        "StackCount": -1
+    },
+    "ArmorAdd": 20
+}

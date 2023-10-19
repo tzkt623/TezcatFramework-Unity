@@ -2,12 +2,19 @@
 {
     public class TezInventoryDefaultView : TezInventoryBaseView
     {
-        protected override void onFilterChanged(TezInventoryFilter filterManager)
+        public override void addViewSlotData(ITezInventoryViewSlotData data)
         {
-
         }
 
-        protected override void onItemChanged(TezInventoryDataSlot dataSlot)
+        public override void removeViewSlotData(ITezInventoryViewSlotData data)
+        {
+        }
+
+        public override void updateViewSlotData(int index)
+        {
+        }
+
+        protected override void onFilterChanged()
         {
 
         }

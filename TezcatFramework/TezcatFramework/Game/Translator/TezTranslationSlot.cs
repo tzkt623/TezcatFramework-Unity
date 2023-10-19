@@ -1,4 +1,3 @@
-using System;
 namespace tezcat.Framework.Game
 {
     public abstract class TezTranslationSlot
@@ -17,35 +16,35 @@ namespace tezcat.Framework.Game
 
     public class TezTranslationSlot_AllInOne : TezTranslationSlot
     {
-        string[] m_Contents;
+        string[] mContents;
 
         public override Category category => Category.AllInOne;
 
         public override string getContent(int index)
         {
-            return m_Contents[index];
+            return mContents[index];
         }
 
         public override void initContent(int count)
         {
-            m_Contents = new string[count];
+            mContents = new string[count];
         }
 
         public override void setContent(int index, string value)
         {
-            this.m_Contents[index] = value;
+            mContents[index] = value;
         }
     }
 
     public class TezTranslationSlot_Single : TezTranslationSlot
     {
-        string m_Content;
+        string mContent;
 
         public override Category category => Category.Single;
 
         public override string getContent(int index)
         {
-            return m_Content;
+            return mContent;
         }
 
         public override void initContent(int count)
@@ -55,7 +54,7 @@ namespace tezcat.Framework.Game
 
         public override void setContent(int index, string value)
         {
-            this.m_Content = value;
+            mContent = value;
         }
     }
 }

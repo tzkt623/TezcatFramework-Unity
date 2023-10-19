@@ -6,12 +6,17 @@ using UnityEngine;
 
 namespace tezcat.Framework.Test
 {
-    public class TestKeyConfig
+    public class TestKeyConfig : TezBaseTest
     {
         TezKeyConfig mConfig;
         TezKeyConfig mSaveConfig;
         TezKeyConfig mLoadConfig;
         TezKeyConfig mChangeKeyConfig;
+
+        public TestKeyConfig() : base("KeyConfig")
+        {
+            this.init();
+        }
 
         public void init()
         {
@@ -73,7 +78,7 @@ namespace tezcat.Framework.Test
 ///OR           UnityKeyConfigManager.instance.setChangeKey(m_Config.getWrapper(0));
         }
 
-        public void update()
+        public override void run()
         {
             if (mConfig.active())
             {

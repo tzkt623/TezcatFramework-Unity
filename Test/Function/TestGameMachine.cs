@@ -18,7 +18,7 @@ namespace tezcat.Framework.Test
     /// 以及输入控制
     /// </para>
     /// </summary>
-    public class TestGameMachine
+    public class TestGameMachine : TezBaseTest
     {
         public class State
         {
@@ -134,23 +134,21 @@ namespace tezcat.Framework.Test
         }
 
 
-        GameMachine m_GameMachine = new GameMachine();
+        GameMachine mGameMachine = new GameMachine();
 
-        public void test()
+        public TestGameMachine() : base("GameMachine")
         {
-            m_GameMachine.setBlackboard(new GameMachineBlackboard());
-
-            m_GameMachine.push<GameMachineState_Idle>();
-            ///do something
-            m_GameMachine.pop<GameMachineState_Idle>();
-
-
-            m_GameMachine.push<GameMachineState_Fun1>();
+            mGameMachine.setBlackboard(new GameMachineBlackboard());
         }
 
-        public void update()
+        public override void run()
         {
-            m_GameMachine.execute();
+            mGameMachine.push<GameMachineState_Idle>();
+            mGameMachine.execute();
+            mGameMachine.pop<GameMachineState_Idle>();
+
+            mGameMachine.push<GameMachineState_Fun1>();
+            mGameMachine.execute();
         }
     }
 }

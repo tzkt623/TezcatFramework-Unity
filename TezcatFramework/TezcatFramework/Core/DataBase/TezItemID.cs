@@ -5,9 +5,23 @@ using tezcat.Framework.Core;
 
 namespace tezcat.Framework.Database
 {
+    /*
+     * 文件数据库
+     * 
+     * 游戏中并不是所有的对象都需要一个ItemID进行比较
+     * 只有物品类的对象才需要一个ItemID
+     * 
+     * 数据库应该给每一个Item一个对应的ID,用于区分不同的Item
+     * ID分为两部分
+     * 低位代表FixedID
+     * 高位代表ModifiedID
+     * 
+     * 
+     */
+
     /// <summary>
     /// 物品ID
-    /// 用于判断两个物品是不是同一类型
+    /// 用于判断两个物品是不是同一个
     /// 此类应该是共享数据类
     /// 不需要存在两份相同的数据
     /// </summary>
@@ -17,83 +31,14 @@ namespace tezcat.Framework.Database
         , IEquatable<TezItemID>
     {
         #region Pool
-        public static readonly TezItemID EmptyID = new TezItemID();
         static Queue<TezItemID> sPool = new Queue<TezItemID>();
+        static Queue<int> sModifiedIDPool = new Queue<int>();
 
-        //         public static bool create(ref TezItemID itemID)
-        //         {
-        //             itemID?.close();
-        // 
-        //             if (sPool.Count > 0)
-        //             {
-        //                 itemID = sPool.Dequeue();
-        //                 return false;
-        //             }
-        // 
-        //             itemID = new TezItemID();
-        //             return true;
-        //         }
-
-        /// <summary>
-        /// 返回True表示新建了新的ID对象
-        /// 返回False表示使用了回收的对象
-        /// </summary>
-        public static bool create(ref TezItemID itemID, int DBID, int modifiedID = -1)
+        public static TezItemID create(int fixedID, int modifiedID = -1)
         {
-            itemID?.close();
-
-            if (sPool.Count > 0)
-            {
-                itemID = sPool.Dequeue();
-                itemID.mFixedID = DBID;
-                itemID.mModifiedID = modifiedID;
-                return false;
-            }
-
-            itemID = new TezItemID();
-            itemID.mFixedID = DBID;
-            itemID.mModifiedID = modifiedID;
-            return true;
-        }
-
-
-        /// <summary>
-        /// 返回True表示新建了新的ID对象
-        /// 返回False表示使用了回收的对象
-        /// </summary>
-        public static bool copyFrom(ref TezItemID target, TezItemID source)
-        {
-            target?.close();
-
-            if (sPool.Count > 0)
-            {
-                target = sPool.Dequeue();
-                target.mID = source.mID;
-                return false;
-            }
-            else
-            {
-                target = new TezItemID();
-                target.mID = source.mID;
-                return true;
-            }
-        }
-
-
-        public static TezItemID create(int FDID, int MDID = -1)
-        {
-            TezItemID result = null;
-            if (sPool.Count > 0)
-            {
-                result = sPool.Dequeue();
-            }
-            else
-            {
-                result = new TezItemID();
-            }
-
-            result.mFixedID = FDID;
-            result.mModifiedID = MDID;
+            TezItemID result = sPool.Count > 0 ? sPool.Dequeue() : new TezItemID();
+            result.mFixedID = fixedID;
+            result.mModifiedID = modifiedID;
             return result;
         }
 
@@ -139,6 +84,11 @@ namespace tezcat.Framework.Database
         {
             mID = -1;
             sPool.Enqueue(this);
+        }
+
+        public TezItemID copy()
+        {
+            return create(mFixedID, mModifiedID);
         }
 
         public bool sameAs(TezItemID other)

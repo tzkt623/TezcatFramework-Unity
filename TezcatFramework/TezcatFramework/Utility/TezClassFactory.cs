@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using static tezcat.Framework.Utility.TezClassFactory;
 
 namespace tezcat.Framework.Utility
 {

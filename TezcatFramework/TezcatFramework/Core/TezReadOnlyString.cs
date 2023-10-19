@@ -5,31 +5,26 @@
         /// <summary>
         /// Class ID
         /// </summary>
-        public const string CID = "CID";
+        public const string ClassID = "CID";
 
         /// <summary>
         /// Name ID
         /// </summary>
-        public const string NID = "NID";
+        public const string NameID = "NID";
 
         /// <summary>
         /// FixedID
         /// </summary>
-        public const string FDID = "FDID";
+        public const string FixedID = "FID";
 
         /// <summary>
         /// ModifiedID
         /// </summary>
-        public const string MDID = "MDID";
+        public const string ModifiedID = "MID";
         /// <summary>
         /// VersionID
         /// </summary>
-        public const string VID = "VID";
-
-        /// <summary>
-        /// 只读类
-        /// </summary>
-        public const string ReadOnly = "ReadOnly";
+        public const string VersionID = "VID";
 
         /// <summary>
         /// StackCount
@@ -41,7 +36,6 @@
         /// </summary>
         public const string Category = "CTG";
 
-//        public const string fixedID = "fixedID";
         public const string ItemID = "ItemID";
         public const string CellID = "CellID";
         public const string TypeID = "TypeID";

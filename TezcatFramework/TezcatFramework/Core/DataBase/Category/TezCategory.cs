@@ -42,7 +42,6 @@ namespace tezcat.Framework.Database
     /// 子数据库里面只包含对应的物品在总数据里面的索引位置
     /// </para>
     /// 
-    /// 
     /// </summary>
     public class TezCategory
         : ITezNonCloseable
@@ -134,11 +133,25 @@ namespace tezcat.Framework.Database
             return mFinalToken.globalID;
         }
 
+        /// <summary>
+        /// 此类不允许有空类存在
+        /// 所以只要有其中一个对象是空
+        /// 那就一定返回false
+        /// 也就是null和null的运算符比较,不能判定为相等,因为他们不是存在的类型
+        /// 如果要进行空判断 请使用object.ReferenceEquals
+        /// </summary>
         public override bool Equals(object other)
         {
             return this.Equals((TezCategory)other);
         }
 
+        /// <summary>
+        /// 此类不允许有空类存在
+        /// 所以只要有其中一个对象是空
+        /// 那就一定返回false
+        /// 也就是null和null的运算符比较,不能判定为相等,因为他们不是存在的类型
+        /// 如果要进行空判断 请使用object.ReferenceEquals
+        /// </summary>
         public bool Equals(TezCategory other)
         {
             if (object.ReferenceEquals(other, null))

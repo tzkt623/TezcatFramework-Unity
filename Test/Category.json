@@ -1,0 +1,26 @@
+{
+    "Namespace": "tezcat.Framework.Core",
+    "WrapperClass": "MyCategory",
+    "Root": {
+        "Useable": {
+            "Potion": [
+                "HealthPotion",
+                "MagicPotion"
+            ]
+        },
+        "Equipment": {
+            "Weapon": [
+                "Gun",
+                "Axe"
+            ],
+            "Armor": [
+                "Helmet",
+                "Breastplate",
+                "Leg"
+            ]
+        },
+        "Unit": [
+            "Character"
+        ]
+    }
+}

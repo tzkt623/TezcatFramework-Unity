@@ -4,88 +4,54 @@ using tezcat.Framework.Core;
 
 namespace tezcat.Framework.Database
 {
-    public interface ITezDatabase
+    /*
+     * 文件数据库
+     * 
+     * 数据库应该给每一个Item一个对应的ID,用于区分不同的Item
+     * ID分为两部分
+     * 
+     * 高位代表FixedID
+     * FixedID表示此物品来源于设定数据库
+     * 
+     * 地位代表ModifiedID
+     * ModifiedID表示此物品来源于运行时依赖设定数据库进行修改后的物品
+     * 
+     */
+
+    public class TezFixedDatabase
     {
-#if false
-        void registerItem(TezDatabaseGameItem item);
-        TezDatabaseGameItem getItem(int uid);
-        TezDatabaseGameItem getItem(string nid);
-#else
-        void registerItem(TezGameObject gameObject);
-        TezGameObject getItem(int uid);
-        TezGameObject getItem(string nid);
-#endif
-
-    }
+        protected List<TezGameItemInfo> mFixedList = new List<TezGameItemInfo>();
+        protected Dictionary<string, TezGameItemInfo> mFixedDict = new Dictionary<string, TezGameItemInfo>();
 
 
-    public class TezSharedDatabase
-    {
-
-    }
-
-    /// <summary>
-    /// 独立主数据库
-    /// 
-    /// 数据库Json文件应该是一个Array的外层
-    /// 物品的DBID来自于数据库文件
-    /// [
-    ///     {
-    ///         "CID": "xxx"        =>类类型
-    ///         "NID": "xxxxxx"     =>物品名称
-    ///         "fixedID": 0           =>物品数据库ID
-    ///         "MID": -1           =>重定义ID
-    ///         "CTG": "xx"         =>物品类型
-    ///     
-    ///     }
-    /// ]
-    /// 
-    /// 
-    /// </summary>
-    public class TezMainDatabase
-    {
-#if false
-        protected List<TezDatabaseGameItem> mItemList = new List<TezDatabaseGameItem>();
-        protected Dictionary<string, TezDatabaseGameItem> mItemDict = new Dictionary<string, TezDatabaseGameItem>();
-
-        public void registerItem(TezDatabaseGameItem item)
+        public void load(string path)
         {
-            if (mItemDict.ContainsKey(item.NID))
+            TezFileReader reader = new TezJsonReader();
+            var files = TezFilePath.getFiles(path, true);
+            for (int j = 0; j < files.Length; j++)
             {
-                throw new Exception(string.Format("{0} : Item {1} had registered!!", this.GetType().Name, item.NID));
+                if (reader.load(files[j]))
+                {
+                    var CID = reader.readString(TezReadOnlyString.ClassID);
+                    var item = TezcatFramework.classFactory.create<TezItemableObject>(CID);
+                    item.deserialize(reader);
+                    this.registerItem(item);
+                }
+                else
+                {
+                    throw new Exception(files[j]);
+                }
             }
 
-            item.onRegister(mItemList.Count);
-            mItemList.Add(item);
-            mItemDict.Add(item.NID, item);
+            reader.close();
         }
-
-        public TezDatabaseGameItem getItem(int uid)
-        {
-            return mItemList[uid];
-        }
-
-        public TezDatabaseGameItem getItem(string nid)
-        {
-            return mItemDict[nid];
-        }
-#else
-        public TezMainDatabase()
-        {
-            mFixedList.Add(TezcatFramework.emptyItemInfo);
-            mFixedDict.Add(TezcatFramework.emptyItemInfo.NID, TezcatFramework.emptyItemInfo);
-        }
-
-        #region ItemData
-        protected List<TezBaseItemInfo> mFixedList = new List<TezBaseItemInfo>();
-        protected Dictionary<string, TezBaseItemInfo> mFixedDict = new Dictionary<string, TezBaseItemInfo>();
 
         public void registerItem(TezItemableObject gameObject)
         {
             //数据库信息应该由数据库文件定义
             //这里只需要读取保存好的文件然后放到指定的位置中即可
             //也可以在这里做更复杂的分类
-            var info = (TezFixedItemInfo)gameObject.itemInfo;
+            var info = (TezGameItemInfo)gameObject.itemInfo;
             var item_id = info.itemID;
 
             while (item_id.fixedID >= mFixedList.Count)
@@ -100,49 +66,39 @@ namespace tezcat.Framework.Database
 
             mFixedList[item_id.fixedID] = info;
             mFixedDict.Add(info.NID, info);
-
-            //             var info = gameObject.itemInfo;
-            //             if (mFixedDict.ContainsKey(info.NID))
-            //             {
-            //                 throw new Exception($"{this.GetType().Name} : Item {info.NID} had registered!!");
-            //             }
-            // 
-            //             gameObject.onDBRegister(mFixedList.Count);
-            //             mFixedList.Add(info);
-            //             mFixedDict.Add(info.NID, info);
         }
 
-        public TezFixedItemInfo getItem(int dbid)
+        public TezGameItemInfo getItem(int fixedID)
         {
-            return (TezFixedItemInfo)mFixedList[dbid];
+            return mFixedList[fixedID];
         }
 
-        public bool tryGetItem(int dbid, out TezFixedItemInfo info)
+        public bool tryGetItem(int fixedID, out TezGameItemInfo info)
         {
-            if (dbid < 0 || dbid > mFixedList.Count)
+            if (fixedID < 0 || fixedID > mFixedList.Count)
             {
-                info = (TezFixedItemInfo)mFixedList[0];
+                info = null;
                 return false;
             }
 
-            info = (TezFixedItemInfo)mFixedList[dbid];
+            info = mFixedList[fixedID];
             return true;
         }
 
-        public TezFixedItemInfo getItem(string nid)
+        public TezGameItemInfo getItem(string nid)
         {
-            return (TezFixedItemInfo)mFixedDict[nid];
+            return mFixedDict[nid];
         }
 
-        public bool tryGetItem(string nid, out TezFixedItemInfo info)
+        public bool tryGetItem(string nid, out TezGameItemInfo info)
         {
             if (mFixedDict.TryGetValue(nid, out var temp))
             {
-                info = (TezFixedItemInfo)temp;
+                info = temp;
                 return true;
             }
 
-            info = (TezFixedItemInfo)mFixedList[0];
+            info = mFixedList[0];
             return false;
         }
 
@@ -155,9 +111,6 @@ namespace tezcat.Framework.Database
         {
 
         }
-        #endregion
-
-#endif
     }
 
     /// <summary>
@@ -169,8 +122,7 @@ namespace tezcat.Framework.Database
     /// </summary>
     public class TezRunTimeDatabase
     {
-#if false
-        protected List<TezDatabaseGameItem> mItemList = new List<TezDatabaseGameItem>();
+        protected List<TezGameItemInfo> mItemList = new List<TezGameItemInfo>();
         private Queue<int> mFreeIndex = new Queue<int>();
 
         public int generateID()
@@ -189,80 +141,7 @@ namespace tezcat.Framework.Database
             return index;
         }
 
-        public bool registerItem(TezItemID itemID, TezDatabaseGameItem gameItem)
-        {
-            var modified_id = itemID.ModifiedID;
-            if (mItemList[modified_id] != null)
-            {
-                return false;
-            }
-
-            gameItem.onRuntimeRegister(itemID.DBID, modified_id);
-            mItemList[modified_id].retainModifiedItem();
-            mItemList[modified_id] = gameItem;
-            return true;
-        }
-
-        public bool unregisterItem(int modifiedID)
-        {
-            if (mItemList[modifiedID].releaseModifiedItem())
-            {
-                mFreeIndex.Enqueue(modifiedID);
-                mItemList[modifiedID].close();
-                mItemList[modifiedID] = null;
-                return true;
-            }
-
-            return false;
-        }
-
-        public TezDatabaseGameItem getItem(int modifiedID)
-        {
-            var item = mItemList[modifiedID];
-            item.retainModifiedItem();
-            return item;
-        }
-
-        public void serialize(TezWriter writer)
-        {
-
-        }
-
-        public void deserialize(TezReader reader)
-        {
-
-        }
-
-        public void close()
-        {
-
-        }
-
-        public bool isModified(int modifiedID)
-        {
-            return mItemList[modifiedID] != null;
-        }
-#else
-        protected List<TezRuntimeItemInfo> mItemList = new List<TezRuntimeItemInfo>();
-        private Queue<int> mFreeIndex = new Queue<int>();
-
-        public int generateID()
-        {
-            int index;
-            if (mFreeIndex.Count > 0)
-            {
-                index = mFreeIndex.Dequeue();
-            }
-            else
-            {
-                index = mItemList.Count;
-                mItemList.Add(null);
-            }
-
-            return index;
-        }
-
-        public bool registerItem(TezRuntimeItemInfo info)
+        public bool registerItem(TezGameItemInfo info)
         {
             var modified_id = info.itemID.modifiedID;
             if (mItemList[modified_id] != null)
@@ -280,12 +159,18 @@ namespace tezcat.Framework.Database
             mItemList[modifiedID] = null;
         }
 
-        public TezRuntimeItemInfo getItem(int modifiedID)
+        public TezGameItemInfo getItem(int modifiedID)
         {
             var info = mItemList[modifiedID];
             return info;
         }
 
+        /*
+         * 记得保存剩余ID
+         */
+        /// <summary>
+        /// 
+        /// </summary>
         public void serialize(TezWriter writer)
         {
 
@@ -300,80 +185,5 @@ namespace tezcat.Framework.Database
         {
             return !object.ReferenceEquals(mItemList[modifiedID], null);
         }
-#endif
     }
-
-    public class TezMultiDatabase : ITezNonCloseable
-    {
-        List<TezCellDatabase> mDatabaseList = new List<TezCellDatabase>();
-
-        public void register(TezCellDatabase db)
-        {
-            while (mDatabaseList.Count <= db.UID)
-            {
-                mDatabaseList.Add(null);
-            }
-
-            if (mDatabaseList[db.UID] != null)
-            {
-                throw new Exception("This Database ID already existed");
-            }
-
-            mDatabaseList[db.UID] = db;
-        }
-
-        public TezCellDatabase get(int id)
-        {
-            return mDatabaseList[id];
-        }
-
-        public TezDatabaseGameItem getItem(int itemID)
-        {
-            return mDatabaseList[TezDBIDGenerator.getCellID(itemID)].getItem(TezDBIDGenerator.getTypeID(itemID));
-        }
-    }
-
-    /// <summary>
-    /// 细胞数据库
-    /// </summary>
-    public class TezCellDatabase
-    {
-        protected List<TezDatabaseGameItem> mItemList = new List<TezDatabaseGameItem>();
-        protected Dictionary<string, TezDatabaseGameItem> mItemDict = new Dictionary<string, TezDatabaseGameItem>();
-
-        public int UID { get; } = 0;
-
-        /// <summary>
-        /// 多数据库模式
-        /// 可以使用TezDatabaseManager来获得所有分体式数据库
-        /// </summary>
-        public TezCellDatabase(int uid)
-        {
-            this.UID = uid;
-            TezcatFramework.multiDB.register(this);
-        }
-
-        public void registerItem(TezDatabaseGameItem item)
-        {
-            if (mItemDict.ContainsKey(item.NID))
-            {
-                throw new Exception($"{this.GetType().Name} : Item {item.NID} had registered!!");
-            }
-
-            item.onRegister(TezDBIDGenerator.generateID(this.UID, mItemList.Count));
-            mItemList.Add(item);
-            mItemDict.Add(item.NID, item);
-        }
-
-        public TezDatabaseGameItem getItem(int uid)
-        {
-            return mItemList[uid];
-        }
-
-        public TezDatabaseGameItem getItem(string nid)
-        {
-            return mItemDict[nid];
-        }
-    }
-
 }
