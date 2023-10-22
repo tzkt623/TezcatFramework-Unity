@@ -5,8 +5,15 @@ namespace tezcat.Framework.Game.Inventory
 {
     public abstract class TezInventoryBaseView : ITezCloseable
     {
-        public TezInventory inventory => mInventoryRef.get();
-        protected TezFlagableRef<TezInventory> mInventoryRef = null;
+        public TezInventory inventory
+        {
+            get
+            {
+                mLifeMonitorSlot.tryUse<TezInventory>(out var result);
+                return result;
+            }
+        }
+        protected TezLifeMonitorSlot mLifeMonitorSlot = null;
 
         protected TezInventoryFilter mFilterManager = new TezInventoryFilter();
         public TezInventoryFilter filterManager => mFilterManager;
@@ -18,12 +25,14 @@ namespace tezcat.Framework.Game.Inventory
 
         public virtual void setInventory(TezInventory inventory)
         {
-            mInventoryRef = new TezFlagableRef<TezInventory>(inventory);
+            mLifeMonitorSlot?.close();
+            mLifeMonitorSlot = new TezLifeMonitorSlot(inventory);
         }
 
         public virtual void setInventory(TezInventory inventory, List<TezInventoryUniqueItemInfo> uniqueList, Dictionary<long, TezInventoryStackedItemInfo> stackedDict)
         {
-            mInventoryRef = new TezFlagableRef<TezInventory>(inventory);
+            mLifeMonitorSlot?.close();
+            mLifeMonitorSlot = new TezLifeMonitorSlot(inventory);
         }
 
         protected abstract void onFilterChanged();
@@ -34,8 +43,8 @@ namespace tezcat.Framework.Game.Inventory
             mFilterManager.close();
             mFilterManager = null;
 
-            mInventoryRef.close();
-            mInventoryRef = null;
+            mLifeMonitorSlot.close();
+            mLifeMonitorSlot = null;
         }
 
         public abstract void updateViewSlotData(int index);

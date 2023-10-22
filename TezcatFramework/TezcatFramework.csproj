@@ -95,7 +95,7 @@
     <Compile Include="TezcatFramework\Core\DataBase\Category\TezCategorySystem.cs" />
     <Compile Include="TezcatFramework\Core\DataBase\Category\TezCategoryToken.cs" />
     <Compile Include="TezcatFramework\Core\Object\ITezCloseable.cs" />
-    <Compile Include="TezcatFramework\Core\Object\TezFlagable.cs" />
+    <Compile Include="TezcatFramework\Core\Object\TezLifeMonitor.cs" />
     <Compile Include="TezcatFramework\Core\Value\Property\Lit\TezLitPropertyManager.cs" />
     <Compile Include="TezcatFramework\Core\Value\Property\Lit\TezLitPropertySortList.cs" />
     <Compile Include="TezcatFramework\Core\Value\TezValueSortList.cs" />

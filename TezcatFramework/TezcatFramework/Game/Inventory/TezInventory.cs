@@ -120,12 +120,21 @@ namespace tezcat.Framework.Game.Inventory
     /// 
     /// </summary>
     public class TezInventory
-        : TezFlagable
+        : ITezLifeMonitor
+        , ITezCloseable
     {
         protected List<TezInventoryUniqueItemInfo> mUniqueItemList = new List<TezInventoryUniqueItemInfo>();
         protected Dictionary<long, TezInventoryStackedItemInfo> mStackedItemDict = new Dictionary<long, TezInventoryStackedItemInfo>();
 
         protected TezInventoryBaseView mView = null;
+
+        TezLifeMonitor mLifeMonitor = new TezLifeMonitor();
+        TezLifeMonitor ITezLifeMonitor.lifeMonitor => mLifeMonitor;
+
+        public TezInventory()
+        {
+            mLifeMonitor.setManagedObject(this);
+        }
 
         public void setView(TezInventoryBaseView view)
         {
@@ -332,9 +341,9 @@ namespace tezcat.Framework.Game.Inventory
             return null;
         }
 
-        public override void close()
+        public void close()
         {
-            base.close();
+            mLifeMonitor.close();
 
             mView.close();
             mView = null;
@@ -354,6 +363,7 @@ namespace tezcat.Framework.Game.Inventory
 
             mUniqueItemList = null;
             mStackedItemDict = null;
+            mLifeMonitor = null;
         }
     }
 }

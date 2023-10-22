@@ -12,14 +12,20 @@ namespace tezcat.Framework.Game.Inventory
         /// <summary>
         /// 通单个知槽位刷新
         /// </summary>
-        public event TezEventExtension.Action<TezInventoryViewSlot> onSlotRefresh;
+        public event TezEventExtension.Action<TezInventoryViewSlot, int> onSlotRefresh;
+        public event TezEventExtension.Action<int, int> onPageChanged;
 
         List<ITezInventoryViewSlotData> mDataSlotList = new List<ITezInventoryViewSlotData>();
         TezStepArray<TezInventoryViewSlot> mSlots = null;
         List<int> mFreeIndex = new List<int>();
         bool mFreeIndexDirty = false;
 
-        int mBeginPos = 0;
+        int mCurrentPage = -1;
+        int mMaxPage = -1;
+        int mBeginPos = -1;
+
+        public int currentPage => mCurrentPage;
+        public int maxPage => mMaxPage;
 
         List<TezInventoryUniqueItemInfo> mUniqueItems = null;
         Dictionary<long, TezInventoryStackedItemInfo> mStackedItems = null;
@@ -64,6 +70,7 @@ namespace tezcat.Framework.Game.Inventory
             mSlots = null;
 
             onSlotRefresh = null;
+            onPageChanged = null;
 
             base.close();
         }
@@ -77,29 +84,32 @@ namespace tezcat.Framework.Game.Inventory
             }
         }
 
-        public void paging(int beginPos)
+        public void pageDown()
         {
-            mBeginPos = beginPos;
-            for (int i = 0; i < mSlots.capacity; i++)
+            if (mCurrentPage == 0)
             {
-                var view_slot = mSlots[i];
-                var index = mBeginPos + i;
-                if (index < mDataSlotList.Count)
-                {
-                    view_slot.data = mDataSlotList[index];
-                }
-                else
-                {
-                    view_slot.data = null;
-                }
-
-                onSlotRefresh?.Invoke(view_slot);
+                return;
             }
+
+            this.page(--mCurrentPage);
+        }
+
+        public void pageUp()
+        {
+            if (mCurrentPage == mMaxPage)
+            {
+                return;
+            }
+
+            this.page(++mCurrentPage);
         }
 
         public void page(int pageIndex)
         {
-            mBeginPos = pageIndex * this.capacity;
+            mCurrentPage = pageIndex;
+            onPageChanged?.Invoke(mCurrentPage, mMaxPage);
+
+            mBeginPos = mCurrentPage * this.capacity;
             for (int i = 0; i < mSlots.capacity; i++)
             {
                 var index = mBeginPos + i;
@@ -113,7 +123,7 @@ namespace tezcat.Framework.Game.Inventory
                     view_slot.data = null;
                 }
 
-                onSlotRefresh?.Invoke(view_slot);
+                onSlotRefresh?.Invoke(view_slot, i);
             }
         }
 
@@ -146,6 +156,8 @@ namespace tezcat.Framework.Game.Inventory
                 }
             }
 
+            this.calculateMaxPage();
+
             this.page(0);
         }
 
@@ -170,6 +182,11 @@ namespace tezcat.Framework.Game.Inventory
             return index;
         }
 
+        private void calculateMaxPage()
+        {
+            mMaxPage = mDataSlotList.Count / this.capacity;
+        }
+
         public override void addViewSlotData(ITezInventoryViewSlotData data)
         {
             if (!mFilterManager.filter(data))
@@ -188,12 +205,14 @@ namespace tezcat.Framework.Game.Inventory
                 mDataSlotList.Add(data);
             }
 
+            this.calculateMaxPage();
+
             var view_index = data.viewIndex;
             if (this.inPageRange(view_index))
             {
                 var view_slot = mSlots[view_index - mBeginPos];
                 view_slot.data = data;
-                onSlotRefresh?.Invoke(view_slot);
+                onSlotRefresh?.Invoke(view_slot, view_index - mBeginPos);
             }
         }
 
@@ -209,7 +228,7 @@ namespace tezcat.Framework.Game.Inventory
             {
                 var view_slot = mSlots[view_index - mBeginPos];
                 view_slot.data = null;
-                onSlotRefresh?.Invoke(view_slot);
+                onSlotRefresh?.Invoke(view_slot, view_index - mBeginPos);
             }
         }
 
@@ -217,7 +236,7 @@ namespace tezcat.Framework.Game.Inventory
         {
             if (this.inPageRange(viewIndex))
             {
-                onSlotRefresh?.Invoke(mSlots[viewIndex - mBeginPos]);
+                onSlotRefresh?.Invoke(mSlots[viewIndex - mBeginPos], viewIndex - mBeginPos);
             }
         }
     }
