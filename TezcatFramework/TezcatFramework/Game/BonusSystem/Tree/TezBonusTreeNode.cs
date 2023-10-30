@@ -9,18 +9,18 @@ namespace tezcat.Framework.BonusSystem
     public abstract class TezBonusTreeNode : ITezBonusTreeNode
     {
         #region Pool
-        static Queue<List<ITezBonusObject>> ListPool = new Queue<List<ITezBonusObject>>();
-        static List<ITezBonusObject> create()
+        static Queue<List<ITezBonusCarrier>> ListPool = new Queue<List<ITezBonusCarrier>>();
+        static List<ITezBonusCarrier> create()
         {
             if (ListPool.Count > 0)
             {
                 return ListPool.Dequeue();
             }
 
-            return new List<ITezBonusObject>();
+            return new List<ITezBonusCarrier>();
         }
 
-        static void recycle(List<ITezBonusObject> list)
+        static void recycle(List<ITezBonusCarrier> list)
         {
             if (list == null)
             {
@@ -38,7 +38,7 @@ namespace tezcat.Framework.BonusSystem
         /// <summary>
         /// 保存可能存在的加成者
         /// </summary>
-        List<ITezBonusObject> m_Objects = null;
+        List<ITezBonusCarrier> mObjects = null;
 
         protected TezBonusTreeNode(int id, ITezBonusTree tree)
         {
@@ -48,22 +48,22 @@ namespace tezcat.Framework.BonusSystem
 
         public virtual void registerAgent(ITezBonusObjectHandler handler)
         {
-            if (m_Objects != null)
+            if (mObjects != null)
             {
-                for (int i = 0; i < m_Objects.Count; i++)
+                for (int i = 0; i < mObjects.Count; i++)
                 {
-                    handler.addBonusObject(m_Objects[i]);
+                    handler.addBonusObject(mObjects[i]);
                 }
             }
         }
 
         public virtual void unregisterAgent(ITezBonusObjectHandler handler)
         {
-            if (m_Objects != null)
+            if (mObjects != null)
             {
-                for (int i = 0; i < m_Objects.Count; i++)
+                for (int i = 0; i < mObjects.Count; i++)
                 {
-                    handler.removeBonusObject(m_Objects[i]);
+                    handler.removeBonusObject(mObjects[i]);
                 }
             }
         }
@@ -71,24 +71,24 @@ namespace tezcat.Framework.BonusSystem
         /// <summary>
         /// 添加一个BountyObject
         /// </summary>
-        public void addBountyObject(ITezBonusObject obj)
+        public void addBountyObject(ITezBonusCarrier obj)
         {
-            if (m_Objects == null)
+            if (mObjects == null)
             {
-                m_Objects = create();
+                mObjects = create();
             }
-            m_Objects.Add(obj);
+            mObjects.Add(obj);
             this.addBonusObjectToChildren(obj);
         }
 
         /// <summary>
         /// 向子节点添加
         /// </summary>
-        public abstract void addBonusObjectToChildren(ITezBonusObject obj);
+        public abstract void addBonusObjectToChildren(ITezBonusCarrier obj);
 
-        public void removeBountyObject(ITezBonusObject obj)
+        public void removeBountyObject(ITezBonusCarrier obj)
         {
-            if (m_Objects.Remove(obj))
+            if (mObjects.Remove(obj))
             {
                 this.removeBonusObjectFromChildren(obj);
             }
@@ -101,12 +101,12 @@ namespace tezcat.Framework.BonusSystem
         /// <summary>
         /// 从子节点移除
         /// </summary>
-        public abstract void removeBonusObjectFromChildren(ITezBonusObject obj);
+        public abstract void removeBonusObjectFromChildren(ITezBonusCarrier obj);
 
         public virtual void close()
         {
-            recycle(m_Objects);
-            m_Objects = null;
+            recycle(mObjects);
+            mObjects = null;
             this.tree = null;
         }
     }

@@ -17,6 +17,7 @@ namespace tezcat.Framework.Core
         }
 
         private uint mObjectUID = TezObjectUID.generateID();
+
         /// <summary>
         /// UID
         /// 为0则表示没有分配

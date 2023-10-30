@@ -1,10 +1,10 @@
 ﻿using System;
-using tezcat.Framework.Database;
+using tezcat.Framework.Core;
 using UnityEngine;
 
 namespace tezcat.Unity.Database
 {
-    public class TezSprite : TezDatabaseAssetItem
+    public class TezSprite : ITezCloseable
     {
         public enum Size
         {
@@ -25,7 +25,7 @@ namespace tezcat.Unity.Database
             this.name = name;
         }
 
-        public override void close()
+        public void close()
         {
             m_Sprite = null;
         }

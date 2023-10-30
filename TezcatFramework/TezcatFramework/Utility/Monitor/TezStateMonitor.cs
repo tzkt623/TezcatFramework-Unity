@@ -7,7 +7,7 @@
     /// 只是可以携带32种状态(uint)进行验证
     /// 
     /// </summary>
-    public class TezStateValider<UserData> where UserData : class
+    public class TezStateMonitor<UserData> where UserData : class
     {
         class FlagData
         {
@@ -68,7 +68,7 @@
         /// 创建一个新的Valider
         /// 以及新的共享数据
         /// </summary>
-        public TezStateValider(UserData userData)
+        public TezStateMonitor(UserData userData)
         {
             mFlagData = new FlagData()
             {
@@ -82,7 +82,7 @@
         /// 用于监视
         /// 不会新创建贡献数据
         /// </summary>
-        public TezStateValider(TezStateValider<UserData> other)
+        public TezStateMonitor(TezStateMonitor<UserData> other)
         {
             this.hold(other);
         }
@@ -90,7 +90,7 @@
         /// <summary>
         /// 持有一个新的entry
         /// </summary>
-        public void hold(TezStateValider<UserData> other)
+        public void hold(TezStateMonitor<UserData> other)
         {
             mFlagData?.release();
             mFlagData = other.mFlagData;

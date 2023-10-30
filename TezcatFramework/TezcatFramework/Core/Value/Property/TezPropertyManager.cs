@@ -4,11 +4,8 @@
         : ITezCloseable
         where Container : TezPropertyContainer, new()
     {
-        Container m_Container = new Container();
-        public TezPropertyContainer container => m_Container;
-
-
-
+        Container mContainer = new Container();
+        public TezPropertyContainer container => mContainer;
 
         /// <summary>
         /// 加入一个Modifier
@@ -16,7 +13,7 @@
         public void addModifier(ITezValueModifier modifier)
         {
             var target = modifier.modifierConfig.target;
-            var property = m_Container.get(target);
+            var property = mContainer.get(target);
             property?.addModifier(modifier);
         }
 
@@ -27,7 +24,7 @@
         public bool addModifier(ITezValueModifier modifier, out ITezProperty property)
         {
             var target = modifier.modifierConfig.target;
-            return m_Container.tryGet(target, out property);
+            return mContainer.tryGet(target, out property);
         }
 
         /// <summary>
@@ -37,7 +34,7 @@
         {
             var target = modifier.modifierConfig.target;
 
-            if (m_Container.tryGet(target, out var property))
+            if (mContainer.tryGet(target, out var property))
             {
                 property.removeModifier(modifier);
                 return true;
@@ -54,7 +51,7 @@
         {
             var target = modifier.modifierConfig.target;
 
-            if (m_Container.tryGet(target, out property))
+            if (mContainer.tryGet(target, out property))
             {
                 property.removeModifier(modifier);
                 return true;
@@ -65,17 +62,17 @@
 
         public T getOrCreate<T>(ITezValueDescriptor descriptor) where T : ITezProperty, new()
         {
-            return m_Container.create<T>(descriptor);
+            return mContainer.create<T>(descriptor);
         }
 
         public T get<T>(ITezValueDescriptor descriptor) where T : ITezProperty
         {
-            return (T)m_Container.get(descriptor.ID);
+            return (T)mContainer.get(descriptor.ID);
         }
 
         public bool tryGet<T>(ITezValueDescriptor descriptor, out T property) where T : class, ITezProperty
         {
-            if (m_Container.tryGet(descriptor.ID, out var result))
+            if (mContainer.tryGet(descriptor.ID, out var result))
             {
                 property = (T)result;
                 return true;
@@ -87,18 +84,18 @@
 
         public bool remove(ITezValueDescriptor descriptor)
         {
-            return m_Container.remove(descriptor);
+            return mContainer.remove(descriptor);
         }
 
         public void clearAll()
         {
-            m_Container.clear();
+            mContainer.clear();
         }
 
         public virtual void close()
         {
-            m_Container.close();
-            m_Container = null;
+            mContainer.close();
+            mContainer = null;
         }
     }
 }

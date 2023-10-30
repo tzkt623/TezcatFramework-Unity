@@ -11,7 +11,7 @@ namespace tezcat.Framework.Core
 
     public interface ITezModifier
         : ITezCloseable
-        , ITezBonusObject
+        , ITezBonusCarrier
     {
         object source { get; set; }
         TezModifierType modifierType { get; }

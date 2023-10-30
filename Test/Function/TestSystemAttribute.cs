@@ -2,7 +2,6 @@
 
 namespace tezcat.Framework.Test
 {
-
     class MyFlagAttribute : Attribute
     {
         public string name;
@@ -14,7 +13,6 @@ namespace tezcat.Framework.Test
 
         public int index = ID++;
     }
-
 
     [MyFlag(name = "Class1")]
     [MyIndex()]
@@ -30,8 +28,13 @@ namespace tezcat.Framework.Test
 
     }
 
-    public class TestSystemAttribute
+    public class TestSystemAttribute : TezBaseTest
     {
+        public TestSystemAttribute() : base("SystemAttribute")
+        {
+
+        }
+
         public void check<T>()
         {
             var objs = typeof(T).GetCustomAttributes(true);
@@ -49,7 +52,7 @@ namespace tezcat.Framework.Test
             Console.WriteLine(((MyIndexAttribute)objs[1]).index);
         }
 
-        public void run()
+        public override void run()
         {
             this.check<MyClass1>();
             this.check<MyClass2>();

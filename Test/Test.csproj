@@ -79,7 +79,7 @@
     <Compile Include="Function\TestRandomIndex.cs" />
     <Compile Include="Function\TestTag.cs" />
     <Compile Include="Function\TestTranslator.cs" />
-    <Compile Include="Function\TestValider.cs" />
+    <Compile Include="Function\TestLifeMonitor.cs" />
     <Compile Include="Function\TezBaseTest.cs" />
   </ItemGroup>
   <ItemGroup>

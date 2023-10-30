@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using tezcat.Framework.Core;
 using tezcat.Framework.Database;
+using tezcat.Framework.Utility;
 
 namespace tezcat.Framework.Game.Inventory
 {
@@ -120,7 +121,7 @@ namespace tezcat.Framework.Game.Inventory
     /// 
     /// </summary>
     public class TezInventory
-        : ITezLifeMonitor
+        : ITezLifeMonitorEntry
         , ITezCloseable
     {
         protected List<TezInventoryUniqueItemInfo> mUniqueItemList = new List<TezInventoryUniqueItemInfo>();
@@ -129,7 +130,7 @@ namespace tezcat.Framework.Game.Inventory
         protected TezInventoryBaseView mView = null;
 
         TezLifeMonitor mLifeMonitor = new TezLifeMonitor();
-        TezLifeMonitor ITezLifeMonitor.lifeMonitor => mLifeMonitor;
+        TezLifeMonitor ITezLifeMonitorEntry.lifeMonitor => mLifeMonitor;
 
         public TezInventory()
         {

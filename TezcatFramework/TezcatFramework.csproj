@@ -61,7 +61,6 @@
     <Compile Include="TezcatFramework\Game\AI\BehaviorTree\TezBTRegisterAttribute.cs" />
     <Compile Include="TezcatFramework\Core\Tag\TezTags.cs" />
     <Compile Include="TezcatFramework\Core\DataBase\Category\ITezCategoryObject.cs" />
-    <Compile Include="TezcatFramework\Core\DataBase\TezDBIDGenerator.cs" />
     <Compile Include="TezcatFramework\Core\EntitySystem\Component\TezInfoComponent.cs" />
     <Compile Include="TezcatFramework\Core\Value\Property\Lit\ITezLitProperty.cs" />
     <Compile Include="TezcatFramework\Core\Value\Property\Other\ITezModifierRefrenceProperty.cs" />
@@ -95,7 +94,6 @@
     <Compile Include="TezcatFramework\Core\DataBase\Category\TezCategorySystem.cs" />
     <Compile Include="TezcatFramework\Core\DataBase\Category\TezCategoryToken.cs" />
     <Compile Include="TezcatFramework\Core\Object\ITezCloseable.cs" />
-    <Compile Include="TezcatFramework\Core\Object\TezLifeMonitor.cs" />
     <Compile Include="TezcatFramework\Core\Value\Property\Lit\TezLitPropertyManager.cs" />
     <Compile Include="TezcatFramework\Core\Value\Property\Lit\TezLitPropertySortList.cs" />
     <Compile Include="TezcatFramework\Core\Value\TezValueSortList.cs" />
@@ -108,7 +106,6 @@
     <Compile Include="TezcatFramework\Core\TezObjectUID.cs" />
     <Compile Include="TezcatFramework\Core\Value\Property\Other\TezBindable.cs" />
     <Compile Include="TezcatFramework\Core\DataBase\TezDBID.cs" />
-    <Compile Include="TezcatFramework\Core\DataBase\TezDatabaseItemConfig.cs" />
     <Compile Include="TezcatFramework\Core\DataBase\TezDatabase.cs" />
     <Compile Include="TezcatFramework\Game\BonusSystem\ITezBonusObjectHandler.cs" />
     <Compile Include="TezcatFramework\Game\BonusSystem\TezBonusTokenCreator.cs" />
@@ -161,7 +158,6 @@
     <Compile Include="TezcatFramework\Core\Value\TezValueDescriptor.cs" />
     <Compile Include="TezcatFramework\Core\Value\TezValueWrapper.cs" />
     <Compile Include="TezcatFramework\Core\DataBase\ITezSerializable.cs" />
-    <Compile Include="TezcatFramework\Core\DataBase\TezDatabaseAssetItem.cs" />
     <Compile Include="TezcatFramework\Core\DataBase\FileIO\TezJsonReader.cs" />
     <Compile Include="TezcatFramework\Core\DataBase\FileIO\TezJsonWriter.cs" />
     <Compile Include="TezcatFramework\Core\DataBase\FileIO\TezReader.cs" />
@@ -255,9 +251,9 @@
     <Compile Include="TezcatFramework\Utility\TezSingleton.cs" />
     <Compile Include="TezcatFramework\Utility\TezSmartObject.cs" />
     <Compile Include="TezcatFramework\Utility\Container\TezTuple.cs" />
-    <Compile Include="TezcatFramework\Utility\Valider\TezBitValider.cs" />
-    <Compile Include="TezcatFramework\Utility\Valider\TezLifeDetector.cs" />
-    <Compile Include="TezcatFramework\Utility\Valider\TezStateValider.cs" />
+    <Compile Include="TezcatFramework\Utility\Monitor\TezBitValider.cs" />
+    <Compile Include="TezcatFramework\Utility\Monitor\TezLifeMonitor.cs" />
+    <Compile Include="TezcatFramework\Utility\Monitor\TezStateMonitor.cs" />
   </ItemGroup>
   <ItemGroup>
     <WCFMetadata Include="Connected Services\" />

@@ -21,17 +21,17 @@ namespace tezcat.Framework.Core
 
     public class TezPropertyListContainer : TezPropertyContainer
     {
-        List<ITezProperty> m_List = new List<ITezProperty>();
+        List<ITezProperty> mList = new List<ITezProperty>();
 
         public override T create<T>(ITezValueDescriptor descriptor)
         {
             var id = descriptor.ID;
-            if (m_List.Count <= id)
+            if (mList.Count <= id)
             {
-                m_List.AddRange(new ITezProperty[id - m_List.Count + 1]);
+                mList.AddRange(new ITezProperty[id - mList.Count + 1]);
             }
 
-            T property = (T)m_List[id];
+            T property = (T)mList[id];
             if (property != null)
             {
                 return property;
@@ -39,108 +39,114 @@ namespace tezcat.Framework.Core
 
             property = new T();
             property.descriptor = descriptor;
-            m_List[id] = property;
+            mList[id] = property;
             return property;
         }
 
         public override bool remove(ITezValueDescriptor descriptor)
         {
             var id = descriptor.ID;
-            var result = m_List[id];
+            var result = mList[id];
 
             if (result != null)
             {
                 result.close();
-                m_List[id] = null;
+                mList[id] = null;
                 return true;
             }
 
             return false;
         }
 
+        /// <summary>
+        /// 清理所有属性数据
+        /// </summary>
         public override void clear()
         {
-            for (int i = 0; i < m_List.Count; i++)
+            for (int i = 0; i < mList.Count; i++)
             {
-                m_List[i]?.close();
+                mList[i]?.close();
             }
 
-            m_List.Clear();
+            mList.Clear();
         }
 
+        /// <summary>
+        /// 清理并关闭
+        /// </summary>
         public override void close()
         {
             this.clear();
-            m_List = null;
+            mList = null;
         }
 
         public override ITezProperty get(int id)
         {
-            return m_List[id];
+            return mList[id];
         }
 
         public override ITezProperty get(ITezValueDescriptor vd)
         {
-            return m_List[vd.ID];
+            return mList[vd.ID];
         }
 
         public override bool tryGet(int id, out ITezProperty property)
         {
-            property = m_List[id];
+            property = mList[id];
             return property != null;
         }
     }
 
     public class TezPropertySortListContainer : TezPropertyContainer
     {
-        TezValueSortList<ITezProperty> m_List = new TezValueSortList<ITezProperty>(4);
+        TezValueSortList<ITezProperty> mList = new TezValueSortList<ITezProperty>(4);
 
         public override T create<T>(ITezValueDescriptor descriptor)
         {
-            if (m_List.binaryFind(descriptor.ID, out int index))
+            if (mList.binaryFind(descriptor.ID, out int index))
             {
-                return (T)m_List[index];
+                return (T)mList[index];
             }
             else
             {
                 var property = new T();
                 property.descriptor = descriptor;
-                m_List.insert(index, property);
+                mList.insert(index, property);
                 return property;
             }
         }
 
         public override void clear()
         {
-            for (int i = 0; i < m_List.count; i++)
+            for (int i = 0; i < mList.count; i++)
             {
-                m_List[i].close();
+                mList[i].close();
             }
 
-            m_List.clear();
+            mList.clear();
         }
 
         public override void close()
         {
             this.clear();
-            m_List = null;
+            mList = null;
         }
 
         public override ITezProperty get(int id)
         {
-            return m_List.binaryFind(id);
+            return mList.binaryFind(id);
         }
 
         public override ITezProperty get(ITezValueDescriptor vd)
         {
-            return m_List.binaryFind(vd.ID);
+            return mList.binaryFind(vd.ID);
         }
 
         public override bool remove(ITezValueDescriptor descriptor)
         {
-            if (m_List.binaryFind(descriptor.ID, out int index))
+            if (mList.binaryFind(descriptor.ID, out int index))
             {
-                m_List.removeAt(index);
+                mList.removeAt(index);
                 return true;
             }
 
@@ -149,9 +155,9 @@ namespace tezcat.Framework.Core
 
         public override bool tryGet(int id, out ITezProperty property)
         {
-            if (m_List.binaryFind(id, out int index))
+            if (mList.binaryFind(id, out int index))
             {
-                property = m_List[id];
+                property = mList[id];
                 return true;
             }
 

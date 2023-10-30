@@ -5,7 +5,6 @@ namespace tezcat.Framework.Test
 {
     class MyData1
         : TezDataComponent
-        , ITezDBItemObject
         , ITezCategoryObject
     {
         public int dbUID { get; private set; }
@@ -29,16 +28,6 @@ namespace tezcat.Framework.Test
         protected virtual void onInitWithData(ITezSerializable item)
         {
 
-        }
-
-        public bool compare(ITezDBItemObject dbItemObject)
-        {
-            if (this.dbUID < 0 || dbItemObject.dbUID < 0)
-            {
-                return false;
-            }
-
-            return this.dbUID == dbItemObject.dbUID;
         }
 
         public override void serialize(TezWriter writer)

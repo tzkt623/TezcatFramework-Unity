@@ -4,7 +4,7 @@ namespace tezcat.Framework.Game
 {
     public enum TezBufferType
     {
-        Attribute,
+        Property,
         Function,
         Custom
     }
@@ -19,15 +19,16 @@ namespace tezcat.Framework.Game
     {
         public object source { get; set; }
         public abstract TezBufferType bufferType { get; }
+
         public virtual void close()
         {
             this.source = null;
         }
     }
 
-    public abstract class TezAttributeBuffer : TezBuffer
+    public abstract class TezPropertyBuffer : TezBuffer
     {
-        public sealed override TezBufferType bufferType => TezBufferType.Attribute;
+        public sealed override TezBufferType bufferType => TezBufferType.Property;
         public abstract void onAdd(ITezLitProperty current_property);
         public abstract void onRemove(ITezLitProperty current_property);
     }

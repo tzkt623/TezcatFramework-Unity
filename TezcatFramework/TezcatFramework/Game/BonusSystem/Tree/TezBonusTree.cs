@@ -15,15 +15,15 @@
         where Container : TezBonusTreeContainer, new()
     {
         const int cPrimaryBegin = 0;
-        TezBonusTreeContainer m_Container = new Container();
+        TezBonusTreeContainer mContainer = new Container();
 
         /// <summary>
         /// 关闭
         /// </summary>
         public virtual void close()
         {
-            m_Container.close();
-            m_Container = null;
+            mContainer.close();
+            mContainer = null;
         }
 
         protected abstract TezBonusTreeNode onCreateNode(ITezBonusToken token);
@@ -33,10 +33,10 @@
             var id = token.tokenID;
 
             TezBonusTreeNode node = null;
-            if (!m_Container.tryGetNode(id, out node))
+            if (!mContainer.tryGetNode(id, out node))
             {
                 node = this.onCreateNode(token);
-                m_Container.addNode(id, node);
+                mContainer.addNode(id, node);
                 pre_path_node?.addChild(id);
             }
 
@@ -53,10 +53,10 @@
             var id = token.tokenID;
 
             TezBonusTreeNode node = null;
-            if (!m_Container.tryGetNode(id, out node))
+            if (!mContainer.tryGetNode(id, out node))
             {
                 node = this.onCreateNode(token);
-                m_Container.addNode(id, node);
+                mContainer.addNode(id, node);
             }
 
             return node;
@@ -69,7 +69,7 @@
 
         public TezBonusTreeNode getNode(int id)
         {
-            m_Container.tryGetNode(id, out TezBonusTreeNode node);
+            mContainer.tryGetNode(id, out TezBonusTreeNode node);
             return node;
         }
 
@@ -132,7 +132,7 @@
         /// 一般为各种Modifier
         /// 用于属性加成等系统
         /// </summary>
-        public void addBonusObject(ITezBonusObject obj)
+        public void addBonusObject(ITezBonusCarrier obj)
         {
             ///如果没有Object被注册到路径上
             ///那么就算此Modifier加入了也不会造成任何影响
@@ -145,7 +145,7 @@
             node.addBountyObject(obj);
         }
 
-        public void removeBonusObject(ITezBonusObject obj)
+        public void removeBonusObject(ITezBonusCarrier obj)
         {
             var defition = obj.bonusPath;
             int length = defition.length;

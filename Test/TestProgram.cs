@@ -22,7 +22,6 @@ namespace tezcat.Framework.Test
     class FunctionTest
     {
         List<TezBaseTest> mTestList = new List<TezBaseTest>();
-        TezBaseTest mCurrent = null;
 
         void init()
         {
@@ -86,9 +85,11 @@ namespace tezcat.Framework.Test
             mTestList.Add(new TestFieldOffset());
             mTestList.Add(new TestCategory());
             mTestList.Add(new TestBehaviorTree());
-            mTestList.Add(new TestValider());
+            mTestList.Add(new TestLifeMonitor());
             mTestList.Add(new TestGameMachine());
             mTestList.Add(new TestTranslator());
+            mTestList.Add(new TestSystemAttribute());
+            mTestList.Add(new TestBonusSystem());
         }
     }
 

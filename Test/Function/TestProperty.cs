@@ -4,7 +4,7 @@ using tezcat.Framework.Core;
 
 namespace tezcat.Framework.Test
 {
-    class MyPropertyConfig
+    public class MyPropertyConfig
     {
         public static readonly ITezValueDescriptor HullCapacity = TezValueDescriptor<MyPropertyConfig>.register("HullCapacity");
         public static readonly ITezValueDescriptor Hull = TezValueDescriptor<MyPropertyConfig>.register("Hull");
@@ -30,14 +30,14 @@ namespace tezcat.Framework.Test
         public static readonly ITezValueDescriptor JumpDistance = TezValueDescriptor<MyPropertyConfig>.register("JumpDistance");
     }
 
-    class MyValueModifierAssembleConfig : TezValueModifierAssembleConfig
+    public class MyValueModifierAssembleConfig : TezValueModifierAssembleConfig
     {
         public const byte my1 = BuildInHold + 1;
         public const byte my2 = BuildInHold + 2;
         public const byte my3 = BuildInHold + 3;
     }
 
-    class MyIntModifierCache : TezBaseValueModifierCache<int>
+    public class MyIntModifierCache : TezBaseValueModifierCache<int>
     {
         protected float m_SumBase = 0;
         protected float m_SumTotal = 0;
@@ -124,7 +124,7 @@ namespace tezcat.Framework.Test
         }
     }
 
-    class MyIntModifierCacheMinMax : MyIntModifierCache
+    public class MyIntModifierCacheMinMax : MyIntModifierCache
     {
         int m_Min;
         int m_Max;
@@ -153,7 +153,7 @@ namespace tezcat.Framework.Test
         }
     }
 
-    class MyPropertyInt : TezProperty<int>
+    public class MyPropertyInt : TezProperty<int>
     {
         public MyPropertyInt() : base(null, new MyIntModifierCache())
         {
@@ -161,12 +161,12 @@ namespace tezcat.Framework.Test
         }
     }
 
-    class MyModifier : TezValueModifier
+    public class MyModifier : TezValueModifier
     {
 
     }
 
-    class MyAgentModifier : TezAgentValueModifier
+    public class MyAgentModifier : TezAgentValueModifier
     {
         public MyAgentModifier(ITezProperty property) : base(property)
         {
@@ -174,12 +174,12 @@ namespace tezcat.Framework.Test
         }
     }
 
-    class MyPropertyManager : TezPropertyManager<TezPropertyListContainer>
+    public class MyPropertyManager : TezPropertyManager<TezPropertyListContainer>
     {
 
     }
 
-    class MyArmorPlate
+    public class MyArmorPlate
     {
         public MyPropertyManager propertyManager = new MyPropertyManager();
         public TezBonusAgent agent = new TezBonusAgent();
@@ -195,12 +195,12 @@ namespace tezcat.Framework.Test
             this.armorCapacity = this.propertyManager.getOrCreate<MyPropertyInt>(MyPropertyConfig.ArmorCapacity);
         }
 
-        private void onAddBonusObject(ITezBonusObject evt)
+        private void onAddBonusObject(ITezBonusCarrier evt)
         {
             this.propertyManager.addModifier((ITezValueModifier)evt);
         }
 
-        private void onRemoveBonusObject(ITezBonusObject evt)
+        private void onRemoveBonusObject(ITezBonusCarrier evt)
         {
             this.propertyManager.removeModifier((ITezValueModifier)evt);
         }

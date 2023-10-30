@@ -6,7 +6,7 @@ namespace tezcat.Framework.BonusSystem
     {
         public sealed override TezBonusTreeNodeType nodeType { get; } = TezBonusTreeNodeType.Leaf;
 
-        List<ITezBonusObjectHandler> m_HandlerList = new List<ITezBonusObjectHandler>();
+        List<ITezBonusObjectHandler> mHandlerList = new List<ITezBonusObjectHandler>();
 
         protected TezBonusTreeLeafNode(int id, ITezBonusTree system) : base(id, system)
         {
@@ -16,36 +16,36 @@ namespace tezcat.Framework.BonusSystem
         public override void registerAgent(ITezBonusObjectHandler handler)
         {
             base.registerAgent(handler);
-            m_HandlerList.Add(handler);
+            mHandlerList.Add(handler);
         }
 
         public override void unregisterAgent(ITezBonusObjectHandler handler)
         {
             base.unregisterAgent(handler);
-            m_HandlerList.Remove(handler);
+            mHandlerList.Remove(handler);
         }
 
-        public override void addBonusObjectToChildren(ITezBonusObject obj)
+        public override void addBonusObjectToChildren(ITezBonusCarrier obj)
         {
-            for (int i = 0; i < m_HandlerList.Count; i++)
+            for (int i = 0; i < mHandlerList.Count; i++)
             {
-                m_HandlerList[i].addBonusObject(obj);
+                mHandlerList[i].addBonusObject(obj);
             }
         }
 
-        public override void removeBonusObjectFromChildren(ITezBonusObject obj)
+        public override void removeBonusObjectFromChildren(ITezBonusCarrier obj)
         {
-            for (int i = 0; i < m_HandlerList.Count; i++)
+            for (int i = 0; i < mHandlerList.Count; i++)
             {
-                m_HandlerList[i].removeBonusObject(obj);
+                mHandlerList[i].removeBonusObject(obj);
             }
         }
 
         public override void close()
         {
             base.close();
-            m_HandlerList.Clear();
-            m_HandlerList = null;
+            mHandlerList.Clear();
+            mHandlerList = null;
         }
     }
 }

@@ -6,6 +6,7 @@ namespace tezcat.Framework.Core
     public class TezValueModifier
         : TezValueWrapper<float>
         , ITezValueModifier
+        , ITezBonusCarrier
     {
         public event TezEventExtension.Action<ITezValueModifier, float> onChanged;
 

@@ -88,7 +88,7 @@ namespace tezcat.Framework.BonusSystem
         {
             if (sTokenDict.ContainsKey(name))
             {
-                throw new Exception(string.Format("TezBonusTokenCreator<{0}> : This name [{1}] is existed", typeof(BonusMask).Name, name));
+                throw new Exception($"TezBonusTokenCreator<{typeof(BonusMask).Name}> : This name [{name}] is existed");
             }
 
             var id = sTokenList.Count;
@@ -118,7 +118,7 @@ namespace tezcat.Framework.BonusSystem
                 return token;
             }
 
-            throw new Exception(string.Format("TezBonusTokenCreator<{0}> : This name [{1}] not exist", typeof(BonusMask).Name, name));
+            throw new Exception($"TezBonusTokenCreator<{typeof(BonusMask).Name}> : This name [{name}] not exist");
         }
 
         public static TezBonusToken getToken(int index)

@@ -3,7 +3,7 @@ using tezcat.Framework.Core;
 
 namespace tezcat.Framework.Utility
 {
-    public interface ITezStateValider64 : ITezCloseable
+    public interface ITezStateMonitor64 : ITezCloseable
     {
         bool noneOf(ulong mask);
 
@@ -46,8 +46,8 @@ namespace tezcat.Framework.Utility
     /// 只是可以携带32种状态(ulong)进行验证
     /// 
     /// </summary>
-    public class TezStateValider64<UserData>
-        : ITezStateValider64
+    public class TezStateMonitor64<UserData>
+        : ITezStateMonitor64
         where UserData : class
     {
         class Data
@@ -109,7 +109,7 @@ namespace tezcat.Framework.Utility
         /// 创建一个新的Valider
         /// 以及新的共享数据
         /// </summary>
-        public TezStateValider64()
+        public TezStateMonitor64()
         {
             m_Valider = new Data();
             m_Valider.retain();
@@ -120,7 +120,7 @@ namespace tezcat.Framework.Utility
         /// 用于监视
         /// 不会新创建贡献数据
         /// </summary>
-        public TezStateValider64(TezStateValider64<UserData> entry)
+        public TezStateMonitor64(TezStateMonitor64<UserData> entry)
         {
             this.hold(entry);
         }
@@ -128,7 +128,7 @@ namespace tezcat.Framework.Utility
         /// <summary>
         /// 持有一个新的entry
         /// </summary>
-        public void hold(TezStateValider64<UserData> entry)
+        public void hold(TezStateMonitor64<UserData> entry)
         {
             m_Valider?.release();
             m_Valider = entry.m_Valider;
@@ -283,7 +283,7 @@ namespace tezcat.Framework.Utility
             m_Valider = null;
         }
 
-        bool ITezStateValider64.tryGetUserData_AllOf(ulong mask, out object userData)
+        bool ITezStateMonitor64.tryGetUserData_AllOf(ulong mask, out object userData)
         {
             if (m_Valider.allOf(mask))
             {
@@ -295,7 +295,7 @@ namespace tezcat.Framework.Utility
             return false;
         }
 
-        bool ITezStateValider64.tryGetUserData_AnyOf(ulong mask, out object userData)
+        bool ITezStateMonitor64.tryGetUserData_AnyOf(ulong mask, out object userData)
         {
             if (m_Valider.anyOf(mask))
             {
@@ -307,7 +307,7 @@ namespace tezcat.Framework.Utility
             return false;
         }
 
-        bool ITezStateValider64.tryGetUserData_NoneOf(ulong mask, out object userData)
+        bool ITezStateMonitor64.tryGetUserData_NoneOf(ulong mask, out object userData)
         {
             if (m_Valider.noneOf(mask))
             {

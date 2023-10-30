@@ -11,7 +11,7 @@ namespace tezcat.Framework.BonusSystem
 
         public int childCount
         {
-            get { return m_Children.count; }
+            get { return mChildren.count; }
         }
 
         /// <summary>
@@ -19,7 +19,7 @@ namespace tezcat.Framework.BonusSystem
         /// 用于查询
         /// 这个表只有在addBountyObjectToChildren时会用到
         /// </summary>
-        TezStepArray<int> m_Children = new TezStepArray<int>(1);
+        TezStepArray<int> mChildren = new TezStepArray<int>(1);
 
         protected TezBonusTreePathNode(int id, ITezBonusTree tree) : base(id, tree)
         {
@@ -28,23 +28,23 @@ namespace tezcat.Framework.BonusSystem
 
         public void addChild(int id)
         {
-            m_Children.add(id);
+            mChildren.add(id);
         }
 
-        public override void addBonusObjectToChildren(ITezBonusObject obj)
+        public override void addBonusObjectToChildren(ITezBonusCarrier obj)
         {
             for (int i = 0; i < this.childCount; i++)
             {
-                var node = this.tree.getNode(m_Children[i]);
+                var node = this.tree.getNode(mChildren[i]);
                 node.addBonusObjectToChildren(obj);
             }
         }
 
-        public override void removeBonusObjectFromChildren(ITezBonusObject obj)
+        public override void removeBonusObjectFromChildren(ITezBonusCarrier obj)
         {
             for (int i = 0; i < this.childCount; i++)
             {
-                var node = this.tree.getNode(m_Children[i]);
+                var node = this.tree.getNode(mChildren[i]);
                 node.removeBonusObjectFromChildren(obj);
             }
         }
@@ -52,8 +52,8 @@ namespace tezcat.Framework.BonusSystem
         public override void close()
         {
             base.close();
-            m_Children.close();
-            m_Children = null;
+            mChildren.close();
+            mChildren = null;
         }
     }
 }

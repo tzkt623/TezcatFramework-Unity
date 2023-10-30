@@ -36,7 +36,7 @@
         /// <summary>
         /// 系统预留位置
         /// </summary>
-        public const byte BuildInHold = 127;
+        public const byte BuildInHold = 64;
     }
 
     /// <summary>

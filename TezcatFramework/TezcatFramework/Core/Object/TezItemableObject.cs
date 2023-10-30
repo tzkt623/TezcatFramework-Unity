@@ -34,6 +34,10 @@ namespace tezcat.Framework.Core
     {
         protected TezGameItemInfo mItemInfo = null;
         public TezGameItemInfo itemInfo => mItemInfo;
+
+        /// <summary>
+        /// 物品ID
+        /// </summary>
         public TezItemID itemID => mItemInfo.itemID;
 
         /// <summary>
@@ -44,7 +48,7 @@ namespace tezcat.Framework.Core
         /// <summary>
         /// 模板物品
         /// </summary>
-        public bool isPrototype => itemInfo.isPrototype(this);
+        public bool isPrototype => mItemInfo.isPrototype(this);
 
         public void init(TezItemableObject template, TezGameItemInfo itemInfo)
         {
@@ -187,7 +191,7 @@ namespace tezcat.Framework.Core
     /// </summary>
     public abstract class TezSharedObject : TezItemableObject
     {
-        public override TezItemableObject duplicate()
+        public sealed override TezItemableObject duplicate()
         {
             mItemInfo.addRef();
             return this.share();
@@ -222,7 +226,7 @@ namespace tezcat.Framework.Core
     /// </summary>
     public abstract class TezUniqueObject : TezItemableObject
     {
-        public override TezItemableObject duplicate()
+        public sealed override TezItemableObject duplicate()
         {
             var newinfo = mItemInfo.remodify();
 

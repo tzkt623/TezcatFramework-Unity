@@ -106,6 +106,11 @@ namespace tezcat.Framework.Game.Inventory
 
         public void page(int pageIndex)
         {
+            if (mCurrentPage < 0 || mCurrentPage > mMaxPage)
+            {
+                return;
+            }
+
             mCurrentPage = pageIndex;
             onPageChanged?.Invoke(mCurrentPage, mMaxPage);
 

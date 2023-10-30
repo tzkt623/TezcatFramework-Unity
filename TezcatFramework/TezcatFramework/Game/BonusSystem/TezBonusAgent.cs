@@ -3,6 +3,13 @@ using tezcat.Framework.Extension;
 
 namespace tezcat.Framework.BonusSystem
 {
+    public interface ITezBonusAgentEntry
+    {
+        TezBonusAgent bonusAgent { get; }
+        void onRemoveBonusObject(ITezBonusCarrier bonusObject);
+        void onAddBonusObject(ITezBonusCarrier bonusObject);
+    }
+
     /// <summary>
     /// 加成代理
     /// 用于需要被加成的对象
@@ -15,15 +22,15 @@ namespace tezcat.Framework.BonusSystem
         TezBonusPath mBonusPath = null;
         public TezBonusPath bonusPath => mBonusPath;
 
-        TezEventExtension.Action<ITezBonusObject> mOnAddBonusObject = null;
-        TezEventExtension.Action<ITezBonusObject> mOnRemoveBonusObject = null;
+        TezEventExtension.Action<ITezBonusCarrier> mOnAddBonusObject = null;
+        TezEventExtension.Action<ITezBonusCarrier> mOnRemoveBonusObject = null;
 
         /// <summary>
         /// 
         /// </summary>
         /// <param name="onAddBonusObject"></param>
         /// <param name="onRemoveBonusObject"></param>
-        public void setListener(TezEventExtension.Action<ITezBonusObject> onAddBonusObject, TezEventExtension.Action<ITezBonusObject> onRemoveBonusObject)
+        public void setListener(TezEventExtension.Action<ITezBonusCarrier> onAddBonusObject, TezEventExtension.Action<ITezBonusCarrier> onRemoveBonusObject)
         {
             mOnAddBonusObject = onAddBonusObject;
             mOnRemoveBonusObject = onRemoveBonusObject;
@@ -42,7 +49,7 @@ namespace tezcat.Framework.BonusSystem
         /// 被动接收调用
         /// </summary>
         /// <param name="obj"></param>
-        public void addBonusObject(ITezBonusObject obj)
+        public void addBonusObject(ITezBonusCarrier obj)
         {
             mOnAddBonusObject(obj);
         }
@@ -51,7 +58,7 @@ namespace tezcat.Framework.BonusSystem
         /// 被动接收调用
         /// </summary>
         /// <param name="obj"></param>
-        public void removeBonusObject(ITezBonusObject obj)
+        public void removeBonusObject(ITezBonusCarrier obj)
         {
             mOnRemoveBonusObject(obj);
         }

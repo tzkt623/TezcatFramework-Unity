@@ -1,5 +1,6 @@
 ﻿using System;
 using tezcat.Framework.BonusSystem;
+using tezcat.Framework.Core;
 
 namespace tezcat.Framework.Test
 {
@@ -8,6 +9,9 @@ namespace tezcat.Framework.Test
     /// </summary>
     public class MyPathes
     {
+        /// <summary>
+        /// 
+        /// </summary>
         public static readonly TezBonusToken Equipment = TezBonusTokenCreator<MyPathes>.createToken("Equipment", TezBonusTokenType.Root, null);
 
         public static readonly TezBonusToken Turrent = TezBonusTokenCreator<MyPathes>.createToken("Turrent", TezBonusTokenType.Path, Equipment);
@@ -17,8 +21,15 @@ namespace tezcat.Framework.Test
         public static readonly TezBonusToken ArmorPlate = TezBonusTokenCreator<MyPathes>.createToken("ArmorPlate", TezBonusTokenType.Leaf, Armor);
         public static readonly TezBonusToken ArmorRepairer = TezBonusTokenCreator<MyPathes>.createToken("ArmorRepairer", TezBonusTokenType.Leaf, Armor);
 
+        /// <summary>
+        /// 
+        /// </summary>
+        public static readonly TezBonusToken Unit = TezBonusTokenCreator<MyPathes>.createToken("Unit", TezBonusTokenType.Root, null);
+        public static readonly TezBonusToken Ship = TezBonusTokenCreator<MyPathes>.createToken("Ship", TezBonusTokenType.Leaf, Unit);
 
-
+        /// <summary>
+        /// 
+        /// </summary>
         public static readonly TezBonusToken Battle = TezBonusTokenCreator<MyPathes>.createToken("Battle", TezBonusTokenType.Root, null);
 
         public static readonly TezBonusToken Melee = TezBonusTokenCreator<MyPathes>.createToken("Melee", TezBonusTokenType.Path, Battle);
@@ -42,7 +53,6 @@ namespace tezcat.Framework.Test
         public static readonly TezBonusToken Shoot = TezBonusTokenCreator<MySkillPathes>.createToken("Shoot", TezBonusTokenType.Leaf, Range);
     }
 
-
     public class MyBountyLeaf : TezBonusTreeLeafNode
     {
         public MyBountyLeaf(int id, ITezBonusTree system) : base(id, system)
@@ -58,7 +68,6 @@ namespace tezcat.Framework.Test
 
         }
     }
-
 
     public class MyBountyTree : TezBonusTree<TezBonusTreeListContainer>
     {
@@ -77,60 +86,224 @@ namespace tezcat.Framework.Test
         }
     }
 
-    public class MyAddAttack : ITezBonusObject
+    public class MyIntBonus : ITezBonusCarrier
     {
-        public TezBonusPath bonusPath { get; } = TezBonusTokenCreator<MyPathes>.getPath(MyPathes.Turrent);
-        public int addAttack = 5;
+        public string name;
+        public TezBonusPath bonusPath { get; set; }
+        public int value = 5;
     }
 
-    public class MyLaserTurrent
+    public class MyPropertyBonus : TezValueModifier
     {
-        public int attack;
-        public TezBonusAgent agent = new TezBonusAgent();
-        public TezBonusPath bonusPath = TezBonusTokenCreator<MyPathes>.getPath(MyPathes.LaserTurrent);
+
+    }
+
+    public class MyLaserTurrent : ITezBonusAgentEntry
+    {
+        public TezBonusAgent bonusAgent { get; } = new TezBonusAgent();
+
+        public int attack = 10;
+        public int power = 10;
+        public int cooldown = 10;
 
         public void init()
         {
-            agent.setPath(this.bonusPath);
-            agent.setListener(this.onAddBountyObject, this.onRemoveBountyObject);
+            bonusAgent.setPath(TezBonusTokenCreator<MyPathes>.getPath(MyPathes.LaserTurrent));
+            bonusAgent.setListener(((ITezBonusAgentEntry)this).onAddBonusObject, ((ITezBonusAgentEntry)this).onRemoveBonusObject);
         }
 
-        private void onAddBountyObject(ITezBonusObject obj)
+        public void log()
         {
-            MyAddAttack mobj = (MyAddAttack)obj;
-            attack += mobj.addAttack;
+            Console.WriteLine($"Attack: {attack}");
+            Console.WriteLine($"Power: {power}");
+            Console.WriteLine($"Cooldown: {cooldown}");
         }
 
-        private void onRemoveBountyObject(ITezBonusObject obj)
+        public void close()
         {
-            MyAddAttack mobj = (MyAddAttack)obj;
-            attack -= mobj.addAttack;
+            this.bonusAgent.close();
+        }
+
+        void ITezBonusAgentEntry.onAddBonusObject(ITezBonusCarrier obj)
+        {
+            MyIntBonus mobj = (MyIntBonus)obj;
+            if (mobj.name == "attack")
+            {
+                this.attack += mobj.value;
+            }
+
+            if (mobj.name == "power")
+            {
+                this.power += mobj.value;
+            }
+
+            if (mobj.name == "cooldown")
+            {
+                this.cooldown += mobj.value;
+            }
+        }
+
+        void ITezBonusAgentEntry.onRemoveBonusObject(ITezBonusCarrier obj)
+        {
+            MyIntBonus mobj = (MyIntBonus)obj;
+            if (mobj.name == "attack")
+            {
+                this.attack -= mobj.value;
+            }
+
+            if (mobj.name == "power")
+            {
+                this.power -= mobj.value;
+            }
+
+            if (mobj.name == "cooldown")
+            {
+                this.cooldown -= mobj.value;
+            }
         }
     }
 
-    public class MyUnit
+    public class MyShip : ITezBonusAgentEntry
     {
         MyBountyTree tree = new MyBountyTree();
         MyLaserTurrent laserTurrent = new MyLaserTurrent();
 
+        public MyPropertyManager propertyManager = new MyPropertyManager();
+        MyPropertyInt hullCapacity = null;
+        MyPropertyInt armorCapacity = null;
+        MyPropertyInt shieldCapacity = null;
+
+        public TezBonusAgent bonusAgent { get; } = new TezBonusAgent();
+
         public void init()
         {
-            tree.registerAgent(this.laserTurrent.agent);
+            this.laserTurrent.init();
+
+            this.bonusAgent.setPath(TezBonusTokenCreator<MyPathes>.getPath(MyPathes.Ship));
+            this.bonusAgent.setListener(((ITezBonusAgentEntry)this).onAddBonusObject, ((ITezBonusAgentEntry)this).onRemoveBonusObject);
+
+            tree.registerAgent(this.bonusAgent);
+            tree.registerAgent(this.laserTurrent.bonusAgent);
+
+            this.hullCapacity = this.propertyManager.getOrCreate<MyPropertyInt>(MyPropertyConfig.HullCapacity);
+            this.hullCapacity.baseValue = 100;
+
+            this.armorCapacity = this.propertyManager.getOrCreate<MyPropertyInt>(MyPropertyConfig.ArmorCapacity);
+            this.armorCapacity.baseValue = 300;
+
+            this.shieldCapacity = this.propertyManager.getOrCreate<MyPropertyInt>(MyPropertyConfig.ShieldCapacity);
+            this.shieldCapacity.baseValue = 50;
         }
 
-        public void addObject()
+        public void log()
         {
-            tree.addBonusObject(new MyAddAttack());
+            Console.WriteLine($"{this.hullCapacity.name}: {this.hullCapacity.value}");
+            Console.WriteLine($"{this.armorCapacity.name}: {this.armorCapacity.value}");
+            Console.WriteLine($"{this.shieldCapacity.name}: {this.shieldCapacity.value}");
+        }
+
+        public void addBonus()
+        {
+            tree.addBonusObject(new MyIntBonus()
+            {
+                bonusPath = TezBonusTokenCreator<MyPathes>.getPath(MyPathes.LaserTurrent),
+                name = "attack",
+                value = 5
+            });
+
+            tree.addBonusObject(new MyIntBonus()
+            {
+                bonusPath = TezBonusTokenCreator<MyPathes>.getPath(MyPathes.LaserTurrent),
+                name = "power",
+                value = -2
+            });
+
+            tree.addBonusObject(new MyIntBonus()
+            {
+                bonusPath = TezBonusTokenCreator<MyPathes>.getPath(MyPathes.LaserTurrent),
+                name = "cooldown",
+                value = -1
+            });
+
+            laserTurrent.log();
+        }
+
+        public void addModifierBonus()
+        {
+            tree.addBonusObject(new MyPropertyBonus()
+            {
+                modifierConfig = new TezValueModifierConfig()
+                {
+                    assemble = TezValueModifierAssembleConfig.SumBase,
+                    target = MyPropertyConfig.HullCapacity
+                },
+                bonusPath = TezBonusTokenCreator<MyPathes>.getPath(MyPathes.Ship),
+                source = this,
+                value = 30
+            });
+
+            tree.addBonusObject(new MyPropertyBonus()
+            {
+                modifierConfig = new TezValueModifierConfig()
+                {
+                    assemble = TezValueModifierAssembleConfig.SumBase,
+                    target = MyPropertyConfig.ArmorCapacity
+                },
+                bonusPath = TezBonusTokenCreator<MyPathes>.getPath(MyPathes.Ship),
+                source = this,
+                value = -50
+            });
+
+            tree.addBonusObject(new MyPropertyBonus()
+            {
+                modifierConfig = new TezValueModifierConfig()
+                {
+                    assemble = TezValueModifierAssembleConfig.SumBase,
+                    target = MyPropertyConfig.ShieldCapacity
+                },
+                bonusPath = TezBonusTokenCreator<MyPathes>.getPath(MyPathes.Ship),
+                source = this,
+                value = 10
+            });
+
+            this.log();
+        }
+
+        public void close()
+        {
+            this.tree.close();
+            this.bonusAgent.close();
+            this.laserTurrent.close();
+            this.propertyManager.close();
+        }
+
+        void ITezBonusAgentEntry.onRemoveBonusObject(ITezBonusCarrier carrier)
+        {
+            this.propertyManager.removeModifier((ITezValueModifier)carrier);
+        }
+
+        void ITezBonusAgentEntry.onAddBonusObject(ITezBonusCarrier carrier)
+        {
+            this.propertyManager.addModifier((ITezValueModifier)carrier);
         }
     }
 
-    class TestBountySystem
+    class TestBonusSystem : TezBaseTest
     {
-        public void test()
+
+        public TestBonusSystem() : base("BonusSystem")
         {
-            MyUnit myUnit = new MyUnit();
+        }
+
+        public override void run()
+        {
+            MyShip myUnit = new MyShip();
             myUnit.init();
-            myUnit.addObject();
+
+            myUnit.addBonus();
+            myUnit.addModifierBonus();
+
+            myUnit.close();
         }
     }
 }
