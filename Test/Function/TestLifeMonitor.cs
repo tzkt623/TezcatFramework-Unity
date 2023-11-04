@@ -49,6 +49,14 @@ namespace tezcat.Framework.Test
 
             }
         }
+
+        public void close()
+        {
+#if DeleteThisDefineToOtherMode
+#else
+            this.lifeMonitor2.close();
+#endif
+        }
     }
 
     public class Missle
@@ -113,15 +121,32 @@ namespace tezcat.Framework.Test
         {
             Console.WriteLine("Find Other Target......");
         }
+
+        public void close()
+        {
+
+        }
     }
 
     public class TestLifeMonitor : TezBaseTest
     {
-        Ship mShip = new Ship();
-        Missle mMissle = new Missle();
+        Ship mShip = null;
+        Missle mMissle = null;
 
         public TestLifeMonitor() : base("LifeMonitor")
         {
+        }
+
+        public override void close()
+        {
+            mShip.close();
+            mMissle.close();
+        }
+
+        public override void init()
+        {
+            mShip = new Ship();
+            mMissle = new Missle();
             mMissle.setTarget(mShip);
         }
 

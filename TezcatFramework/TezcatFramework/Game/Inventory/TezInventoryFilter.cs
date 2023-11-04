@@ -76,7 +76,7 @@ namespace tezcat.Framework.Game.Inventory
         }
 
         #region Tool
-        public const string DefaultFilter = "DefaultFilter";
+        public const string DefaultFilter = "Default";
         static List<BaseFilter> sFilters = new List<BaseFilter>()
         {
             new Filter_Null(DefaultFilter)
@@ -114,11 +114,13 @@ namespace tezcat.Framework.Game.Inventory
         public void setFilter(int index)
         {
             mCurrentFilter = sFilters[index];
+            onFilterChanged?.Invoke();
         }
 
         public void setFilter(string name)
         {
             mCurrentFilter = sFilters.Find((BaseFilter filter) => filter.name == name);
+            onFilterChanged?.Invoke();
         }
 
         public bool filter(ITezInventoryViewSlotData slotData)

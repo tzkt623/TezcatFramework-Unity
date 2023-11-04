@@ -290,20 +290,29 @@ namespace tezcat.Framework.Test
 
     class TestBonusSystem : TezBaseTest
     {
+        MyShip myUnit = null;
 
         public TestBonusSystem() : base("BonusSystem")
         {
         }
 
+        public override void close()
+        {
+            myUnit.close();
+            myUnit = null;
+        }
+
+        public override void init()
+        {
+            myUnit = new MyShip();
+            myUnit.init();
+        }
+
         public override void run()
         {
-            MyShip myUnit = new MyShip();
-            myUnit.init();
-
             myUnit.addBonus();
             myUnit.addModifierBonus();
 
-            myUnit.close();
         }
     }
 }

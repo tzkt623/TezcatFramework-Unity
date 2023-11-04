@@ -21,6 +21,11 @@ namespace tezcat.Framework.Game.Inventory
             this.data = null;
         }
 
+        public void clear()
+        {
+            this.data = null;
+        }
+
         public virtual void pick()
         {
 

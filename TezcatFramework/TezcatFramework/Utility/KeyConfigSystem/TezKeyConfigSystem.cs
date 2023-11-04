@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using tezcat.Framework.Core;
 using tezcat.Framework.Database;
 using tezcat.Framework.Extension;
 
@@ -11,22 +12,40 @@ namespace tezcat.Framework.Utility
     /// 具体使用方法看TestKeyConfig
     /// 
     /// </summary>
-    public class TezKeyConfigManager
+    public class TezKeyConfigManager : ITezCloseable
     {
-        public event TezEventExtension.Action<TezKeyWrapper> onPrepare;
-        public event TezEventExtension.Action<TezKeyWrapper> onOK;
-        public event TezEventExtension.Action<TezKeyWrapper> onCancel;
+        public event TezEventExtension.Action<TezKeyWrapper> evtPrepare;
+        public event TezEventExtension.Action<TezKeyWrapper> evtOK;
+        public event TezEventExtension.Action<TezKeyWrapper> evtCancel;
 
-        public bool isWaitingChangeKey { get { return m_ChangeKey != null; } }
+        public bool isWaitingChangeKey { get { return mChangeKey != null; } }
 
-        List<TezKeyConfigLayer> m_List = new List<TezKeyConfigLayer>();
-        Dictionary<string, TezKeyConfigLayer> m_Dic = new Dictionary<string, TezKeyConfigLayer>();
+        List<TezKeyConfigLayer> mList = new List<TezKeyConfigLayer>();
+        Dictionary<string, TezKeyConfigLayer> mDict = new Dictionary<string, TezKeyConfigLayer>();
 
-        TezKeyWrapper m_ChangeKey = null;
+        TezKeyWrapper mChangeKey = null;
+
+        public virtual void close()
+        {
+            for (int i = 0; i < mList.Count; i++)
+            {
+                mList[i].close();
+            }
+            mList.Clear();
+            mDict.Clear();
+
+            mList = null;
+            mDict = null;
+            mChangeKey = null;
+
+            this.evtPrepare = null;
+            this.evtOK = null;
+            this.evtCancel = null;
+        }
 
         public TezKeyConfigLayer getOrCreateConfigLayer(string layerName)
         {
-            if (!m_Dic.TryGetValue(layerName, out TezKeyConfigLayer configLayer))
+            if (!mDict.TryGetValue(layerName, out TezKeyConfigLayer configLayer))
             {
                 configLayer = this.createConfigLayer();
                 this.addConfig(layerName, configLayer);
@@ -37,9 +56,9 @@ namespace tezcat.Framework.Utility
 
         private void addConfig(string layerName, TezKeyConfigLayer configLayer)
         {
-            configLayer.index = m_List.Count;
-            m_List.Add(configLayer);
-            m_Dic.Add(layerName, configLayer);
+            configLayer.index = mList.Count;
+            mList.Add(configLayer);
+            mDict.Add(layerName, configLayer);
         }
 
         public void resetToDefault(TezReader reader)
@@ -50,7 +69,7 @@ namespace tezcat.Framework.Utility
         public void resetToDefault(TezReader reader, string layerName)
         {
             reader.beginObject(layerName);
-            m_Dic[layerName].resetToDefault(reader);
+            mDict[layerName].resetToDefault(reader);
             reader.endObject(layerName);
         }
 
@@ -61,7 +80,7 @@ namespace tezcat.Framework.Utility
 
         public void setChangeKey(string layerName, string configName, int index)
         {
-            this.setChangeKey(m_Dic[layerName].configs[configName].getWrapper(index));
+            this.setChangeKey(mDict[layerName].configs[configName].getWrapper(index));
         }
 
         public void setChangeKey(TezKeyWrapper wrapper)
@@ -75,28 +94,28 @@ namespace tezcat.Framework.Utility
 
         private void resetChangeKey()
         {
-            m_ChangeKey.onPrepare -= onChangeKeyPrepare;
-            m_ChangeKey.onSave -= onChangeKeySave;
-            m_ChangeKey.onCancel -= onChangeKeyCancel;
-            m_ChangeKey = null;
+            mChangeKey.onPrepare -= onChangeKeyPrepare;
+            mChangeKey.onSave -= onChangeKeySave;
+            mChangeKey.onCancel -= onChangeKeyCancel;
+            mChangeKey = null;
         }
 
         protected virtual void onChangeKeyCancel(TezKeyWrapper wrapper)
         {
             this.resetChangeKey();
-            onCancel?.Invoke(wrapper);
+            evtCancel?.Invoke(wrapper);
         }
 
         protected virtual void onChangeKeySave(TezKeyWrapper wrapper)
         {
             this.resetChangeKey();
-            onOK?.Invoke(wrapper);
+            evtOK?.Invoke(wrapper);
         }
 
         protected virtual void onChangeKeyPrepare(TezKeyWrapper wrapper)
         {
-            m_ChangeKey = wrapper;
-            onPrepare?.Invoke(wrapper);
+            mChangeKey = wrapper;
+            evtPrepare?.Invoke(wrapper);
         }
 
         /// <summary>
@@ -104,13 +123,13 @@ namespace tezcat.Framework.Utility
         /// </summary>
         public void waitingChangeKey()
         {
-            m_ChangeKey.waitingKey();
+            mChangeKey.waitingKey();
         }
 
         #region SaveLoad
         public void writeToSave(TezWriter writer)
         {
-            foreach (var pair in m_Dic)
+            foreach (var pair in mDict)
             {
                 writer.beginObject(pair.Key);
                 pair.Value.writeToSave(writer);
@@ -124,11 +143,10 @@ namespace tezcat.Framework.Utility
             foreach (var layer_name in layer_names)
             {
                 reader.beginObject(layer_name);
-                m_Dic[layer_name].readFromSave(reader);
+                mDict[layer_name].readFromSave(reader);
                 reader.endObject(layer_name);
             }
         }
         #endregion
-
     }
 }

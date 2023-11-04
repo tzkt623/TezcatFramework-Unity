@@ -7,6 +7,15 @@ namespace tezcat.Framework.Test
     {
         public TestTranslator() : base("Translator")
         {
+        }
+
+        public override void close()
+        {
+            TezTranslator.clearConfig();
+        }
+
+        public override void init()
+        {
             TezTranslator.loadConfig(Path.root + "Localization");
         }
 

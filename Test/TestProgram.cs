@@ -45,29 +45,45 @@ namespace tezcat.Framework.Test
             this.register();
             this.loadRes();
 
-
-            Console.WriteLine("<======== Choose Test ========>");
-            for (int i = 0; i < mTestList.Count; i++)
-            {
-                Console.WriteLine($"{i}.{mTestList[i].name}");
-            }
-
             while (true)
             {
-                int index = this.choose();
+                var index = this.choose();
                 if (index != -1)
                 {
+                    Console.ForegroundColor = ConsoleColor.Cyan;
+                    Console.WriteLine($"<=== Enter {index}.{mTestList[index].name} Test ===>");
+                    mTestList[index].init();
                     mTestList[index].run();
+                    mTestList[index].close();
                 }
+
+                Console.ResetColor();
+                Console.WriteLine("Press Any Key to Continue");
+                Console.ReadKey();
             }
         }
 
         int choose()
         {
-            Console.WriteLine("<=============================>");
+            Console.Clear();
+            Console.ForegroundColor = ConsoleColor.DarkGreen;
+            Console.WriteLine("<======== Choose Test ========>");
+            for (int i = 0; i < mTestList.Count; i++)
+            {
+                Console.WriteLine($"{i}.{mTestList[i].name}");
+            }
             Console.Write("Number:");
             string index_str = Console.ReadLine();
-            int index = int.Parse(index_str);
+
+            int index;
+            try
+            {
+                index = int.Parse(index_str);
+            }
+            catch (Exception e)
+            {
+                index = -1;
+            }
 
             if (index < mTestList.Count)
             {

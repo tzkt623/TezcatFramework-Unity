@@ -265,10 +265,6 @@ namespace tezcat.Framework.Test
 
             myUnit2.tree.addBonusObject(myAgentModifier);
             Console.WriteLine(string.Format("Armor: {0}", myUnit2.armorPlate.armorCapacity.value));
-
-
-
-            Console.ReadKey();
         }
     }
 }

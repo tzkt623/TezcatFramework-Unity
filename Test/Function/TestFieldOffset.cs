@@ -41,13 +41,21 @@ namespace tezcat.Framework.Test
             //             mDBID = -1;
             //             mModifiedID = -1;
 
-            mField.mItemID = -1;
 
             Console.WriteLine(mField.mItemID);
             Console.WriteLine(mField.mDBID);
             Console.WriteLine(mField.mModifiedID);
 //            Console.WriteLine((1L << 32) | 1L);
-            Console.Read();
+        }
+
+        public override void init()
+        {
+            mField.mItemID = -1;
+        }
+
+        public override void close()
+        {
+            mField = null;
         }
     }
 }

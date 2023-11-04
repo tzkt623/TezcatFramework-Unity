@@ -57,12 +57,24 @@ namespace tezcat.Framework.Utility
             mMetaData = entry.lifeMonitor.metaData;
         }
 
-        public bool tryUse<T>(out T result) where T : class
+        public bool tryGetObject(out object result)
         {
             if (mMetaData.managedObject != null)
             {
-                result = (T)mMetaData.managedObject;
+                result = mMetaData.managedObject;
                 return true;
+            }
+
+            result = null;
+            return false;
+        }
+
+        public bool tryGetObject<T>(out T result) where T : class
+        {
+            if (mMetaData.managedObject != null)
+            {
+                result = mMetaData.managedObject as T;
+                return result != null;
             }
 
             result = null;
@@ -94,13 +106,13 @@ namespace tezcat.Framework.Utility
     /// </para>
     /// 
     /// </summary>
-    public class TezLifeMonitor<UserData> where UserData : class
+    public class TezLifeMonitor<UserType> where UserType : class
     {
         class MetaData
         {
             int mRef = 0;
             public bool valid = false;
-            public UserData userData = null;
+            public UserType managedObject = null;
 
             public MetaData() { }
 
@@ -114,7 +126,7 @@ namespace tezcat.Framework.Utility
                 mRef--;
                 if (mRef == 0)
                 {
-                    this.userData = null;
+                    this.managedObject = null;
                 }
             }
         }
@@ -124,7 +136,7 @@ namespace tezcat.Framework.Utility
         /// <summary>
         /// 
         /// </summary>
-        public UserData owner => mMetaData.userData;
+        public UserType owner => mMetaData.managedObject;
 
         /// <summary>
         /// 是否有效
@@ -135,11 +147,11 @@ namespace tezcat.Framework.Utility
         /// 创建一个新的Detector
         /// 以及新的共享数据
         /// </summary>
-        public TezLifeMonitor(UserData userData)
+        public TezLifeMonitor(UserType userData)
         {
             mMetaData = new MetaData()
             {
-                userData = userData,
+                managedObject = userData,
                 valid = userData == null ? false : true
             };
             mMetaData.retain();
@@ -150,7 +162,7 @@ namespace tezcat.Framework.Utility
         /// 用于监视
         /// 不会新创建贡献数据
         /// </summary>
-        public TezLifeMonitor(TezLifeMonitor<UserData> other)
+        public TezLifeMonitor(TezLifeMonitor<UserType> other)
         {
             this.hold(other);
         }
@@ -158,7 +170,7 @@ namespace tezcat.Framework.Utility
         /// <summary>
         /// 持有一个新的Detector
         /// </summary>
-        public void hold(TezLifeMonitor<UserData> other)
+        public void hold(TezLifeMonitor<UserType> other)
         {
             mMetaData?.release();
             mMetaData = other.mMetaData;
@@ -170,15 +182,27 @@ namespace tezcat.Framework.Utility
         /// 如果数据失效
         /// 则获得null
         /// </summary>
-        public bool tryGetUserData(out UserData userData)
+        public bool tryGetObject(out UserType result)
         {
             if (mMetaData.valid)
             {
-                userData = mMetaData.userData;
+                result = mMetaData.managedObject;
                 return true;
             }
 
-            userData = null;
+            result = null;
+            return false;
+        }
+
+        public bool tryGetObject<T>(out T result) where T : class, UserType
+        {
+            if (mMetaData.valid)
+            {
+                result = mMetaData.managedObject as T;
+                return result != null;
+            }
+
+            result = null;
             return false;
         }
 

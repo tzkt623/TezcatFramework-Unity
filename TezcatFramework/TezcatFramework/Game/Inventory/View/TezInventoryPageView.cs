@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using tezcat.Framework.Extension;
 using tezcat.Framework.Utility;
 
@@ -11,8 +12,14 @@ namespace tezcat.Framework.Game.Inventory
     {
         /// <summary>
         /// 通单个知槽位刷新
+        /// <需要刷新的数据,当前索引>
         /// </summary>
         public event TezEventExtension.Action<TezInventoryViewSlot, int> onSlotRefresh;
+
+
+        /// <summary>
+        /// <当前页码,最大页码>
+        /// </summary>
         public event TezEventExtension.Action<int, int> onPageChanged;
 
         List<ITezInventoryViewSlotData> mDataSlotList = new List<ITezInventoryViewSlotData>();
@@ -106,7 +113,7 @@ namespace tezcat.Framework.Game.Inventory
 
         public void page(int pageIndex)
         {
-            if (mCurrentPage < 0 || mCurrentPage > mMaxPage)
+            if (pageIndex < 0 || pageIndex > mMaxPage)
             {
                 return;
             }
@@ -137,6 +144,11 @@ namespace tezcat.Framework.Game.Inventory
             mDataSlotList.Clear();
             mFreeIndex.Clear();
 
+            for (int i = 0; i < mSlots.count; i++)
+            {
+                mSlots[i].clear();
+            }
+
             for (int i = 0; i < mUniqueItems.Count; i++)
             {
                 var data = mUniqueItems[i];
@@ -144,6 +156,10 @@ namespace tezcat.Framework.Game.Inventory
                 {
                     data.viewIndex = mDataSlotList.Count;
                     mDataSlotList.Add(data);
+                }
+                else
+                {
+                    data.viewIndex = -1;
                 }
             }
 
@@ -157,6 +173,10 @@ namespace tezcat.Framework.Game.Inventory
                     {
                         data.viewIndex = mDataSlotList.Count;
                         mDataSlotList.Add(data);
+                    }
+                    else
+                    {
+                        data.viewIndex = -1;
                     }
                 }
             }
@@ -223,6 +243,11 @@ namespace tezcat.Framework.Game.Inventory
 
         public override void removeViewSlotData(ITezInventoryViewSlotData data)
         {
+            if(data.viewIndex == -1)
+            {
+                return;
+            }
+
             mFreeIndex.Add(data.viewIndex);
             mFreeIndexDirty = true;
 
@@ -242,6 +267,15 @@ namespace tezcat.Framework.Game.Inventory
             if (this.inPageRange(viewIndex))
             {
                 onSlotRefresh?.Invoke(mSlots[viewIndex - mBeginPos], viewIndex - mBeginPos);
+            }
+        }
+
+        public override void debug()
+        {
+            Console.WriteLine("Debug Being..............");
+            for (int i = 0; i < mSlots.capacity; i++)
+            {
+                onSlotRefresh?.Invoke(mSlots[i], i);
             }
         }
     }

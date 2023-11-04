@@ -52,12 +52,18 @@ namespace tezcat.Framework.Test
             Console.WriteLine(((MyIndexAttribute)objs[1]).index);
         }
 
+        public override void close()
+        {
+        }
+
+        public override void init()
+        {
+        }
+
         public override void run()
         {
             this.check<MyClass1>();
             this.check<MyClass2>();
-
-            Console.ReadKey();
         }
     }
 }

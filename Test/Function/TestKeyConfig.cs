@@ -15,10 +15,10 @@ namespace tezcat.Framework.Test
 
         public TestKeyConfig() : base("KeyConfig")
         {
-            this.init();
+
         }
 
-        public void init()
+        public override void init()
         {
             var logic = TezcatUnity.unityKeyConfigSystem.getOrCreateConfigLayer("Logic");
             logic.addConfig(new UnityAdvanceKeyConfig2(
@@ -107,6 +107,11 @@ namespace tezcat.Framework.Test
             {
                 TezcatUnity.unityKeyConfigSystem.waitingChangeKey();
             }
+        }
+
+        public override void close()
+        {
+            TezcatUnity.unityKeyConfigSystem.close();
         }
     }
 }

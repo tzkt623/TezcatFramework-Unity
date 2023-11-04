@@ -20,18 +20,17 @@ namespace tezcat.Framework.Utility
             public static State instance = new State();
         }
 
-        public event TezEventExtension.Action<TState> eventPush;
-        public event TezEventExtension.Action<TState> eventPop;
-        public event TezEventExtension.Action<TState, TState> eventChange;
-
-        public event TezEventExtension.Action eventRefresh;
+        public event TezEventExtension.Action<TState> evtPush;
+        public event TezEventExtension.Action<TState> evtPop;
+        public event TezEventExtension.Action<TState, TState> evtChange;
+        public event TezEventExtension.Action evtRefresh;
 
         public IReadOnlyCollection<TState> stack => mStack;
         Stack<TState> mStack = new Stack<TState>();
 
         public void push<State>() where State : TState, new()
         {
-            eventPush?.Invoke(Singleton<State>.instance);
+            evtPush?.Invoke(Singleton<State>.instance);
 
             if (mCurrentState != null)
             {
@@ -43,7 +42,7 @@ namespace tezcat.Framework.Utility
             mCurrentState.gameMachine = this;
             mCurrentState.enter(mBlackboard);
 
-            eventRefresh?.Invoke();
+            evtRefresh?.Invoke();
         }
 
         /// <summary>
@@ -69,26 +68,26 @@ namespace tezcat.Framework.Utility
             }
             else
             {
-                eventPop?.Invoke(mCurrentState);
+                evtPop?.Invoke(mCurrentState);
                 mCurrentState.exit(mBlackboard);
                 mCurrentState = mStack.Pop();
 
                 //延迟处理所有标记弹出
                 while (mCurrentState.needMarkPop())
                 {
-                    eventPop?.Invoke(mCurrentState);
+                    evtPop?.Invoke(mCurrentState);
                     mCurrentState = mStack.Pop();
                 }
 
                 mCurrentState.resume(mBlackboard);
             }
 
-            eventRefresh?.Invoke();
+            evtRefresh?.Invoke();
         }
 
         public void change<State>() where State : TState, new()
         {
-            eventChange?.Invoke(mCurrentState, Singleton<State>.instance);
+            evtChange?.Invoke(mCurrentState, Singleton<State>.instance);
             this.change(Singleton<State>.instance);
         }
 
@@ -125,9 +124,9 @@ namespace tezcat.Framework.Utility
             mStack.Clear();
             mStack = null;
 
-            eventPop = null;
-            eventPush = null;
-            eventChange = null;
+            evtPop = null;
+            evtPush = null;
+            evtChange = null;
         }
     }
 }

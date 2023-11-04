@@ -161,6 +161,10 @@ namespace tezcat.Framework.Test
         {
         }
 
+        public override void close()
+        {
+        }
+
         public void generateCShapFile()
         {
             string loadPath = Path.root + "Category.json";
@@ -170,6 +174,10 @@ namespace tezcat.Framework.Test
             {
                 TezCategorySystem.generateCodeFile(savePath, reader);
             }
+        }
+
+        public override void init()
+        {
         }
 
         public override void run()

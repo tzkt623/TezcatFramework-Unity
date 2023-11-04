@@ -10,10 +10,18 @@ namespace tezcat.Framework.Game
     /// </summary>
     public class TezTranslator
     {
+        #region Config
+
         class LanguageInfo
         {
             public string name;
             public string path;
+
+            public void close()
+            {
+                this.name = null;
+                this.path = null;
+            }
         }
 
         static Dictionary<string, LanguageInfo> sLanguageInfoList = new Dictionary<string, LanguageInfo>();
@@ -56,6 +64,16 @@ namespace tezcat.Framework.Game
             }
             reader.close();
         }
+
+        public static void clearConfig()
+        {
+            foreach (var item in sLanguageInfoList)
+            {
+                item.Value.close();
+            }
+            sLanguageInfoList.Clear();
+        }
+        #endregion
 
         Dictionary<string, string> mDataDict = new Dictionary<string, string>();
 

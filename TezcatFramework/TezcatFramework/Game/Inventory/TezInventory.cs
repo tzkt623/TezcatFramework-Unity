@@ -128,6 +128,7 @@ namespace tezcat.Framework.Game.Inventory
         protected Dictionary<long, TezInventoryStackedItemInfo> mStackedItemDict = new Dictionary<long, TezInventoryStackedItemInfo>();
 
         protected TezInventoryBaseView mView = null;
+        public TezInventoryBaseView view => mView;
 
         TezLifeMonitor mLifeMonitor = new TezLifeMonitor();
         TezLifeMonitor ITezLifeMonitorEntry.lifeMonitor => mLifeMonitor;
@@ -203,7 +204,6 @@ namespace tezcat.Framework.Game.Inventory
                         mView.addViewSlotData(data);
                     }
                 }
-
             }
             //不可堆叠物品
             else
@@ -346,9 +346,6 @@ namespace tezcat.Framework.Game.Inventory
         {
             mLifeMonitor.close();
 
-            mView.close();
-            mView = null;
-
             for (int i = 0; i < mUniqueItemList.Count; i++)
             {
                 mUniqueItemList[i].close();
@@ -361,10 +358,10 @@ namespace tezcat.Framework.Game.Inventory
             }
             mStackedItemDict.Clear();
 
-
             mUniqueItemList = null;
             mStackedItemDict = null;
             mLifeMonitor = null;
+            mView = null;
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using tezcat.Framework.Event;
+﻿using System;
+using tezcat.Framework.Event;
 using tezcat.Framework.Utility;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -60,16 +61,28 @@ namespace tezcat.Framework.Test
             public override void enter(GameMachineBlackboard blackboard)
             {
                 TezGlobalState.add(State.Idle);
+                Console.WriteLine($"{this.GetType().Name} enter");
             }
 
             public override void exit(GameMachineBlackboard blackboard)
             {
                 TezGlobalState.remove(State.Idle);
+                Console.WriteLine($"{this.GetType().Name} exit");
+            }
+
+            public override void pause(GameMachineBlackboard blackboard)
+            {
+                Console.WriteLine($"{this.GetType().Name} pause");
+            }
+
+            public override void resume(GameMachineBlackboard blackboard)
+            {
+                Console.WriteLine($"{this.GetType().Name} resume");
             }
 
             public override void execute(GameMachineBlackboard blackboard)
             {
-
+                Console.WriteLine($"{this.GetType().Name} running......");
             }
 
             public override bool onEvent(ITezEventData eventData)
@@ -81,7 +94,6 @@ namespace tezcat.Framework.Test
         public class GameMachineState_Fun1 : GameMachineState
         {
             public override string name => "Fun1";
-            int m_MeshLayerMask = -1;
 
             public override void close()
             {
@@ -90,16 +102,24 @@ namespace tezcat.Framework.Test
 
             public override void enter(GameMachineBlackboard blackboard)
             {
-                if (m_MeshLayerMask == -1)
-                {
-                    m_MeshLayerMask = 1 << LayerMask.NameToLayer("Fun1");
-                }
                 TezGlobalState.add(State.Fun1);
+                Console.WriteLine($"{this.GetType().Name} enter");
             }
 
             public override void exit(GameMachineBlackboard blackboard)
             {
                 TezGlobalState.remove(State.Fun1);
+                Console.WriteLine($"{this.GetType().Name} exit");
+            }
+
+            public override void pause(GameMachineBlackboard blackboard)
+            {
+                Console.WriteLine($"{this.GetType().Name} exit");
+            }
+
+            public override void resume(GameMachineBlackboard blackboard)
+            {
+                Console.WriteLine($"{this.GetType().Name} exit");
             }
 
             public override bool onEvent(ITezEventData eventData)
@@ -109,22 +129,7 @@ namespace tezcat.Framework.Test
 
             public override void execute(GameMachineBlackboard blackboard)
             {
-                if (this.hoverUI)
-                {
-                    return;
-                }
-
-                if (Input.GetMouseButtonUp(1))
-                {
-                    this.gameMachine.pop<GameMachineState_Fun1>();
-                    return;
-                }
-
-                Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-                if (Physics.Raycast(ray, out RaycastHit hitInfo, Camera.main.farClipPlane, m_MeshLayerMask))
-                {
-                    Debug.DrawLine(ray.origin, hitInfo.point, Color.green);
-                }
+                Console.WriteLine($"{this.GetType().Name} running......");
             }
         }
 
@@ -134,21 +139,37 @@ namespace tezcat.Framework.Test
         }
 
 
-        GameMachine mGameMachine = new GameMachine();
+        GameMachine mGameMachine = null;
+        GameMachineBlackboard mBlackboard = null;
 
         public TestGameMachine() : base("GameMachine")
         {
-            mGameMachine.setBlackboard(new GameMachineBlackboard());
         }
 
         public override void run()
         {
-            mGameMachine.push<GameMachineState_Idle>();
             mGameMachine.execute();
-            mGameMachine.pop<GameMachineState_Idle>();
 
             mGameMachine.push<GameMachineState_Fun1>();
             mGameMachine.execute();
+            mGameMachine.pop<GameMachineState_Fun1>();
+
+            mGameMachine.execute();
+        }
+
+        public override void init()
+        {
+            mBlackboard = new GameMachineBlackboard();
+            mGameMachine = new GameMachine();
+            mGameMachine.setBlackboard(mBlackboard);
+
+            mGameMachine.push<GameMachineState_Idle>();
+        }
+
+        public override void close()
+        {
+            mGameMachine.close();
+            mBlackboard.close();
         }
     }
 }

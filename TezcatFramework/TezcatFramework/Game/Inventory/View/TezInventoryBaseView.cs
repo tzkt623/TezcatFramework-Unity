@@ -4,13 +4,18 @@ using tezcat.Framework.Utility;
 
 namespace tezcat.Framework.Game.Inventory
 {
+    /// <summary>
+    /// 物品栏视图
+    /// 生命周期不归物品栏管
+    /// 因为可以在运输时替换视图结构
+    /// </summary>
     public abstract class TezInventoryBaseView : ITezCloseable
     {
         public TezInventory inventory
         {
             get
             {
-                mLifeMonitorSlot.tryUse<TezInventory>(out var result);
+                mLifeMonitorSlot.tryGetObject<TezInventory>(out var result);
                 return result;
             }
         }
@@ -47,6 +52,8 @@ namespace tezcat.Framework.Game.Inventory
             mLifeMonitorSlot.close();
             mLifeMonitorSlot = null;
         }
+
+        public virtual void debug() { }
 
         public abstract void updateViewSlotData(int index);
         public abstract void addViewSlotData(ITezInventoryViewSlotData data);

@@ -112,5 +112,15 @@ namespace tezcat.Framework.Test
         {
 
         }
+
+        public override void init()
+        {
+
+        }
+
+        public override void close()
+        {
+
+        }
     }
 }

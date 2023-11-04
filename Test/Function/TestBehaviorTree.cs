@@ -358,23 +358,17 @@ namespace tezcat.Framework.Test
 
     public class TestBehaviorTree : TezBaseTest
     {
-        TezBehaviorTree mTree = new TezBehaviorTree();
+        TezBehaviorTree mTree = null;
 
         public TestBehaviorTree() : base("BehaviorTree")
         {
-            TezBehaviorTree.register<NeedFoods>();
-            TezBehaviorTree.register<NeedTools>();
 
-            TezBehaviorTree.register<GetFoods>();
-            TezBehaviorTree.register<SteamRice>();
-            TezBehaviorTree.register<Cooking>();
-            TezBehaviorTree.register<Eating>();
-
-            this.buildTree();
         }
 
         public void buildTree()
         {
+            mTree = new TezBehaviorTree();
+
             ///做饭
             ///如果没有食物,先取得食物
             ///如果没有工具,取得工具,
@@ -400,11 +394,29 @@ namespace tezcat.Framework.Test
             mTree.setContext(new Context());
         }
 
+        public override void close()
+        {
+            mTree.close();
+            mTree = null;
+        }
+
+        public override void init()
+        {
+            TezBehaviorTree.register<NeedFoods>();
+            TezBehaviorTree.register<NeedTools>();
+
+            TezBehaviorTree.register<GetFoods>();
+            TezBehaviorTree.register<SteamRice>();
+            TezBehaviorTree.register<Cooking>();
+            TezBehaviorTree.register<Eating>();
+
+            this.buildTree();
+        }
 
         public override void run()
         {
-            Console.WriteLine("Press Any key to run, Press SpaceBar to exit");
-            while (Console.ReadKey(true).Key != ConsoleKey.Spacebar)
+            Console.WriteLine("Press Any key to run, Press Esc to exit");
+            while (Console.ReadKey(true).Key != ConsoleKey.Escape)
             {
                 mTree.imdExecute();
             }
