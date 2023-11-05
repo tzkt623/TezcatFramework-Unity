@@ -85,18 +85,18 @@ namespace tezcat.Framework.Utility
 
         public void setChangeKey(TezKeyWrapper wrapper)
         {
-            wrapper.onPrepare += onChangeKeyPrepare;
-            wrapper.onSave += onChangeKeySave;
-            wrapper.onCancel += onChangeKeyCancel;
+            wrapper.evtPrepare += onChangeKeyPrepare;
+            wrapper.evtSave += onChangeKeySave;
+            wrapper.evtCancel += onChangeKeyCancel;
 
             wrapper.prepareChange();
         }
 
         private void resetChangeKey()
         {
-            mChangeKey.onPrepare -= onChangeKeyPrepare;
-            mChangeKey.onSave -= onChangeKeySave;
-            mChangeKey.onCancel -= onChangeKeyCancel;
+            mChangeKey.evtPrepare -= onChangeKeyPrepare;
+            mChangeKey.evtSave -= onChangeKeySave;
+            mChangeKey.evtCancel -= onChangeKeyCancel;
             mChangeKey = null;
         }
 

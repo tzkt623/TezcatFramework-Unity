@@ -69,7 +69,7 @@
     <Compile Include="Function\TestAwaitable.cs" />
     <Compile Include="Function\TestAStartSystem.cs" />
     <Compile Include="Function\TestBonusSystem.cs" />
-    <Compile Include="Function\TestCategory.cs" />
+    <Compile Include="Function\TestCategoryGenerator.cs" />
     <Compile Include="Function\TestECS.cs" />
     <Compile Include="Function\TestGameMachine.cs" />
     <Compile Include="Function\TestHexSystem.cs" />

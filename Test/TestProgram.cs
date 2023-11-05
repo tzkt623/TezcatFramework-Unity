@@ -58,6 +58,7 @@ namespace tezcat.Framework.Test
                 }
 
                 Console.ResetColor();
+                Console.WriteLine("");
                 Console.WriteLine("Press Any Key to Continue");
                 Console.ReadKey();
             }
@@ -97,15 +98,17 @@ namespace tezcat.Framework.Test
 
         void register()
         {
-            mTestList.Add(new TestInventory());
+            mTestList.Add(new TestTag());
+            mTestList.Add(new TestRandomIndex());
             mTestList.Add(new TestFieldOffset());
-            mTestList.Add(new TestCategory());
             mTestList.Add(new TestBehaviorTree());
             mTestList.Add(new TestLifeMonitor());
             mTestList.Add(new TestGameMachine());
+            mTestList.Add(new TestInventory());
             mTestList.Add(new TestTranslator());
             mTestList.Add(new TestSystemAttribute());
             mTestList.Add(new TestBonusSystem());
+            mTestList.Add(new TestCategoryGenerator());
         }
     }
 

@@ -1,22 +1,35 @@
-﻿using tezcat.Framework.Math;
+﻿using System;
+using tezcat.Framework.Math;
 using tezcat.Framework.Utility;
 
 namespace tezcat.Framework.Test
 {
-    public class TestRandomIndex
+    public class TestRandomIndex : TezBaseTest
     {
-        public void run()
+        TezRandom mRandom = null;
+        TezRandomIndex mIndexRandom = null;
+        TezRandomIndex mIndexRandom2 = null;
+        int[] mIndexArray = null;
+
+        public TestRandomIndex() : base("RandomIndex")
         {
-            TezRandom random = new TezRandom();
 
-            TezRandomIndex r1 = new TezRandomIndex(10, random.nextInt);
-            for (int i = 0; i < 10; i++)
-            {
-                var index = r1.nextIndex();
-            }
+        }
 
+        public override void close()
+        {
+            mIndexRandom.close();
+            mIndexRandom2.close();
 
-            int[] index_array = new int[]
+            mIndexArray = null;
+            mIndexRandom = null;
+            mIndexRandom2 = null;
+            mRandom = null;
+        }
+
+        public override void init()
+        {
+            mIndexArray = new int[]
             {
                 23,
                 345,
@@ -29,10 +42,37 @@ namespace tezcat.Framework.Test
                 9,
                 2
             };
-            TezRandomIndex r2 = new TezRandomIndex(index_array, random.nextInt);
+
+            mRandom = new TezRandom();
+            mIndexRandom = new TezRandomIndex(0, 0, mRandom.nextInt);
+            mIndexRandom2 = new TezRandomIndex(mIndexArray, mRandom.nextInt);
+        }
+
+        public override void run()
+        {
+            Console.WriteLine("Random with 10 int numbers:");
             for (int i = 0; i < 10; i++)
             {
-                var index = r2.nextIndex();
+                Console.Write(mIndexRandom.nextIndex());
+                Console.Write(",");
+            }
+            Console.WriteLine("");
+
+            Console.WriteLine("");
+            Console.WriteLine("Random with a numbers array");
+            Console.Write("Array numbers:");
+            foreach (var item in mIndexArray)
+            {
+                Console.Write(item);
+                Console.Write(",");
+            }
+
+            Console.WriteLine("");
+            Console.Write("Random:");
+            for (int i = 0; i < 10; i++)
+            {
+                Console.Write(mIndexRandom2.nextIndex());
+                Console.Write(",");
             }
         }
     }

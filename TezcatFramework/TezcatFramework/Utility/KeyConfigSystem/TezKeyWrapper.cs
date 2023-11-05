@@ -9,9 +9,9 @@ namespace tezcat.Framework.Utility
     /// </summary>
     public abstract class TezKeyWrapper : ITezCloseable
     {
-        public event TezEventExtension.Action<TezKeyWrapper> onPrepare;
-        public event TezEventExtension.Action<TezKeyWrapper> onSave;
-        public event TezEventExtension.Action<TezKeyWrapper> onCancel;
+        public event TezEventExtension.Action<TezKeyWrapper> evtPrepare;
+        public event TezEventExtension.Action<TezKeyWrapper> evtSave;
+        public event TezEventExtension.Action<TezKeyWrapper> evtCancel;
 
         public virtual string name { get; }
 
@@ -30,25 +30,25 @@ namespace tezcat.Framework.Utility
 
         public virtual void prepareChange()
         {
-            onPrepare?.Invoke(this);
+            evtPrepare?.Invoke(this);
         }
 
         public virtual void cancelChange()
         {
-            onCancel?.Invoke(this);
+            evtCancel?.Invoke(this);
         }
 
 
         public virtual void saveChange()
         {
-            onSave?.Invoke(this);
+            evtSave?.Invoke(this);
         }
 
         public virtual void close()
         {
-            onCancel = null;
-            onSave = null;
-            onPrepare = null;
+            evtCancel = null;
+            evtSave = null;
+            evtPrepare = null;
         }
 
         public abstract void readFromSave(TezReader reader);

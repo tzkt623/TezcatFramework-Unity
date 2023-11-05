@@ -143,7 +143,7 @@
     <Compile Include="TezcatFramework\Core\TezReadOnlyString.cs" />
     <Compile Include="TezcatFramework\Core\DataBase\TezSaveManager.cs" />
     <Compile Include="TezcatFramework\Core\TezService.cs" />
-    <Compile Include="TezcatFramework\Core\Tag\TezTagGenerator.cs" />
+    <Compile Include="TezcatFramework\Core\Tag\TezTagManager.cs" />
     <Compile Include="TezcatFramework\Game\Translator\TezTranslator.cs" />
     <Compile Include="TezcatFramework\Core\TezVersions.cs" />
     <Compile Include="TezcatFramework\Game\Buffer\TezBuffer.cs" />
@@ -251,7 +251,6 @@
     <Compile Include="TezcatFramework\Utility\TezSingleton.cs" />
     <Compile Include="TezcatFramework\Utility\TezSmartObject.cs" />
     <Compile Include="TezcatFramework\Utility\Container\TezTuple.cs" />
-    <Compile Include="TezcatFramework\Utility\Monitor\TezBitValider.cs" />
     <Compile Include="TezcatFramework\Utility\Monitor\TezLifeMonitor.cs" />
     <Compile Include="TezcatFramework\Utility\Monitor\TezStateMonitor.cs" />
   </ItemGroup>

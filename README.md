@@ -1,5 +1,7 @@
 # TezcatFramework
 
+![示例](https://github.com/tzkt623/TezcatEngine-Tiny/blob/main/logo1.jpg?raw=true)
+
 ## Introduction
 
 This is a library for my indie game
@@ -14,11 +16,11 @@ I will translate C# to C++ for my own engine finally
 
 ## Tutorial
 
-Please check the Test folder
+Please check the Test Project
 
 If you not found what you want
 
-That is I have no time to write
+That is I have no time to do it
 
 ## 简介
 

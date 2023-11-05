@@ -27,7 +27,7 @@ namespace tezcat.Framework.Test
             public int mModifiedID = 30;
         }
 
-        Field mField = new Field();
+        Field mField = null;
 
         public TestFieldOffset() : base("FieldOffset")
         {
@@ -36,21 +36,26 @@ namespace tezcat.Framework.Test
 
         public override void run()
         {
-            //             mItemID = (1L << 32) | 2L;
-            // 
-            //             mDBID = -1;
-            //             mModifiedID = -1;
+            Console.WriteLine("ItemID = -1");
+            mField.mItemID = -1;
+            Console.WriteLine($"DBID:{mField.mDBID}");
+            Console.WriteLine($"ModifiedID:{mField.mModifiedID}");
+            Console.WriteLine($"ItemID:{mField.mItemID}");
 
+            Console.WriteLine("");
 
-            Console.WriteLine(mField.mItemID);
-            Console.WriteLine(mField.mDBID);
-            Console.WriteLine(mField.mModifiedID);
-//            Console.WriteLine((1L << 32) | 1L);
+            Console.WriteLine("DBID = 1, ModifiedID = 1");
+            mField.mDBID = 1;
+            mField.mModifiedID = 1;
+            Console.WriteLine($"DBID:{mField.mDBID}");
+            Console.WriteLine($"ModifiedID:{mField.mModifiedID}");
+            Console.WriteLine($"ItemID:{mField.mItemID}");
+            Console.WriteLine($"##UInt32.MaxValue:{UInt32.MaxValue}##");
         }
 
         public override void init()
         {
-            mField.mItemID = -1;
+            mField = new Field();
         }
 
         public override void close()

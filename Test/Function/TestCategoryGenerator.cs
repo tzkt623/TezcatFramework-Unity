@@ -155,9 +155,9 @@ namespace tezcat.Framework.Test
         }
     }
 
-    public class TestCategory : TezBaseTest
+    public class TestCategoryGenerator : TezBaseTest
     {
-        public TestCategory() : base("CategoryGenerator")
+        public TestCategoryGenerator() : base("CategoryGenerator")
         {
         }
 

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace tezcat.Framework.Core
 {
-    public static class TezTagGenerator
+    public static class TezTagManager
     {
         public class Element
         {
@@ -11,26 +11,25 @@ namespace tezcat.Framework.Core
             public string name;
         }
 
-        #region Manager
-        static Dictionary<string, int> m_Dict = new Dictionary<string, int>();
-        static List<Element> m_List = new List<Element>();
+        static Dictionary<string, int> mDict = new Dictionary<string, int>();
+        static List<Element> mList = new List<Element>();
 
         public static int register(string name)
         {
-            if (m_Dict.ContainsKey(name))
+            if (mDict.ContainsKey(name))
             {
                 throw new Exception("TezTag has already existed!!!");
             }
             else
             {
-                int id = m_List.Count;
+                int id = mList.Count;
                 var tag = new Element()
                 {
                     name = name,
                     id = id
                 };
-                m_List.Add(tag);
-                m_Dict.Add(name, id);
+                mList.Add(tag);
+                mDict.Add(name, id);
 
                 return id;
             }
@@ -38,18 +37,17 @@ namespace tezcat.Framework.Core
 
         public static Element get(int id)
         {
-            return m_List[id];
+            return mList[id];
         }
 
         public static Element get(string name)
         {
-            if (m_Dict.TryGetValue(name, out int id))
+            if (mDict.TryGetValue(name, out int id))
             {
-                return m_List[id];
+                return mList[id];
             }
 
             return null;
         }
-        #endregion
     }
 }

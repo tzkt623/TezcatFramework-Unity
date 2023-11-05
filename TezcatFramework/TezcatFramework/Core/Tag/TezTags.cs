@@ -5,7 +5,9 @@ namespace tezcat.Framework.Core
 {
     public class TezTags : ITezCloseable
     {
-        HashSet<int> m_Set = new HashSet<int>();
+        public IEnumerable<int> tags => mSet;
+
+        HashSet<int> mSet = new HashSet<int>();
 
         public TezTags()
         {
@@ -13,28 +15,28 @@ namespace tezcat.Framework.Core
 
         public bool add(string name)
         {
-            return m_Set.Add(TezTagGenerator.get(name).id);
+            return mSet.Add(TezTagManager.get(name).id);
         }
 
         public bool remove(string name)
         {
-            return m_Set.Remove(TezTagGenerator.get(name).id);
+            return mSet.Remove(TezTagManager.get(name).id);
         }
 
         public bool add(int tag)
         {
-            return m_Set.Add(TezTagGenerator.get(tag).id);
+            return mSet.Add(TezTagManager.get(tag).id);
         }
 
         public bool remove(int tag)
         {
-            return m_Set.Remove(TezTagGenerator.get(tag).id);
+            return mSet.Remove(TezTagManager.get(tag).id);
         }
 
         public void close()
         {
-            m_Set.Clear();
-            m_Set = null;
+            mSet.Clear();
+            mSet = null;
         }
 
         /// <summary>
@@ -42,7 +44,7 @@ namespace tezcat.Framework.Core
         /// </summary>
         public bool oneOf(int tag)
         {
-            return m_Set.Contains(tag);
+            return mSet.Contains(tag);
         }
 
         /// <summary>
@@ -50,60 +52,44 @@ namespace tezcat.Framework.Core
         /// </summary>
         public bool noneOf(int tag)
         {
-            return !m_Set.Contains(tag);
+            return !mSet.Contains(tag);
+        }
+
+        /// <summary>
+        /// 完全等于
+        /// </summary>
+        public bool equalOf(IEnumerable<int> tags)
+        {
+            return mSet.SetEquals(tags);
         }
 
         /// <summary>
         /// 全都存在
         /// </summary>
-        public bool allOf(int[] tags)
+        public bool allOf(IEnumerable<int> tags)
         {
-            foreach (var tag in tags)
-            {
-                if (!m_Set.Contains(tag))
-                {
-                    return false;
-                }
-            }
-
-            return true;
+            return mSet.IsSupersetOf(tags);
         }
 
         /// <summary>
         /// 存在任意一个
         /// </summary>
-        public bool anyOf(int[] tags)
+        public bool anyOf(IEnumerable<int> tags)
         {
-            foreach (var tag in tags)
-            {
-                if (m_Set.Contains(tag))
-                {
-                    return true;
-                }
-            }
-
-            return false;
+            return mSet.Overlaps(tags);
         }
 
         /// <summary>
         /// 全都不存在
         /// </summary>
-        public bool noneOf(int[] tags)
+        public bool noneOf(IEnumerable<int> tags)
         {
-            foreach (var tag in tags)
-            {
-                if (m_Set.Contains(tag))
-                {
-                    return false;
-                }
-            }
-
-            return true;
+            return !mSet.Overlaps(tags);
         }
 
         public void foreachTag(TezEventExtension.Action<int> action)
         {
-            foreach (var tag in m_Set)
+            foreach (var tag in mSet)
             {
                 action(tag);
             }

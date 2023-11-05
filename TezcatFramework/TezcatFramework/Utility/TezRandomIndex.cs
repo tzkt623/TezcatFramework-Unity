@@ -16,16 +16,27 @@ namespace tezcat.Framework.Utility
         int mSize;
         TezEventExtension.Function<int, int, int> mGenerator;
 
-        public TezRandomIndex(int count, TezEventExtension.Function<int, int, int> randomGenerator)
+        public TezRandomIndex(int min, int max, TezEventExtension.Function<int, int, int> randomGenerator)
         {
-            mData = new int[count];
-
-            for (int i = 0; i < mData.Length; i++)
+            if(min == max)
             {
-                mData[i] = i;
+                mSize = 1;
+                mData = new int[mSize];
+                mData[0] = min;
+            }
+            else
+            {
+                int count = max - min;
+                mData = new int[count];
+
+                for (int i = 0; i < count; i++)
+                {
+                    mData[i] = min + i;
+                }
+
+                mSize = mData.Length;
             }
 
-            mSize = mData.Length;
             mGenerator = randomGenerator;
         }
 
