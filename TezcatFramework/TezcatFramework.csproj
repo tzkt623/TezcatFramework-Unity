@@ -45,10 +45,6 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Xml" />
-    <Reference Include="UnityEngine, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\UnityDLL\UnityEngine.dll</HintPath>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="TezcatFramework\Core\DataBase\FileIO\TezJsonObjectReader.cs" />
@@ -103,7 +99,7 @@
     <Compile Include="TezcatFramework\Core\Value\Modifier\TezModifierConfig.cs" />
     <Compile Include="TezcatFramework\Core\Value\Modifier\TezBaseModifierCache.cs" />
     <Compile Include="TezcatFramework\Core\Value\Property\Other\TezNotificationValue.cs" />
-    <Compile Include="TezcatFramework\Core\TezObjectUID.cs" />
+    <Compile Include="TezcatFramework\Core\Object\TezObjectUIDManager.cs" />
     <Compile Include="TezcatFramework\Core\Value\Property\Other\TezBindable.cs" />
     <Compile Include="TezcatFramework\Core\DataBase\TezDBID.cs" />
     <Compile Include="TezcatFramework\Core\DataBase\TezDatabase.cs" />
@@ -119,7 +115,6 @@
     <Compile Include="TezcatFramework\Core\EntitySystem\Component\TezComponentID.cs" />
     <Compile Include="TezcatFramework\Core\EntitySystem\Component\TezComponentManager.cs" />
     <Compile Include="TezcatFramework\Core\EntitySystem\Entity\TezEntityManager.cs" />
-    <Compile Include="TezcatFramework\Game\HexSystem\TezHexMesh.cs" />
     <Compile Include="TezcatFramework\Game\Inventory\View\TezInventoryViewSlot.cs" />
     <Compile Include="TezcatFramework\Game\Inventory\TezInventory.cs" />
     <Compile Include="TezcatFramework\Game\Inventory\TezInventoryFilter.cs" />
@@ -129,7 +124,6 @@
     <Compile Include="TezcatFramework\Game\Inventory\TezInventoryPicker.cs" />
     <Compile Include="TezcatFramework\Game\PathFind\ITezAStarDataWrapper.cs" />
     <Compile Include="TezcatFramework\Game\PathFind\TezAStarDataWrapper.cs" />
-    <Compile Include="TezcatFramework\Game\Planet\TezPlanetData.cs" />
     <Compile Include="TezcatFramework\Game\Translator\TezTranslationSlot.cs" />
     <Compile Include="TezcatFramework\Utility\KeyConfigSystem\TezKeyConfig.cs" />
     <Compile Include="TezcatFramework\Utility\KeyConfigSystem\TezKeyConfigLayer.cs" />
@@ -137,10 +131,10 @@
     <Compile Include="TezcatFramework\Utility\KeyConfigSystem\TezKeyWrapper.cs" />
     <Compile Include="TezcatFramework\Utility\Math\TezRemap.cs" />
     <Compile Include="TezcatFramework\Utility\TezClassFactory.cs" />
-    <Compile Include="TezcatFramework\Core\Extension\TezBitMaskExtension.cs" />
+    <Compile Include="TezcatFramework\Extension\TezBitMaskExtension.cs" />
     <Compile Include="TezcatFramework\Utility\TezLazyValueManager.cs" />
     <Compile Include="TezcatFramework\Utility\TezRandomIndex.cs" />
-    <Compile Include="TezcatFramework\Core\TezReadOnlyString.cs" />
+    <Compile Include="TezcatFramework\Core\TezBuildInName.cs" />
     <Compile Include="TezcatFramework\Core\DataBase\TezSaveManager.cs" />
     <Compile Include="TezcatFramework\Core\TezService.cs" />
     <Compile Include="TezcatFramework\Core\Tag\TezTagManager.cs" />
@@ -170,44 +164,17 @@
     <Compile Include="TezcatFramework\Core\EntitySystem\Component\TezDataComponent.cs" />
     <Compile Include="TezcatFramework\Core\Event\ITezEventData.cs" />
     <Compile Include="TezcatFramework\Core\Event\TezEventDispatcher.cs" />
-    <Compile Include="TezcatFramework\Core\Extension\TezArrayExtension.cs" />
-    <Compile Include="TezcatFramework\Core\Extension\TezDictionaryExtension.cs" />
-    <Compile Include="TezcatFramework\Core\Extension\TezEntityExtension.cs" />
-    <Compile Include="TezcatFramework\Core\Extension\TezEnumExtension.cs" />
-    <Compile Include="TezcatFramework\Core\Extension\TezEventExtension.cs" />
-    <Compile Include="TezcatFramework\Core\Extension\TezListExtension.cs" />
-    <Compile Include="TezcatFramework\Core\Extension\TezStringExtension.cs" />
-    <Compile Include="TezcatFramework\Core\Extension\TezTransformExtension.cs" />
-    <Compile Include="TezcatFramework\Core\Extension\TezValueWrapperExtension.cs" />
-    <Compile Include="TezcatFramework\Core\Extension\TezVectorExtension.cs" />
+    <Compile Include="TezcatFramework\Extension\TezArrayExtension.cs" />
+    <Compile Include="TezcatFramework\Extension\TezDictionaryExtension.cs" />
+    <Compile Include="TezcatFramework\Extension\TezEntityExtension.cs" />
+    <Compile Include="TezcatFramework\Extension\TezEnumExtension.cs" />
+    <Compile Include="TezcatFramework\Extension\TezEventExtension.cs" />
+    <Compile Include="TezcatFramework\Extension\TezListExtension.cs" />
+    <Compile Include="TezcatFramework\Extension\TezStringExtension.cs" />
+    <Compile Include="TezcatFramework\Extension\TezValueWrapperExtension.cs" />
     <Compile Include="TezcatFramework\Game\Command\TezCommand.cs" />
     <Compile Include="TezcatFramework\Game\Command\TezCommandSequence.cs" />
-    <Compile Include="TezcatFramework\Game\Dungeon\ITezDungeon.cs" />
-    <Compile Include="TezcatFramework\Game\Dungeon\TezDungeonBlock.cs" />
-    <Compile Include="TezcatFramework\Game\Dungeon\TezDungeonCorridor.cs" />
-    <Compile Include="TezcatFramework\Game\Dungeon\TezDungeonGenerator.cs" />
-    <Compile Include="TezcatFramework\Game\Dungeon\TezDungeonRoom.cs" />
-    <Compile Include="TezcatFramework\Game\Dungeon\TezDungeonUtility.cs" />
-    <Compile Include="TezcatFramework\Game\Galaxy\TezGalaxyBody.cs" />
-    <Compile Include="TezcatFramework\Game\Galaxy\TezGalaxyCDF.cs" />
-    <Compile Include="TezcatFramework\Game\Galaxy\TezGalaxySimulator.cs" />
-    <Compile Include="TezcatFramework\Game\Galaxy\TezGalaxySpectra.cs" />
-    <Compile Include="TezcatFramework\Game\Galaxy\TezGalaxyTool.cs" />
-    <Compile Include="TezcatFramework\Game\HexSystem\TexHexList.cs" />
-    <Compile Include="TezcatFramework\Game\HexSystem\TezHexArea.cs" />
-    <Compile Include="TezcatFramework\Game\HexSystem\TezHexArrayIndex.cs" />
-    <Compile Include="TezcatFramework\Game\HexSystem\TezHexBlock.cs" />
-    <Compile Include="TezcatFramework\Game\HexSystem\TezHexChunk.cs" />
-    <Compile Include="TezcatFramework\Game\HexSystem\TezHexCubeCoordinate.cs" />
-    <Compile Include="TezcatFramework\Game\HexSystem\TezHexGrid.cs" />
-    <Compile Include="TezcatFramework\Game\HexSystem\TezHexLayout.cs" />
-    <Compile Include="TezcatFramework\Game\HexSystem\TezHexOffsetCoordinate.cs" />
-    <Compile Include="TezcatFramework\Game\HexSystem\TezHexOrientation.cs" />
-    <Compile Include="TezcatFramework\Game\HexSystem\TezHexVector2.cs" />
     <Compile Include="TezcatFramework\Game\PathFind\TezAStarSystem.cs" />
-    <Compile Include="TezcatFramework\Game\Planet\TezPlanetGenerator.cs" />
-    <Compile Include="TezcatFramework\Game\Planet\TezPlanetGMO.cs" />
-    <Compile Include="TezcatFramework\Game\Planet\TezPlanetTerrainFace.cs" />
     <Compile Include="TezcatFramework\Thirdparty\LitJson\IJsonWrapper.cs" />
     <Compile Include="TezcatFramework\Thirdparty\LitJson\JsonData.cs" />
     <Compile Include="TezcatFramework\Thirdparty\LitJson\JsonException.cs" />
@@ -245,7 +212,6 @@
     <Compile Include="TezcatFramework\Utility\TezCodeWriter.cs" />
     <Compile Include="TezcatFramework\Utility\TezGlobalState.cs" />
     <Compile Include="TezcatFramework\Utility\Container\TezList.cs" />
-    <Compile Include="TezcatFramework\Utility\TezNoise.cs" />
     <Compile Include="TezcatFramework\Core\DataBase\FileIO\TezFilePath.cs" />
     <Compile Include="TezcatFramework\Utility\SamplePool\TezSamplePool.cs" />
     <Compile Include="TezcatFramework\Utility\TezSingleton.cs" />

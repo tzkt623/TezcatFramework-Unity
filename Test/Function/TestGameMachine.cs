@@ -1,8 +1,6 @@
 ﻿using System;
 using tezcat.Framework.Event;
 using tezcat.Framework.Utility;
-using UnityEngine;
-using UnityEngine.EventSystems;
 
 namespace tezcat.Framework.Test
 {
@@ -40,7 +38,6 @@ namespace tezcat.Framework.Test
 
         public abstract class GameMachineState : TezGameMachineState<GameMachineBlackboard, GameMachineState>
         {
-            public bool hoverUI => EventSystem.current.IsPointerOverGameObject();
             public abstract string name { get; }
 
             public override void execute(GameMachineBlackboard blackboard)

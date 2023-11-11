@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using UnityEngine;
 
 namespace tezcat.Framework.ECS
 {
@@ -7,7 +6,7 @@ namespace tezcat.Framework.ECS
     {
         public static TezEntityManager instance { get; } = new TezEntityManager();
 
-        Queue<TezEntity> m_FreeEntity = new Queue<TezEntity>();
+        Queue<TezEntity> mFreeEntity = new Queue<TezEntity>();
 
         protected TezEntityManager()
         {
@@ -16,9 +15,9 @@ namespace tezcat.Framework.ECS
 
         public TezEntity create()
         {
-            if (m_FreeEntity.Count > 0)
+            if (mFreeEntity.Count > 0)
             {
-                var entity = m_FreeEntity.Dequeue();
+                var entity = mFreeEntity.Dequeue();
                 return entity;
             }
 
@@ -27,13 +26,13 @@ namespace tezcat.Framework.ECS
 
         public void recycle(TezEntity entity)
         {
-            m_FreeEntity.Enqueue(entity);
+            mFreeEntity.Enqueue(entity);
         }
 
         public void close()
         {
-            m_FreeEntity.Clear();
-            m_FreeEntity = null;
+            mFreeEntity.Clear();
+            mFreeEntity = null;
         }
     }
 }

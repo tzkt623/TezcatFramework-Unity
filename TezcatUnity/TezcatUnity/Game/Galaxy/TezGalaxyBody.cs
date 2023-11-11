@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace tezcat.Framework.Game.Galaxy
+namespace tezcat.Framework.Game
 {
     public class TezGalaxyBody
     {

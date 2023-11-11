@@ -1,5 +1,5 @@
 ﻿using System;
-using tezcat.Framework.Math;
+using tezcat.Framework.TMath;
 
 namespace tezcat.Framework.Game
 {

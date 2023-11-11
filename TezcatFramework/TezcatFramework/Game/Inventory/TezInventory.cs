@@ -111,13 +111,12 @@ namespace tezcat.Framework.Game.Inventory
     /// 
     /// Data层
     /// 用于储存item的概览数据
-    /// 一个列表用于统计不可堆叠的信息
+    /// 一个List用于统计不可堆叠的信息
     /// 一个Dict用于统计可堆叠的物品信息
     /// 每当添加一个item进来时,向view发送消息进行更新
     /// 
-    /// view层
+    /// View层
     /// 用于保存物品在inventory中的排列顺序
-    /// 负责给信的item赋予slot
     /// 
     /// </summary>
     public class TezInventory

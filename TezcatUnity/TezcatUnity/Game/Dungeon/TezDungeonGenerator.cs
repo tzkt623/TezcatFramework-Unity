@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using tezcat.Framework.Extension;
-using tezcat.Framework.Math;
+using tezcat.Framework.TMath;
 using UnityEngine;
 
 namespace tezcat.Framework.Game

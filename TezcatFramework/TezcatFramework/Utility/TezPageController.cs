@@ -1,6 +1,6 @@
-﻿using tezcat.Framework.Core;
+﻿using System;
+using tezcat.Framework.Core;
 using tezcat.Framework.Extension;
-using UnityEngine;
 
 namespace tezcat.Framework.Utility
 {
@@ -44,7 +44,7 @@ namespace tezcat.Framework.Utility
             set
             {
                 mCount = value;
-                this.maxPage = Mathf.CeilToInt(mCount / (float)this.pageCapacity);
+                this.maxPage = (int)Math.Ceiling(mCount / (float)this.pageCapacity);
             }
         }
 

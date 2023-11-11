@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace tezcat.Framework.Extension
+namespace tezcat.Unity
 {
     public static class TezTransformExtension
     {
@@ -10,6 +10,5 @@ namespace tezcat.Framework.Extension
             transform.localRotation = Quaternion.identity;
             transform.localScale = Vector3.one;
         }
-
     }
 }

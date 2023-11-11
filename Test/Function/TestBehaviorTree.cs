@@ -130,7 +130,7 @@ namespace tezcat.Framework.Test
             if (context.foods < 5)
             {
                 context.foods += 1;
-                Console.WriteLine(string.Format("取得食物{0}", context.foods));
+                Console.WriteLine($"取得食物{context.foods}");
                 return Result.Running;
             }
             else
@@ -166,7 +166,7 @@ namespace tezcat.Framework.Test
             if (context.tools < 5)
             {
                 context.tools += 1;
-                Console.WriteLine(string.Format("取得厨具{0}", context.tools));
+                Console.WriteLine($"取得厨具{context.tools}");
                 return Result.Running;
             }
             else
@@ -182,8 +182,8 @@ namespace tezcat.Framework.Test
         }
     }
 
-    [TezBTRegister(name = "SteamRice")]
-    class SteamRice : TezBTAction
+    [TezBTRegister(name = "CookRice")]
+    class CookRice : TezBTAction
     {
         public override void init()
         {
@@ -229,7 +229,7 @@ namespace tezcat.Framework.Test
                 context.rice += 1;
                 context.tools -= 1;
                 context.foods -= 1;
-                Console.WriteLine(string.Format("蒸饭{0}", context.rice));
+                Console.WriteLine($"蒸饭{context.rice}");
                 return Result.Running;
             }
             else
@@ -287,7 +287,7 @@ namespace tezcat.Framework.Test
                 context.dish += 1;
                 context.tools -= 1;
                 context.foods -= 2;
-                Console.WriteLine(string.Format("做菜{0}", context.dish));
+                Console.WriteLine($"做菜{context.dish}");
                 return Result.Running;
             }
             else
@@ -343,13 +343,13 @@ namespace tezcat.Framework.Test
             if (context.dish > 0)
             {
                 context.dish -= 1;
-                Console.WriteLine(string.Format("吃菜{0}", context.dish));
+                Console.WriteLine($"吃菜{context.dish}");
             }
 
             if (context.rice > 0)
             {
                 context.rice -= 1;
-                Console.WriteLine(string.Format("吃饭{0}", context.rice));
+                Console.WriteLine($"吃饭{context.rice}");
             }
 
             return Result.Running;
@@ -385,7 +385,7 @@ namespace tezcat.Framework.Test
             get_tools.createNode<GetTools>();
 
             var cook = root.createNode<TezBTParallel>();
-            cook.createNode<SteamRice>();
+            cook.createNode<CookRice>();
             cook.createNode<Cooking>();
 
             root.createNode<Eating>();
@@ -406,7 +406,7 @@ namespace tezcat.Framework.Test
             TezBehaviorTree.register<NeedTools>();
 
             TezBehaviorTree.register<GetFoods>();
-            TezBehaviorTree.register<SteamRice>();
+            TezBehaviorTree.register<CookRice>();
             TezBehaviorTree.register<Cooking>();
             TezBehaviorTree.register<Eating>();
 

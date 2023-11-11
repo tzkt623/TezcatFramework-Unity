@@ -95,7 +95,7 @@ namespace tezcat.Framework.Database
                 for (int i = 0; i < count; i++)
                 {
                     reader.beginObject(i);
-                    var CID = reader.readString(TezReadOnlyString.ClassID);
+                    var CID = reader.readString(TezBuildInName.ClassID);
                     var obj = TezcatFramework.classFactory.create<TezDataComponent>(CID);
                     if (obj != null)
                     {

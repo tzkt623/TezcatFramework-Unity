@@ -32,7 +32,7 @@ namespace tezcat.Framework.Database
             {
                 if (reader.load(files[j]))
                 {
-                    var CID = reader.readString(TezReadOnlyString.ClassID);
+                    var CID = reader.readString(TezBuildInName.ClassID);
                     var item = TezcatFramework.classFactory.create<TezItemableObject>(CID);
                     item.deserialize(reader);
                     this.registerItem(item);

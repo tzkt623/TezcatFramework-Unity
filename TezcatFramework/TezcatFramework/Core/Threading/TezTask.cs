@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Threading;
 using tezcat.Framework.Core;
 using tezcat.Framework.Extension;
-using UnityEngine;
 
 namespace tezcat.Framework.Threading
 {
@@ -277,15 +276,15 @@ namespace tezcat.Framework.Threading
                 }
                 catch (ThreadAbortException ex)
                 {
-                    Debug.Log(ex.ToString());
+                    Console.WriteLine(ex.ToString());
                 }
                 catch (ThreadInterruptedException ex2)
                 {
-                    Debug.Log(ex2.ToString());
+                    Console.WriteLine(ex2.ToString());
                 }
                 catch (Exception ex3)
                 {
-                    Debug.Log(ex3.ToString());
+                    Console.WriteLine(ex3.ToString());
                     m_Running = false;
                 }
                 finally

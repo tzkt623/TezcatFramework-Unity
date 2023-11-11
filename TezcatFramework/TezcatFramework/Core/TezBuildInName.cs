@@ -1,7 +1,13 @@
 ﻿namespace tezcat.Framework.Core
 {
-    public class TezReadOnlyString
+    public class TezBuildInName
     {
+        #region ObjectInfo
+        /// <summary>
+        /// StackCount
+        /// </summary>
+        public const string ObjectInfo = "ObjectInfo";
+
         /// <summary>
         /// Class ID
         /// </summary>
@@ -13,32 +19,14 @@
         public const string NameID = "NID";
 
         /// <summary>
-        /// FixedID
+        /// Fixed ID
         /// </summary>
         public const string FixedID = "FID";
 
         /// <summary>
-        /// ModifiedID
+        /// Modified ID
         /// </summary>
         public const string ModifiedID = "MID";
-        /// <summary>
-        /// VersionID
-        /// </summary>
-        public const string VersionID = "VID";
-
-        /// <summary>
-        /// StackCount
-        /// </summary>
-        public const string StackCount = "StackCount";
-
-        /// <summary>
-        /// 分类类型
-        /// </summary>
-        public const string Category = "CTG";
-
-        public const string ItemID = "ItemID";
-        public const string CellID = "CellID";
-        public const string TypeID = "TypeID";
 
         /// <summary>
         /// Tag
@@ -46,13 +34,29 @@
         public const string TAG = "TAG";
 
         /// <summary>
-        /// Catgory RootToken
+        /// 分类类型
         /// </summary>
-        public const string CTG_RT = "CTG_RT";
+        public const string Category = "Category";
 
         /// <summary>
-        /// Catgory FinalToken
+        /// VersionID
         /// </summary>
-        public const string CTG_FT = "CTG_FT";
+        public const string Version = "Version";
+        #endregion
+
+
+
+
+        #region ItemInfo
+        /// <summary>
+        /// StackCount
+        /// </summary>
+        public const string ItemInfo = "ItemInfo";
+
+        /// <summary>
+        /// StackCount
+        /// </summary>
+        public const string StackCount = "StackCount";
+        #endregion
     }
 }

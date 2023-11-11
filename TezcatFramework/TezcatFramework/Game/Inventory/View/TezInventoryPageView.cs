@@ -11,16 +11,15 @@ namespace tezcat.Framework.Game.Inventory
     public class TezInventoryPageView : TezInventoryBaseView
     {
         /// <summary>
-        /// 通单个知槽位刷新
+        /// 通知单个槽位刷新
         /// <需要刷新的数据,当前索引>
         /// </summary>
-        public event TezEventExtension.Action<TezInventoryViewSlot, int> onSlotRefresh;
-
+        public event TezEventExtension.Action<TezInventoryViewSlot, int> evtSlotRefresh;
 
         /// <summary>
         /// <当前页码,最大页码>
         /// </summary>
-        public event TezEventExtension.Action<int, int> onPageChanged;
+        public event TezEventExtension.Action<int, int> evtPageChanged;
 
         List<ITezInventoryViewSlotData> mDataSlotList = new List<ITezInventoryViewSlotData>();
         TezStepArray<TezInventoryViewSlot> mSlots = null;
@@ -76,8 +75,8 @@ namespace tezcat.Framework.Game.Inventory
             mFreeIndex = null;
             mSlots = null;
 
-            onSlotRefresh = null;
-            onPageChanged = null;
+            evtSlotRefresh = null;
+            evtPageChanged = null;
 
             base.close();
         }
@@ -119,7 +118,7 @@ namespace tezcat.Framework.Game.Inventory
             }
 
             mCurrentPage = pageIndex;
-            onPageChanged?.Invoke(mCurrentPage, mMaxPage);
+            evtPageChanged?.Invoke(mCurrentPage, mMaxPage);
 
             mBeginPos = mCurrentPage * this.capacity;
             for (int i = 0; i < mSlots.capacity; i++)
@@ -135,7 +134,7 @@ namespace tezcat.Framework.Game.Inventory
                     view_slot.data = null;
                 }
 
-                onSlotRefresh?.Invoke(view_slot, i);
+                evtSlotRefresh?.Invoke(view_slot, i);
             }
         }
 
@@ -237,7 +236,7 @@ namespace tezcat.Framework.Game.Inventory
             {
                 var view_slot = mSlots[view_index - mBeginPos];
                 view_slot.data = data;
-                onSlotRefresh?.Invoke(view_slot, view_index - mBeginPos);
+                evtSlotRefresh?.Invoke(view_slot, view_index - mBeginPos);
             }
         }
 
@@ -248,25 +247,31 @@ namespace tezcat.Framework.Game.Inventory
                 return;
             }
 
-            mFreeIndex.Add(data.viewIndex);
+            var view_index = data.viewIndex;
+            mFreeIndex.Add(view_index);
             mFreeIndexDirty = true;
 
-            mDataSlotList[data.viewIndex] = null;
+            mDataSlotList[view_index] = null;
+            data.viewIndex = -1;
 
-            var view_index = data.viewIndex;
             if (this.inPageRange(view_index))
             {
                 var view_slot = mSlots[view_index - mBeginPos];
                 view_slot.data = null;
-                onSlotRefresh?.Invoke(view_slot, view_index - mBeginPos);
+                evtSlotRefresh?.Invoke(view_slot, view_index - mBeginPos);
             }
         }
 
         public override void updateViewSlotData(int viewIndex)
         {
+            if (viewIndex == -1)
+            {
+                return;
+            }
+
             if (this.inPageRange(viewIndex))
             {
-                onSlotRefresh?.Invoke(mSlots[viewIndex - mBeginPos], viewIndex - mBeginPos);
+                evtSlotRefresh?.Invoke(mSlots[viewIndex - mBeginPos], viewIndex - mBeginPos);
             }
         }
 
@@ -275,7 +280,7 @@ namespace tezcat.Framework.Game.Inventory
             Console.WriteLine("Debug Being..............");
             for (int i = 0; i < mSlots.capacity; i++)
             {
-                onSlotRefresh?.Invoke(mSlots[i], i);
+                evtSlotRefresh?.Invoke(mSlots[i], i);
             }
         }
     }

@@ -73,6 +73,35 @@
     <Compile Include="TezcatUnity\Core\Object\TezGameMonoObject.cs" />
     <Compile Include="TezcatUnity\Core\Object\TezMonoObject.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TezcatUnity\Extension\TezTransformExtension.cs" />
+    <Compile Include="TezcatUnity\Extension\TezVectorExtension.cs" />
+    <Compile Include="TezcatUnity\Game\Dungeon\ITezDungeon.cs" />
+    <Compile Include="TezcatUnity\Game\Dungeon\TezDungeonBlock.cs" />
+    <Compile Include="TezcatUnity\Game\Dungeon\TezDungeonCorridor.cs" />
+    <Compile Include="TezcatUnity\Game\Dungeon\TezDungeonGenerator.cs" />
+    <Compile Include="TezcatUnity\Game\Dungeon\TezDungeonRoom.cs" />
+    <Compile Include="TezcatUnity\Game\Dungeon\TezDungeonUtility.cs" />
+    <Compile Include="TezcatUnity\Game\Galaxy\TezGalaxyBody.cs" />
+    <Compile Include="TezcatUnity\Game\Galaxy\TezGalaxyCDF.cs" />
+    <Compile Include="TezcatUnity\Game\Galaxy\TezGalaxySimulator.cs" />
+    <Compile Include="TezcatUnity\Game\Galaxy\TezGalaxySpectra.cs" />
+    <Compile Include="TezcatUnity\Game\Galaxy\TezGalaxyTool.cs" />
+    <Compile Include="TezcatUnity\Game\HexSystem\TexHexList.cs" />
+    <Compile Include="TezcatUnity\Game\HexSystem\TezHexArea.cs" />
+    <Compile Include="TezcatUnity\Game\HexSystem\TezHexArrayIndex.cs" />
+    <Compile Include="TezcatUnity\Game\HexSystem\TezHexBlock.cs" />
+    <Compile Include="TezcatUnity\Game\HexSystem\TezHexChunk.cs" />
+    <Compile Include="TezcatUnity\Game\HexSystem\TezHexCubeCoordinate.cs" />
+    <Compile Include="TezcatUnity\Game\HexSystem\TezHexGrid.cs" />
+    <Compile Include="TezcatUnity\Game\HexSystem\TezHexLayout.cs" />
+    <Compile Include="TezcatUnity\Game\HexSystem\TezHexMesh.cs" />
+    <Compile Include="TezcatUnity\Game\HexSystem\TezHexOffsetCoordinate.cs" />
+    <Compile Include="TezcatUnity\Game\HexSystem\TezHexOrientation.cs" />
+    <Compile Include="TezcatUnity\Game\HexSystem\TezHexVector2.cs" />
+    <Compile Include="TezcatUnity\Game\Planet\TezPlanetData.cs" />
+    <Compile Include="TezcatUnity\Game\Planet\TezPlanetGenerator.cs" />
+    <Compile Include="TezcatUnity\Game\Planet\TezPlanetGMO.cs" />
+    <Compile Include="TezcatUnity\Game\Planet\TezPlanetTerrainFace.cs" />
     <Compile Include="TezcatUnity\UI\TezTipController.cs" />
     <Compile Include="TezcatUnity\GraphicSystem\TezBasicMesh.cs" />
     <Compile Include="TezcatUnity\GraphicSystem\TezGraphicObject.cs" />
@@ -114,6 +143,7 @@
     <Compile Include="TezcatUnity\Utility\KeyConfigSystem\UnityKeyPressWrapper.cs" />
     <Compile Include="TezcatUnity\Utility\KeyConfigSystem\UnityKeyUpWrapper.cs" />
     <Compile Include="TezcatUnity\Utility\KeyConfigSystem\UnityKeyWrapper.cs" />
+    <Compile Include="TezcatUnity\Utility\TezNoise.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

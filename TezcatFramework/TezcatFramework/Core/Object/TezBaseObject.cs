@@ -16,7 +16,7 @@ namespace tezcat.Framework.Core
             get { return this.GetType().Name; }
         }
 
-        private uint mObjectUID = TezObjectUID.generateID();
+        private uint mObjectUID = TezObjectUIDManager.generateID();
 
         /// <summary>
         /// UID
@@ -29,7 +29,7 @@ namespace tezcat.Framework.Core
         /// </summary>
         public virtual void close()
         {
-            TezObjectUID.recycleID(mObjectUID);
+            TezObjectUIDManager.recycleID(mObjectUID);
             mObjectUID = 0;
         }
 

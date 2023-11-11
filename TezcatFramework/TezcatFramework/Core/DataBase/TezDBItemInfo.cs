@@ -196,27 +196,27 @@ namespace tezcat.Framework.Database
 
         public static TezGameItemInfo createFixedItemInfo(TezReader reader, string path)
         {
-            string nid = reader.readString(TezReadOnlyString.NameID);
-            if (!reader.tryRead(TezReadOnlyString.StackCount, out int stack_count))
+            string nid = reader.readString(TezBuildInName.NameID);
+            if (!reader.tryRead(TezBuildInName.StackCount, out int stack_count))
             {
                 stack_count = -1;
             }
 
-            var fdid = reader.readInt(TezReadOnlyString.FixedID);
+            var fdid = reader.readInt(TezBuildInName.FixedID);
 
             return new TezGameItemInfo(path, nid, stack_count, fdid);
         }
 
         public static TezGameItemInfo createRuntimeItemInfo(TezReader reader)
         {
-            string nid = reader.readString(TezReadOnlyString.NameID);
-            if (!reader.tryRead(TezReadOnlyString.StackCount, out int stack_count))
+            string nid = reader.readString(TezBuildInName.NameID);
+            if (!reader.tryRead(TezBuildInName.StackCount, out int stack_count))
             {
                 stack_count = -1;
             }
 
-            var fdid = reader.readInt(TezReadOnlyString.FixedID);
-            var mdid = reader.readInt(TezReadOnlyString.ModifiedID);
+            var fdid = reader.readInt(TezBuildInName.FixedID);
+            var mdid = reader.readInt(TezBuildInName.ModifiedID);
 
             return new TezGameItemInfo(nid, stack_count, fdid, mdid);
         }

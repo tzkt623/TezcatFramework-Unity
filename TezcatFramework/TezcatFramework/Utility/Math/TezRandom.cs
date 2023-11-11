@@ -1,4 +1,4 @@
-﻿namespace tezcat.Framework.Math
+﻿namespace tezcat.Framework.TMath
 {
     /// <summary>
     /// 

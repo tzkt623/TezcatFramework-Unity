@@ -1,4 +1,3 @@
-using System;
 using tezcat.Framework.Database;
 using tezcat.Framework.Game.Inventory;
 
@@ -113,11 +112,11 @@ namespace tezcat.Framework.Core
         {
             base.serialize(writer);
             var item_info = this.itemInfo;
-            writer.write(TezReadOnlyString.NameID, item_info.NID);
-            writer.write(TezReadOnlyString.StackCount, item_info.stackCount);
+            writer.write(TezBuildInName.NameID, item_info.NID);
+            writer.write(TezBuildInName.StackCount, item_info.stackCount);
 
-            writer.write(TezReadOnlyString.FixedID, this.itemID.fixedID);
-            writer.write(TezReadOnlyString.ModifiedID, this.itemID.modifiedID);
+            writer.write(TezBuildInName.FixedID, this.itemID.fixedID);
+            writer.write(TezBuildInName.ModifiedID, this.itemID.modifiedID);
         }
 
         /// <summary>
@@ -129,15 +128,15 @@ namespace tezcat.Framework.Core
 
             reader.beginObject("ItemInfo");
 
-            int fdid = reader.readInt(TezReadOnlyString.FixedID);
-            if (!reader.tryRead(TezReadOnlyString.ModifiedID, out int mdid))
+            int fdid = reader.readInt(TezBuildInName.FixedID);
+            if (!reader.tryRead(TezBuildInName.ModifiedID, out int mdid))
             {
                 mdid = -1;
             }
 
             mItemInfo = new TezGameItemInfo
-                ( reader.readString(TezReadOnlyString.NameID)
-                , reader.readInt(TezReadOnlyString.StackCount)
+                ( reader.readString(TezBuildInName.NameID)
+                , reader.readInt(TezBuildInName.StackCount)
                 , fdid
                 , mdid);
             mItemInfo.setPrototype(this);

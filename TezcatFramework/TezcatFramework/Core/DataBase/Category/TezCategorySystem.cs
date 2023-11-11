@@ -323,6 +323,7 @@ namespace tezcat.Framework.Database
 
             var writer = TezFilePath.createTextFile(outPath + "/" + wrapper_class + ".cs");
             writer.Write(builder.ToString());
+            writer.Flush();
             writer.Close();
         }
 

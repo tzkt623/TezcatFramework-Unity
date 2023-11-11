@@ -1,6 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using tezcat.Framework.TypeTraits;
-using UnityEngine;
 
 namespace tezcat.Framework.Core
 {
@@ -35,7 +35,7 @@ namespace tezcat.Framework.Core
                     ServiceID<IService>.setID(m_List.Count);
                     ServiceID<IService>.service = service;
                     m_List.Add(service);
-                    Debug.Log(string.Format("Service : [{0}] is registered!", service.GetType().Name));
+                    Console.WriteLine(string.Format("Service : [{0}] is registered!", service.GetType().Name));
                     break;
                 default:
                     ServiceID<IService>.service = service;

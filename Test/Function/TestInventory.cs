@@ -49,8 +49,8 @@ namespace tezcat.Framework.Test
 
     class TestInventory : TezBaseTest
     {
-        TezInventory inventory = null;
-        TezInventoryPageView pageView = null;
+        TezInventory mInventory = null;
+        TezInventoryPageView mPageView = null;
 
         public TestInventory() : base("Inventory")
         {
@@ -78,20 +78,20 @@ namespace tezcat.Framework.Test
         {
             var info = TezcatFramework.mainDB.getItem("SmallHealthPotion");
             var hpPotion = info.getObject<HealthPotion>();
-            this.inventory.store(hpPotion, 25);
+            mInventory.store(hpPotion, 25);
 
             info = TezcatFramework.mainDB.getItem("H355");
             var armor = info.getObject<Armor>();
-            this.inventory.store(armor);
-            this.pageView.debug();
+            mInventory.store(armor);
+            mPageView.debug();
 
-            this.pageView.filterManager.setFilter("TypeFilter");
-            this.pageView.filterManager.setFilter("NameFilter");
+            mPageView.filterManager.setFilter("TypeFilter");
+            mPageView.filterManager.setFilter("NameFilter");
 
-            this.inventory.take(armor);
-            this.inventory.take(hpPotion, 10);
+            mInventory.take(armor);
+            mInventory.take(hpPotion, 10);
 
-            this.pageView.filterManager.setFilter("Default");
+            mPageView.filterManager.setFilter("Default");
         }
 
         public override void init()
@@ -106,20 +106,20 @@ namespace tezcat.Framework.Test
                 return data.item.itemInfo.category == TezCategorySystem.getCategory(MyCategory.Potion.HealthPotion);
             });
 
-            this.pageView = new TezInventoryPageView();
+            mPageView = new TezInventoryPageView();
 
-            pageView.setPageCapacity(5);
-            pageView.onPageChanged += onPageChanged;
-            pageView.onSlotRefresh += onSlotRefresh;
+            mPageView.setPageCapacity(5);
+            mPageView.evtPageChanged += onPageChanged;
+            mPageView.evtSlotRefresh += onSlotRefresh;
 
-            this.inventory = new TezInventory();
-            inventory.setView(pageView);
+            mInventory = new TezInventory();
+            mInventory.setView(mPageView);
         }
 
         public override void close()
         {
-            this.inventory.close();
-            this.pageView.close();
+            mInventory.close();
+            mPageView.close();
         }
     }
 }

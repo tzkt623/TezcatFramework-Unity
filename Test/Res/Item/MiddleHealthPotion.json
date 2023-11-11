@@ -1,6 +1,6 @@
 {
     "CID": "HealthPotion",
-    "CTG": "HealthPotion",
+    "Category": "HealthPotion",
     "ItemInfo": {
         "NID": "MiddleHealthPotion",
         "FID": 1,

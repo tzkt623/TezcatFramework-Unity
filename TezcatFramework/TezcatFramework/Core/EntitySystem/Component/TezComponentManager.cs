@@ -1,6 +1,5 @@
 ﻿using System;
 using tezcat.Framework.TypeTraits;
-using UnityEngine;
 
 namespace tezcat.Framework.ECS
 {
@@ -14,7 +13,7 @@ namespace tezcat.Framework.ECS
             {
                 var id = count++;
                 TezComponentID<Component>.setID(id);
-                Debug.Log(string.Format("TezComponentManager : Register {0}-{1}", typeof(Component).Name, id));
+                /*Debug.Log(string.Format("TezComponentManager : Register {0}-{1}", typeof(Component).Name, id));*/
                 return id;
             }
 

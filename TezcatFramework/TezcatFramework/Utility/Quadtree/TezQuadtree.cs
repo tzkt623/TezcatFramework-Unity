@@ -2,10 +2,10 @@
 #define OptimizeSearch
 #endif
 
+using System;
 using System.Collections.Generic;
 using tezcat.Framework.Extension;
 using tezcat.Framework.Shape;
-using UnityEngine;
 
 namespace tezcat.Framework.Utility
 {
@@ -160,7 +160,7 @@ namespace tezcat.Framework.Utility
             {
                 if(m_Level + 1 == this.maxLevel)
                 {
-                    Debug.Log("超过最大分裂值,留在当前");
+                    Console.WriteLine("超过最大分裂值,留在当前");
                     m_Objects.Add(obj);
                     return true;
                 }
@@ -233,7 +233,7 @@ namespace tezcat.Framework.Utility
             }
 #endif
 
-            Debug.Log("插入失败,超出数量,留在父节点");
+            //Debug.Log("插入失败,超出数量,留在父节点");
 //            m_Objects.Add(obj);
             return false;
         }

@@ -1,6 +1,6 @@
 {
     "CID": "Armor",
-    "CTG": "Breastplate",
+    "Category": "Breastplate",
     "ItemInfo": {
         "NID": "H355",
         "FID": 3,

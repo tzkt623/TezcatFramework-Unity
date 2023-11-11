@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using UnityEngine;
 
 namespace tezcat.Framework.Utility
 {
@@ -13,7 +12,7 @@ namespace tezcat.Framework.Utility
             var type = typeof(T);
             if (!m_Dic.ContainsKey(type))
             {
-                Debug.Log("TezSamplePoolManager : " + type.FullName);
+                Console.WriteLine("TezSamplePoolManager : " + type.FullName);
                 m_Dic.Add(type, pool);
             }
             else

@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace tezcat.Framework.Extension
+namespace tezcat.Unity
 {
     public static class TezVectorExtension
     {

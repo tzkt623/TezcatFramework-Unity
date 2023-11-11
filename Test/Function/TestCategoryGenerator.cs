@@ -1,3 +1,4 @@
+using System;
 using tezcat.Framework.Database;
 
 namespace tezcat.Framework.Test
@@ -167,13 +168,19 @@ namespace tezcat.Framework.Test
 
         public void generateCShapFile()
         {
-            string loadPath = Path.root + "Category.json";
-            string savePath = Path.root;
+            string loadPath = Path.root + "Res/CategoryGenerator/Category.json";
+            string savePath = Path.root + "Res/CategoryGenerator";
             TezJsonReader reader = new TezJsonReader();
             if (reader.load(loadPath))
             {
                 TezCategorySystem.generateCodeFile(savePath, reader);
+                Console.WriteLine($"Generate File Successed: {savePath}");
             }
+            else
+            {
+                Console.WriteLine($"Open File Error: {loadPath}");
+            }
+            reader.close();
         }
 
         public override void init()

@@ -16,7 +16,7 @@ namespace tezcat.Framework.Test
 
         public override void init()
         {
-            TezTranslator.loadConfig(Path.root + "Localization");
+            TezTranslator.loadConfig(Path.root + "Res/Localization");
         }
 
         public override void run()

@@ -2,7 +2,7 @@
 using tezcat.Framework.Core;
 using tezcat.Framework.Utility;
 
-namespace tezcat.Framework.Math
+namespace tezcat.Framework.TMath
 {
     /// <summary>
     /// 赌轮算法

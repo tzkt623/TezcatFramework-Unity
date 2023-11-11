@@ -6,8 +6,8 @@ namespace tezcat.Framework.Game.Inventory
 {
     /// <summary>
     /// 物品栏视图
-    /// 生命周期不归物品栏管
-    /// 因为可以在运输时替换视图结构
+    /// 此对象的生命周期不归物品栏管
+    /// 因为可以在运行时替换视图结构
     /// </summary>
     public abstract class TezInventoryBaseView : ITezCloseable
     {
@@ -26,7 +26,7 @@ namespace tezcat.Framework.Game.Inventory
 
         public TezInventoryBaseView()
         {
-            mFilterManager.onFilterChanged += this.onFilterChanged;
+            mFilterManager.evtFilterChanged += this.onFilterChanged;
         }
 
         public virtual void setInventory(TezInventory inventory)
@@ -45,7 +45,7 @@ namespace tezcat.Framework.Game.Inventory
 
         public virtual void close()
         {
-            mFilterManager.onFilterChanged -= this.onFilterChanged;
+            mFilterManager.evtFilterChanged -= this.onFilterChanged;
             mFilterManager.close();
             mFilterManager = null;
 
@@ -53,10 +53,11 @@ namespace tezcat.Framework.Game.Inventory
             mLifeMonitorSlot = null;
         }
 
-        public virtual void debug() { }
-
         public abstract void updateViewSlotData(int index);
         public abstract void addViewSlotData(ITezInventoryViewSlotData data);
         public abstract void removeViewSlotData(ITezInventoryViewSlotData data);
+
+
+        public virtual void debug() { }
     }
 }

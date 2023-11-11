@@ -51,7 +51,7 @@ namespace tezcat.Framework.Core
 
         public override void deserialize(TezReader reader)
         {
-            if(reader.tryRead(TezReadOnlyString.Category, out string name))
+            if(reader.tryRead(TezBuildInName.Category, out string name))
             {
                 mCategory = TezCategorySystem.getCategory(name);
             }
@@ -59,10 +59,10 @@ namespace tezcat.Framework.Core
 
         public override void serialize(TezWriter writer)
         {
-            writer.write(TezReadOnlyString.ClassID, this.CID);
+            writer.write(TezBuildInName.ClassID, this.CID);
             if(mCategory != null)
             {
-                writer.write(TezReadOnlyString.Category, mCategory.name);
+                writer.write(TezBuildInName.Category, mCategory.name);
             }
         }
 

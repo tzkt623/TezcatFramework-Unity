@@ -36,7 +36,7 @@ namespace tezcat.Framework.Test
             TezcatFramework.classFactory.register(() => new Armor());
             TezcatFramework.classFactory.register(() => new Character());
             TezcatFramework.classFactory.register(() => new HealthPotion());
-            TezcatFramework.mainDB.load(Path.root + "Res");
+            TezcatFramework.mainDB.load(Path.root + "Res/Item");
         }
 
         public void run()

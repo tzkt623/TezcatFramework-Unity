@@ -102,7 +102,7 @@ namespace tezcat.Framework.Game.Inventory
         }
         #endregion
 
-        public event TezEventExtension.Action onFilterChanged;
+        public event TezEventExtension.Action evtFilterChanged;
 
         BaseFilter mCurrentFilter = null;
 
@@ -114,13 +114,13 @@ namespace tezcat.Framework.Game.Inventory
         public void setFilter(int index)
         {
             mCurrentFilter = sFilters[index];
-            onFilterChanged?.Invoke();
+            evtFilterChanged?.Invoke();
         }
 
         public void setFilter(string name)
         {
             mCurrentFilter = sFilters.Find((BaseFilter filter) => filter.name == name);
-            onFilterChanged?.Invoke();
+            evtFilterChanged?.Invoke();
         }
 
         public bool filter(ITezInventoryViewSlotData slotData)
@@ -131,7 +131,7 @@ namespace tezcat.Framework.Game.Inventory
         public void close()
         {
             mCurrentFilter = null;
-            onFilterChanged = null;
+            evtFilterChanged = null;
         }
     }
 }

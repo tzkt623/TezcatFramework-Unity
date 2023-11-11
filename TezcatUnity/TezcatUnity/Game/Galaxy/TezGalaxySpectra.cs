@@ -1,7 +1,7 @@
 ﻿using tezcat.Framework.Extension;
 using UnityEngine;
 
-namespace tezcat.Framework.Game.Galaxy
+namespace tezcat.Framework.Game
 {
     /*
                 Colour Rendering of Spectra
