@@ -57,7 +57,6 @@
     <Compile Include="TezcatFramework\Game\AI\BehaviorTree\TezBTRegisterAttribute.cs" />
     <Compile Include="TezcatFramework\Core\Tag\TezTags.cs" />
     <Compile Include="TezcatFramework\Core\DataBase\Category\ITezCategoryObject.cs" />
-    <Compile Include="TezcatFramework\Core\EntitySystem\Component\TezInfoComponent.cs" />
     <Compile Include="TezcatFramework\Core\Value\Property\Lit\ITezLitProperty.cs" />
     <Compile Include="TezcatFramework\Core\Value\Property\Other\ITezModifierRefrenceProperty.cs" />
     <Compile Include="TezcatFramework\Core\Value\Property\ITezProperty.cs" />
@@ -93,7 +92,7 @@
     <Compile Include="TezcatFramework\Core\Value\Property\Lit\TezLitPropertyManager.cs" />
     <Compile Include="TezcatFramework\Core\Value\Property\Lit\TezLitPropertySortList.cs" />
     <Compile Include="TezcatFramework\Core\Value\TezValueSortList.cs" />
-    <Compile Include="TezcatFramework\Core\Tag\ITezTagSet.cs" />
+    <Compile Include="TezcatFramework\Core\Tag\ITezTagEntry.cs" />
     <Compile Include="TezcatFramework\Core\Object\TezBaseObject.cs" />
     <Compile Include="TezcatFramework\Core\Value\Modifier\TezFunctionModifier.cs" />
     <Compile Include="TezcatFramework\Core\Value\Modifier\TezModifierConfig.cs" />

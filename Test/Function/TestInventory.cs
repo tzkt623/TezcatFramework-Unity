@@ -1,7 +1,7 @@
 ﻿using System;
 using tezcat.Framework.Core;
 using tezcat.Framework.Database;
-using tezcat.Framework.Game.Inventory;
+using tezcat.Framework.Game;
 
 namespace tezcat.Framework.Test
 {

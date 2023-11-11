@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using tezcat.Framework.Extension;
 using tezcat.Framework.Utility;
 
-namespace tezcat.Framework.Game.Inventory
+namespace tezcat.Framework.Game
 {
     /// <summary>
     /// 卡尺式Inventory分页显示器

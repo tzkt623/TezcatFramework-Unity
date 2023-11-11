@@ -3,7 +3,7 @@ using tezcat.Framework.Core;
 using tezcat.Framework.Database;
 using tezcat.Framework.Utility;
 
-namespace tezcat.Framework.Game.Inventory
+namespace tezcat.Framework.Game
 {
     /// <summary>
     /// 可放入Inventory的对象

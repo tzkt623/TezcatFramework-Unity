@@ -155,7 +155,7 @@ namespace tezcat.Framework.Utility
                 ///右子树
                 int right_index = item.index * 2 + 2;
 
-                int swap_index = 0;
+                int swap_index;
 
                 ///如果左子树没有越界
                 if (left_index < mCount)
@@ -166,7 +166,7 @@ namespace tezcat.Framework.Utility
                     if (right_index < mCount)
                     {
                         ///比较左右子树的优先级
-                        ///选取优先级大的一个作为交换对象
+                        ///选取优先级大的一个作为交换对象(最大堆/最小堆)
                         if (mItems[left_index].CompareTo(mItems[right_index]) < 0)
                         {
                             swap_index = right_index;

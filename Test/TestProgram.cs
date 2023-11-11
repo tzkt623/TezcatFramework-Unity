@@ -98,6 +98,7 @@ namespace tezcat.Framework.Test
 
         void register()
         {
+            mTestList.Add(new TestAStarSystem());
             mTestList.Add(new TestTag());
             mTestList.Add(new TestRandomIndex());
             mTestList.Add(new TestFieldOffset());

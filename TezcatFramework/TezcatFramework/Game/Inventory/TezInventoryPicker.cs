@@ -1,8 +1,4 @@
-﻿using System.Collections.Generic;
-using tezcat.Framework.Core;
-using tezcat.Framework.Extension;
-
-namespace tezcat.Framework.Game.Inventory
+﻿namespace tezcat.Framework.Game
 {
     /// <summary>
     /// 物品虚拟选择接口

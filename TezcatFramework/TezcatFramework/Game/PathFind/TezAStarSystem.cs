@@ -16,13 +16,12 @@ namespace tezcat.Framework.Game
         where Wrapper : TezAStarDataWrapper<Wrapper, BlockData>, new()
     {
         #region Tool
-
         public static void closePools()
         {
-            TezSamplePool<Wrapper>.instance.close();
-            TezSamplePool<HashSet<Wrapper>>.instance.close();
-            TezSamplePool<List<BlockData>>.instance.close();
-            TezSamplePool<List<Wrapper>>.instance.close();
+            TezSamplePool<Wrapper>.instance.destroy();
+            TezSamplePool<HashSet<Wrapper>>.instance.destroy();
+            TezSamplePool<List<BlockData>>.instance.destroy();
+            TezSamplePool<List<Wrapper>>.instance.destroy();
         }
 
         protected static List<BlockData> createList_BlockData()
@@ -66,22 +65,21 @@ namespace tezcat.Framework.Game
         }
         #endregion
 
-
         Dictionary<BlockData, Wrapper> mSaveWrappers = new Dictionary<BlockData, Wrapper>();
 
         /// <summary>
         /// 路径找到
         /// </summary>
-        public event TezEventExtension.Action<List<BlockData>> onPathFound;
+        public event TezEventExtension.Action<List<BlockData>> evtPathFound;
         /// <summary>
         /// 路径没找到
         /// </summary>
-        public event TezEventExtension.Action onPathNotFound;
+        public event TezEventExtension.Action evtPathNotFound;
 
         public virtual void close()
         {
-            onPathFound = null;
-            onPathNotFound = null;
+            evtPathFound = null;
+            evtPathNotFound = null;
 
             mSaveWrappers.Clear();
             mSaveWrappers = null;
@@ -91,15 +89,15 @@ namespace tezcat.Framework.Game
         /// </summary>
         public void findPath(Wrapper start, Wrapper end, TezBinaryHeap<Wrapper> openSet)
         {
-            //             Stopwatch stopwatch = new Stopwatch();
-            //             stopwatch.Start();
+            //Stopwatch stopwatch = new Stopwatch();
+            //stopwatch.Start();
             this.saveWrapper(start);
             this.saveWrapper(end);
 
             if (end.isBlocked())
             {
                 this.onPathFindComplete();
-                onPathNotFound.Invoke();
+                evtPathNotFound.Invoke();
                 return;
             }
 
@@ -111,8 +109,8 @@ namespace tezcat.Framework.Game
                 var current_node = openSet.pop();
                 if (current_node.Equals(end))
                 {
-                    //                     stopwatch.Stop();
-                    //                     UnityEngine.Debug.Log(stopwatch.ElapsedMilliseconds + "ms");
+                    //stopwatch.Stop();
+                    //Console.WriteLine($"{stopwatch.ElapsedMilliseconds}ms");
                     this.retracePath(start, current_node);
                     this.onPathFindComplete(openSet, close_set);
                     return;
@@ -133,8 +131,8 @@ namespace tezcat.Framework.Game
                     if (new_cost < neighbour.gCost || not_in_open)
                     {
                         neighbour.gCost = new_cost;
-                        neighbour.hCost = this.calculateHCost(neighbour, end);
                         neighbour.parent = current_node;
+                        neighbour.hCost = this.calculateHCost(neighbour, end);
 
                         if (not_in_open)
                         {
@@ -145,7 +143,7 @@ namespace tezcat.Framework.Game
                 this.recycleNeighbourList(neighbours);
             }
 
-            onPathNotFound.Invoke();
+            evtPathNotFound.Invoke();
             this.onPathFindComplete(openSet, close_set);
         }
 
@@ -165,9 +163,9 @@ namespace tezcat.Framework.Game
                 path.Add(current.blockData);
                 current = (Wrapper)current.parent;
             }
-            path.Reverse();
+            //path.Reverse();
 
-            onPathFound.Invoke(path);
+            evtPathFound.Invoke(path);
         }
         /// <summary>
         /// 计算G的前置代价
@@ -183,7 +181,6 @@ namespace tezcat.Framework.Game
 
         /// <summary>
         /// 计算当前块的邻居
-        /// 
         /// </summary>
         private List<Wrapper> calculateNeighbours(Wrapper current)
         {
@@ -252,7 +249,7 @@ namespace tezcat.Framework.Game
 
             if (end.isBlocked())
             {
-                onPathNotFound.Invoke();
+                evtPathNotFound.Invoke();
                 return;
             }
 
@@ -327,9 +324,7 @@ namespace tezcat.Framework.Game
             }
 
             recycleHashSet_Wrapper(close_set);
-            onPathNotFound.Invoke();
+            evtPathNotFound.Invoke();
         }
-
     }
 }
-

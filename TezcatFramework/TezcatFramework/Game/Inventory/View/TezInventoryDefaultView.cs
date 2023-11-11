@@ -1,4 +1,4 @@
-﻿namespace tezcat.Framework.Game.Inventory
+﻿namespace tezcat.Framework.Game
 {
     public class TezInventoryDefaultView : TezInventoryBaseView
     {

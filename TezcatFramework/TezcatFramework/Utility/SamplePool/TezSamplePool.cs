@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using tezcat.Framework.Extension;
 
 namespace tezcat.Framework.Utility
@@ -13,12 +12,12 @@ namespace tezcat.Framework.Utility
         : ITezSamplePool
         where MyObject : new()
     {
-        static TezSamplePool<MyObject> m_Instance = new TezSamplePool<MyObject>();
-        public static TezSamplePool<MyObject> instance => m_Instance;
+        static TezSamplePool<MyObject> sInstance = new TezSamplePool<MyObject>();
+        public static TezSamplePool<MyObject> instance => sInstance;
 
-        TezEventExtension.Action<MyObject> m_ClearFunction;
-        TezEventExtension.Function<MyObject> m_CreateFunction;
-        TezEventExtension.Action<MyObject> m_CloseFunction;
+        TezEventExtension.Action<MyObject> mClearFunction;
+        TezEventExtension.Function<MyObject> mCreateFunction;
+        TezEventExtension.Action<MyObject> mCloseFunction;
 
         /// <summary>
         /// 设置清理方法
@@ -26,7 +25,7 @@ namespace tezcat.Framework.Utility
         /// </summary>
         public TezEventExtension.Action<MyObject> clearFunction
         {
-            set { m_ClearFunction = value; }
+            set { mClearFunction = value; }
         }
 
         /// <summary>
@@ -35,7 +34,7 @@ namespace tezcat.Framework.Utility
         /// </summary>
         public TezEventExtension.Function<MyObject> createFunction
         {
-            set { m_CreateFunction = value; }
+            set { mCreateFunction = value; }
         }
 
         /// <summary>
@@ -43,12 +42,12 @@ namespace tezcat.Framework.Utility
         /// </summary>
         public TezEventExtension.Action<MyObject> closeFunction
         {
-            set { m_CloseFunction = value; }
+            set { mCloseFunction = value; }
         }
 
-        int m_CreateCount = 0;
+        int mCreateCount = 0;
 
-        string m_Name = string.Empty;
+        string mName = string.Empty;
         /// <summary>
         /// 池名称
         /// (包含类型的名称)
@@ -57,23 +56,23 @@ namespace tezcat.Framework.Utility
         {
             get
             {
-                if (string.IsNullOrEmpty(m_Name))
+                if (string.IsNullOrEmpty(mName))
                 {
-                    m_Name = string.Format("TezSamplePool<{0}>", typeof(MyObject).Name);
+                    mName = $"TezSamplePool<{typeof(MyObject).Name}>";
                 }
-                return m_Name;
+                return mName;
             }
         }
         /// <summary>
         /// 以创建的个数
         /// </summary>
-        public int createCount => m_CreateCount;
+        public int createCount => mCreateCount;
         /// <summary>
         /// 回收待用的个数
         /// </summary>
-        public int recycleCount => m_Pool.Count;
+        public int recycleCount => mPool.Count;
 
-        Queue<MyObject> m_Pool = new Queue<MyObject>();
+        Queue<MyObject> mPool = new Queue<MyObject>();
 
         private TezSamplePool()
         {
@@ -86,30 +85,30 @@ namespace tezcat.Framework.Utility
         /// </summary>
         public void destroyObjects()
         {
-            if (m_CloseFunction != null)
+            if (mCloseFunction != null)
             {
-                foreach (var item in m_Pool)
+                foreach (var item in mPool)
                 {
-                    m_CloseFunction(item);
+                    mCloseFunction(item);
                 }
             }
-            m_Pool.Clear();
+            mPool.Clear();
         }
 
         /// <summary>
         /// 关闭此Pool
         /// 此Pool将永远无法再次使用
         /// </summary>
-        public void close()
+        public void destroy()
         {
             this.destroyObjects();
 
-            m_Pool = null;
+            mPool = null;
 
-            m_CloseFunction = null;
-            m_ClearFunction = null;
-            m_CreateFunction = null;
-            m_Instance = null;
+            mCloseFunction = null;
+            mClearFunction = null;
+            mCreateFunction = null;
+            sInstance = null;
         }
 
         /// <summary>
@@ -117,12 +116,12 @@ namespace tezcat.Framework.Utility
         /// </summary>
         public MyObject create()
         {
-            if (m_Pool.Count > 0)
+            if (mPool.Count > 0)
             {
-                return m_Pool.Dequeue();
+                return mPool.Dequeue();
             }
 
-            m_CreateCount++;
+            mCreateCount++;
             return new MyObject();
         }
 
@@ -131,13 +130,13 @@ namespace tezcat.Framework.Utility
         /// </summary>
         public MyObject customCreate()
         {
-            if (m_Pool.Count > 0)
+            if (mPool.Count > 0)
             {
-                return m_Pool.Dequeue();
+                return mPool.Dequeue();
             }
 
-            m_CreateCount++;
-            return m_CreateFunction();
+            mCreateCount++;
+            return mCreateFunction();
         }
 
         /// <summary>
@@ -145,7 +144,7 @@ namespace tezcat.Framework.Utility
         /// </summary>
         public void recycle(MyObject myObject)
         {
-            m_Pool.Enqueue(myObject);
+            mPool.Enqueue(myObject);
         }
 
         /// <summary>
@@ -153,8 +152,8 @@ namespace tezcat.Framework.Utility
         /// </summary>
         public void recycleWithClear(MyObject myObject)
         {
-            m_ClearFunction(myObject);
-            m_Pool.Enqueue(myObject);
+            mClearFunction(myObject);
+            mPool.Enqueue(myObject);
         }
 
         object ITezSamplePool.create()

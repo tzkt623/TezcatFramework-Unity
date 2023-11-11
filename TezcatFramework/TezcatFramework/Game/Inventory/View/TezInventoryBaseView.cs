@@ -2,7 +2,7 @@
 using tezcat.Framework.Core;
 using tezcat.Framework.Utility;
 
-namespace tezcat.Framework.Game.Inventory
+namespace tezcat.Framework.Game
 {
     /// <summary>
     /// 物品栏视图
@@ -11,14 +11,6 @@ namespace tezcat.Framework.Game.Inventory
     /// </summary>
     public abstract class TezInventoryBaseView : ITezCloseable
     {
-        public TezInventory inventory
-        {
-            get
-            {
-                mLifeMonitorSlot.tryGetObject<TezInventory>(out var result);
-                return result;
-            }
-        }
         protected TezLifeMonitorSlot mLifeMonitorSlot = null;
 
         protected TezInventoryFilter mFilterManager = new TezInventoryFilter();
@@ -39,6 +31,16 @@ namespace tezcat.Framework.Game.Inventory
         {
             mLifeMonitorSlot?.close();
             mLifeMonitorSlot = new TezLifeMonitorSlot(inventory);
+        }
+
+        /// <summary>
+        /// try to get inventory instance,
+        /// if it had been deleted,
+        /// return false
+        /// </summary>
+        public bool tryGetInventory(out TezInventory inventory)
+        {
+            return mLifeMonitorSlot.tryGetObject(out inventory);
         }
 
         protected abstract void onFilterChanged();

@@ -2,7 +2,7 @@
 using tezcat.Framework.Core;
 using tezcat.Framework.Extension;
 
-namespace tezcat.Framework.Game.Inventory
+namespace tezcat.Framework.Game
 {
     public interface ITezInventoryFilterData
     {

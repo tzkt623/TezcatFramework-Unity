@@ -1,6 +1,6 @@
 ﻿using tezcat.Framework.Core;
 
-namespace tezcat.Framework.Game.Inventory
+namespace tezcat.Framework.Game
 {
     public interface ITezInventoryViewSlotData
     {
