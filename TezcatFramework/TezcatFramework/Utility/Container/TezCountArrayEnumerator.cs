@@ -8,28 +8,28 @@ namespace tezcat.Framework.Utility
         public Array Current { get; private set; }
         object IEnumerator.Current => this.Current;
 
-        private int m_Index;
-        private int m_Count;
-        private Array[] m_Array;
+        private int mIndex;
+        private int mCount;
+        private Array[] mArray;
 
         public TezCountArrayEnumerator(Array[] array, int count)
         {
-            m_Array = array;
-            m_Count = count;
+            mArray = array;
+            mCount = count;
         }
 
         public void Dispose()
         {
             this.Current = default;
-            m_Array = null;
+            mArray = null;
         }
 
         public bool MoveNext()
         {
-            if (m_Index < m_Count)
+            if (mIndex < mCount)
             {
-                this.Current = m_Array[m_Index];
-                m_Index++;
+                this.Current = mArray[mIndex];
+                mIndex++;
                 return true;
             }
             else
@@ -41,8 +41,8 @@ namespace tezcat.Framework.Utility
 
         public void Reset()
         {
-            m_Index = 0;
-            m_Count = 0;
+            mIndex = 0;
+            mCount = 0;
             this.Current = default;
         }
     }

@@ -21,10 +21,14 @@ namespace tezcat.Framework.Game
 
         public override int GetHashCode()
         {
-#if false
-            var hash = TezHash.intHash(q);
-            hash = TezHash.intHash(hash + r);
-            return hash;
+#if true
+            unchecked
+            {
+                int hash = (int)2166136261;
+                hash = (hash * 16777619) ^ this.q.GetHashCode();
+                hash = (hash * 16777619) ^ this.r.GetHashCode();
+                return hash;
+            }
 #else
 
             var hq = TezHash.intHash(q);
@@ -56,7 +60,7 @@ namespace tezcat.Framework.Game
 
         public override string ToString()
         {
-            return string.Format("{0},{1}", q, r);
+            return $"{q},{r}";
         }
     }
 }

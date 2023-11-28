@@ -7,7 +7,7 @@ namespace tezcat.Framework.Test
 {
     class Path
     {
-        public static string root;
+        public static string root { get; private set; }
 
         public static void init()
         {
@@ -109,6 +109,7 @@ namespace tezcat.Framework.Test
             mTestList.Add(new TestTranslator());
             mTestList.Add(new TestSystemAttribute());
             mTestList.Add(new TestBonusSystem());
+            mTestList.Add(new TestHexSystem());
             mTestList.Add(new TestCategoryGenerator());
         }
     }

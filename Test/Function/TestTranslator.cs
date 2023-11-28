@@ -21,7 +21,7 @@ namespace tezcat.Framework.Test
 
         public override void run()
         {
-            Console.Write("Input: en, zh, jp)\n");
+            Console.Write("Input: (en, zh, jp)\n");
             Console.Write("Language:");
             string language = Console.ReadLine();
             TezcatFramework.translator.loadLanguage(language, "en");

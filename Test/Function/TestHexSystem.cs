@@ -1,14 +1,38 @@
-﻿using tezcat.Framework.Game;
+﻿using System;
+using tezcat.Framework.Game;
 
 namespace tezcat.Framework.Test
 {
-    public class TestHexSystem
+    public class MyHexArea : TezHexArea<MyHexChunk, MyHexBlock>
+    {
+        public MyHexArea(int width, int height, int chunkSize)
+        {
+            this.initChunkArray(width, height, chunkSize);
+        }
+
+        protected override void onInitChunk(ref MyHexChunk chunk)
+        {
+
+        }
+    }
+
+    public class MyHexChunk : TezHexChunk<MyHexBlock>
+    {
+
+    }
+
+    public class MyHexBlock : TezHexBlock
+    {
+
+    }
+
+    public class TestHexSystem : TezBaseTest
     {
         /// <summary>
         /// Hex边长为2.0f
         /// 布局为Pointy
         /// </summary>
-        TezHexGrid mHexGrid = new TezHexGrid(2.0f, TezHexGrid.Layout.Pointy);
+        TezHexGrid mHexGrid = null;
 
         /// <summary>
         /// 100W
@@ -16,7 +40,11 @@ namespace tezcat.Framework.Test
         /// 100S
         /// ChunkCount = 100W/100S * 100H/100S
         /// </summary>
-        TestHexArea mHexArea = new TestHexArea(100, 100, 100);
+        MyHexArea mHexArea = null;
+
+        public TestHexSystem() : base("HexSystem")
+        {
+        }
 
         public void build(int size)
         {
@@ -28,34 +56,35 @@ namespace tezcat.Framework.Test
                     {
                         if (x + y + z == 0)
                         {
-                            mHexArea.initBlock(new TezHexCubeCoordinate(x, y, z), mHexGrid.layout, new TestHexBlock());
+                            mHexArea.initBlock(new TezHexCubeCoordinate(x, y, z), mHexGrid.layout, new MyHexBlock());
                         }
                     }
                 }
             }
         }
-    }
 
-    public class TestHexArea : TezHexArea<TestHexChunk, TestHexBlock>
-    {
-        public TestHexArea(int width, int height, int chunkSize)
+        public override void init()
         {
-            this.initChunkArray(width, height, chunkSize);
+//             mHexGrid = new TezHexGrid(2.0f, TezHexGrid.Layout.Pointy);
+//             mHexArea = new MyHexArea(100, 100, 100);
         }
 
-        protected override void onInitChunk(ref TestHexChunk chunk)
+        public override void close()
         {
-
+//             mHexGrid.close();
+//             mHexArea.close();
         }
-    }
 
-    public class TestHexChunk : TezHexChunk<TestHexBlock>
-    {
-
-    }
-
-    public class TestHexBlock : TezHexBlock
-    {
-
+        public override void run()
+        {
+            for (int q = -2; q <= 2; q++)
+            {
+                for (int r = -2; r <= 2; r++)
+                {
+                    var cood = new TezHexOffsetCoordinate(q, r);
+                    Console.WriteLine(cood.GetHashCode());
+                }
+            }
+        }
     }
 }

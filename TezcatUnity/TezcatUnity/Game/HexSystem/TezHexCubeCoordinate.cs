@@ -29,7 +29,7 @@ namespace tezcat.Framework.Game
         const int MaskZ100 = 1 << 8;
 
         const int Z_XY = MaskZ010 | MaskX100 | MaskY001;
-        const int Y_XZ = MaskY010 | MaskX100 | MaskZ001;
+        const int Y_ZX = MaskY010 | MaskZ001 | MaskX100;
         const int X_YZ = MaskX010 | MaskY100 | MaskZ001;
         #endregion
 
@@ -96,12 +96,14 @@ namespace tezcat.Framework.Game
         /// </summary>
         public override int GetHashCode()
         {
-#if false
-            ///经过测试
-            ///此算法约80W数据时冲突362个
-            var hash = TezHash.intHash(q);
-            hash = TezHash.intHash(hash + r);
-            return hash;
+#if true
+            unchecked
+            {
+                int hash = (int)2166136261;
+                hash = (hash * 16777619) ^ this.q.GetHashCode();
+                hash = (hash * 16777619) ^ this.r.GetHashCode();
+                return hash;
+            }
 #else
             ///经过测试
             ///此算法约80W数据时冲突76个值
@@ -113,7 +115,7 @@ namespace tezcat.Framework.Game
 
         public override string ToString()
         {
-            return string.Format("[{0},{1},{2}]", x, y, z);
+            return $"[{x},{y},{z}]";
         }
 
         public static TezHexCubeCoordinate operator +(TezHexCubeCoordinate v1, TezHexCubeCoordinate v2)

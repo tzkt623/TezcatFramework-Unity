@@ -7,7 +7,7 @@ using tezcat.Framework.Utility;
 namespace tezcat.Framework.Game
 {
     /// <summary>
-    /// A星寻路系统
+    /// AStar Path Finder
     /// </summary>
     /// <typeparam name="Wrapper">路径包装器</typeparam>
     /// <typeparam name="BlockData">包装器中的实际路块数据</typeparam>
@@ -241,7 +241,7 @@ namespace tezcat.Framework.Game
         /// <summary>
         /// 普通find
         /// </summary>
-        [Obsolete("尽量不要使用这个方法,用带二叉堆的那个,此方法主要着重于介绍思路")]
+        [Obsolete("Do not use this method!!! use the other one that with BinaryHeap")]
         private void findPath(Wrapper start, Wrapper end)
         {
             //             Stopwatch stopwatch = new Stopwatch();

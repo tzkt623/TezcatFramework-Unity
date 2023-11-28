@@ -57,43 +57,6 @@ namespace tezcat.Framework.Test
 
         }
 
-        private void onSlotRefresh(TezInventoryViewSlot slot, int index)
-        {
-            if (slot.data == null)
-            {
-                Console.WriteLine($"Slot Refresh[{index}]>> empty");
-            }
-            else
-            {
-                Console.WriteLine($"Slot Refresh[{index}]>> {slot.data.item.itemInfo.NID}({slot.count})");
-            }
-        }
-
-        private void onPageChanged(int current, int max)
-        {
-            Console.WriteLine($"{current}/{max}");
-        }
-
-        public override void run()
-        {
-            var info = TezcatFramework.mainDB.getItem("SmallHealthPotion");
-            var hpPotion = info.getObject<HealthPotion>();
-            mInventory.store(hpPotion, 25);
-
-            info = TezcatFramework.mainDB.getItem("H355");
-            var armor = info.getObject<Armor>();
-            mInventory.store(armor);
-            mPageView.debug();
-
-            mPageView.filterManager.setFilter("TypeFilter");
-            mPageView.filterManager.setFilter("NameFilter");
-
-            mInventory.take(armor);
-            mInventory.take(hpPotion, 10);
-
-            mPageView.filterManager.setFilter("Default");
-        }
-
         public override void init()
         {
             TezInventoryFilter.createFilter("NameFilter", (ITezInventoryViewSlotData data) =>
@@ -120,6 +83,43 @@ namespace tezcat.Framework.Test
         {
             mInventory.close();
             mPageView.close();
+        }
+
+        public override void run()
+        {
+            var info = TezcatFramework.mainDB.getItem("SmallHealthPotion");
+            var hpPotion = info.getObject<HealthPotion>();
+            mInventory.store(hpPotion, 25);
+
+            info = TezcatFramework.mainDB.getItem("H355");
+            var armor = info.getObject<Armor>();
+            mInventory.store(armor);
+            mPageView.debug();
+
+            mPageView.filterManager.setFilter("TypeFilter");
+            mPageView.filterManager.setFilter("NameFilter");
+
+            mInventory.take(armor);
+            mInventory.take(hpPotion, 10);
+
+            mPageView.filterManager.setFilter("Default");
+        }
+
+        private void onSlotRefresh(TezInventoryViewSlot slot, int index)
+        {
+            if (slot.data == null)
+            {
+                Console.WriteLine($"{slot.index}:[x]");
+            }
+            else
+            {
+                Console.WriteLine($"{slot.index}:{slot.data.item.itemInfo.NID}({slot.count})");
+            }
+        }
+
+        private void onPageChanged(int current, int max)
+        {
+            Console.WriteLine($"{current}/{max}");
         }
     }
 }

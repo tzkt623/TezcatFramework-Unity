@@ -54,9 +54,26 @@ namespace tezcat.Framework.TMath
             unchecked
             {
                 const int p = 16777619;
-                int hash = (int)2166136261L;
+                int hash = (int)2166136261;
                 for (int i = 0; i < data.Length; i++)
                     hash = (hash ^ data[i]) * p;
+                hash += hash << 13;
+                hash ^= hash >> 7;
+                hash += hash << 3;
+                hash ^= hash >> 17;
+                hash += hash << 5;
+                return hash;
+            }
+        }
+
+        public static int FNVHash(params int[] array)
+        {
+            unchecked
+            {
+                const int p = 16777619;
+                int hash = (int)2166136261;
+                for (int i = 0; i < array.Length; i++)
+                    hash = hash * p ^ array[i];
                 hash += hash << 13;
                 hash ^= hash >> 7;
                 hash += hash << 3;

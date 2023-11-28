@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using tezcat.Framework.Core;
 using UnityEngine;
 
 namespace tezcat.Framework.Game
@@ -6,7 +7,7 @@ namespace tezcat.Framework.Game
     /// <summary>
     /// Hex位置计算器
     /// </summary>
-    public class TezHexGrid
+    public class TezHexGrid : ITezCloseable
     {
         #region Config
         /// <summary>
@@ -386,6 +387,11 @@ namespace tezcat.Framework.Game
             this.init(size, layout);
         }
 
+        public void close()
+        {
+
+        }
+
         private void init(float size, Layout layout)
         {
             mSize = size;
@@ -394,8 +400,8 @@ namespace tezcat.Framework.Game
             switch (layout)
             {
                 case Layout.Pointy:
-                    mCellHeight = size * 2;
                     mCellWidth = Sqrt3 / 2 * mCellHeight;
+                    mCellHeight = size * 2;
 
                     mVDistance = mCellHeight * 3 / 4;
                     mHDistance = mCellWidth;
@@ -416,9 +422,9 @@ namespace tezcat.Framework.Game
             var ry = Mathf.RoundToInt(position.y);
             var rz = Mathf.RoundToInt(position.z);
 
-            var x_diff = Mathf.Abs(rx - position.x);
-            var y_diff = Mathf.Abs(ry - position.y);
-            var z_diff = Mathf.Abs(rz - position.z);
+            var x_diff = Mathf.Abs(position.x - rx);
+            var y_diff = Mathf.Abs(position.y - ry);
+            var z_diff = Mathf.Abs(position.z - rz);
 
             if (x_diff > y_diff && x_diff > z_diff)
             {

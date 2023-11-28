@@ -2,7 +2,7 @@
 
 namespace tezcat.Framework.Test
 {
-    class MyFlagAttribute : Attribute
+    class MyNameAttribute : Attribute
     {
         public string name;
     }
@@ -10,19 +10,18 @@ namespace tezcat.Framework.Test
     class MyIndexAttribute : Attribute
     {
         static int ID = 0;
-
         public int index = ID++;
     }
 
-    [MyFlag(name = "Class1")]
-    [MyIndex()]
+    [MyName(name = "Class1")]
+    [MyIndex]
     class MyClass1
     {
 
     }
 
-    [MyFlag(name = "Class2")]
-    [MyIndex()]
+    [MyName(name = "Class2")]
+    [MyIndex]
     class MyClass2
     {
 
@@ -48,8 +47,9 @@ namespace tezcat.Framework.Test
                 Console.WriteLine(item);
             }
 
-            Console.WriteLine(((MyFlagAttribute)objs[0]).name);
+            Console.WriteLine(((MyNameAttribute)objs[0]).name);
             Console.WriteLine(((MyIndexAttribute)objs[1]).index);
+            Console.WriteLine();
         }
 
         public override void close()

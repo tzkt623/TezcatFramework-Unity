@@ -3,23 +3,6 @@ using System.Runtime.CompilerServices;
 
 namespace tezcat.Framework.Exp
 {
-    public interface ITezAwaitable
-    {
-        ITezAwaiter GetAwaiter();
-    }
-
-    public interface ITezAwaitable<out TAwaiter>
-        where TAwaiter : ITezAwaiter
-    {
-        TAwaiter GetAwaiter();
-    }
-
-    public interface ITezAwaitable<out TAwaiter, out TResult>
-        where TAwaiter : ITezAwaiter<TResult>
-    {
-        TAwaiter GetAwaiter();
-    }
-
     public interface ITezAwaiter : INotifyCompletion
     {
         bool IsCompleted { get; }
@@ -42,10 +25,27 @@ namespace tezcat.Framework.Exp
 
     }
 
+    public interface ITezAwaitable
+    {
+        ITezAwaiter GetAwaiter();
+    }
+
+    public interface ITezAwaitable<out TAwaiter>
+        where TAwaiter : ITezAwaiter
+    {
+        TAwaiter GetAwaiter();
+    }
+
+    public interface ITezAwaitable<out TAwaiter, out TResult>
+        where TAwaiter : ITezAwaiter<TResult>
+    {
+        TAwaiter GetAwaiter();
+    }
+
+
 
     public class TezAwaitable : ITezAwaitable
     {
-
         Awaiter mAwaiter = null;
 
         public TezAwaitable()
@@ -65,12 +65,12 @@ namespace tezcat.Framework.Exp
 
             public void GetResult()
             {
-                Console.WriteLine(nameof(GetResult));
+                Console.WriteLine(nameof(this.GetResult));
             }
 
             public void OnCompleted(Action continuation)
             {
-                Console.WriteLine(nameof(OnCompleted));
+                Console.WriteLine(nameof(this.OnCompleted));
                 if (this.IsCompleted)
                 {
                     continuation?.Invoke();
