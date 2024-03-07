@@ -3,7 +3,7 @@ using UnityEditor.UI;
 using UnityEditor;
 using tezcat.Unity.UI;
 
-namespace tezcat
+namespace tezcat.Framework.MyEditor
 {
     [CustomEditor(typeof(TezScrollRect), true)]
     [CanEditMultipleObjects]

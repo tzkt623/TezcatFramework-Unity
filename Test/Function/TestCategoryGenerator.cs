@@ -169,7 +169,7 @@ namespace tezcat.Framework.Test
         public void generateCShapFile()
         {
             string loadPath = Path.root + "Res/CategoryGenerator/Category.json";
-            string savePath = Path.root + "Res/CategoryGenerator";
+            string savePath = Path.root + "Res/CategoryGenerator/MyCategory.cs";
             TezJsonReader reader = new TezJsonReader();
             if (reader.load(loadPath))
             {

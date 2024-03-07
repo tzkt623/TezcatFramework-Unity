@@ -1,11 +1,13 @@
-﻿namespace tezcat.Framework.Game
+﻿using tezcat.Framework.Core;
+
+namespace tezcat.Framework.Game
 {
     /// <summary>
     /// 物品虚拟选择接口
     /// </summary>
     public interface ITezInventorySelectorIcon
     {
-        void onSelect(ITezInventoryItem item);
+        void onSelect(ITezItemObject item);
         void onComplete();
     }
 

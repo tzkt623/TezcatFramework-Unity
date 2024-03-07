@@ -25,18 +25,55 @@ namespace tezcat.Framework.Test
 
         void init()
         {
-            MyCategory.init();
             Path.init();
-            TezcatFramework.set(new TezFixedDatabase());
-            TezcatFramework.set(new TezRunTimeDatabase());
+
+            MyCategory.init();
+            TezcatFramework.set(new TezItemDatabase());
+            //TezcatFramework.set(new TezRunTimeDatabase());
         }
 
+        void register()
+        {
+            mTestList.Add(new TestObject());
+            mTestList.Add(new TestAStarSystem());
+            mTestList.Add(new TestTag());
+            mTestList.Add(new TestRandomIndex());
+            mTestList.Add(new TestFieldOffset());
+            mTestList.Add(new TestBehaviorTree());
+            mTestList.Add(new TestLifeMonitor());
+            mTestList.Add(new TestGameMachine());
+            mTestList.Add(new TestInventory());
+            mTestList.Add(new TestTranslator());
+            mTestList.Add(new TestSystemAttribute());
+            mTestList.Add(new TestBonusSystem());
+            mTestList.Add(new TestHexSystem());
+            mTestList.Add(new TestCategoryGenerator());
+
+
+
+            TezcatFramework.classFactory.register<Axe>();
+            TezcatFramework.classFactory.register<Gun>();
+
+            TezcatFramework.classFactory.register<Helmet>();
+            TezcatFramework.classFactory.register<Breastplate>();
+            TezcatFramework.classFactory.register<Leg>();
+
+            TezcatFramework.classFactory.register<MagicPotion>();
+            TezcatFramework.classFactory.register<HealthPotion>();
+
+            TezcatFramework.classFactory.register<Character>();
+        }
         void loadRes()
         {
-            TezcatFramework.classFactory.register(() => new Armor());
-            TezcatFramework.classFactory.register(() => new Character());
-            TezcatFramework.classFactory.register(() => new HealthPotion());
-            TezcatFramework.mainDB.load(Path.root + "Res/Item");
+            TezJsonReader reader = new TezJsonReader();
+            if(reader.load(Path.root + "Res/Item/Config.json"))
+            {
+                TezItemID.loadIDFrom(reader);
+                TezCategorySystem.registerTypeIDFrom(reader);
+            }
+            reader.close();
+
+            TezcatFramework.mainDB.load(Path.root + "Res/Item/Data");
         }
 
         public void run()
@@ -96,22 +133,6 @@ namespace tezcat.Framework.Test
             }
         }
 
-        void register()
-        {
-            mTestList.Add(new TestAStarSystem());
-            mTestList.Add(new TestTag());
-            mTestList.Add(new TestRandomIndex());
-            mTestList.Add(new TestFieldOffset());
-            mTestList.Add(new TestBehaviorTree());
-            mTestList.Add(new TestLifeMonitor());
-            mTestList.Add(new TestGameMachine());
-            mTestList.Add(new TestInventory());
-            mTestList.Add(new TestTranslator());
-            mTestList.Add(new TestSystemAttribute());
-            mTestList.Add(new TestBonusSystem());
-            mTestList.Add(new TestHexSystem());
-            mTestList.Add(new TestCategoryGenerator());
-        }
     }
 
 

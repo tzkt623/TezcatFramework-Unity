@@ -1,0 +1,6 @@
+{
+    "Potion" : 0,
+    "Weapon": 1,
+    "Armor" : 2,
+    "Unit" : 3
+}

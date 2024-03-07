@@ -1,0 +1,13 @@
+{
+    "CID": "HealthPotion",
+    "ItemInfo": {
+        "NID": "SmallHealthPotion",
+        "TID": "Potion",
+        "UID": 0,
+        "StackCount": 10,
+        "Category" : "HealthPotion"
+    },
+    "ItemData": {
+        "HealthAdd": 5
+    }
+}

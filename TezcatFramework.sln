@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.31613.86
+# Visual Studio Version 17
+VisualStudioVersion = 17.8.34316.72
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TezcatFramework", "TezcatFramework\TezcatFramework.csproj", "{22D8C2B7-9934-4822-B96C-67F90F9F694E}"
 EndProject
@@ -15,6 +15,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test", "Test\Test.csproj", 
 		{6E5A2033-6CE1-4887-9C81-596E33F3D6D3} = {6E5A2033-6CE1-4887-9C81-596E33F3D6D3}
 		{22D8C2B7-9934-4822-B96C-67F90F9F694E} = {22D8C2B7-9934-4822-B96C-67F90F9F694E}
 	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TezcatUnityEditor", "TezcatUnityEditor\TezcatUnityEditor.csproj", "{3783E6B1-BD2A-444D-B138-5C21F1FD6FD4}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -34,6 +36,10 @@ Global
 		{6299B0B2-0A2F-4B94-B19A-03838E931DD9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6299B0B2-0A2F-4B94-B19A-03838E931DD9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6299B0B2-0A2F-4B94-B19A-03838E931DD9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3783E6B1-BD2A-444D-B138-5C21F1FD6FD4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3783E6B1-BD2A-444D-B138-5C21F1FD6FD4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3783E6B1-BD2A-444D-B138-5C21F1FD6FD4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3783E6B1-BD2A-444D-B138-5C21F1FD6FD4}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

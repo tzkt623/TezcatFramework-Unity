@@ -1,0 +1,13 @@
+{
+    "CID": "Gun",
+    "ItemInfo": {
+        "NID": "1911",
+        "TID": "Weapon",
+        "UID": 1,
+        "StackCount": -1,
+        "Category" : "Gun"
+    },
+    "ItemData": {
+        "Attack": 500
+    }
+}

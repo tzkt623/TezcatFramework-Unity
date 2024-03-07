@@ -5,25 +5,38 @@ using tezcat.Framework.Core;
 
 namespace tezcat.Framework.Database
 {
-    /*
-     * 文件数据库
-     * 
-     * 游戏中并不是所有的对象都需要一个ItemID进行比较
-     * 只有物品类的对象才需要一个ItemID
-     * 
-     * 数据库应该给每一个Item一个对应的ID,用于区分不同的Item
-     * ID分为两部分
-     * 低位代表FixedID
-     * 高位代表ModifiedID
-     * 
-     * 
-     */
-
     /// <summary>
     /// 物品ID
     /// 用于判断两个物品是不是同一个
     /// 此类应该是共享数据类
     /// 不需要存在两份相同的数据
+    /// 
+    /// <para>
+    /// 此类由两个ID组成
+    /// </para>
+    /// 
+    /// <para>
+    /// Database ID
+    /// 存在于数据库中的物品的ID 
+    /// 范围值为[0, int32.Max]
+    /// </para>
+    /// 
+    /// <para>
+    /// Runtime ID
+    /// 用于在游戏运行时赋予动态生成的物品
+    /// ID范围值为[int32.Max+1, int64.Max]
+    /// </para>
+    /// 
+    /// <para>
+    /// 例如
+    /// RPG游戏里面掉落的一个不可堆叠装备
+    /// 坚固盔甲的DBID = 2
+    /// 
+    /// 爆了两个圣神之强化的坚固盔甲
+    /// 第一个DBID = 2, RTID = 1
+    /// 第二个DBID = 2, RTID = 2
+    /// </para>
+    /// 
     /// </summary>
     [StructLayout(LayoutKind.Explicit)]
     public class TezItemID
@@ -32,68 +45,153 @@ namespace tezcat.Framework.Database
     {
         #region Pool
         static Queue<TezItemID> sPool = new Queue<TezItemID>();
-        static Queue<int> sModifiedIDPool = new Queue<int>();
+        static Queue<int> sRTIDPool = new Queue<int>();
 
-        public static TezItemID create(int fixedID, int modifiedID = -1)
+        static int sRTID = 0;
+
+        public static TezItemID create(uint DBID, int RTID)
         {
             TezItemID result = sPool.Count > 0 ? sPool.Dequeue() : new TezItemID();
-            result.mFixedID = fixedID;
-            result.mModifiedID = modifiedID;
+            result.mDBID = DBID;
+            result.mRTID = RTID;
             return result;
         }
 
+        public static TezItemID create(uint DBID)
+        {
+            TezItemID result = sPool.Count > 0 ? sPool.Dequeue() : new TezItemID();
+            result.mDBID = DBID;
+            result.mRTID = sRTIDPool.Count > 0 ? sRTIDPool.Dequeue() : sRTID++;
+            return result;
+        }
+
+        public static TezItemID create(ushort TID, ushort UID)
+        {
+            TezItemID result = sPool.Count > 0 ? sPool.Dequeue() : new TezItemID();
+            result.mTID = TID;
+            result.mUID = UID;
+            result.mRTID = sRTIDPool.Count > 0 ? sRTIDPool.Dequeue() : sRTID++;
+            return result;
+        }
+
+        public static TezItemID create(ushort TID, ushort UID, int RTID)
+        {
+            TezItemID result = sPool.Count > 0 ? sPool.Dequeue() : new TezItemID();
+            result.mTID = TID;
+            result.mUID = UID;
+            result.mRTID = RTID;
+            return result;
+        }
         #endregion
+
+
+        #region Tool
+        static List<string> sTypeList = new List<string>();
+        static Dictionary<string, ushort> sTypeDic = new Dictionary<string, ushort>();
+
+        public static string getTypeName(int index)
+        {
+            return sTypeList[index];
+        }
+
+        public static ushort getTypeID(string name)
+        {
+            return sTypeDic[name];
+        }
+
+        public static void loadIDFrom(TezReader reader)
+        {
+            foreach (var key in reader.getKeys())
+            {
+                registerTypeID(key, reader.readInt(key));
+            }
+        }
+
+        public static void registerTypeID(string typeName, int typeID)
+        {
+            while (sTypeList.Count <= typeID)
+            {
+                sTypeList.Add(null);
+            }
+
+            sTypeList[typeID] = typeName;
+            sTypeDic.Add(typeName, (ushort)typeID);
+        }
+        #endregion
+
         /// <summary>
         /// 是否运行存储
         /// </summary>
-        public bool isEmpty => mID == -1;
+        public bool isEmpty => mID == 0;
 
         [FieldOffset(0)]
         long mID;
         public long ID => mID;
 
         [FieldOffset(0)]
-        int mFixedID = -1;
+        uint mDBID = 0;
         /// <summary>
-        /// 固定ID
+        /// Database ID
         /// 存在于数据库中的物品的ID
         /// 范围值为[0, int32.Max]
         /// </summary>
-        public int fixedID => mFixedID;
+        public uint DBID => mDBID;
+
+        [FieldOffset(0)]
+        ushort mUID = 0;
+        /// <summary>
+        /// 唯一ID
+        /// </summary>
+        public ushort UID => mUID;
+
+        [FieldOffset(2)]
+        ushort mTID = 0;
+        /// <summary>
+        /// 类型ID
+        /// </summary>
+        public ushort TID => mTID;
 
         [FieldOffset(4)]
-        int mModifiedID = -1;
+        int mRTID = -1;
         /// <summary>
-        /// 重定义ID
-        /// 用于当物品被修改时用于确定物品是否相同
+        /// Runtime ID
+        /// 用于在游戏运行时赋予动态生成的物品
         /// ID范围值为[int32.Max+1, int64.Max]
         /// 
         /// <para>
         /// 例如
         /// RPG游戏里面掉落的一个装备
-        /// 圣神之强化的坚固盔甲
-        /// 虽然有不同的词缀,但是都是坚固盔甲
+        /// 
+        /// 坚固盔甲的TID = 2, UID = 1, RTID = -1
+        /// 爆了两个圣神之强化的坚固盔甲
+        /// 第一个DBID = 2, RTID = 1
+        /// 第二个DBID = 2, RTID = 2
         /// </para>
         /// 
         /// </summary>
-        public int modifiedID => mModifiedID;
+        public int RTID => mRTID;
 
         private TezItemID() { }
 
         public void close()
         {
-            mID = -1;
+            if (mRTID > -1)
+            {
+                sRTIDPool.Enqueue(mRTID);
+            }
+
+            mID = 0;
             sPool.Enqueue(this);
         }
 
         public TezItemID copy()
         {
-            return create(mFixedID, mModifiedID);
+            return create(mDBID, mRTID);
         }
 
         public bool sameAs(TezItemID other)
         {
-            //             if (mFixedID == -1 || other.mFixedID == -1)
+            //             if (mDBID == -1 || other.mDBID == -1)
             //             {
             //                 return false;
             //             }

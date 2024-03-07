@@ -31,6 +31,19 @@ namespace tezcat.Framework.Utility
             }
         }
 
+        public void register<T>() where T : class, new()
+        {
+            var name = typeof(T).Name;
+            if (mDictWithName.ContainsKey(name))
+            {
+                throw new Exception($"{name} : this type is registered");
+            }
+            else
+            {
+                mDictWithName.Add(name, () => new T());
+            }
+        }
+
         public T create<T>(string name) where T : class
         {
             if (mDictWithName.TryGetValue(name, out Creator<object> creator))

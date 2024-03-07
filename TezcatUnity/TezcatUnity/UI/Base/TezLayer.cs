@@ -51,7 +51,7 @@ namespace tezcat.Unity.UI
         protected virtual void sort()
         {
             this.transform.SetSiblingIndex(ID);
-            this.name = "Layer_" + ID;
+            this.name = $"Layer_{ID}";
         }
     }
 }

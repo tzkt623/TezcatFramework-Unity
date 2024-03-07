@@ -1,12 +1,13 @@
 ﻿using System.Collections.Generic;
 using tezcat.Framework.Core;
+using tezcat.Framework.Database;
 using tezcat.Framework.Extension;
 
 namespace tezcat.Framework.Game
 {
     public interface ITezInventoryFilterData
     {
-        ITezInventoryItem item { get; }
+        ITezItemObject item { get; }
         int filterIndex { get; set; }
     }
 

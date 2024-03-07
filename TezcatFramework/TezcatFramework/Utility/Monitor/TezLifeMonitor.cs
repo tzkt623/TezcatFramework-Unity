@@ -19,7 +19,7 @@ namespace tezcat.Framework.Utility
      * 
      */
 
-    public interface ITezLifeMonitorEntry
+    public interface ITezLifeMonitorHolder
     {
         TezLifeMonitor lifeMonitor { get; }
     }
@@ -28,33 +28,73 @@ namespace tezcat.Framework.Utility
     {
         public class MetaData
         {
-            public object managedObject;
+            int refCount = 1;
+            public bool valid = false;
+            public object managedObject = null;
+
+            public MetaData() { }
+
+            public void addRef()
+            {
+                refCount++;
+            }
+
+            public void subRef()
+            {
+                refCount--;
+                if (refCount == 0)
+                {
+                    this.managedObject = null;
+                }
+            }
         }
 
-        MetaData mMetaData = new MetaData();
-        public MetaData metaData => mMetaData;
+        MetaData mMetaData = null;
+        public bool isValied => mMetaData.valid;
+        public object owner => mMetaData.managedObject;
+
+
+        public TezLifeMonitor() { }
+
+        private void clear()
+        {
+            if (mMetaData != null)
+            {
+                mMetaData.subRef();
+                mMetaData = null;
+            }
+        }
 
         public void setManagedObject(object obj)
         {
-            mMetaData.managedObject = obj;
+            this.clear();
+            mMetaData = new MetaData()
+            {
+                managedObject = obj,
+                valid = true
+            };
         }
 
-        public virtual void close()
+        public void setMonitorFrom(ITezLifeMonitorHolder holder)
         {
-            mMetaData.managedObject = null;
-            mMetaData = null;
+            this.setMonitorFrom(holder.lifeMonitor);
         }
-    }
 
-    public class TezLifeMonitorSlot : ITezCloseable
-    {
-        private TezLifeMonitor.MetaData mMetaData = null;
-
-        public bool isValied => mMetaData != null && mMetaData.managedObject != null;
-
-        public TezLifeMonitorSlot(ITezLifeMonitorEntry entry)
+        public void setMonitorFrom(TezLifeMonitor other)
         {
-            mMetaData = entry.lifeMonitor.metaData;
+            this.clear();
+            mMetaData = other.mMetaData;
+            mMetaData.addRef();
+        }
+
+        public void setInvalid()
+        {
+            mMetaData.valid = false;
+        }
+
+        public void setValid()
+        {
+            mMetaData.valid = true;
         }
 
         public bool tryGetObject(out object result)
@@ -81,8 +121,9 @@ namespace tezcat.Framework.Utility
             return false;
         }
 
-        public void close()
+        public virtual void close()
         {
+            mMetaData.subRef();
             mMetaData = null;
         }
     }

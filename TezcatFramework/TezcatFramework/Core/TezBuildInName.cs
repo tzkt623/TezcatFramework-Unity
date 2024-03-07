@@ -16,17 +16,7 @@
         /// <summary>
         /// Name ID
         /// </summary>
-        public const string NameID = "NID";
 
-        /// <summary>
-        /// Fixed ID
-        /// </summary>
-        public const string FixedID = "FID";
-
-        /// <summary>
-        /// Modified ID
-        /// </summary>
-        public const string ModifiedID = "MID";
 
         /// <summary>
         /// Tag
@@ -53,10 +43,22 @@
         /// </summary>
         public const string ItemInfo = "ItemInfo";
 
+        public const string ItemData = "ItemData";
+
         /// <summary>
         /// StackCount
         /// </summary>
         public const string StackCount = "StackCount";
+
+        public const string NameID = "NID";
+
+        public const string DBID = "DBID";
+
+        public const string TypeID = "TID";
+
+        public const string UniqueID = "UID";
+
+        public const string RuntimeID = "RTID";
         #endregion
     }
 }

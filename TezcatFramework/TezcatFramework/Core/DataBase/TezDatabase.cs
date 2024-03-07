@@ -17,12 +17,38 @@ namespace tezcat.Framework.Database
      * ModifiedID表示此物品来源于运行时依赖设定数据库进行修改后的物品
      * 
      */
-
-    public class TezFixedDatabase
+    public class TezItemDatabase
     {
-        protected List<TezGameItemInfo> mFixedList = new List<TezGameItemInfo>();
-        protected Dictionary<string, TezGameItemInfo> mFixedDict = new Dictionary<string, TezGameItemInfo>();
+        sealed class GetTypeID<T> where T : ITezItemObject
+        {
+            static GetTypeID()
+            {
+                if (sTID < 0)
+                {
+                    sTID = TezItemID.getTypeID(typeof(T).Name);
+                }
+            }
 
+            static int sTID = -1;
+            public static int TID => sTID;
+        }
+
+        class Cell
+        {
+            public List<TezGameItemInfo> list = new List<TezGameItemInfo>();
+            public Dictionary<string, TezGameItemInfo> dict = new Dictionary<string, TezGameItemInfo>();
+
+            public void memoryCut()
+            {
+                list.TrimExcess();
+            }
+        }
+
+        protected List<TezGameItemInfo> mFixedList = new List<TezGameItemInfo>();
+
+        private List<Cell> mCellList = new List<Cell>();
+
+        protected Dictionary<string, TezGameItemInfo> mFixedDict = new Dictionary<string, TezGameItemInfo>();
 
         public void load(string path)
         {
@@ -33,8 +59,9 @@ namespace tezcat.Framework.Database
                 if (reader.load(files[j]))
                 {
                     var CID = reader.readString(TezBuildInName.ClassID);
-                    var item = TezcatFramework.classFactory.create<TezItemableObject>(CID);
+                    var item = TezcatFramework.classFactory.create<TezItemObject>(CID);
                     item.deserialize(reader);
+                    item.itemInfo.setPrototype(item);
                     this.registerItem(item);
                 }
                 else
@@ -44,44 +71,68 @@ namespace tezcat.Framework.Database
             }
 
             reader.close();
+
+            foreach (var item in mCellList)
+            {
+                item.memoryCut();
+            }
         }
 
-        public void registerItem(TezItemableObject gameObject)
+        public void registerItem(TezItemObject gameObject)
         {
             //数据库信息应该由数据库文件定义
             //这里只需要读取保存好的文件然后放到指定的位置中即可
             //也可以在这里做更复杂的分类
-            var info = (TezGameItemInfo)gameObject.itemInfo;
+            var info = gameObject.itemInfo;
             var item_id = info.itemID;
 
-            while (item_id.fixedID >= mFixedList.Count)
+            while (item_id.TID >= mCellList.Count)
             {
-                mFixedList.Add(null);
+                mCellList.Add(new Cell());
             }
 
-            if (mFixedList[item_id.fixedID] != null)
+            var cell = mCellList[item_id.TID];
+            while (item_id.UID >= cell.list.Count)
             {
-                throw new Exception($"This item slot has registered! [{info.NID}: {item_id.fixedID}]");
+                cell.list.Add(null);
             }
 
-            mFixedList[item_id.fixedID] = info;
-            mFixedDict.Add(info.NID, info);
+            if (cell.list[item_id.UID] != null)
+            {
+                throw new Exception($"This item slot[{cell.list[item_id.UID].NID}] has registered! [{info.NID}: {item_id.UID}]");
+            }
+
+            cell.list[item_id.UID] = info;
+            cell.dict.Add(info.NID, info);
+
+            //mFixedDict.Add(info.NID, info);
         }
 
-        public TezGameItemInfo getItem(int fixedID)
+        public TezGameItemInfo getItem(int TID, int UID)
         {
-            return mFixedList[fixedID];
+            return mCellList[TID].list[UID];
         }
 
-        public bool tryGetItem(int fixedID, out TezGameItemInfo info)
+        public TezGameItemInfo getItem<T>(int UID) where T : ITezItemObject
         {
-            if (fixedID < 0 || fixedID > mFixedList.Count)
+            return mCellList[GetTypeID<T>.TID].list[UID];
+        }
+
+        public TezGameItemInfo getItem<T>(string NID) where T : ITezItemObject
+        {
+            return mCellList[GetTypeID<T>.TID].dict[NID];
+        }
+
+        public bool tryGetItem(ushort TID, ushort UID, out TezGameItemInfo info)
+        {
+            var list = mCellList[TID].list;
+            if (UID < 0 || UID > list.Count)
             {
                 info = null;
                 return false;
             }
 
-            info = mFixedList[fixedID];
+            info = list[UID];
             return true;
         }
 
@@ -98,7 +149,7 @@ namespace tezcat.Framework.Database
                 return true;
             }
 
-            info = mFixedList[0];
+            info = null;
             return false;
         }
 
@@ -123,27 +174,15 @@ namespace tezcat.Framework.Database
     public class TezRunTimeDatabase
     {
         protected List<TezGameItemInfo> mItemList = new List<TezGameItemInfo>();
-        private Queue<int> mFreeIndex = new Queue<int>();
-
-        public int generateID()
-        {
-            int index;
-            if (mFreeIndex.Count > 0)
-            {
-                index = mFreeIndex.Dequeue();
-            }
-            else
-            {
-                index = mItemList.Count;
-                mItemList.Add(null);
-            }
-
-            return index;
-        }
 
         public bool registerItem(TezGameItemInfo info)
         {
-            var modified_id = info.itemID.modifiedID;
+            var modified_id = info.itemID.RTID;
+            while(modified_id >= mItemList.Count)
+            {
+                mItemList.Add(null);
+            }
+
             if (mItemList[modified_id] != null)
             {
                 return false;
@@ -153,15 +192,14 @@ namespace tezcat.Framework.Database
             return true;
         }
 
-        public void unregisterItem(int modifiedID)
+        public void unregisterItem(int RTID)
         {
-            mFreeIndex.Enqueue(modifiedID);
-            mItemList[modifiedID] = null;
+            mItemList[RTID] = null;
         }
 
-        public TezGameItemInfo getItem(int modifiedID)
+        public TezGameItemInfo getItem(int RTID)
         {
-            var info = mItemList[modifiedID];
+            var info = mItemList[RTID];
             return info;
         }
 

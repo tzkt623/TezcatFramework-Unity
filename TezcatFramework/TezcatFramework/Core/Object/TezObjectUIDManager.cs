@@ -3,6 +3,11 @@ using tezcat.Framework.Extension;
 
 namespace tezcat.Framework.Core
 {
+    public interface ITezObjectUID
+    {
+        uint objectUID { get; set; }
+    }
+
     /// <summary>
     /// 实体对象的唯一ID
     /// </summary>
@@ -43,7 +48,7 @@ namespace tezcat.Framework.Core
             get { return (uint)IDPool.Count; }
         }
 
-        public static uint generateID()
+        static uint generateID()
         {
             if (IDPool.Count > 0)
             {
@@ -55,13 +60,24 @@ namespace tezcat.Framework.Core
             return mIDGenerate;
         }
 
-        public static void recycleID(uint uid)
+        static void recycleID(uint uid)
         {
             if (uid != cErrorUID)
             {
                 IDPool.Enqueue(uid);
                 evtObjectRecycled?.Invoke(uid);
             }
+        }
+
+        public static void generateUID(this ITezObjectUID uid)
+        {
+            uid.objectUID = generateID();
+        }
+
+        public static void recycleUID(this ITezObjectUID uid)
+        {
+            recycleID(uid.objectUID);
+            uid.objectUID = cErrorUID;
         }
     }
 }

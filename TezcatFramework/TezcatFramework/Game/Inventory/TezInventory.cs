@@ -6,22 +6,13 @@ using tezcat.Framework.Utility;
 namespace tezcat.Framework.Game
 {
     /// <summary>
-    /// 可放入Inventory的对象
-    /// 需要使用ItemInfo里面的数据进行操作
-    /// </summary>
-    public interface ITezInventoryItem
-    {
-        TezGameItemInfo itemInfo { get; }
-    }
-
-    /// <summary>
     /// 基础物品信息
     /// </summary>
     public abstract class TezInventoryBaseItemInfo : ITezCloseable
     {
         public abstract bool stacked { get; }
         public virtual int count { get; set; }
-        public ITezInventoryItem item { get; set; } = null;
+        public ITezItemObject item { get; set; } = null;
         public virtual void close()
         {
             this.item = null;
@@ -78,7 +69,7 @@ namespace tezcat.Framework.Game
         public int viewIndex { get; set; }
         public int filterIndex { get; set; }
 
-        public ITezInventoryItem item => mInfo.item;
+        public ITezItemObject item => mInfo.item;
 
         public TezInventoryStackedItemData(TezInventoryStackedItemInfo info)
         {
@@ -120,8 +111,7 @@ namespace tezcat.Framework.Game
     /// 
     /// </summary>
     public class TezInventory
-        : ITezLifeMonitorEntry
-        , ITezCloseable
+        : ITezCloseable
     {
         protected List<TezInventoryUniqueItemInfo> mUniqueItemList = new List<TezInventoryUniqueItemInfo>();
         protected Dictionary<long, TezInventoryStackedItemInfo> mStackedItemDict = new Dictionary<long, TezInventoryStackedItemInfo>();
@@ -130,7 +120,7 @@ namespace tezcat.Framework.Game
         public TezInventoryBaseView view => mView;
 
         TezLifeMonitor mLifeMonitor = new TezLifeMonitor();
-        TezLifeMonitor ITezLifeMonitorEntry.lifeMonitor => mLifeMonitor;
+        public TezLifeMonitor lifeMonitor => mLifeMonitor;
 
         public TezInventory()
         {
@@ -143,10 +133,10 @@ namespace tezcat.Framework.Game
             mView.setInventory(this, mUniqueItemList, mStackedItemDict);
         }
 
-        public void store(ITezInventoryItem item, int count = -1)
+        public void store(ITezItemObject item, int count = -1)
         {
             TezGameItemInfo item_info = item.itemInfo;
-            var stack_count = item.itemInfo.stackCount;
+            var stack_count = item_info.stackCount;
 
             //可堆叠物品
             if (stack_count > 0)
@@ -235,7 +225,7 @@ namespace tezcat.Framework.Game
             }
         }
 
-        public void take(ITezInventoryItem item, int count = -1)
+        public void take(ITezItemObject item, int count = -1)
         {
             if (item.itemInfo.stackCount > 0)
             {
@@ -295,7 +285,7 @@ namespace tezcat.Framework.Game
         /// 从包裹里面查询是否有某个特定物品
         /// 返回-1表示没有
         /// </summary>
-        public TezInventoryBaseItemInfo find(ITezInventoryItem item)
+        public TezInventoryBaseItemInfo find(ITezItemObject item)
         {
             if (item.itemInfo.stackCount > 0)
             {
@@ -318,11 +308,11 @@ namespace tezcat.Framework.Game
         /// <summary>
         /// 从包裹里面查询是否有某个特定类型的物品
         /// </summary>
-        public TezInventoryBaseItemInfo find(TezCategory category)
+        public TezInventoryBaseItemInfo find(ushort TID)
         {
             TezInventoryBaseItemInfo result = mUniqueItemList.Find((TezInventoryUniqueItemInfo info) =>
             {
-                return info.item.itemInfo.category == category;
+                return info.item.itemInfo.itemID.TID == TID;
             });
 
             if (result != null)
@@ -332,7 +322,7 @@ namespace tezcat.Framework.Game
 
             foreach (var pair in mStackedItemDict)
             {
-                if (pair.Value.item.itemInfo.category == category)
+                if (pair.Value.item.itemInfo.itemID.TID == TID)
                 {
                     return pair.Value;
                 }

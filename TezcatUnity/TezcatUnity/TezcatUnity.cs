@@ -96,14 +96,24 @@ namespace tezcat.Unity
         {
             TezFilePath.setUnityPath(Application.dataPath);
 
+            this.beginRegister();
             this.registerVersions();
             this.registerService();
-
-            TezcatFramework.initBuildinService();
             this.registerFramework();
 
             this.registerComponent();
             this.registerClassFactory();
+            this.endRegister();
+        }
+
+        protected virtual void beginRegister()
+        {
+
+        }
+
+        protected virtual void endRegister()
+        {
+
         }
 
         protected virtual void registerService()
@@ -118,7 +128,7 @@ namespace tezcat.Unity
         /// </summary>
         protected virtual void registerFramework()
         {
-            TezcatFramework.set(new TezFixedDatabase());
+            TezcatFramework.set(new TezItemDatabase());
             TezcatFramework.set(new TezRunTimeDatabase());
         }
 

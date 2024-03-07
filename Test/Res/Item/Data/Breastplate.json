@@ -1,0 +1,13 @@
+{
+    "CID": "Breastplate",
+    "ItemInfo": {
+        "NID": "H355",
+        "TID": "Armor",
+        "UID": 0,
+        "StackCount": -1,
+        "Category" : "Breastplate"
+    },
+    "ItemData": {
+        "ArmorAdd": 20
+    }
+}

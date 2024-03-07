@@ -1,7 +1,7 @@
 ﻿using UnityEditor;
 using UnityEngine;
 
-namespace tezcat.TEditor
+namespace tezcat.Framework.MyEditor
 {
     public class TezLogEditor : EditorWindow
     {

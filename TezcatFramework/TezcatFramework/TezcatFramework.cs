@@ -32,9 +32,9 @@ namespace tezcat.Framework
         /// <summary>
         /// 主数据库
         /// </summary>
-        static TezFixedDatabase mMainDB = null;
-        public static TezFixedDatabase mainDB => mMainDB;
-        public static void set(TezFixedDatabase mainDB)
+        static TezItemDatabase mMainDB = null;
+        public static TezItemDatabase mainDB => mMainDB;
+        public static void set(TezItemDatabase mainDB)
         {
             mMainDB = mainDB;
         }

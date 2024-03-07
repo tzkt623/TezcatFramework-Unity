@@ -9,29 +9,17 @@ namespace tezcat.Framework.Core
     public abstract class TezBaseObject
         : ITezCloseable
         , ITezSerializable
-        , IEquatable<TezBaseObject>
+        //, IEquatable<TezBaseObject>
     {
         public virtual string CID
         {
             get { return this.GetType().Name; }
         }
 
-        private uint mObjectUID = TezObjectUIDManager.generateID();
-
-        /// <summary>
-        /// UID
-        /// 为0则表示没有分配
-        /// </summary>
-        public uint objectUID => mObjectUID;
-
         /// <summary>
         /// 销毁对象
         /// </summary>
-        public virtual void close()
-        {
-            TezObjectUIDManager.recycleID(mObjectUID);
-            mObjectUID = 0;
-        }
+        public abstract void close();
 
         /// <summary>
         /// 序列化对象
@@ -43,7 +31,7 @@ namespace tezcat.Framework.Core
         /// </summary>
         public abstract void deserialize(TezReader reader);
 
-
+        /*
         #region Override
         public override int GetHashCode()
         {
@@ -93,5 +81,6 @@ namespace tezcat.Framework.Core
             return !(a == b);
         }
         #endregion
+        */
     }
 }

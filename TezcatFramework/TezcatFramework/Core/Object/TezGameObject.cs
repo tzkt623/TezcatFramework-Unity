@@ -9,19 +9,15 @@ namespace tezcat.Framework.Core
     /// 
     /// 如果没有Category则为null
     /// </summary>
-    public abstract class TezGameObject
-        : TezBaseObject
+    public abstract class TezGameObject : TezBaseObject
     {
-        protected TezCategory mCategory = null;
-        public TezCategory category => mCategory;
-
         /// <summary>
-        /// 生成默认对象
+        /// 以当前的对象数据生成对象
         /// </summary>
-        public void init()
+        public virtual void init()
         {
             this.preInit();
-            this.initDefault();
+            this.onInit();
             this.postInit();
         }
 
@@ -34,6 +30,14 @@ namespace tezcat.Framework.Core
         }
 
         /// <summary>
+        /// 初始化默认对象
+        /// </summary>
+        protected virtual void onInit()
+        {
+
+        }
+
+        /// <summary>
         /// 初始化之后做点什么
         /// </summary>
         protected virtual void postInit()
@@ -41,35 +45,20 @@ namespace tezcat.Framework.Core
 
         }
 
-        /// <summary>
-        /// 初始化默认对象
-        /// </summary>
-        protected virtual void initDefault()
-        {
-
-        }
 
         public override void deserialize(TezReader reader)
         {
-            if(reader.tryRead(TezBuildInName.Category, out string name))
-            {
-                mCategory = TezCategorySystem.getCategory(name);
-            }
+
         }
 
         public override void serialize(TezWriter writer)
         {
             writer.write(TezBuildInName.ClassID, this.CID);
-            if(mCategory != null)
-            {
-                writer.write(TezBuildInName.Category, mCategory.name);
-            }
         }
 
         public override void close()
         {
-            base.close();
-            mCategory = null;
+
         }
     }
 }

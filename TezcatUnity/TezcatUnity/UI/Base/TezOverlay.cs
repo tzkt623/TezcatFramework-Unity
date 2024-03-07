@@ -5,7 +5,7 @@ namespace tezcat.Unity.UI
     [RequireComponent(typeof(Canvas))]
     public class TezOverlay : TezLayer
     {
-        Canvas m_Canvas = null;
+        Canvas mCanvas = null;
 
         protected override void preInit()
         {
@@ -14,7 +14,7 @@ namespace tezcat.Unity.UI
 
         protected override void initWidget()
         {
-            m_Canvas = this.GetComponent<Canvas>();
+            mCanvas = this.GetComponent<Canvas>();
         }
 
         protected override void sort()

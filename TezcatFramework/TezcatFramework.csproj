@@ -48,10 +48,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="TezcatFramework\Core\DataBase\FileIO\TezJsonObjectReader.cs" />
-    <Compile Include="TezcatFramework\Core\DataBase\TezDBItemInfo.cs" />
+    <Compile Include="TezcatFramework\Core\DataBase\TezGameItemInfo.cs" />
     <Compile Include="TezcatFramework\Core\Object\TezGameObject.cs" />
     <Compile Include="TezcatFramework\Core\DataBase\TezItemID.cs" />
-    <Compile Include="TezcatFramework\Core\Object\TezItemableObject.cs" />
+    <Compile Include="TezcatFramework\Core\Object\TezItemObject.cs" />
     <Compile Include="TezcatFramework\Core\Object\TezSmartRef.cs" />
     <Compile Include="TezcatFramework\Exp\TezAwaitable.cs" />
     <Compile Include="TezcatFramework\Game\AI\BehaviorTree\TezBTRegisterAttribute.cs" />

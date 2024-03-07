@@ -6,9 +6,6 @@ using tezcat.Framework.Utility;
 namespace tezcat.Framework.Test
 {
     public class Ship
-#if DeleteThisDefineToOtherMode
-        : ITezLifeMonitorEntry
-#endif
     {
 #if DeleteThisDefineToOtherMode
         public TezLifeMonitor lifeMonitor { get; } = new TezLifeMonitor();
@@ -33,26 +30,31 @@ namespace tezcat.Framework.Test
 
         public void update()
         {
-            if (this.health == 0)
-            {
-                return;
-            }
-
-            this.health -= 1;
-            if (this.health == 0)
-            {
 #if DeleteThisDefineToOtherMode
-                this.lifeMonitor.close();
-#else
-                this.lifeMonitor2.setInvalid();
-#endif
-
+            if (this.lifeMonitor.isValied)
+            {
+                if (this.health == 0)
+                {
+                    Console.WriteLine("Ship Dead");
+                    this.lifeMonitor.setInvalid();
+                }
             }
+#else
+            if (this.lifeMonitor2.isValied)
+            {
+                if (this.health == 0)
+                {
+                    Console.WriteLine("Ship Dead");
+                    this.lifeMonitor2.setInvalid();
+                }
+            }
+#endif
         }
 
         public void close()
         {
 #if DeleteThisDefineToOtherMode
+            this.lifeMonitor.close();
 #else
             this.lifeMonitor2.close();
 #endif
@@ -61,26 +63,34 @@ namespace tezcat.Framework.Test
 
     public class Missle
     {
-        public TezLifeMonitor<Ship> target = null;
-        public TezLifeMonitorSlot slot = null;
+        public string name = null;
+        public int step = 0;
+        public TezLifeMonitor<Ship> targetT = null;
+        public TezLifeMonitor target = null;
+        bool stop = false;
 
         public void update()
         {
+            if(stop)
+            {
+                return;
+            }
+
 #if DeleteThisDefineToOtherMode
-            if (this.slot == null)
+            if (this.target == null)
             {
                 this.findOtherTarget();
                 return;
             }
 
-            if (this.slot.isValied)
+            if (this.target.isValied)
             {
                 this.moveToTarget();
             }
             else
             {
-                this.slot.close();
-                this.slot = null;
+                this.target.close();
+                this.target = null;
             }
 #else
             if (target == null)
@@ -106,7 +116,9 @@ namespace tezcat.Framework.Test
         {
 
 #if DeleteThisDefineToOtherMode
-            this.slot = new TezLifeMonitorSlot(ship);
+            this.target = new TezLifeMonitor();
+            this.target.setMonitorFrom(ship.lifeMonitor);
+            //this.target.setManagedObject(ship);
 #else
             this.target = new TezLifeMonitor<Ship>(ship.lifeMonitor2);
 #endif
@@ -114,17 +126,27 @@ namespace tezcat.Framework.Test
 
         private void moveToTarget()
         {
-            Console.WriteLine("Move To Target......");
+            Console.WriteLine($"{name}: Move To Target......");
+            step--;
+            if (step == 0)
+            {
+                this.target.tryGetObject<Ship>(out var ship);
+                ship.health = 0;
+                Console.WriteLine($"{name} hit target!!");
+                this.target.close();
+                this.target = null;
+                this.stop = true;
+            }
         }
 
         private void findOtherTarget()
         {
-            Console.WriteLine("Find Other Target......");
+            Console.WriteLine($"{name}: Find Other Target......");
         }
 
         public void close()
         {
-
+            this.target?.close();
         }
     }
 
@@ -132,6 +154,7 @@ namespace tezcat.Framework.Test
     {
         Ship mShip = null;
         Missle mMissle = null;
+        Missle mMissle2 = null;
 
         public TestLifeMonitor() : base("LifeMonitor")
         {
@@ -141,24 +164,36 @@ namespace tezcat.Framework.Test
         {
             mShip.close();
             mMissle.close();
+            mMissle2.close();
         }
 
         public override void init()
         {
             mShip = new Ship();
-            mMissle = new Missle();
+            mMissle = new Missle()
+            {
+                name = "M1",
+                step = 4
+            };
             mMissle.setTarget(mShip);
+
+            mMissle2 = new Missle()
+            {
+                name = "M2",
+                step = 2
+            };
+            mMissle2.setTarget(mShip);
         }
 
         public override void run()
         {
-            while (mShip.health > 0)
+            int count = 6;
+            while (count-- > 0)
             {
-                mShip.update();
                 mMissle.update();
+                mMissle2.update();
+                mShip.update();
             }
-
-            mMissle.update();
         }
     }
 }

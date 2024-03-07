@@ -186,6 +186,16 @@ namespace tezcat.Framework.Database
                 mCategoryList.Add(null);
             }
             mCategoryList[finalToken.globalID] = category;
+
+            stack.Clear();
+        }
+
+        public static void registerTypeIDFrom(TezReader reader)
+        {
+            foreach (var item in mCategoryList)
+            {
+                item.finalToken.setTypeID(reader.readInt(item.finalToken.parent.name));
+            }
         }
         #endregion
 
@@ -257,6 +267,7 @@ namespace tezcat.Framework.Database
         /// <param name="reader"></param>
         public static void generateCodeFile(string outPath, TezReader reader)
         {
+            #region 生成.cs文件
             List<string> final_list = new List<string>();
             StringBuilder builder = new StringBuilder();
 
@@ -321,10 +332,40 @@ namespace tezcat.Framework.Database
             ///Namespace
             builder.AppendLine("}");
 
-            var writer = TezFilePath.createTextFile(outPath + "/" + wrapper_class + ".cs");
+            var writer = TezFilePath.createTextFile(outPath);
             writer.Write(builder.ToString());
             writer.Flush();
             writer.Close();
+            #endregion
+        }
+
+        public static void generateItemConfigFile(string outPath, TezReader reader)
+        {
+            TezJsonWriter writer = new TezJsonWriter();
+
+            reader.beginObject("Root");
+            int id = 0;
+            foreachCategoryFile(ref id, reader, writer);
+            reader.endObject("Root");
+
+            writer.save(outPath);
+            writer.close();
+        }
+
+        private static void foreachCategoryFile(ref int id, TezReader reader, TezWriter writer)
+        {
+            foreach (var key in reader.getKeys())
+            {
+                if (reader.tryBeginObject(key))
+                {
+                    foreachCategoryFile(ref id, reader, writer);
+                    reader.endObject(key);
+                }
+                else
+                {
+                    writer.write(key, id++);
+                }
+            }
         }
 
         private static void writeClasses(ICollection<string> children, TezReader reader, StringBuilder builder, string parentClass, string rootClass, string rootMemeber, List<string> finalList)
