@@ -45,7 +45,8 @@ namespace tezcat.Framework.Test
             mTestList.Add(new TestInventory());
             mTestList.Add(new TestTranslator());
             mTestList.Add(new TestSystemAttribute());
-            mTestList.Add(new TestBonusSystem());
+            //mTestList.Add(new TestBonusSystem());
+            mTestList.Add(new TestBonusSystem2());
             mTestList.Add(new TestHexSystem());
             mTestList.Add(new TestCategoryGenerator());
 
@@ -62,6 +63,7 @@ namespace tezcat.Framework.Test
             TezcatFramework.classFactory.register<HealthPotion>();
 
             TezcatFramework.classFactory.register<Character>();
+            TezcatFramework.classFactory.register<Ship>();
         }
         void loadRes()
         {

@@ -1,0 +1,11 @@
+{
+    "Ship": {
+        "TypeID": 0,
+        "IndexID": {
+            "Hull": 0,
+            "Armor": 1,
+            "Shield": 2,
+            "Power": 3
+        }
+    }
+}

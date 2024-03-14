@@ -119,12 +119,12 @@ namespace tezcat.Framework.Game
         protected TezInventoryBaseView mView = null;
         public TezInventoryBaseView view => mView;
 
-        TezLifeMonitor mLifeMonitor = new TezLifeMonitor();
-        public TezLifeMonitor lifeMonitor => mLifeMonitor;
+        TezLifeHolder mLifeMonitor = new TezLifeHolder();
+        public TezLifeHolder lifeMonitor => mLifeMonitor;
 
         public TezInventory()
         {
-            mLifeMonitor.setManagedObject(this);
+            mLifeMonitor.create(this);
         }
 
         public void setView(TezInventoryBaseView view)

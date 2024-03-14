@@ -1,0 +1,16 @@
+{
+    "CID": "Ship",
+    "ItemInfo": {
+        "NID": "Battleship",
+        "TID": "Unit",
+        "UID": 0,
+        "StackCount": -1,
+        "Category": "Ship"
+    },
+    "ItemData": {
+        "HullCapacity": 300,
+        "ArmorCapacity": 1000,
+        "ShieldCapacity": 500,
+        "PowerCapacity": 2000
+    }
+}

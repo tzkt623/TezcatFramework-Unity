@@ -2,16 +2,16 @@
 {
     public class TezLitPropertyManager : ITezCloseable
     {
-        TezLitPropertySortList m_Attributes = null;
+        TezLitPropertySortList mAttributes = null;
         public TezLitPropertySortList attributes
         {
             get
             {
-                if (m_Attributes == null)
+                if (mAttributes == null)
                 {
-                    m_Attributes = new TezLitPropertySortList();
+                    mAttributes = new TezLitPropertySortList();
                 }
-                return m_Attributes;
+                return mAttributes;
             }
         }
 
@@ -19,7 +19,7 @@
         {
             if (this.attributes.binaryFind(descriptor.ID, out int index))
             {
-                return (T)m_Attributes[index];
+                return (T)mAttributes[index];
             }
             else
             {
@@ -48,23 +48,23 @@
 
         public void clearAll()
         {
-            if (m_Attributes == null)
+            if (mAttributes == null)
             {
                 return;
             }
 
-            for (int i = 0; i < m_Attributes.count; i++)
+            for (int i = 0; i < mAttributes.count; i++)
             {
-                m_Attributes[i].close();
+                mAttributes[i].close();
             }
 
-            m_Attributes.clear();
+            mAttributes.clear();
         }
 
         public virtual void close()
         {
             this.clearAll();
-            m_Attributes = null;
+            mAttributes = null;
         }
     }
 }

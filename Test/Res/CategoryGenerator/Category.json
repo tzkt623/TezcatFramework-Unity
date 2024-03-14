@@ -11,7 +11,8 @@
         "Equipment": {
             "Weapon": [
                 "Gun",
-                "Axe"
+                "Axe",
+                "Missle"
             ],
             "Armor": [
                 "Helmet",
@@ -20,7 +21,8 @@
             ]
         },
         "Unit": [
-            "Character"
+            "Character",
+            "Ship"
         ]
     }
 }

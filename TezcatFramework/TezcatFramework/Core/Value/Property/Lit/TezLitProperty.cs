@@ -4,20 +4,31 @@ using tezcat.Framework.Game;
 
 namespace tezcat.Framework.Core
 {
+    public interface ITezLitProperty : ITezValueWrapper
+    {
+        event TezEventExtension.Action<ITezLitProperty> onValueChanged;
+        void manualUpdate();
+    }
+
+    public interface ITezLitProperty<T> : ITezLitProperty
+    {
+        T value { get; set; }
+        T innerValue { set; }
+    }
 
     /// <summary>
     /// 轻量级的属性
     /// 没有modifier功能
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public abstract class TezLitProperty<T>
+    public class TezLitProperty<T>
         : TezValueWrapper<T>
-        , ITezLitProperty
+        , ITezLitProperty<T>
     {
         public event TezEventExtension.Action<ITezLitProperty> onValueChanged;
         public override TezWrapperType wrapperType => TezWrapperType.LitProperty;
 
-        T m_Value;
+        T mValue;
         /// <summary>
         /// 设置此数值将会通知更新
         /// </summary>
@@ -25,12 +36,12 @@ namespace tezcat.Framework.Core
         {
             get
             {
-                return m_Value;
+                return mValue;
             }
             set
             {
-                m_Value = value;
-                this.update();
+                mValue = value;
+                this.onValueChanged?.Invoke(this);
             }
         }
 
@@ -41,46 +52,44 @@ namespace tezcat.Framework.Core
         /// </summary>
         public T innerValue
         {
-            set { m_Value = value; }
+            set { mValue = value; }
         }
 
 
-        protected TezLitProperty(ITezValueDescriptor name) : base(name)
+        public TezLitProperty(ITezValueDescriptor descriptor) : base(descriptor)
         {
 
         }
 
-        protected TezLitProperty() : base() { }
+        public TezLitProperty() : base() { }
 
         public override void close()
         {
             this.descriptor = null;
-            m_Value = default;
+            mValue = default;
             onValueChanged = null;
         }
 
         /// <summary>
-        /// 通知数据更新
+        /// 手动通知数据更新
         /// </summary>
-        public void update()
+        public void manualUpdate()
         {
             this.onValueChanged?.Invoke(this);
         }
     }
 
-    public abstract class TezLitPropertyInt : TezLitProperty<int>
+    public class TezLitPropertyInt : TezLitProperty<int>
     {
-        protected TezLitPropertyInt(ITezValueDescriptor name) : base(name)
-        {
+        public TezLitPropertyInt() : base() { }
 
-        }
+        public TezLitPropertyInt(ITezValueDescriptor name) : base(name) { }
     }
 
-    public abstract class TezLitPropertyFloat : TezLitProperty<float>
+    public class TezLitPropertyFloat : TezLitProperty<float>
     {
-        protected TezLitPropertyFloat(ITezValueDescriptor name) : base(name)
-        {
+        public TezLitPropertyFloat() : base() { }
 
-        }
+        public TezLitPropertyFloat(ITezValueDescriptor name) : base(name) { }
     }
 }

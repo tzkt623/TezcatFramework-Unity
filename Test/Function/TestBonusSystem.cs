@@ -7,6 +7,7 @@ namespace tezcat.Framework.Test
     /// <summary>
     /// 第一类加成写法
     /// </summary>
+    [Obsolete]
     public class MyPathes
     {
         /// <summary>
@@ -42,6 +43,7 @@ namespace tezcat.Framework.Test
     /// <summary>
     /// 第二类加成写法
     /// </summary>
+    [Obsolete]
     public class MySkillPathes
     {
         public static readonly TezBonusToken Battle = TezBonusTokenCreator<MySkillPathes>.createToken("Battle", TezBonusTokenType.Root, null);
@@ -53,6 +55,7 @@ namespace tezcat.Framework.Test
         public static readonly TezBonusToken Shoot = TezBonusTokenCreator<MySkillPathes>.createToken("Shoot", TezBonusTokenType.Leaf, Range);
     }
 
+    [Obsolete]
     public class MyBountyLeaf : TezBonusTreeLeafNode
     {
         public MyBountyLeaf(int id, ITezBonusTree system) : base(id, system)
@@ -61,6 +64,7 @@ namespace tezcat.Framework.Test
         }
     }
 
+    [Obsolete]
     public class MyBountyPath : TezBonusTreePathNode
     {
         public MyBountyPath(int id, ITezBonusTree tree) : base(id, tree)
@@ -69,6 +73,7 @@ namespace tezcat.Framework.Test
         }
     }
 
+    [Obsolete]
     public class MyBountyTree : TezBonusTree<TezBonusTreeListContainer>
     {
         protected override TezBonusTreeNode onCreateNode(ITezBonusToken token)
@@ -86,6 +91,7 @@ namespace tezcat.Framework.Test
         }
     }
 
+    [Obsolete]
     public class MyIntBonus : ITezBonusCarrier
     {
         public string name;
@@ -93,11 +99,13 @@ namespace tezcat.Framework.Test
         public int value = 5;
     }
 
+    [Obsolete]
     public class MyPropertyBonus : TezValueModifier
     {
 
     }
 
+    [Obsolete]
     public class MyLaserTurrent : ITezBonusAgentEntry
     {
         public TezBonusAgent bonusAgent { get; } = new TezBonusAgent();
@@ -163,6 +171,7 @@ namespace tezcat.Framework.Test
         }
     }
 
+    [Obsolete]
     public class MyShip : ITezBonusAgentEntry
     {
         MyBountyTree tree = new MyBountyTree();
@@ -288,6 +297,7 @@ namespace tezcat.Framework.Test
         }
     }
 
+    [Obsolete]
     class TestBonusSystem : TezBaseTest
     {
         MyShip myUnit = null;

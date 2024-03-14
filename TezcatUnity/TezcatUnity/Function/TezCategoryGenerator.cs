@@ -19,7 +19,7 @@ namespace tezcat.Unity.Tool
             {
                 Debug.LogError($"Load File Error : {inCategoryFilePath}");
             }
-            TezCategorySystem.generateCodeFile(outCShapPath, reader);
+            TezCategorySystem.generateCShapFile(outCShapPath, reader);
             reader.close();
         }
 

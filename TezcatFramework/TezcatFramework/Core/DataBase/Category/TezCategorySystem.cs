@@ -265,7 +265,7 @@ namespace tezcat.Framework.Database
         /// </summary>
         /// <param name="outPath"></param>
         /// <param name="reader"></param>
-        public static void generateCodeFile(string outPath, TezReader reader)
+        public static void generateCShapFile(string outPath, TezReader reader)
         {
             #region 生成.cs文件
             List<string> final_list = new List<string>();

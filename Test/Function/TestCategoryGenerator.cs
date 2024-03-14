@@ -94,6 +94,7 @@ namespace tezcat.Framework.Test
             public enum Category
             {
                 Character,
+                Ship
             }
 
             private Unit(Category value, ITezCategoryBaseToken parentToken) : base(value, parentToken)
@@ -102,10 +103,12 @@ namespace tezcat.Framework.Test
             }
 
             public static readonly Unit Character = new Unit(Category.Character, Root.Unit);
+            public static readonly Unit Ship = new Unit(Category.Ship, Root.Unit);
 
             public static void init()
             {
                 Character.registerID();
+                Ship.registerID();
             }
         }
 
@@ -168,13 +171,17 @@ namespace tezcat.Framework.Test
 
         public void generateCShapFile()
         {
-            string loadPath = Path.root + "Res/CategoryGenerator/Category.json";
-            string savePath = Path.root + "Res/CategoryGenerator/MyCategory.cs";
+            string loadPath = $"{Path.root}Res/CategoryGenerator/Category.json";
             TezJsonReader reader = new TezJsonReader();
             if (reader.load(loadPath))
             {
-                TezCategorySystem.generateCodeFile(savePath, reader);
-                Console.WriteLine($"Generate File Successed: {savePath}");
+                string savePath = $"{Path.root}Res/CategoryGenerator/MyCategory.cs";
+                TezCategorySystem.generateCShapFile(savePath, reader);
+                Console.WriteLine($"Generate CategoryCShap File Successed: {savePath}");
+
+                savePath = $"{Path.root}Res/Item/Config.json";
+                TezCategorySystem.generateItemConfigFile(savePath, reader);
+                Console.WriteLine($"Generate ItemConfig File Successed: {savePath}");
             }
             else
             {

@@ -108,11 +108,11 @@ namespace tezcat.Framework.Core
     {
         static Dictionary<Type, TezValueType> Mapping = new Dictionary<Type, TezValueType>()
         {
+            {typeof(bool),      TezValueType.Bool },
             {typeof(sbyte),     TezValueType.SByte },
             {typeof(byte),      TezValueType.Byte },
             {typeof(short),     TezValueType.Short },
             {typeof(ushort),    TezValueType.UShort },
-            {typeof(bool),      TezValueType.Bool },
             {typeof(int),       TezValueType.Int },
             {typeof(uint),      TezValueType.UInt },
             {typeof(long),      TezValueType.Long },

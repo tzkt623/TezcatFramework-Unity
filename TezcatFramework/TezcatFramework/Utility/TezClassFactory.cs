@@ -52,7 +52,7 @@ namespace tezcat.Framework.Utility
             }
             else
             {
-                throw new Exception(string.Format("{0} : this type is not registered", name));
+                throw new Exception($"ClassFactory : {name} this type is not registered");
             }
         }
 
