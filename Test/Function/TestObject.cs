@@ -159,7 +159,7 @@ namespace tezcat.Framework.Test
             Console.WriteLine($"{name}: Find Other Target......");
         }
 
-        public void close()
+        public override void close()
         {
             this.target?.close();
         }
@@ -220,8 +220,8 @@ namespace tezcat.Framework.Test
 
     class Character : Unit
     {
-        public int health;
-        public int armor;
+        public int health = 0;
+        public int armor = 0;
 
         protected override ITezItemObject copy()
         {
@@ -233,10 +233,8 @@ namespace tezcat.Framework.Test
         : Unit
         , ITezBonusSystemHolder
     {
+        //Life
         public TezLifeHolder lifeMonitor { get; } = new TezLifeHolder();
-
-        TezBonusSystem mBonusSystem = new TezBonusSystem();
-        public TezBonusSystem bonusSystem => mBonusSystem;
 
         //Property
         public TezLitPropertyInt hull { get; private set; } = new TezLitPropertyInt(MyPropertyConfig.Hull);
@@ -245,6 +243,9 @@ namespace tezcat.Framework.Test
         public TezLitPropertyInt power { get; private set; } = new TezLitPropertyInt(MyPropertyConfig.Power);
 
         //Bonusable
+        TezBonusSystem mBonusSystem = new TezBonusSystem();
+        public TezBonusSystem bonusSystem => mBonusSystem;
+
         public TezBonusableInt hullCapacity { get; private set; } = new TezBonusableInt(MyPropertyConfig.HullCapacity);
         public TezBonusableInt armorCapacity { get; private set; } = new TezBonusableInt(MyPropertyConfig.ArmorCapacity);
         public TezBonusableInt shieldCapacity { get; private set; } = new TezBonusableInt(MyPropertyConfig.ShieldCapacity);
@@ -326,8 +327,9 @@ namespace tezcat.Framework.Test
             return new Ship();
         }
 
-        public void close()
+        public override void close()
         {
+            base.close();
             this.hull.close();
 
             this.hullCapacity.close();

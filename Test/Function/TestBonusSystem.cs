@@ -4,6 +4,7 @@ using tezcat.Framework.Core;
 
 namespace tezcat.Framework.Test
 {
+#if false
     /// <summary>
     /// 第一类加成写法
     /// </summary>
@@ -325,4 +326,5 @@ namespace tezcat.Framework.Test
 
         }
     }
+#endif
 }

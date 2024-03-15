@@ -1,11 +1,12 @@
-﻿using System;
-using tezcat.Framework.Utility;
-
-namespace tezcat.Framework.Test
+﻿namespace tezcat.Framework.Test
 {
     public class TestLifeMonitor : TezBaseTest
     {
+        /// <summary>
+        /// <see cref="Ship">See Ship Memeber</see>
+        /// </summary>
         Ship mShip = null;
+
         Missle mMissle = null;
         Missle mMissle2 = null;
 

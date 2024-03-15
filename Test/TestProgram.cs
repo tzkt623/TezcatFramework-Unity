@@ -35,6 +35,7 @@ namespace tezcat.Framework.Test
         void register()
         {
             mTestList.Add(new TestObject());
+            mTestList.Add(new TestValueDescriptor());
             mTestList.Add(new TestAStarSystem());
             mTestList.Add(new TestTag());
             mTestList.Add(new TestRandomIndex());
@@ -65,6 +66,7 @@ namespace tezcat.Framework.Test
             TezcatFramework.classFactory.register<Character>();
             TezcatFramework.classFactory.register<Ship>();
         }
+
         void loadRes()
         {
             TezJsonReader reader = new TezJsonReader();
@@ -122,6 +124,7 @@ namespace tezcat.Framework.Test
             }
             catch (Exception e)
             {
+                Console.WriteLine(e.StackTrace);
                 index = -1;
             }
 

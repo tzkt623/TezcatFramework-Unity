@@ -30,13 +30,13 @@ namespace tezcat.Framework.Game
             mContainerArray[bonusToken.indexID] = bonusableValue.modifierContainer;
         }
 
-        public void addModifier(TezBonusModifier modifier)
+        public void addModifier(ITezBonusModifier modifier)
         {
             var iid = modifier.bonusToken.indexID;
             mContainerArray[iid].add(modifier);
         }
 
-        public void removeModifier(TezBonusModifier modifier)
+        public void removeModifier(ITezBonusModifier modifier)
         {
             var iid = modifier.bonusToken.indexID;
             mContainerArray[iid].remove(modifier);

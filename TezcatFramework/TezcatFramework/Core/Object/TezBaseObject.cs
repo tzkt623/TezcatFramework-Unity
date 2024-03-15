@@ -1,5 +1,4 @@
-﻿using System;
-using tezcat.Framework.Database;
+﻿using tezcat.Framework.Database;
 
 namespace tezcat.Framework.Core
 {

@@ -1,8 +1,11 @@
 using tezcat.Framework.Core;
+using tezcat.Framework.Database;
 
 namespace tezcat.Framework.Game
 {
-    public interface ITezBonusableValue : ITezCloseable
+    public interface ITezBonusableValue
+        : ITezCloseable
+        , ITezSerializable
     {
         TezBonusBaseModifierContainer modifierContainer { get; }
         ITezLitProperty baseProperty { get; }
@@ -67,11 +70,13 @@ namespace tezcat.Framework.Game
 
         public TezBonusableInt()
         {
+            mValue.value = 0;
         }
 
         public TezBonusableInt(ITezValueDescriptor valueDescriptor)
         {
             mValue.descriptor = valueDescriptor;
+            mValue.value = 0;
         }
 
         public void setContainer(TezBonusBaseModifierContainer modifierContainer)
@@ -96,6 +101,16 @@ namespace tezcat.Framework.Game
 
             mModifierContainer = null;
             mValue = null;
+        }
+
+        public void serialize(TezWriter writer)
+        {
+            writer.write(mValue.descriptor.name, mBaseValue);
+        }
+
+        public void deserialize(TezReader reader)
+        {
+            mBaseValue = reader.readInt(mValue.descriptor.name);
         }
     }
 
@@ -136,12 +151,13 @@ namespace tezcat.Framework.Game
 
         public TezBonusableFloat()
         {
-
+            mValue.value = 0.0f;
         }
 
         public TezBonusableFloat(ITezValueDescriptor valueDescriptor)
         {
             mValue.descriptor = valueDescriptor;
+            mValue.value = 0.0f;
         }
 
         public void setContainer(TezBonusBaseModifierContainer modifierContainer)
@@ -166,6 +182,16 @@ namespace tezcat.Framework.Game
 
             mModifierContainer = null;
             mValue = null;
+        }
+
+        public void serialize(TezWriter writer)
+        {
+            writer.write(mValue.descriptor.name, mBaseValue);
+        }
+
+        public void deserialize(TezReader reader)
+        {
+            mBaseValue = reader.readFloat(mValue.descriptor.name);
         }
     }
 }

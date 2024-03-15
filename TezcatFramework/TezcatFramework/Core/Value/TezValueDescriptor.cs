@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using tezcat.Framework.Extension;
-using tezcat.Framework.Utility;
 
 namespace tezcat.Framework.Core
 {
@@ -10,6 +10,8 @@ namespace tezcat.Framework.Core
         , IComparable<ITezValueDescriptor>
     {
         int ID { get; }
+        int typeID { get; }
+        int indexID { get; }
         string name { get; }
     }
 
@@ -22,73 +24,122 @@ namespace tezcat.Framework.Core
     /// 
     /// 这里的模板参数用于产生多种不同归属的描述信息
     /// </summary>
-    public sealed class TezValueDescriptor<Descriptor>
+    public sealed class TezValueDescriptor
         : ITezValueDescriptor
     {
-        public int ID { get; }
-        public string name { get; }
-
-        TezValueDescriptor(int id, string name)
+        [StructLayout(LayoutKind.Explicit)]
+        struct Data
         {
-            this.name = name;
-            this.ID = id;
+            [FieldOffset(0)]
+            public int ID;
+            [FieldOffset(0)]
+            public short indexID;
+            [FieldOffset(2)]
+            public short typeID;
+        }
+
+        Data mData = new Data();
+        public string mName = null;
+
+        public int ID => mData.ID;
+        public int typeID => mData.typeID;
+        public int indexID => mData.indexID;
+        public string name => mName;
+
+        TezValueDescriptor(short typeID, short indexID, string name)
+        {
+            mData.typeID = typeID;
+            mData.indexID = indexID;
+            mName = name;
         }
 
         public bool Equals(ITezValueDescriptor other)
         {
-            return this.ID == other.ID;
+            return mData.ID == other.ID;
         }
 
         public int CompareTo(ITezValueDescriptor other)
         {
-            return this.ID.CompareTo(other.ID);
+            return mData.ID.CompareTo(other.ID);
         }
 
         public override int GetHashCode()
         {
-            return this.ID.GetHashCode();
+            return mData.ID.GetHashCode();
         }
 
         #region 注册
-        static Dictionary<string, ITezValueDescriptor> m_NameDic = new Dictionary<string, ITezValueDescriptor>();
-        static List<ITezValueDescriptor> m_NameList = new List<ITezValueDescriptor>();
-
-        public static ITezValueDescriptor register(string name)
+        class Cell
         {
-            if (m_NameDic.TryGetValue(name, out ITezValueDescriptor descriptor))
+            public short ID = 0;
+            public string Name;
+            public Dictionary<string, ITezValueDescriptor> dict = new Dictionary<string, ITezValueDescriptor>();
+            public List<ITezValueDescriptor> list = new List<ITezValueDescriptor>();
+        }
+
+        static List<Cell> mList = new List<Cell>();
+
+        public static short generateTypeID(string name)
+        {
+            var cell = new Cell()
+            {
+                ID = (short)mList.Count,
+                Name = name
+            };
+            mList.Add(cell);
+
+            return cell.ID;
+        }
+
+        public static ITezValueDescriptor register(short typeID, string name)
+        {
+//             while (mList.Count <= typeID)
+//             {
+//                 mList.Add(new Cell());
+//             }
+
+            var cell = mList[typeID];
+            cell.ID = typeID;
+            if (cell.dict.TryGetValue(name, out ITezValueDescriptor descriptor))
             {
                 throw new ArgumentException();
             }
             else
             {
-                descriptor = new TezValueDescriptor<Descriptor>(m_NameList.Count, name);
-                m_NameDic.Add(name, descriptor);
-                m_NameList.Add(descriptor);
+                descriptor = new TezValueDescriptor(typeID, (short)cell.list.Count, name);
+                cell.dict.Add(name, descriptor);
+                cell.list.Add(descriptor);
             }
 
             return descriptor;
         }
 
-        public static ITezValueDescriptor get(string name)
+        public static ITezValueDescriptor get(short typeID, string name)
         {
+            var cell = mList[typeID];
+
             ITezValueDescriptor descriptor;
-            if (!m_NameDic.TryGetValue(name, out descriptor))
+            if (!cell.dict.TryGetValue(name, out descriptor))
             {
                 throw new Exception(string.Format("This Value[{0}] is not registered!!", name));
             }
             return descriptor;
         }
 
-        public static ITezValueDescriptor get(int id)
+        public static ITezValueDescriptor get(short typeID, short indexID)
         {
-            return m_NameList[id];
+            return mList[typeID].list[indexID];
         }
 
-        public static void foreachName(TezEventExtension.Action<ITezValueDescriptor> action)
+        public static void foreachName(TezEventExtension.Action<string, short> onTypeBegin, TezEventExtension.Action<ITezValueDescriptor> onDescriptor)
         {
-            foreach (var pair in m_NameDic)
+            foreach (var cell in mList)
             {
-                action(pair.Value);
+                onTypeBegin(cell.Name, cell.ID);
+                foreach (var item in cell.list)
+                {
+                    onDescriptor(item);
+                }
             }
         }
         #endregion

@@ -77,7 +77,7 @@
     <Compile Include="Function\TestHexSystem.cs" />
     <Compile Include="Function\TestInventory.cs" />
     <Compile Include="Function\TestKeyConfig.cs" />
-    <Compile Include="Function\TestProperty.cs" />
+    <Compile Include="Function\TestValueDescriptor.cs" />
     <Compile Include="Function\TestRandomIndex.cs" />
     <Compile Include="Function\TestTag.cs" />
     <Compile Include="Function\TestTranslator.cs" />

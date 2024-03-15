@@ -5,7 +5,7 @@ namespace tezcat.Framework.Game
 {
     public abstract class TezBonusBaseModifierContainer : ITezCloseable
     {
-        protected List<TezBonusModifier> mList = new List<TezBonusModifier>(8);
+        protected List<ITezBonusModifier> mList = new List<ITezBonusModifier>(8);
 
         protected TezBonusToken mToken = null;
         public TezBonusToken bonusToken => mToken;
@@ -26,23 +26,23 @@ namespace tezcat.Framework.Game
             mDirty = true;
         }
 
-        public void add(TezBonusModifier modifier)
+        public void add(ITezBonusModifier modifier)
         {
             mDirty = true;
             mList.Add(modifier);
             this.onAdd(modifier);
         }
 
-        protected abstract void onAdd(TezBonusModifier modifier);
+        protected abstract void onAdd(ITezBonusModifier modifier);
 
-        public void remove(TezBonusModifier modifier)
+        public void remove(ITezBonusModifier modifier)
         {
             mDirty = true;
             mList.Remove(modifier);
             this.onRemove(modifier);
         }
 
-        protected abstract void onRemove(TezBonusModifier modifier);
+        protected abstract void onRemove(ITezBonusModifier modifier);
 
         public void removeFrom(object source)
         {
@@ -86,7 +86,7 @@ namespace tezcat.Framework.Game
 //         float mBase_PercentAdd = 0;
 //         float mBase_PercentMulti = 0;
 
-        protected override void onAdd(TezBonusModifier modifier)
+        protected override void onAdd(ITezBonusModifier modifier)
         {
 //             switch ((TezBonusModifierType)modifier.modifyType)
 //             {
@@ -104,7 +104,7 @@ namespace tezcat.Framework.Game
 //             }
         }
 
-        protected override void onRemove(TezBonusModifier modifier)
+        protected override void onRemove(ITezBonusModifier modifier)
         {
 //             switch ((TezBonusModifierType)modifier.modifyType)
 //             {

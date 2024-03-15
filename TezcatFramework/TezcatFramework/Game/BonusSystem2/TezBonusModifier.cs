@@ -10,11 +10,19 @@ namespace tezcat.Framework.Game
         Base_PercentMulti,
     }
 
-    public abstract class TezBonusModifier : ITezCloseable
+    public interface ITezBonusModifier : ITezCloseable
     {
-        public object owner;
-        public byte modifyType;
-        public TezBonusToken bonusToken;
+        object owner { get; set; }
+        byte modifyType { get; set; }
+        TezBonusToken bonusToken { get; set; }
+        float value { get; set; }
+    }
+
+    public abstract class TezBonusModifier : ITezBonusModifier
+    {
+        public object owner { get; set; }
+        public byte modifyType { get; set; }
+        public TezBonusToken bonusToken { get; set; }
 
         public abstract float value { get; set; }
 

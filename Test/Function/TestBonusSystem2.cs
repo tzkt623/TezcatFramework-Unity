@@ -28,6 +28,9 @@ namespace tezcat.Framework.Test
 
     public class TestBonusSystem2 : TezBaseTest
     {
+        /// <summary>
+        /// <see cref="Ship">See Ship Class Memeber </see>
+        /// </summary>
         Ship mShip = null;
 
         public TestBonusSystem2() : base("New BonusSystem")
@@ -107,4 +110,3 @@ namespace tezcat.Framework.Test
         }
     }
 }
-
