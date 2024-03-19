@@ -36,6 +36,7 @@ namespace tezcat.Framework.Test
         {
             mTestList.Add(new TestObject());
             mTestList.Add(new TestValueDescriptor());
+            mTestList.Add(new TestValueArrayManager());
             mTestList.Add(new TestAStarSystem());
             mTestList.Add(new TestTag());
             mTestList.Add(new TestRandomIndex());
@@ -89,7 +90,7 @@ namespace tezcat.Framework.Test
             while (true)
             {
                 var index = this.choose();
-                if (index != -1)
+                if (index >= 0 && index < mTestList.Count)
                 {
                     Console.ForegroundColor = ConsoleColor.Cyan;
                     Console.WriteLine($"<=== Enter {index}.{mTestList[index].name} Test ===>");
@@ -124,18 +125,11 @@ namespace tezcat.Framework.Test
             }
             catch (Exception e)
             {
-                Console.WriteLine(e.StackTrace);
+                Console.WriteLine(e.Message);
                 index = -1;
             }
 
-            if (index < mTestList.Count)
-            {
-                return index;
-            }
-            else
-            {
-                return -1;
-            }
+            return index;
         }
 
     }

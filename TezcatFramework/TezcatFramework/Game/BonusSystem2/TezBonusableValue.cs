@@ -1,16 +1,23 @@
+using System;
 using tezcat.Framework.Core;
 using tezcat.Framework.Database;
 
 namespace tezcat.Framework.Game
 {
     public interface ITezBonusableValue
-        : ITezCloseable
+        : ITezValueWrapper
         , ITezSerializable
     {
-        TezBonusBaseModifierContainer modifierContainer { get; }
+        TezBonusToken bonusToken { get; set; }
+        ITezBonusModifierContainer modifierContainer { get; }
         ITezLitProperty baseProperty { get; }
-        void setContainer(TezBonusBaseModifierContainer modifierContainer);
+
+        void createContainer<Container>() where Container : ITezBonusModifierContainer, new();
         void manualUpdate();
+
+        void markDirty();
+        void addModifier(ITezBonusModifier bonusModifier);
+        void removeModifier(ITezBonusModifier bonusModifier);
     }
 
     public interface ITezBonusableValue<T> : ITezBonusableValue
@@ -31,167 +38,183 @@ namespace tezcat.Framework.Game
         ITezLitProperty<T> porperty { get; }
     }
 
-    public class TezBonusableInt
-        : ITezBonusableValue<int>
-        , ITezBonusReadModifierEntry
+    public abstract class TezBaseBonusaValue<T>
+        : ITezBonusableValue<T>
     {
-        TezBonusBaseModifierContainer mModifierContainer = null;
-        public TezBonusBaseModifierContainer modifierContainer => mModifierContainer;
+        protected TezLitProperty<T> mLitPoperty = new TezLitProperty<T>();
+        public ITezLitProperty baseProperty => mLitPoperty;
+        public ITezLitProperty<T> porperty => mLitPoperty;
 
-        TezLitProperty<int> mValue = new TezLitProperty<int>();
-        public ITezLitProperty baseProperty => mValue;
-        public ITezLitProperty<int> porperty => mValue;
 
-        int mBaseValue = 0;
-        public int baseValue
+        public Type systemType => mLitPoperty.systemType;
+        public TezValueType valueType => mLitPoperty.valueType;
+        public TezWrapperType wrapperType => TezWrapperType.Bonusable;
+        public int ID => mLitPoperty.ID;
+        public string name => mLitPoperty.name;
+
+        public ITezValueDescriptor descriptor
+        {
+            get => mLitPoperty.descriptor;
+            set => mLitPoperty.descriptor = value;
+        }
+
+        protected TezBonusToken mBonusToken = null;
+        public TezBonusToken bonusToken
+        {
+            get => mBonusToken;
+            set => mBonusToken = value;
+        }
+
+        protected ITezBonusModifierContainer mModifierContainer = null;
+        public ITezBonusModifierContainer modifierContainer => mModifierContainer;
+
+        protected bool mDirty = true;
+        protected T mBaseValue = default;
+        public T baseValue
         {
             get { return mBaseValue; }
             set
             {
+                mDirty = true;
                 mBaseValue = value;
-                mModifierContainer?.markDirty();
             }
         }
 
-        public int value
+        public T value
         {
             get
             {
-                if (mModifierContainer.isDirty)
+                if (mDirty)
                 {
-                    mValue.innerValue = mModifierContainer.calculate(ref mBaseValue);
+                    mDirty = true;
+                    mLitPoperty.innerValue = this.calculateValue();
                 }
-
-                return mValue.value;
+                return mLitPoperty.value;
             }
         }
 
-        float ITezBonusReadModifierEntry.value => this.value;
-
-        public TezBonusableInt()
+        public TezBaseBonusaValue(TezBonusToken bonusToken, ITezValueDescriptor valueDescriptor)
         {
-            mValue.value = 0;
+            mBonusToken = bonusToken;
+            mLitPoperty.descriptor = valueDescriptor;
         }
 
-        public TezBonusableInt(ITezValueDescriptor valueDescriptor)
+        public TezBaseBonusaValue()
         {
-            mValue.descriptor = valueDescriptor;
-            mValue.value = 0;
+
         }
 
-        public void setContainer(TezBonusBaseModifierContainer modifierContainer)
+        protected abstract T calculateValue();
+
+        public void createContainer<Container>() where Container : ITezBonusModifierContainer, new()
         {
-            mModifierContainer = modifierContainer;
+            mModifierContainer = new Container();
         }
 
-        public void manualUpdate()
+        public void markDirty()
         {
-            if (mModifierContainer.isDirty)
+            mDirty = true;
+        }
+
+        public void addModifier(ITezBonusModifier bonusModifier)
+        {
+            mDirty = true;
+            mModifierContainer.add(bonusModifier);
+        }
+
+        public void removeModifier(ITezBonusModifier bonusModifier)
+        {
+            if (mModifierContainer.remove(bonusModifier))
             {
-                mValue.innerValue = mModifierContainer.calculate(ref mBaseValue);
+                mDirty = true;
             }
-
-            mValue.manualUpdate();
         }
 
         public virtual void close()
         {
-            mValue.close();
-            //mModifierContainer.close();
+            mLitPoperty.close();
+            mModifierContainer.close();
 
+            mLitPoperty = null;
+            mBonusToken = null;
             mModifierContainer = null;
-            mValue = null;
         }
 
-        public void serialize(TezWriter writer)
+        public void manualUpdate()
         {
-            writer.write(mValue.descriptor.name, mBaseValue);
+            if (mDirty)
+            {
+                mDirty = true;
+                mLitPoperty.innerValue = this.calculateValue();
+            }
+
+            mLitPoperty.manualUpdate();
         }
 
-        public void deserialize(TezReader reader)
+        public abstract void serialize(TezWriter writer);
+        public abstract void deserialize(TezReader reader);
+
+        public string valueToString()
         {
-            mBaseValue = reader.readInt(mValue.descriptor.name);
+            return mLitPoperty.valueToString();
+        }
+    }
+
+    public class TezBonusableInt
+        : TezBaseBonusaValue<int>
+    {
+        public TezBonusableInt()
+        {
+            mLitPoperty.value = 0;
+        }
+
+        public TezBonusableInt(TezBonusToken bonusToken, ITezValueDescriptor valueDescriptor) : base(bonusToken, valueDescriptor)
+        {
+            mLitPoperty.value = 0;
+        }
+
+        protected override int calculateValue()
+        {
+            return mModifierContainer.calculate(ref mBaseValue);
+        }
+
+        public override void serialize(TezWriter writer)
+        {
+            writer.write(mLitPoperty.descriptor.name, mBaseValue);
+        }
+
+        public override void deserialize(TezReader reader)
+        {
+            mBaseValue = reader.readInt(mLitPoperty.descriptor.name);
         }
     }
 
     public class TezBonusableFloat
-        : ITezBonusableValue<float>
-        , ITezBonusReadModifierEntry
+        : TezBaseBonusaValue<float>
     {
-        TezBonusBaseModifierContainer mModifierContainer = null;
-        public TezBonusBaseModifierContainer modifierContainer => mModifierContainer;
-
-        TezLitProperty<float> mValue = new TezLitProperty<float>();
-        public ITezLitProperty baseProperty => mValue;
-        public ITezLitProperty<float> porperty => mValue;
-
-        float mBaseValue = 0;
-        public float baseValue
-        {
-            get { return mBaseValue; }
-            set
-            {
-                mBaseValue = value;
-                mModifierContainer?.markDirty();
-            }
-        }
-
-        public float value
-        {
-            get
-            {
-                if (mModifierContainer.isDirty)
-                {
-                    mValue.innerValue = mModifierContainer.calculate(ref mBaseValue);
-                }
-
-                return mValue.value;
-            }
-        }
-
         public TezBonusableFloat()
         {
-            mValue.value = 0.0f;
+            mLitPoperty.value = 0.0f;
         }
 
-        public TezBonusableFloat(ITezValueDescriptor valueDescriptor)
+        public TezBonusableFloat(TezBonusToken bonusToken, ITezValueDescriptor valueDescriptor) : base(bonusToken, valueDescriptor)
         {
-            mValue.descriptor = valueDescriptor;
-            mValue.value = 0.0f;
+            mLitPoperty.value = 0.0f;
         }
 
-        public void setContainer(TezBonusBaseModifierContainer modifierContainer)
+        protected override float calculateValue()
         {
-            mModifierContainer = modifierContainer;
+            return mModifierContainer.calculate(ref mBaseValue);
         }
 
-        public void manualUpdate()
+        public override void serialize(TezWriter writer)
         {
-            if (mModifierContainer.isDirty)
-            {
-                mValue.innerValue = mModifierContainer.calculate(ref mBaseValue);
-            }
-
-            mValue.manualUpdate();
+            writer.write(mLitPoperty.descriptor.name, mBaseValue);
         }
 
-        public virtual void close()
+        public override void deserialize(TezReader reader)
         {
-            mValue.close();
-            //mModifierContainer.close();
-
-            mModifierContainer = null;
-            mValue = null;
-        }
-
-        public void serialize(TezWriter writer)
-        {
-            writer.write(mValue.descriptor.name, mBaseValue);
-        }
-
-        public void deserialize(TezReader reader)
-        {
-            mBaseValue = reader.readFloat(mValue.descriptor.name);
+            mBaseValue = reader.readFloat(mLitPoperty.descriptor.name);
         }
     }
 }

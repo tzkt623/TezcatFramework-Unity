@@ -43,7 +43,9 @@ namespace tezcat.Framework.Test
 
     class HealthPotion : Potion
     {
-        public int healthAdd;
+        //public TezBonusableInt healthAdd { get; private set; } = new TezBonusableInt(MyDescriptorConfig.Modifier.HealthAdd);
+
+        public TezBonusModifier healthAdd { get; private set; } = new TezBonusModifier(MyBonusConfig.Human.Health);
 
         protected override ITezItemObject copy()
         {
@@ -53,7 +55,7 @@ namespace tezcat.Framework.Test
         protected override void onDeserialize(TezReader reader)
         {
             base.onDeserialize(reader);
-            this.healthAdd = reader.readInt("HealthAdd");
+            this.healthAdd.value = reader.readInt("HealthAdd");
         }
     }
     #endregion
@@ -167,7 +169,7 @@ namespace tezcat.Framework.Test
 
     abstract class Armor : Equipment
     {
-        public TezLitPropertyInt armorAdd { get; private set; } = new TezLitPropertyInt(MyPropertyConfig.ArmorAdd);
+        public TezLitPropertyInt armorAdd { get; private set; } = new TezLitPropertyInt(MyDescriptorConfig.Modifier.ArmorAdd);
 
         protected override void onCopyDataFrome(ITezItemObject template)
         {
@@ -220,16 +222,13 @@ namespace tezcat.Framework.Test
 
     class Character : Unit
     {
-        public int health = 0;
-        public int armor = 0;
-
         protected override ITezItemObject copy()
         {
             return new Character();
         }
     }
 
-    class Ship 
+    class Ship
         : Unit
         , ITezBonusSystemHolder
     {
@@ -237,19 +236,26 @@ namespace tezcat.Framework.Test
         public TezLifeHolder lifeMonitor { get; } = new TezLifeHolder();
 
         //Property
-        public TezLitPropertyInt hull { get; private set; } = new TezLitPropertyInt(MyPropertyConfig.Hull);
-        public TezLitPropertyInt armor { get; private set; } = new TezLitPropertyInt(MyPropertyConfig.Armor);
-        public TezLitPropertyInt shield { get; private set; } = new TezLitPropertyInt(MyPropertyConfig.Shield);
-        public TezLitPropertyInt power { get; private set; } = new TezLitPropertyInt(MyPropertyConfig.Power);
+        TezLitPropertyArray mLitPropertyArray = new TezLitPropertyArray();
+        public TezLitPropertyArray litPropertyArray => mLitPropertyArray;
+        public TezLitPropertyInt hull { get; private set; } = new TezLitPropertyInt(MyDescriptorConfig.ShipValue.Hull);
+        public TezLitPropertyInt armor { get; private set; } = new TezLitPropertyInt(MyDescriptorConfig.ShipValue.Armor);
+        public TezLitPropertyInt shield { get; private set; } = new TezLitPropertyInt(MyDescriptorConfig.ShipValue.Shield);
+        public TezLitPropertyInt power { get; private set; } = new TezLitPropertyInt(MyDescriptorConfig.ShipValue.Power);
 
         //Bonusable
         TezBonusSystem mBonusSystem = new TezBonusSystem();
         public TezBonusSystem bonusSystem => mBonusSystem;
+        TezBonusableValueArray mBonusableValueArray = new TezBonusableValueArray();
+        public TezBonusableValueArray bonusableValueArray => mBonusableValueArray;
 
-        public TezBonusableInt hullCapacity { get; private set; } = new TezBonusableInt(MyPropertyConfig.HullCapacity);
-        public TezBonusableInt armorCapacity { get; private set; } = new TezBonusableInt(MyPropertyConfig.ArmorCapacity);
-        public TezBonusableInt shieldCapacity { get; private set; } = new TezBonusableInt(MyPropertyConfig.ShieldCapacity);
-        public TezBonusableInt powerCapacity { get; private set; } = new TezBonusableInt(MyPropertyConfig.PowerCapacity);
+
+        public TezBonusableInt hullCapacity { get; private set; } = new TezBonusableInt(MyBonusConfig.Ship.Hull, MyDescriptorConfig.ShipPorperty.HullCapacity);
+        public TezBonusableInt armorCapacity { get; private set; } = new TezBonusableInt(MyBonusConfig.Ship.Armor, MyDescriptorConfig.ShipPorperty.ArmorCapacity);
+        public TezBonusableInt shieldCapacity { get; private set; } = new TezBonusableInt(MyBonusConfig.Ship.Shield, MyDescriptorConfig.ShipPorperty.ShieldCapacity);
+        public TezBonusableInt powerCapacity { get; private set; } = new TezBonusableInt(MyBonusConfig.Ship.Power, MyDescriptorConfig.ShipPorperty.PowerCapacity);
+
+
 
         public Ship()
         {
@@ -273,6 +279,12 @@ namespace tezcat.Framework.Test
             this.initValue();
         }
 
+        protected override void postInit()
+        {
+            base.postInit();
+            this.setValue();
+        }
+
         protected override void onCopyDataFrome(ITezItemObject template)
         {
             base.onCopyDataFrome(template);
@@ -286,28 +298,47 @@ namespace tezcat.Framework.Test
         protected override void onDeserialize(TezReader reader)
         {
             base.onDeserialize(reader);
-            this.hullCapacity.baseValue = reader.readInt(MyPropertyConfig.HullCapacity.name);
-            this.armorCapacity.baseValue = reader.readInt(MyPropertyConfig.ArmorCapacity.name);
-            this.shieldCapacity.baseValue = reader.readInt(MyPropertyConfig.ShieldCapacity.name);
-            this.powerCapacity.baseValue = reader.readInt(MyPropertyConfig.PowerCapacity.name);
+            this.hullCapacity.baseValue = reader.readInt(MyDescriptorConfig.ShipPorperty.HullCapacity.name);
+            this.armorCapacity.baseValue = reader.readInt(MyDescriptorConfig.ShipPorperty.ArmorCapacity.name);
+            this.shieldCapacity.baseValue = reader.readInt(MyDescriptorConfig.ShipPorperty.ShieldCapacity.name);
+            this.powerCapacity.baseValue = reader.readInt(MyDescriptorConfig.ShipPorperty.PowerCapacity.name);
         }
 
         private void initValue()
+        {
+            mLitPropertyArray.init(MyDescriptorConfig.TypeID.ShipValue);
+            mLitPropertyArray.set(this.hull);
+            mLitPropertyArray.set(this.armor);
+            mLitPropertyArray.set(this.shield);
+            mLitPropertyArray.set(this.power);
+        }
+
+        public void initBonusSystem()
+        {
+            this.hullCapacity.createContainer<TezBonusModifierCache>();
+            this.armorCapacity.createContainer<TezBonusModifierCache>();
+            this.shieldCapacity.createContainer<TezBonusModifierList>();
+            this.powerCapacity.createContainer<TezBonusModifierList>();
+
+            mBonusSystem.init(MyBonusConfig.TypeID.Ship);
+            mBonusSystem.set(this.hullCapacity);
+            mBonusSystem.set(this.armorCapacity);
+            mBonusSystem.set(this.shieldCapacity);
+            mBonusSystem.set(this.powerCapacity);
+
+            mBonusableValueArray.init(MyDescriptorConfig.TypeID.ShipProperty);
+            mBonusableValueArray.set(this.hullCapacity);
+            mBonusableValueArray.set(this.armorCapacity);
+            mBonusableValueArray.set(this.shieldCapacity);
+            mBonusableValueArray.set(this.powerCapacity);
+        }
+
+        private void setValue()
         {
             this.hull.innerValue = this.hullCapacity.value;
             this.armor.innerValue = this.armorCapacity.value;
             this.shield.innerValue = this.shieldCapacity.value;
             this.power.innerValue = this.powerCapacity.value;
-        }
-
-        public void initBonusSystem()
-        {
-            mBonusSystem.init(TezBonusTokenManager.getTokenCapacity((int)MyBonusTokens.TypeID.Ship));
-
-            mBonusSystem.register<TezBonusModifierContainer>(this.hullCapacity, MyBonusTokens.BToken_ShipHull);
-            mBonusSystem.register<TezBonusModifierContainer>(this.armorCapacity, MyBonusTokens.BToken_ShipArmor);
-            mBonusSystem.register<TezBonusModifierContainer>(this.shieldCapacity, MyBonusTokens.BToken_ShipShield);
-            mBonusSystem.register<TezBonusModifierContainer>(this.powerCapacity, MyBonusTokens.BToken_ShipPower);
         }
 
         public void update()
@@ -331,6 +362,9 @@ namespace tezcat.Framework.Test
         {
             base.close();
             this.hull.close();
+            this.armor.close();
+            this.shield.close();
+            this.power.close();
 
             this.hullCapacity.close();
             this.armorCapacity.close();
@@ -338,9 +372,14 @@ namespace tezcat.Framework.Test
             this.powerCapacity.close();
 
             mBonusSystem.close();
+            mBonusableValueArray.close();
+            mLitPropertyArray.close();
             this.lifeMonitor.close();
 
             this.hull = null;
+            this.armor = null;
+            this.shield = null;
+            this.power = null;
 
             this.hullCapacity = null;
             this.armorCapacity = null;
@@ -348,6 +387,8 @@ namespace tezcat.Framework.Test
             this.powerCapacity = null;
 
             mBonusSystem = null;
+            mBonusableValueArray = null;
+            mLitPropertyArray = null;
         }
     }
     #endregion
@@ -372,12 +413,12 @@ namespace tezcat.Framework.Test
             var potion1 = item_info.createObject<HealthPotion>();
             potion1.init();
 
-            Console.WriteLine($"Potion1: {potion1.itemInfo.NID}, HealthAdd: {potion1.healthAdd}");
+            Console.WriteLine($"Potion1: {potion1.itemInfo.NID}, HealthAdd: {potion1.healthAdd.value}");
 
             var potion2 = potion1.duplicate<HealthPotion>();
             potion2.init();
 
-            Console.WriteLine($"Potion2: {potion2.itemInfo.NID}, HealthAdd: {potion2.healthAdd}");
+            Console.WriteLine($"Potion2: {potion2.itemInfo.NID}, HealthAdd: {potion2.healthAdd.value}");
 
             Console.WriteLine($"Potion1==Potion2 : {potion1 == potion2}");
 

@@ -91,6 +91,11 @@ namespace tezcat.Framework.Core
             return cell.ID;
         }
 
+        public static int generateTypeCapacity(short id)
+        {
+            return mList[id].list.Count;
+        }
+
         public static ITezValueDescriptor register(short typeID, string name)
         {
 //             while (mList.Count <= typeID)

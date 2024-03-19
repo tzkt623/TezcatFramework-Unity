@@ -1,55 +1,53 @@
 using System;
+using tezcat.Framework.Core;
 
 namespace tezcat.Framework.Game
 {
+    public class TezBonusableValueArray : TezValueWrapperArray<ITezBonusableValue>
+    {
+
+    }
+
     public interface ITezBonusSystemHolder
     {
         TezBonusSystem bonusSystem { get; }
     }
 
-    public class TezBonusSystem
+    public class TezBonusSystem : ITezCloseable
     {
-        TezBonusBaseModifierContainer[] mContainerArray = null;
+        ITezBonusableValue[] mArray = null;
 
-        public void init(int valueCapacity)
+        public void init(int bonusTokenTypeID)
         {
-            mContainerArray = new TezBonusBaseModifierContainer[valueCapacity];
+            var capacity =TezBonusToken.getTokenCapacity(bonusTokenTypeID);
+            mArray = new ITezBonusableValue[capacity];
         }
 
-        public void register<ModifierContainer>(ITezBonusableValue bonusableValue, TezBonusToken bonusToken)
-            where ModifierContainer : TezBonusModifierContainer, new()
+        public void set(ITezBonusableValue bonusableValue)
         {
-            var container = new ModifierContainer();
-            container.init(bonusToken);
-
-            bonusableValue.setContainer(container);
-            if (mContainerArray[bonusToken.indexID] != null)
+            var token = bonusableValue.bonusToken;
+            if (mArray[token.indexID] != null)
             {
                 throw new Exception();
             }
-            mContainerArray[bonusToken.indexID] = bonusableValue.modifierContainer;
+            mArray[token.indexID] = bonusableValue;
         }
 
         public void addModifier(ITezBonusModifier modifier)
         {
             var iid = modifier.bonusToken.indexID;
-            mContainerArray[iid].add(modifier);
+            mArray[iid].addModifier(modifier);
         }
 
         public void removeModifier(ITezBonusModifier modifier)
         {
             var iid = modifier.bonusToken.indexID;
-            mContainerArray[iid].remove(modifier);
+            mArray[iid].removeModifier(modifier);
         }
 
         public void close()
         {
-            foreach (var item in mContainerArray)
-            {
-                item?.close();
-            }
-
-            mContainerArray = null;
+            mArray = null;
         }
     }
 }

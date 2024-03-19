@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Text;
 using tezcat.Framework.Database;
@@ -14,16 +13,16 @@ namespace tezcat.Framework.Game
         public int indexID;
 
 
-        public TezBonusToken(string name, int typeID, int indexID)
+        private TezBonusToken() { }
+
+        private TezBonusToken(string name, int typeID, int indexID)
         {
             this.name = name;
             this.typeID = typeID;
             this.indexID = indexID;
         }
-    }
 
-    public static class TezBonusTokenManager
-    {
+        #region Manager
         class Cell
         {
             public List<TezBonusToken> list = new List<TezBonusToken>(8);
@@ -55,9 +54,9 @@ namespace tezcat.Framework.Game
         static List<Cell> mCellList = new List<Cell>();
         static Dictionary<string, Cell> mCellDict = new Dictionary<string, Cell>();
 
-        public static TezBonusToken createGlobalToken(string name, Enum enumTypeID, int indexID)
+        public static TezBonusToken createToken(string name, int typeID, int indexID)
         {
-            var type_id = Convert.ToInt32(enumTypeID);
+            var type_id = typeID;
             var token = new TezBonusToken(name, type_id, indexID);
             while (mCellList.Count <= type_id)
             {
@@ -111,5 +110,6 @@ namespace tezcat.Framework.Game
                 }
             }
         }
+        #endregion
     }
 }

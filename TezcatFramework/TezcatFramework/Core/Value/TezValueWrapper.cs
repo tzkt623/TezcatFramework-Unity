@@ -8,11 +8,11 @@ namespace tezcat.Framework.Core
     public enum TezValueType
     {
         Unknown = -1,
+        Bool,
         Byte,
         SByte,
         Short,
         UShort,
-        Bool,
         Int,
         UInt,
         Long,
@@ -31,73 +31,23 @@ namespace tezcat.Framework.Core
         Property,
         MRProperty,
         LitProperty,
+        Bonusable,
         Notification,
         WithMinMax,
         WithBasic,
         GetterSetter,
     }
 
-    public interface ITezBaseValueWrapper : ITezCloseable
+    public interface ITezValueWrapper : ITezCloseable
     {
         Type systemType { get; }
         TezValueType valueType { get; }
         TezWrapperType wrapperType { get; }
-    }
 
-    public interface ITezValueWrapper : ITezBaseValueWrapper
-    {
         ITezValueDescriptor descriptor { get; set; }
         string name { get; }
         int ID { get; }
         string valueToString();
-    }
-
-    public abstract class TezBaseValueWrapper
-        : ITezBaseValueWrapper
-    {
-        protected class WrapperID<Value> : TezTypeInfo<Value, TezBaseValueWrapper>
-        {
-            public static readonly TezValueType valueType;
-
-            static WrapperID()
-            {
-                if (!Mapping.TryGetValue(systemType, out valueType))
-                {
-                    if (systemType.IsClass)
-                    {
-                        valueType = TezValueType.Class;
-                    }
-                    else
-                    {
-                        valueType = TezValueType.Unknown;
-                    }
-                }
-            }
-        }
-
-        static Dictionary<Type, TezValueType> Mapping = new Dictionary<Type, TezValueType>()
-        {
-            {typeof(sbyte),     TezValueType.SByte },
-            {typeof(byte),      TezValueType.Byte },
-            {typeof(short),     TezValueType.Short },
-            {typeof(ushort),    TezValueType.UShort },
-            {typeof(bool),      TezValueType.Bool },
-            {typeof(int),       TezValueType.Int },
-            {typeof(uint),      TezValueType.UInt },
-            {typeof(long),      TezValueType.Long },
-            {typeof(ulong),     TezValueType.ULong },
-            {typeof(float),     TezValueType.Float },
-            {typeof(double),    TezValueType.Double },
-            {typeof(string),    TezValueType.String },
-        };
-
-        public abstract Type systemType { get; }
-
-        public abstract TezValueType valueType { get; }
-
-        public abstract TezWrapperType wrapperType { get; }
-
-        public abstract void close();
     }
 
     public abstract class TezValueWrapper
@@ -143,7 +93,6 @@ namespace tezcat.Framework.Core
         }
 
         public abstract Type systemType { get; }
-
         public abstract TezValueType valueType { get; }
 
         public virtual TezWrapperType wrapperType
@@ -151,14 +100,19 @@ namespace tezcat.Framework.Core
             get { return TezWrapperType.Normal; }
         }
 
-        public virtual ITezValueDescriptor descriptor { get; set; } = null;
+        protected ITezValueDescriptor mDescriptor = null;
+        public virtual ITezValueDescriptor descriptor
+        {
+            get => mDescriptor;
+            set => mDescriptor = value;
+        }
 
         /// <summary>
         /// Value的名称
         /// </summary>
         public string name
         {
-            get { return descriptor.name; }
+            get { return mDescriptor.name; }
         }
 
         /// <summary>
@@ -166,17 +120,17 @@ namespace tezcat.Framework.Core
         /// </summary>
         public int ID
         {
-            get { return descriptor.ID; }
+            get { return mDescriptor.ID; }
         }
 
         int ITezBinarySearchItem.binaryWeight
         {
-            get { return descriptor.ID; }
+            get { return mDescriptor.ID; }
         }
 
-        public TezValueWrapper(ITezValueDescriptor name)
+        public TezValueWrapper(ITezValueDescriptor valueDescriptor)
         {
-            this.descriptor = name;
+            mDescriptor = valueDescriptor;
         }
 
         public TezValueWrapper()
@@ -196,12 +150,12 @@ namespace tezcat.Framework.Core
                 return false;
             }
 
-            return this.descriptor.Equals(other.descriptor);
+            return mDescriptor.Equals(other.mDescriptor);
         }
 
         public int CompareTo(TezValueWrapper other)
         {
-            return this.descriptor.CompareTo(other.descriptor);
+            return mDescriptor.CompareTo(other.mDescriptor);
         }
 
         /// <summary>
@@ -216,12 +170,12 @@ namespace tezcat.Framework.Core
 
         public override int GetHashCode()
         {
-            return this.descriptor.GetHashCode();
+            return mDescriptor.GetHashCode();
         }
 
         public virtual void close()
         {
-            this.descriptor = null;
+            mDescriptor = null;
         }
 
         public abstract string valueToString();
@@ -279,7 +233,7 @@ namespace tezcat.Framework.Core
 
         public virtual T value { get; set; }
 
-        public TezValueWrapper(ITezValueDescriptor name) : base(name) { }
+        public TezValueWrapper(ITezValueDescriptor valueDescriptor) : base(valueDescriptor) { }
 
         public TezValueWrapper() : base() { }
 

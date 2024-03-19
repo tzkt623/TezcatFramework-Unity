@@ -47,6 +47,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="TezcatFramework\Core\Value\TezValueWrapperArray.cs" />
     <Compile Include="TezcatFramework\Game\BonusSystem2\TezBonusableValue.cs" />
     <Compile Include="TezcatFramework\Game\BonusSystem2\TezBonusModifierContainer.cs" />
     <Compile Include="TezcatFramework\Game\BonusSystem2\TezBonusModifier.cs" />
@@ -95,7 +96,7 @@
     <Compile Include="TezcatFramework\Core\DataBase\Category\TezCategorySystem.cs" />
     <Compile Include="TezcatFramework\Core\DataBase\Category\TezCategoryToken.cs" />
     <Compile Include="TezcatFramework\Core\Object\ITezCloseable.cs" />
-    <Compile Include="TezcatFramework\Core\Value\Property\Lit\TezLitPropertyManager.cs" />
+    <Compile Include="TezcatFramework\Core\Value\Property\Lit\TezLitPropertySortedManager.cs" />
     <Compile Include="TezcatFramework\Core\Value\Property\Lit\TezLitPropertySortList.cs" />
     <Compile Include="TezcatFramework\Core\Value\TezValueSortList.cs" />
     <Compile Include="TezcatFramework\Core\Tag\ITezTagEntry.cs" />

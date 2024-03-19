@@ -1,5 +1,6 @@
 ﻿using System;
 using tezcat.Framework.Core;
+using tezcat.Framework.Extension;
 
 namespace tezcat.Framework.Game
 {
@@ -12,27 +13,48 @@ namespace tezcat.Framework.Game
 
     public interface ITezBonusModifier : ITezCloseable
     {
+        //event TezEventExtension.Action<ITezBonusModifier> onDelete;
+
         object owner { get; set; }
         byte modifyType { get; set; }
         TezBonusToken bonusToken { get; set; }
         float value { get; set; }
     }
 
-    public abstract class TezBonusModifier : ITezBonusModifier
+    public class TezBonusModifier : ITezBonusModifier
     {
+        //public event TezEventExtension.Action<ITezBonusModifier> onDelete;
+
         public object owner { get; set; }
         public byte modifyType { get; set; }
         public TezBonusToken bonusToken { get; set; }
+        public float value { get; set; }
 
-        public abstract float value { get; set; }
+        public TezBonusModifier()
+        {
+
+        }
+
+        public TezBonusModifier(TezBonusToken bonusToken)
+        {
+            this.bonusToken = bonusToken;
+        }
 
         public virtual void close()
         {
+            //onDelete?.Invoke(this);
             this.bonusToken = null;
             this.owner = null;
+            //onDelete = null;
+        }
+
+        public override string ToString()
+        {
+            return $"[Modifier]{this.bonusToken.name}: {this.value}[{(TezBonusModifierType)this.modifyType}]";
         }
     }
 
+#if false
     public class TezBonusValueModifier : TezBonusModifier
     {
         float mValue;
@@ -69,5 +91,5 @@ namespace tezcat.Framework.Game
             this.entry = null;
         }
     }
+#endif
 }
-
