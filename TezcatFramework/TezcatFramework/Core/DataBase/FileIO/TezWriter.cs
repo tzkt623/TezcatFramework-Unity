@@ -1,7 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
-namespace tezcat.Framework.Database
+namespace tezcat.Framework.Core
 {
     public abstract class TezWriter
     {

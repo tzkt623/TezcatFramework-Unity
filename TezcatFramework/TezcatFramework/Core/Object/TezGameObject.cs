@@ -1,6 +1,4 @@
-﻿using tezcat.Framework.Database;
-
-namespace tezcat.Framework.Core
+﻿namespace tezcat.Framework.Core
 {
     /// <summary>
     /// 基础游戏对象
@@ -11,14 +9,20 @@ namespace tezcat.Framework.Core
     /// </summary>
     public abstract class TezGameObject : TezBaseObject
     {
+        bool mIsInited = false;
+
         /// <summary>
         /// 以当前的对象数据生成对象
         /// </summary>
-        public virtual void init()
+        public void init()
         {
-            this.preInit();
-            this.onInit();
-            this.postInit();
+            if (!mIsInited)
+            {
+                mIsInited = true;
+                this.preInit();
+                this.onInit();
+                this.postInit();
+            }
         }
 
         /// <summary>
@@ -53,7 +57,7 @@ namespace tezcat.Framework.Core
 
         public override void serialize(TezWriter writer)
         {
-            writer.write(TezBuildInName.ClassID, this.CID);
+            writer.write(TezBuildInName.CID, this.CID);
         }
 
         public override void close()

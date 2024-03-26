@@ -1,0 +1,14 @@
+﻿{
+    "Wall": 0,
+    "MagicPotion": 1,
+    "HealthPotion": 2,
+    "Gun": 3,
+    "Axe": 4,
+    "Missle": 5,
+    "ArmorPlate": 6,
+    "Helmet": 7,
+    "Breastplate": 8,
+    "Leg": 9,
+    "Character": 10,
+    "Ship": 11
+}

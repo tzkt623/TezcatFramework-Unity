@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using tezcat.Framework.Core;
-using tezcat.Framework.Database;
+using tezcat.Framework.Core;
 
 namespace tezcat.Framework.Test
 {
@@ -28,7 +28,7 @@ namespace tezcat.Framework.Test
             Path.init();
 
             MyCategory.init();
-            TezcatFramework.set(new TezItemDatabase());
+            TezcatFramework.set(new TezProtoDatabase());
             //TezcatFramework.set(new TezRunTimeDatabase());
         }
 
@@ -71,14 +71,21 @@ namespace tezcat.Framework.Test
         void loadRes()
         {
             TezJsonReader reader = new TezJsonReader();
-            if(reader.load(Path.root + "Res/Item/Config.json"))
+            if (reader.load(Path.root + "Res/Config/ProtoConfig.json"))
             {
-                TezItemID.loadIDFrom(reader);
+                TezProtoID.loadConfigFile(reader);
+            }
+            reader.close();
+
+            reader = new TezJsonReader();
+            if (reader.load(Path.root + "Res/Config/ItemConfig.json"))
+            {
+                TezItemID.loadConfigFile(reader);
                 TezCategorySystem.registerTypeIDFrom(reader);
             }
             reader.close();
 
-            TezcatFramework.mainDB.load(Path.root + "Res/Item/Data");
+            TezcatFramework.protoDB.load(Path.root + "Res/Proto/Item/");
         }
 
         public void run()

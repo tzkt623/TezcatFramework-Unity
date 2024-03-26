@@ -11,11 +11,15 @@
         /// <summary>
         /// Class ID
         /// </summary>
-        public const string ClassID = "CID";
+        public const string CID = "CID";
+        public const string ClassName = "ClassName";
+        public const string ProtoInfo = "ProtoInfo";
+        public const string ProtoIndex = "ProtoIndex";
+        public const string ProtoName = "ProtoName";
+        public const string IsProto = "IsProto";
 
-        /// <summary>
-        /// Name ID
-        /// </summary>
+        public const string Name = "Name";
+        public const string Type = "Type";
 
 
         /// <summary>
@@ -43,22 +47,22 @@
         /// </summary>
         public const string ItemInfo = "ItemInfo";
 
-        public const string ItemData = "ItemData";
+        public const string ObjectData = "ObjectData";
 
         /// <summary>
         /// StackCount
         /// </summary>
         public const string StackCount = "StackCount";
 
-        public const string NameID = "NID";
-
         public const string DBID = "DBID";
 
-        public const string TypeID = "TID";
+        public const string NID = "NID";
 
-        public const string UniqueID = "UID";
+        public const string TID = "TID";
 
-        public const string RuntimeID = "RTID";
+        public const string IID = "IID";
+
+        public const string RTID = "RTID";
         #endregion
     }
 }

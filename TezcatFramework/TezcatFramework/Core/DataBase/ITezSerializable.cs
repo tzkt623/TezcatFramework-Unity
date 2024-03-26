@@ -1,4 +1,4 @@
-﻿namespace tezcat.Framework.Database
+﻿namespace tezcat.Framework.Core
 {
     public interface ITezSerializable
     {

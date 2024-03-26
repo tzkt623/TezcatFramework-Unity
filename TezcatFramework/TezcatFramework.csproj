@@ -47,6 +47,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="TezcatFramework\Core\Object\ITezProtoObject.cs" />
     <Compile Include="TezcatFramework\Core\Value\TezValueWrapperArray.cs" />
     <Compile Include="TezcatFramework\Game\BonusSystem2\TezBonusableValue.cs" />
     <Compile Include="TezcatFramework\Game\BonusSystem2\TezBonusModifierContainer.cs" />
@@ -107,7 +108,6 @@
     <Compile Include="TezcatFramework\Core\Value\Property\Other\TezNotificationValue.cs" />
     <Compile Include="TezcatFramework\Core\Object\TezObjectUIDManager.cs" />
     <Compile Include="TezcatFramework\Core\Value\Property\Other\TezBindable.cs" />
-    <Compile Include="TezcatFramework\Core\DataBase\TezDBID.cs" />
     <Compile Include="TezcatFramework\Core\DataBase\TezDatabase.cs" />
     <Compile Include="TezcatFramework\Game\BonusSystem\ITezBonusObjectHandler.cs" />
     <Compile Include="TezcatFramework\Game\BonusSystem\TezBonusTokenCreator.cs" />
@@ -229,8 +229,6 @@
   <ItemGroup>
     <WCFMetadata Include="Connected Services\" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Game\BonusSystem2\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

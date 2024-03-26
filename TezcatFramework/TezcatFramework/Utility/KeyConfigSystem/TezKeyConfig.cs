@@ -1,5 +1,5 @@
 ﻿using tezcat.Framework.Core;
-using tezcat.Framework.Database;
+using tezcat.Framework.Core;
 
 namespace tezcat.Framework.Utility
 {

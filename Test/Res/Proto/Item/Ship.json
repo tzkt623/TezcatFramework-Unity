@@ -1,0 +1,21 @@
+{
+    "CID": "Ship",
+    "ProtoInfo": {
+        "Name": "Battleship",
+        "IID": 0
+    },
+    "ItemInfo": {
+        "Name": "Battleship",
+        "Type": "Unit",
+        "IID": 0,
+        "StackCount": -1,
+        "Category": "Ship",
+        "IsProto": true
+    },
+    "ObjectData": {
+        "HullCapacity": 300,
+        "ArmorCapacity": 1000,
+        "ShieldCapacity": 500,
+        "PowerCapacity": 2000
+    }
+}

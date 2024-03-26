@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using tezcat.Framework.Core;
 
-namespace tezcat.Framework.Database
+namespace tezcat.Framework.Core
 {
     /// <summary>
     /// 分类系统

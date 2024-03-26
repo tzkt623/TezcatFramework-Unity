@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using tezcat.Framework.Database;
+using tezcat.Framework.Core;
 using tezcat.Framework.Extension;
 
 namespace tezcat.Framework.AI

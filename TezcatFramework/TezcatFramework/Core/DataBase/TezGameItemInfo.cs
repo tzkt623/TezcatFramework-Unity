@@ -1,7 +1,4 @@
-using System;
-using tezcat.Framework.Core;
-
-namespace tezcat.Framework.Database
+namespace tezcat.Framework.Core
 {
     /// <summary>
     /// 
@@ -57,24 +54,29 @@ namespace tezcat.Framework.Database
     /// 2.生成前缀,生成后缀
     /// 3.组合前后缀,生成物品
     /// 4.赋予物品一个新的RTID
-    /// 
     /// </para>
+    /// 
+    /// 
+    /// 
+    /// 
     /// </summary>
-    public class TezGameItemInfo : ITezCloseable
+    public class TezGameItemInfo
+        : ITezCloseable
+        , ITezSerializable
     {
         class MetaData
         {
             public int refCount;
-            public string path;
             public TezItemID itemID;
             public string NID;
             public int stackCount;
-            public ITezItemObject prototype;
+            public TezItemObject proto;
             public TezCategory category;
         }
 
         private MetaData mMetaData = null;
-        public string path => mMetaData.path;
+        private TezItemObject mOwner = null;
+
         public TezItemID itemID => mMetaData.itemID;
         public TezCategory category => mMetaData.category;
 
@@ -93,19 +95,22 @@ namespace tezcat.Framework.Database
         public int stackCount => mMetaData.stackCount;
         public bool isShared => mMetaData.stackCount > 1;
         public bool invalid => mMetaData == null;
+        public bool isProto => (mMetaData.proto != null) && (mOwner == mMetaData.proto);
 
 
-        public TezGameItemInfo() { }
+        public TezGameItemInfo(TezItemObject itemObject)
+        {
+            mOwner = itemObject;
+        }
 
         /// <summary>
         /// 从数据库中加载物品元信息
         /// </summary>
-        public void initFrom(string path, string NID, int stackCount, ushort TID, ushort UID, TezCategory category)
+        public void initFrom(string NID, int stackCount, ushort TID, ushort UID, TezCategory category)
         {
             mMetaData = new MetaData()
             {
                 refCount = 1,
-                path = path,
                 NID = NID,
                 stackCount = stackCount,
                 itemID = TezItemID.create(TID, UID),
@@ -116,12 +121,11 @@ namespace tezcat.Framework.Database
         /// <summary>
         /// 从保存的数据中加载物品元信息
         /// </summary>
-        public void initFrom(string path, string NID, int stackCount, ushort TID, ushort UID, int RTID, TezCategory category)
+        public void initFrom(string NID, int stackCount, ushort TID, ushort UID, int RTID, TezCategory category)
         {
             mMetaData = new MetaData()
             {
                 refCount = 1,
-                path = path,
                 NID = NID,
                 stackCount = stackCount,
                 itemID = TezItemID.create(TID, UID, RTID),
@@ -143,7 +147,7 @@ namespace tezcat.Framework.Database
         /// </summary>
         public void remodifyFrom(TezGameItemInfo template)
         {
-            this.initFrom(template.path, template.NID, template.stackCount, template.itemID.TID, template.itemID.UID, template.category);
+            this.initFrom(template.NID, template.stackCount, template.itemID.TID, template.itemID.IID, template.category);
         }
 
         public override int GetHashCode()
@@ -151,25 +155,9 @@ namespace tezcat.Framework.Database
             return mMetaData.itemID.GetHashCode();
         }
 
-        public void setPrototype(ITezItemObject prototype)
+        public void setProto(TezItemObject proto)
         {
-            mMetaData.prototype = prototype;
-        }
-
-        /// <summary>
-        /// 获得当前数据所提供的对象
-        /// 此模板数据
-        /// 要么是克隆数据
-        /// 要么是共享数据
-        /// </summary>
-        public ITezItemObject createObject()
-        {
-            return mMetaData.prototype.duplicate();
-        }
-
-        public T createObject<T>() where T : ITezItemObject
-        {
-            return (T)mMetaData.prototype.duplicate();
+            mMetaData.proto = proto;
         }
 
         public TezGameItemInfo share()
@@ -185,6 +173,7 @@ namespace tezcat.Framework.Database
 
         public void close()
         {
+            mOwner = null;
             if ((--mMetaData.refCount) > 0)
             {
                 return;
@@ -193,12 +182,59 @@ namespace tezcat.Framework.Database
             mMetaData.itemID.close();
 
             mMetaData.itemID = null;
-            mMetaData.path = null;
             mMetaData.NID = null;
-            mMetaData.prototype = null;
+            mMetaData.proto = null;
             mMetaData.category = null;
 
             mMetaData = null;
+        }
+
+        public void serialize(TezWriter writer)
+        {
+            writer.beginObject(TezBuildInName.ItemInfo);
+            writer.write(TezBuildInName.Name, this.NID);
+            writer.write(TezBuildInName.StackCount, this.stackCount);
+
+            writer.write(TezBuildInName.Type, TezItemID.getTypeName(this.itemID.TID));
+            writer.write(TezBuildInName.IID, this.itemID.IID);
+            if (this.itemID.RTID > -1)
+            {
+                writer.write(TezBuildInName.RTID, this.itemID.RTID);
+            }
+
+            writer.write(TezBuildInName.IsProto, this.isProto);
+
+            writer.endObject(TezBuildInName.ItemInfo);
+        }
+
+        public void deserialize(TezReader reader)
+        {
+            reader.beginObject(TezBuildInName.ItemInfo);
+
+            if (!reader.tryRead(TezBuildInName.RTID, out int runtime_id))
+            {
+                runtime_id = -1;
+            }
+
+            TezCategory category = null;
+            if (reader.tryRead(TezBuildInName.Category, out string categoryName))
+            {
+                category = TezCategorySystem.getCategory(categoryName);
+            }
+
+            this.initFrom(reader.readString(TezBuildInName.Name)
+                , reader.readInt(TezBuildInName.StackCount)
+                , TezItemID.getTypeID(reader.readString(TezBuildInName.Type))
+                , (ushort)reader.readInt(TezBuildInName.IID)
+                , runtime_id
+                , category);
+
+            if (reader.readBool(TezBuildInName.IsProto))
+            {
+                this.setProto(mOwner);
+            }
+
+            reader.endObject(TezBuildInName.ItemInfo);
         }
     }
 }

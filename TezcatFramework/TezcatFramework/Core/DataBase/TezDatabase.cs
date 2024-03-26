@@ -1,42 +1,63 @@
 ﻿using System;
 using System.Collections.Generic;
-using tezcat.Framework.Core;
 
-namespace tezcat.Framework.Database
+namespace tezcat.Framework.Core
 {
+    public class TezProtoCreator
+    {
+        public string name { get; }
+        public int typeID { get; }
+        public int indexID { get; }
+
+        ITezProtoObject mProtoObject = null;
+
+        public TezProtoCreator(string name, int typeID, int indexID, ITezProtoObject protoObject)
+        {
+            mProtoObject = protoObject;
+            this.name = name;
+            this.typeID = typeID;
+            this.indexID = indexID;
+        }
+
+        public ITezProtoObject spawnObject()
+        {
+            return mProtoObject.spawnObject();
+        }
+
+        public T spawnObject<T>() where T : ITezProtoObject
+        {
+            return (T)mProtoObject.spawnObject();
+        }
+    }
+
     /*
-     * 文件数据库
+     * 原型数据库
      * 
-     * 数据库应该给每一个Item一个对应的ID,用于区分不同的Item
-     * ID分为两部分
-     * 
-     * 高位代表FixedID
-     * FixedID表示此物品来源于设定数据库
-     * 
-     * 地位代表ModifiedID
-     * ModifiedID表示此物品来源于运行时依赖设定数据库进行修改后的物品
+     * 用于读取原型文件
+     * 并创建原型对象用于实时生成
      * 
      */
-    public class TezItemDatabase
+    public class TezProtoDatabase
     {
-        sealed class GetTypeID<T> where T : ITezItemObject
+        static class TypeIDGetter<T> where T : ITezProtoObject
         {
-            static GetTypeID()
+            static TypeIDGetter()
             {
-                if (sTID < 0)
+                if (ID < 0)
                 {
-                    sTID = TezItemID.getTypeID(typeof(T).Name);
+                    ID = TezProtoID.getTypeID(typeof(T).Name);
+
+                    //ID = TezItemID.getTypeID(typeof(T).Name);
                 }
             }
 
-            static int sTID = -1;
-            public static int TID => sTID;
+            public static readonly int ID = -1;
         }
 
         class Cell
         {
-            public List<TezGameItemInfo> list = new List<TezGameItemInfo>();
-            public Dictionary<string, TezGameItemInfo> dict = new Dictionary<string, TezGameItemInfo>();
+            public List<TezProtoCreator> list = new List<TezProtoCreator>();
+            public Dictionary<string, TezProtoCreator> dict = new Dictionary<string, TezProtoCreator>();
 
             public void memoryCut()
             {
@@ -44,11 +65,9 @@ namespace tezcat.Framework.Database
             }
         }
 
-        protected List<TezGameItemInfo> mFixedList = new List<TezGameItemInfo>();
-
+        protected List<TezProtoCreator> mFixedList = new List<TezProtoCreator>();
         private List<Cell> mCellList = new List<Cell>();
-
-        protected Dictionary<string, TezGameItemInfo> mFixedDict = new Dictionary<string, TezGameItemInfo>();
+        protected Dictionary<string, TezProtoCreator> mFixedDict = new Dictionary<string, TezProtoCreator>();
 
         public void load(string path)
         {
@@ -58,11 +77,17 @@ namespace tezcat.Framework.Database
             {
                 if (reader.load(files[j]))
                 {
-                    var CID = reader.readString(TezBuildInName.ClassID);
-                    var item = TezcatFramework.classFactory.create<TezItemObject>(CID);
+                    var CID = reader.readString(TezBuildInName.CID);
+                    var item = TezcatFramework.classFactory.create<ITezProtoObject>(CID);
                     item.deserialize(reader);
-                    item.itemInfo.setPrototype(item);
-                    this.registerItem(item);
+                    int type_id = TezProtoID.getTypeID(CID);
+
+                    reader.beginObject(TezBuildInName.ProtoInfo);
+                    var index_id = reader.readInt(TezBuildInName.IID);
+                    string proto_name = reader.readString(TezBuildInName.Name);
+                    reader.endObject(TezBuildInName.ProtoInfo);
+
+                    this.register(proto_name, type_id, index_id, item);
                 }
                 else
                 {
@@ -78,52 +103,50 @@ namespace tezcat.Framework.Database
             }
         }
 
-        public void registerItem(TezItemObject gameObject)
+        private void register(string protoName, int typeID, int indexID, ITezProtoObject protoObject)
         {
-            //数据库信息应该由数据库文件定义
-            //这里只需要读取保存好的文件然后放到指定的位置中即可
-            //也可以在这里做更复杂的分类
-            var info = gameObject.itemInfo;
-            var item_id = info.itemID;
-
-            while (item_id.TID >= mCellList.Count)
+            while (typeID >= mCellList.Count)
             {
                 mCellList.Add(new Cell());
             }
 
-            var cell = mCellList[item_id.TID];
-            while (item_id.UID >= cell.list.Count)
+            var cell = mCellList[typeID];
+            while (indexID >= cell.list.Count)
             {
                 cell.list.Add(null);
             }
 
-            if (cell.list[item_id.UID] != null)
+            if (cell.list[indexID] != null)
             {
-                throw new Exception($"This item slot[{cell.list[item_id.UID].NID}] has registered! [{info.NID}: {item_id.UID}]");
+                throw new Exception($"This item slot[{cell.list[indexID].name}:{cell.list[indexID].typeID}|{cell.list[indexID].indexID}] has registered! You want[{protoName}:{typeID}|{indexID}]");
             }
 
-            cell.list[item_id.UID] = info;
-            cell.dict.Add(info.NID, info);
-
-            //mFixedDict.Add(info.NID, info);
+            var info = new TezProtoCreator(protoName, typeID, indexID, protoObject);
+            cell.list[indexID] = info;
+            cell.dict.Add(info.name, info);
         }
 
-        public TezGameItemInfo getItem(int TID, int UID)
+        public TezProtoCreator getProto(string nid)
         {
-            return mCellList[TID].list[UID];
+            return mFixedDict[nid];
         }
 
-        public TezGameItemInfo getItem<T>(int UID) where T : ITezItemObject
+        public TezProtoCreator getProto(int typeID, int indexID)
         {
-            return mCellList[GetTypeID<T>.TID].list[UID];
+            return mCellList[typeID].list[indexID];
         }
 
-        public TezGameItemInfo getItem<T>(string NID) where T : ITezItemObject
+        public TezProtoCreator getProto<T>(int indexID) where T : ITezProtoObject
         {
-            return mCellList[GetTypeID<T>.TID].dict[NID];
+            return mCellList[TypeIDGetter<T>.ID].list[indexID];
         }
 
-        public bool tryGetItem(ushort TID, ushort UID, out TezGameItemInfo info)
+        public TezProtoCreator getProto<T>(string name) where T : ITezProtoObject
+        {
+            return mCellList[TypeIDGetter<T>.ID].dict[name];
+        }
+
+        public bool tryGetProto(ushort TID, ushort UID, out TezProtoCreator info)
         {
             var list = mCellList[TID].list;
             if (UID < 0 || UID > list.Count)
@@ -136,12 +159,7 @@ namespace tezcat.Framework.Database
             return true;
         }
 
-        public TezGameItemInfo getItem(string nid)
-        {
-            return mFixedDict[nid];
-        }
-
-        public bool tryGetItem(string nid, out TezGameItemInfo info)
+        public bool tryGetProto(string nid, out TezProtoCreator info)
         {
             if (mFixedDict.TryGetValue(nid, out var temp))
             {
@@ -171,6 +189,7 @@ namespace tezcat.Framework.Database
     /// 如果一个数据的索引值为0
     /// 那么它将被删除
     /// </summary>
+    [Obsolete("Don`t use this", true)]
     public class TezRunTimeDatabase
     {
         protected List<TezGameItemInfo> mItemList = new List<TezGameItemInfo>();
@@ -178,7 +197,7 @@ namespace tezcat.Framework.Database
         public bool registerItem(TezGameItemInfo info)
         {
             var modified_id = info.itemID.RTID;
-            while(modified_id >= mItemList.Count)
+            while (modified_id >= mItemList.Count)
             {
                 mItemList.Add(null);
             }

@@ -1,11 +1,10 @@
 ﻿using tezcat.Framework.Core;
-using tezcat.Framework.Database;
 
 namespace tezcat.Framework.Game
 {
     public interface ITezInventoryViewSlotData
     {
-        ITezItemObject item { get; }
+        TezItemObject item { get; }
         TezInventory inventory { get; set; }
         int count { get; }
         int viewIndex { get; set; }

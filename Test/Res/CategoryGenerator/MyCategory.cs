@@ -72,16 +72,19 @@ public enum Category
 {
 Gun,
 Axe,
+Missle,
 }
 private Weapon(Category value, ITezCategoryBaseToken parentToken) : base(value, parentToken)
 {
 }
 public static readonly Weapon Gun = new Weapon(Category.Gun, Equipment.Weapon);
 public static readonly Weapon Axe = new Weapon(Category.Axe, Equipment.Weapon);
+public static readonly Weapon Missle = new Weapon(Category.Missle, Equipment.Weapon);
 public static void init()
 {
 Gun.registerID();
 Axe.registerID();
+Missle.registerID();
 }
 }
 
@@ -112,14 +115,17 @@ public class Unit : TezCategoryFinalToken<Unit, Unit.Category>
 public enum Category
 {
 Character,
+Ship,
 }
 private Unit(Category value, ITezCategoryBaseToken parentToken) : base(value, parentToken)
 {
 }
 public static readonly Unit Character = new Unit(Category.Character, Root.Unit);
+public static readonly Unit Ship = new Unit(Category.Ship, Root.Unit);
 public static void init()
 {
 Character.registerID();
+Ship.registerID();
 }
 }
 

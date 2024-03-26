@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using tezcat.Framework.Database;
+using tezcat.Framework.Core;
 
 namespace tezcat.Framework.AI
 {

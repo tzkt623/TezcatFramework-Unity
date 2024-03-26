@@ -1,5 +1,5 @@
 using System;
-using tezcat.Framework.Database;
+using tezcat.Framework.Core;
 
 namespace tezcat.Framework.Test
 {
@@ -163,15 +163,17 @@ namespace tezcat.Framework.Test
     {
         public TestCategoryGenerator() : base("CategoryGenerator")
         {
+
         }
 
-        public override void close()
+        public override void init()
         {
+
         }
 
-        public void generateCShapFile()
+        public override void run()
         {
-            string loadPath = $"{Path.root}Res/CategoryGenerator/Category.json";
+            string loadPath = $"{Path.root}Res/Config/CategoryConfig.json";
             TezJsonReader reader = new TezJsonReader();
             if (reader.load(loadPath))
             {
@@ -179,7 +181,7 @@ namespace tezcat.Framework.Test
                 TezCategorySystem.generateCShapFile(savePath, reader);
                 Console.WriteLine($"Generate CategoryCShap File Successed: {savePath}");
 
-                savePath = $"{Path.root}Res/Item/Config.json";
+                savePath = $"{Path.root}Res/Config/ItemConfig.json";
                 TezCategorySystem.generateItemConfigFile(savePath, reader);
                 Console.WriteLine($"Generate ItemConfig File Successed: {savePath}");
             }
@@ -190,13 +192,9 @@ namespace tezcat.Framework.Test
             reader.close();
         }
 
-        public override void init()
+        public override void close()
         {
-        }
 
-        public override void run()
-        {
-            this.generateCShapFile();
         }
     }
 }

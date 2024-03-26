@@ -12,6 +12,7 @@
 
         public TestLifeMonitor() : base("LifeMonitor")
         {
+
         }
 
         public override void close()
@@ -27,7 +28,9 @@
 
         public override void init()
         {
-            mShip = new Ship();
+            var proto = TezcatFramework.protoDB.getProto<Ship>("Battleship");
+
+            mShip = proto.spawnObject<Ship>();
             mShip.init();
             mMissle = new Missle()
             {

@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using tezcat.Framework.Core;
 
-namespace tezcat.Framework.Database
+namespace tezcat.Framework.Core
 {
     public static class TezCategorySystem
     {

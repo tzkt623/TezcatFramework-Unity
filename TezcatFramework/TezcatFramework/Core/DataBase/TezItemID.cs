@@ -1,10 +1,133 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
-using tezcat.Framework.Core;
 
-namespace tezcat.Framework.Database
+namespace tezcat.Framework.Core
 {
+    /// <para>
+    /// 每一个对象都有可能成为一个原型
+    /// 
+    /// 但是不是每一个对象都可以是一个物品
+    /// 
+    /// 以eve来说
+    /// 每一艘舰船都可以是一个市场里的物品
+    /// 但是他同时也是一艘舰船
+    /// (怀疑拆卸装箱功能就是变为proto信息对象本身)
+    /// 所以
+    /// 1.存在两种类对象,一种是物品包装对象,一种是舰船实体
+    ///   当舰船保存在物品栏中的时候,操作的是物品包装对象
+    ///   可以通过让物品对象成为实体对象的wrapper来操作
+    ///   这样来说实体本身就应该包含作为物品的元信息
+    ///   
+    /// 2.只存在一种实体对象,他同时也是物品对象
+    /// </para>
+    /// 
+    /// <para>
+    /// 一个Proto
+    /// 1.ProtoID
+    ///  a.TypeID 用class名称来生成
+    ///  b.IndexID 人为赋予
+    /// </para>
+    /// 
+    /// <para>
+    /// 一个Item
+    /// 1.ItemID
+    ///  a.TypeID
+    ///  b.IndexID
+    /// 2.stackCount
+    /// </para>
+    /// 
+    /// <para>
+    /// RuntimeID
+    /// 
+    /// 
+    /// </para>
+    [StructLayout(LayoutKind.Explicit)]
+    public class TezProtoID
+        : ITezNonCloseable
+        , IEquatable<TezProtoID>
+    {
+        [FieldOffset(0)]
+        int mID = -1;
+        [FieldOffset(0)]
+        ushort mTypeID;
+        [FieldOffset(2)]
+        ushort mIndexID;
+
+        public int typeID => mTypeID;
+        public int indexID => mIndexID;
+
+        public override int GetHashCode()
+        {
+            return mID.GetHashCode();
+        }
+
+        public override bool Equals(object obj)
+        {
+            return this.Equals((TezProtoID)obj);
+        }
+
+        public bool Equals(TezProtoID other)
+        {
+            if (object.ReferenceEquals(other, null))
+            {
+                return false;
+            }
+
+            return mID == other.mID;
+        }
+
+        public static bool operator ==(TezProtoID a, TezProtoID b)
+        {
+            if (object.ReferenceEquals(a, null) || object.ReferenceEquals(b, null))
+            {
+                return false;
+            }
+
+            return a.mID == b.mID;
+        }
+
+        public static bool operator !=(TezProtoID a, TezProtoID b)
+        {
+            if (object.ReferenceEquals(a, null) || object.ReferenceEquals(b, null))
+            {
+                return true;
+            }
+
+            return a.mID != b.mID;
+        }
+
+
+        #region Tool
+        static List<string> sTypeList = new List<string>();
+        static Dictionary<string, ushort> sTypeDict = new Dictionary<string, ushort>();
+
+        public static void loadConfigFile(TezReader reader)
+        {
+            foreach (var key in reader.getKeys())
+            {
+                registerTypeID(key, reader.readInt(key));
+            }
+        }
+
+        public static int getTypeID(string name)
+        {
+            return sTypeDict[name];
+        }
+
+        public static void registerTypeID(string typeName, int typeID)
+        {
+            while (sTypeList.Count <= typeID)
+            {
+                sTypeList.Add(null);
+            }
+
+            sTypeList[typeID] = typeName;
+            sTypeDict.Add(typeName, (ushort)typeID);
+        }
+        #endregion
+    }
+
     /// <summary>
     /// 物品ID
     /// 用于判断两个物品是不是同一个
@@ -37,6 +160,8 @@ namespace tezcat.Framework.Database
     /// 第二个DBID = 2, RTID = 2
     /// </para>
     /// 
+    /// 
+    /// 
     /// </summary>
     [StructLayout(LayoutKind.Explicit)]
     public class TezItemID
@@ -68,8 +193,8 @@ namespace tezcat.Framework.Database
         public static TezItemID create(ushort TID, ushort UID)
         {
             TezItemID result = sPool.Count > 0 ? sPool.Dequeue() : new TezItemID();
-            result.mTID = TID;
-            result.mUID = UID;
+            result.mTypeID = TID;
+            result.mIndexID = UID;
             result.mRTID = sRTIDPool.Count > 0 ? sRTIDPool.Dequeue() : sRTID++;
             return result;
         }
@@ -77,13 +202,12 @@ namespace tezcat.Framework.Database
         public static TezItemID create(ushort TID, ushort UID, int RTID)
         {
             TezItemID result = sPool.Count > 0 ? sPool.Dequeue() : new TezItemID();
-            result.mTID = TID;
-            result.mUID = UID;
+            result.mTypeID = TID;
+            result.mIndexID = UID;
             result.mRTID = RTID;
             return result;
         }
         #endregion
-
 
         #region Tool
         static List<string> sTypeList = new List<string>();
@@ -99,7 +223,7 @@ namespace tezcat.Framework.Database
             return sTypeDic[name];
         }
 
-        public static void loadIDFrom(TezReader reader)
+        public static void loadConfigFile(TezReader reader)
         {
             foreach (var key in reader.getKeys())
             {
@@ -138,18 +262,18 @@ namespace tezcat.Framework.Database
         public uint DBID => mDBID;
 
         [FieldOffset(0)]
-        ushort mUID = 0;
+        ushort mIndexID = 0;
         /// <summary>
         /// 唯一ID
         /// </summary>
-        public ushort UID => mUID;
+        public ushort IID => mIndexID;
 
         [FieldOffset(2)]
-        ushort mTID = 0;
+        ushort mTypeID = 0;
         /// <summary>
         /// 类型ID
         /// </summary>
-        public ushort TID => mTID;
+        public ushort TID => mTypeID;
 
         [FieldOffset(4)]
         int mRTID = -1;
@@ -184,11 +308,6 @@ namespace tezcat.Framework.Database
             sPool.Enqueue(this);
         }
 
-        public TezItemID copy()
-        {
-            return create(mDBID, mRTID);
-        }
-
         public bool sameAs(TezItemID other)
         {
             //             if (mDBID == -1 || other.mDBID == -1)
@@ -216,7 +335,7 @@ namespace tezcat.Framework.Database
                 return false;
             }
 
-            return this.sameAs(other);
+            return mID == other.mID;
         }
 
         /// <summary>
@@ -229,7 +348,7 @@ namespace tezcat.Framework.Database
                 return false;
             }
 
-            return a.sameAs(b);
+            return a.mID == b.mID;
         }
 
         /// <summary>
@@ -238,6 +357,19 @@ namespace tezcat.Framework.Database
         public static bool operator !=(TezItemID a, TezItemID b)
         {
             return !(a == b);
+        }
+    }
+
+    [AttributeUsage(AttributeTargets.Class, AllowMultiple = false)]
+    public class TezPrototypeRegisterAttribute : Attribute
+    {
+        public string name;
+        public int index;
+
+        public TezPrototypeRegisterAttribute(string name, int index)
+        {
+            this.name = name;
+            this.index = index;
         }
     }
 }

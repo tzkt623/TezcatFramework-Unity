@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using tezcat.Framework.Core;
-using tezcat.Framework.Database;
 using tezcat.Framework.Utility;
 
 namespace tezcat.Framework.Game
@@ -12,7 +11,7 @@ namespace tezcat.Framework.Game
     {
         public abstract bool stacked { get; }
         public virtual int count { get; set; }
-        public ITezItemObject item { get; set; } = null;
+        public TezItemObject item { get; set; } = null;
         public virtual void close()
         {
             this.item = null;
@@ -69,7 +68,7 @@ namespace tezcat.Framework.Game
         public int viewIndex { get; set; }
         public int filterIndex { get; set; }
 
-        public ITezItemObject item => mInfo.item;
+        public TezItemObject item => mInfo.item;
 
         public TezInventoryStackedItemData(TezInventoryStackedItemInfo info)
         {
@@ -133,7 +132,7 @@ namespace tezcat.Framework.Game
             mView.setInventory(this, mUniqueItemList, mStackedItemDict);
         }
 
-        public void store(ITezItemObject item, int count = -1)
+        public void store(TezItemObject item, int count = -1)
         {
             TezGameItemInfo item_info = item.itemInfo;
             var stack_count = item_info.stackCount;
@@ -225,7 +224,7 @@ namespace tezcat.Framework.Game
             }
         }
 
-        public void take(ITezItemObject item, int count = -1)
+        public void take(TezItemObject item, int count = -1)
         {
             if (item.itemInfo.stackCount > 0)
             {
@@ -285,7 +284,7 @@ namespace tezcat.Framework.Game
         /// 从包裹里面查询是否有某个特定物品
         /// 返回-1表示没有
         /// </summary>
-        public TezInventoryBaseItemInfo find(ITezItemObject item)
+        public TezInventoryBaseItemInfo find(TezItemObject item)
         {
             if (item.itemInfo.stackCount > 0)
             {

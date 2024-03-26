@@ -5,7 +5,7 @@ using System.IO;
 using System.Text;
 using LitJson;
 
-namespace tezcat.Framework.Database
+namespace tezcat.Framework.Core
 {
     /// <summary>
     /// Json数据读取器

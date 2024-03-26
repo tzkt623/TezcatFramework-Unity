@@ -1,4 +1,4 @@
-﻿using tezcat.Framework.Database;
+﻿using tezcat.Framework.Core;
 using UnityEngine;
 
 namespace tezcat.Unity.Tool

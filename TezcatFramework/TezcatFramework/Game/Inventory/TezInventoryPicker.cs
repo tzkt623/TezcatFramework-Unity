@@ -7,7 +7,7 @@ namespace tezcat.Framework.Game
     /// </summary>
     public interface ITezInventorySelectorIcon
     {
-        void onSelect(ITezItemObject item);
+        void onSelect(TezItemObject item);
         void onComplete();
     }
 

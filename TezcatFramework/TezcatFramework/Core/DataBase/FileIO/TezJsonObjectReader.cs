@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using LitJson;
 
-namespace tezcat.Framework.Database
+namespace tezcat.Framework.Core
 {
     public class TezJsonObjectReader : TezReader
     {

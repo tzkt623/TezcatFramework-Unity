@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using tezcat.Framework.Core;
 using tezcat.Framework.ECS;
 using tezcat.Framework.Extension;
 
-namespace tezcat.Framework.Database
+namespace tezcat.Framework.Core
 {
     public class TezSaveManager : ITezService
     {
@@ -95,7 +94,7 @@ namespace tezcat.Framework.Database
                 for (int i = 0; i < count; i++)
                 {
                     reader.beginObject(i);
-                    var CID = reader.readString(TezBuildInName.ClassID);
+                    var CID = reader.readString(TezBuildInName.CID);
                     var obj = TezcatFramework.classFactory.create<TezDataComponent>(CID);
                     if (obj != null)
                     {

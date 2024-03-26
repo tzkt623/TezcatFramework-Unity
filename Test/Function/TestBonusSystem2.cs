@@ -40,8 +40,8 @@ namespace tezcat.Framework.Test
 
         public override void init()
         {
-            var info = TezcatFramework.mainDB.getItem<Unit>("Battleship");
-            mShip = info.createObject<Ship>();
+            var prto = TezcatFramework.protoDB.getProto<Ship>("Battleship");
+            mShip = prto.spawnObject<Ship>();
             mShip.init();
         }
 
@@ -156,8 +156,8 @@ namespace tezcat.Framework.Test
 
         public override void init()
         {
-            var info = TezcatFramework.mainDB.getItem<Unit>("Battleship");
-            mShip = info.createObject<Ship>();
+            var proto = TezcatFramework.protoDB.getProto<Ship>("Battleship");
+            mShip = proto.spawnObject<Ship>();
             mShip.init();
         }
 

@@ -1,11 +1,16 @@
 using System;
 using tezcat.Framework.Core;
-using tezcat.Framework.Database;
+using tezcat.Framework.Core;
 using tezcat.Framework.Game;
 using tezcat.Framework.Utility;
 
 namespace tezcat.Framework.Test
 {
+    public static class ItemClassIndexConfig
+    {
+        public const int Ship = 0;
+    }
+
     class Wall : TezGameObject
     {
         public override void deserialize(TezReader reader)
@@ -29,7 +34,7 @@ namespace tezcat.Framework.Test
     {
         public int magicAdd;
 
-        protected override ITezItemObject copy()
+        protected override TezItemObject copy()
         {
             return new MagicPotion();
         }
@@ -47,7 +52,7 @@ namespace tezcat.Framework.Test
 
         public TezBonusModifier healthAdd { get; private set; } = new TezBonusModifier(MyBonusConfig.Human.Health);
 
-        protected override ITezItemObject copy()
+        protected override TezItemObject copy()
         {
             return new HealthPotion();
         }
@@ -70,7 +75,7 @@ namespace tezcat.Framework.Test
     {
         public int attack;
 
-        protected override void onCopyDataFrome(ITezItemObject template)
+        protected override void onCopyDataFrome(TezItemObject template)
         {
             base.onCopyDataFrome(template);
             this.attack = ((Weapon)template).attack;
@@ -85,7 +90,7 @@ namespace tezcat.Framework.Test
 
     class Gun : Weapon
     {
-        protected override ITezItemObject copy()
+        protected override TezItemObject copy()
         {
             return new Gun();
         }
@@ -93,7 +98,7 @@ namespace tezcat.Framework.Test
 
     class Axe : Weapon
     {
-        protected override ITezItemObject copy()
+        protected override TezItemObject copy()
         {
             return new Axe();
         }
@@ -106,7 +111,7 @@ namespace tezcat.Framework.Test
         public TezLifeMonitor target = null;
         bool stop = false;
 
-        protected override ITezItemObject copy()
+        protected override TezItemObject copy()
         {
             return new Missle();
         }
@@ -171,7 +176,7 @@ namespace tezcat.Framework.Test
     {
         public TezLitPropertyInt armorAdd { get; private set; } = new TezLitPropertyInt(MyDescriptorConfig.Modifier.ArmorAdd);
 
-        protected override void onCopyDataFrome(ITezItemObject template)
+        protected override void onCopyDataFrome(TezItemObject template)
         {
             base.onCopyDataFrome(template);
             this.armorAdd.innerValue = ((Armor)template).armorAdd.value;
@@ -189,25 +194,28 @@ namespace tezcat.Framework.Test
 
     }
 
+    [TezPrototypeRegister("Helmet", 3)]
     class Helmet : Armor
     {
-        protected override ITezItemObject copy()
+        protected override TezItemObject copy()
         {
             return new Helmet();
         }
     }
 
+    [TezPrototypeRegister("Breastplate", 2)]
     class Breastplate : Armor
     {
-        protected override ITezItemObject copy()
+        protected override TezItemObject copy()
         {
             return new Breastplate();
         }
     }
 
+    [TezPrototypeRegister("Leg", 1)]
     class Leg : Armor
     {
-        protected override ITezItemObject copy()
+        protected override TezItemObject copy()
         {
             return new Leg();
         }
@@ -222,12 +230,13 @@ namespace tezcat.Framework.Test
 
     class Character : Unit
     {
-        protected override ITezItemObject copy()
+        protected override TezItemObject copy()
         {
             return new Character();
         }
     }
 
+    [TezPrototypeRegister("Ship", ItemClassIndexConfig.Ship)]
     class Ship
         : Unit
         , ITezBonusSystemHolder
@@ -254,7 +263,6 @@ namespace tezcat.Framework.Test
         public TezBonusableInt armorCapacity { get; private set; } = new TezBonusableInt(MyBonusConfig.Ship.Armor, MyDescriptorConfig.ShipPorperty.ArmorCapacity);
         public TezBonusableInt shieldCapacity { get; private set; } = new TezBonusableInt(MyBonusConfig.Ship.Shield, MyDescriptorConfig.ShipPorperty.ShieldCapacity);
         public TezBonusableInt powerCapacity { get; private set; } = new TezBonusableInt(MyBonusConfig.Ship.Power, MyDescriptorConfig.ShipPorperty.PowerCapacity);
-
 
 
         public Ship()
@@ -285,7 +293,7 @@ namespace tezcat.Framework.Test
             this.setValue();
         }
 
-        protected override void onCopyDataFrome(ITezItemObject template)
+        protected override void onCopyDataFrome(TezItemObject template)
         {
             base.onCopyDataFrome(template);
             Ship data = (Ship)template;
@@ -353,7 +361,7 @@ namespace tezcat.Framework.Test
             }
         }
 
-        protected override ITezItemObject copy()
+        protected override TezItemObject copy()
         {
             return new Ship();
         }
@@ -408,14 +416,14 @@ namespace tezcat.Framework.Test
         public override void run()
         {
             //var item_info = TezcatFramework.mainDB.getItem(0, 0);
-            var item_info = TezcatFramework.mainDB.getItem<Potion>(0);
+            var proto = TezcatFramework.protoDB.getProto<HealthPotion>(0);
 
-            var potion1 = item_info.createObject<HealthPotion>();
+            var potion1 = proto.spawnObject<HealthPotion>();
             potion1.init();
 
             Console.WriteLine($"Potion1: {potion1.itemInfo.NID}, HealthAdd: {potion1.healthAdd.value}");
 
-            var potion2 = potion1.duplicate<HealthPotion>();
+            var potion2 = potion1.spawnObject<HealthPotion>();
             potion2.init();
 
             Console.WriteLine($"Potion2: {potion2.itemInfo.NID}, HealthAdd: {potion2.healthAdd.value}");
@@ -430,8 +438,8 @@ namespace tezcat.Framework.Test
             potion2.close();
             potion3.close();
 
-            item_info = TezcatFramework.mainDB.getItem<Armor>(0);
-            var armor1 = item_info.createObject<Breastplate>();
+            proto = TezcatFramework.protoDB.getProto<Breastplate>(0);
+            var armor1 = proto.spawnObject<Breastplate>();
             armor1.init();
 
             Console.WriteLine($"Armor: {armor1.itemInfo.NID}, Armor: {armor1.armorAdd}");

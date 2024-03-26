@@ -1,6 +1,4 @@
-﻿using tezcat.Framework.Database;
-
-namespace tezcat.Framework.Core
+﻿namespace tezcat.Framework.Core
 {
     /// <summary>
     /// 基础Object

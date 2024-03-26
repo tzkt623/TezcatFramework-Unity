@@ -1,0 +1,18 @@
+{
+    "CID": "Helmet",
+    "ProtoInfo": {
+        "Name": "Monster",
+        "IID": 0
+    },
+    "ItemInfo": {
+        "Name": "Monster",
+        "Type": "Armor",
+        "IID": 1,
+        "StackCount": -1,
+        "Category": "Helmet",
+        "IsProto": true
+    },
+    "ObjectData": {
+        "ArmorAdd": 20
+    }
+}

@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using tezcat.Framework;
 using tezcat.Framework.Core;
-using tezcat.Framework.Database;
+using tezcat.Framework.Core;
 using tezcat.Unity.Core;
 using tezcat.Unity.Database;
 using tezcat.Unity.GraphicSystem;
@@ -128,8 +128,8 @@ namespace tezcat.Unity
         /// </summary>
         protected virtual void registerFramework()
         {
-            TezcatFramework.set(new TezItemDatabase());
-            TezcatFramework.set(new TezRunTimeDatabase());
+            TezcatFramework.set(new TezProtoDatabase());
+            //TezcatFramework.set(new TezRunTimeDatabase());
         }
 
         protected virtual void registerClassFactory()

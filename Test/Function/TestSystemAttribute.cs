@@ -1,4 +1,5 @@
 ﻿using System;
+using tezcat.Framework.Core;
 
 namespace tezcat.Framework.Test
 {

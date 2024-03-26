@@ -1,4 +1,4 @@
-﻿using tezcat.Framework.Database;
+﻿using tezcat.Framework.Core;
 using tezcat.Framework.Event;
 using tezcat.Framework.Game;
 using tezcat.Framework.Threading;
@@ -32,21 +32,22 @@ namespace tezcat.Framework
         /// <summary>
         /// 主数据库
         /// </summary>
-        static TezItemDatabase mMainDB = null;
-        public static TezItemDatabase mainDB => mMainDB;
-        public static void set(TezItemDatabase mainDB)
+        static TezProtoDatabase mProtoDB = null;
+        public static TezProtoDatabase protoDB => mProtoDB;
+        public static void set(TezProtoDatabase protoDB)
         {
-            mMainDB = mainDB;
+            mProtoDB = protoDB;
         }
+
         /// <summary>
         /// 运行时数据库
         /// </summary>
-        static TezRunTimeDatabase mRTDB = null;
-        public static TezRunTimeDatabase runtimeDB => mRTDB;
-        public static void set(TezRunTimeDatabase runtimeDB)
-        {
-            mRTDB = runtimeDB;
-        }
+        //static TezRunTimeDatabase mRTDB = null;
+        //public static TezRunTimeDatabase runtimeDB => mRTDB;
+        //public static void set(TezRunTimeDatabase runtimeDB)
+        //{
+        //    mRTDB = runtimeDB;
+        //}
         #endregion
     }
 }

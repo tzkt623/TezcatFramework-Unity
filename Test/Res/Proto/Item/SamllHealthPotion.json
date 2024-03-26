@@ -1,0 +1,18 @@
+{
+    "CID": "HealthPotion",
+    "ProtoInfo": {
+        "Name": "SmallHealthPotion",
+        "IID": 0
+    },
+    "ItemInfo": {
+        "Name": "SmallHealthPotion",
+        "Type": "Potion",
+        "IID": 1,
+        "StackCount": 10,
+        "Category": "HealthPotion",
+        "IsProto": true
+    },
+    "ObjectData": {
+        "HealthAdd": 5
+    }
+}
