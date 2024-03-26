@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using tezcat.Framework.Core;
-using tezcat.Framework.Core;
 
 namespace tezcat.Framework.Test
 {

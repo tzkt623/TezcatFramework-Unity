@@ -65,8 +65,8 @@ namespace tezcat.Framework.Core
             }
         }
 
-        protected List<TezProtoCreator> mFixedList = new List<TezProtoCreator>();
         private List<Cell> mCellList = new List<Cell>();
+        protected List<TezProtoCreator> mFixedList = new List<TezProtoCreator>();
         protected Dictionary<string, TezProtoCreator> mFixedDict = new Dictionary<string, TezProtoCreator>();
 
         public void load(string path)

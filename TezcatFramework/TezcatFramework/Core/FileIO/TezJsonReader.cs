@@ -58,10 +58,17 @@ namespace tezcat.Framework.Core
         public override void close()
         {
             base.close();
+
+            foreach (var item in mPreRoot)
+            {
+                item.close();
+            }
+            mPreRoot.Clear();
             mRootObject.Clear();
 
             mRootObject = null;
             mCurrent = null;
+            mPreRoot = null;
         }
 
         public bool loadContent(string jsonString)
@@ -88,6 +95,10 @@ namespace tezcat.Framework.Core
 
             mPath = path;
             bool result = false;
+            foreach (var item in mPreRoot)
+            {
+                item.close();
+            }
             mPreRoot.Clear();
             string content = null;
             try
@@ -95,7 +106,7 @@ namespace tezcat.Framework.Core
                 content = File.ReadAllText(mPath);
                 result = true;
             }
-            catch
+            catch(Exception e)
             {
                 result = false;
             }

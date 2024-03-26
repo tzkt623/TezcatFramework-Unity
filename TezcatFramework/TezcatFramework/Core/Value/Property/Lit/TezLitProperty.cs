@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using tezcat.Framework.Extension;
-using tezcat.Framework.Game;
+﻿using tezcat.Framework.Extension;
 
 namespace tezcat.Framework.Core
 {
@@ -65,8 +63,7 @@ namespace tezcat.Framework.Core
 
         public override void close()
         {
-            this.descriptor = null;
-            mValue = default;
+            base.close();
             onValueChanged = null;
         }
 

@@ -1,6 +1,6 @@
 using System;
 using tezcat.Framework.Core;
-using tezcat.Framework.Core;
+using tezcat.Framework.Extension;
 
 namespace tezcat.Framework.Game
 {
@@ -8,9 +8,10 @@ namespace tezcat.Framework.Game
         : ITezValueWrapper
         , ITezSerializable
     {
+        event TezEventExtension.Action<ITezBonusableValue> onValueChanged;
+
         TezBonusToken bonusToken { get; set; }
         ITezBonusModifierContainer modifierContainer { get; }
-        ITezLitProperty baseProperty { get; }
 
         void createContainer<Container>() where Container : ITezBonusModifierContainer, new();
         void manualUpdate();
@@ -31,32 +32,14 @@ namespace tezcat.Framework.Game
         /// 基础数值
         /// </summary>
         T baseValue { get; set; }
-
-        /// <summary>
-        /// 当前包含的Litproperty
-        /// </summary>
-        ITezLitProperty<T> porperty { get; }
     }
 
-    public abstract class TezBaseBonusaValue<T>
-        : ITezBonusableValue<T>
+    public abstract class TezBaseBonusableValue<T>
+        : TezValueWrapper<T>
+        , ITezBonusableValue<T>
     {
-        protected TezLitProperty<T> mLitPoperty = new TezLitProperty<T>();
-        public ITezLitProperty baseProperty => mLitPoperty;
-        public ITezLitProperty<T> porperty => mLitPoperty;
-
-
-        public Type systemType => mLitPoperty.systemType;
-        public TezValueType valueType => mLitPoperty.valueType;
-        public TezWrapperType wrapperType => TezWrapperType.Bonusable;
-        public int ID => mLitPoperty.ID;
-        public string name => mLitPoperty.name;
-
-        public ITezValueDescriptor descriptor
-        {
-            get => mLitPoperty.descriptor;
-            set => mLitPoperty.descriptor = value;
-        }
+        public event TezEventExtension.Action<ITezBonusableValue> onValueChanged;
+        public sealed override TezWrapperType wrapperType => TezWrapperType.Bonusable;
 
         protected TezBonusToken mBonusToken = null;
         public TezBonusToken bonusToken
@@ -80,26 +63,32 @@ namespace tezcat.Framework.Game
             }
         }
 
-        public T value
+        protected T mValue = default;
+        public override T value
         {
             get
             {
                 if (mDirty)
                 {
                     mDirty = true;
-                    mLitPoperty.innerValue = this.calculateValue();
+                    mValue = this.calculateValue();
+                    this.onValueChanged?.Invoke(this);
                 }
-                return mLitPoperty.value;
+                return mValue;
+            }
+
+            set
+            {
+                throw new Exception();
             }
         }
 
-        public TezBaseBonusaValue(TezBonusToken bonusToken, ITezValueDescriptor valueDescriptor)
+        public TezBaseBonusableValue(TezBonusToken bonusToken, ITezValueDescriptor valueDescriptor) : base(valueDescriptor)
         {
             mBonusToken = bonusToken;
-            mLitPoperty.descriptor = valueDescriptor;
         }
 
-        public TezBaseBonusaValue()
+        public TezBaseBonusableValue()
         {
 
         }
@@ -130,14 +119,16 @@ namespace tezcat.Framework.Game
             }
         }
 
-        public virtual void close()
+        public override void close()
         {
-            mLitPoperty.close();
+            base.close();
             mModifierContainer.close();
 
-            mLitPoperty = null;
             mBonusToken = null;
             mModifierContainer = null;
+            mDescriptor = null;
+
+            this.onValueChanged = null;
         }
 
         public void manualUpdate()
@@ -145,10 +136,10 @@ namespace tezcat.Framework.Game
             if (mDirty)
             {
                 mDirty = true;
-                mLitPoperty.innerValue = this.calculateValue();
+                mValue = this.calculateValue();
             }
 
-            mLitPoperty.manualUpdate();
+            this.onValueChanged?.Invoke(this);
         }
 
         public abstract void serialize(TezWriter writer);
@@ -156,21 +147,21 @@ namespace tezcat.Framework.Game
 
         public string valueToString()
         {
-            return mLitPoperty.valueToString();
+            return mValue.ToString();
         }
     }
 
     public class TezBonusableInt
-        : TezBaseBonusaValue<int>
+        : TezBaseBonusableValue<int>
     {
         public TezBonusableInt()
         {
-            mLitPoperty.value = 0;
+
         }
 
         public TezBonusableInt(TezBonusToken bonusToken, ITezValueDescriptor valueDescriptor) : base(bonusToken, valueDescriptor)
         {
-            mLitPoperty.value = 0;
+
         }
 
         protected override int calculateValue()
@@ -180,26 +171,26 @@ namespace tezcat.Framework.Game
 
         public override void serialize(TezWriter writer)
         {
-            writer.write(mLitPoperty.descriptor.name, mBaseValue);
+            writer.write(this.name, mBaseValue);
         }
 
         public override void deserialize(TezReader reader)
         {
-            mBaseValue = reader.readInt(mLitPoperty.descriptor.name);
+            mBaseValue = reader.readInt(this.name);
         }
     }
 
     public class TezBonusableFloat
-        : TezBaseBonusaValue<float>
+        : TezBaseBonusableValue<float>
     {
         public TezBonusableFloat()
         {
-            mLitPoperty.value = 0.0f;
+
         }
 
         public TezBonusableFloat(TezBonusToken bonusToken, ITezValueDescriptor valueDescriptor) : base(bonusToken, valueDescriptor)
         {
-            mLitPoperty.value = 0.0f;
+
         }
 
         protected override float calculateValue()
@@ -209,12 +200,12 @@ namespace tezcat.Framework.Game
 
         public override void serialize(TezWriter writer)
         {
-            writer.write(mLitPoperty.descriptor.name, mBaseValue);
+            writer.write(this.name, mBaseValue);
         }
 
         public override void deserialize(TezReader reader)
         {
-            mBaseValue = reader.readFloat(mLitPoperty.descriptor.name);
+            mBaseValue = reader.readFloat(this.name);
         }
     }
 }

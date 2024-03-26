@@ -69,7 +69,7 @@ namespace tezcat.Framework.Core
         }
 
         #region 注册
-        class Cell
+        class TypeData
         {
             public short ID = 0;
             public string Name;
@@ -77,37 +77,38 @@ namespace tezcat.Framework.Core
             public List<ITezValueDescriptor> list = new List<ITezValueDescriptor>();
         }
 
-        static List<Cell> mList = new List<Cell>();
+        static List<TypeData> mList = new List<TypeData>();
+        static Dictionary<string, TypeData> mDict = new Dictionary<string, TypeData>();
 
         public static short generateTypeID(string name)
         {
-            var cell = new Cell()
+            var cell = new TypeData()
             {
                 ID = (short)mList.Count,
                 Name = name
             };
             mList.Add(cell);
-
+            mDict.Add(name, cell);
             return cell.ID;
         }
 
-        public static int generateTypeCapacity(short id)
+        public static int getTypeCapacity(short id)
         {
             return mList[id].list.Count;
         }
 
         public static ITezValueDescriptor register(short typeID, string name)
         {
-//             while (mList.Count <= typeID)
-//             {
-//                 mList.Add(new Cell());
-//             }
+            //             while (mList.Count <= typeID)
+            //             {
+            //                 mList.Add(new Cell());
+            //             }
 
             var cell = mList[typeID];
             cell.ID = typeID;
-            if (cell.dict.TryGetValue(name, out ITezValueDescriptor descriptor))
+            if (cell.dict.TryGetValue(name, out var descriptor))
             {
-                throw new ArgumentException();
+                throw new ArgumentException(descriptor.name);
             }
             else
             {
@@ -126,7 +127,7 @@ namespace tezcat.Framework.Core
             ITezValueDescriptor descriptor;
             if (!cell.dict.TryGetValue(name, out descriptor))
             {
-                throw new Exception(string.Format("This Value[{0}] is not registered!!", name));
+                throw new Exception($"This Value[{name}] is not registered!!");
             }
             return descriptor;
         }
@@ -134,6 +135,19 @@ namespace tezcat.Framework.Core
         public static ITezValueDescriptor get(short typeID, short indexID)
         {
             return mList[typeID].list[indexID];
+        }
+
+        public static ITezValueDescriptor get(string typeName, string name)
+        {
+            if (mDict.TryGetValue(typeName, out var data))
+            {
+                if (data.dict.TryGetValue(name, out var descriptor))
+                {
+                    return descriptor;
+                }
+            }
+
+            throw new Exception($"This Value[{name}] is not registered!!");
         }
 
         public static void foreachName(TezEventExtension.Action<string, short> onTypeBegin, TezEventExtension.Action<ITezValueDescriptor> onDescriptor)

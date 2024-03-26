@@ -10,7 +10,7 @@ namespace tezcat.Framework.Core
 
         public virtual void init(short descriptorTypeID)
         {
-            var capacity = TezValueDescriptor.generateTypeCapacity(descriptorTypeID);
+            var capacity = TezValueDescriptor.getTypeCapacity(descriptorTypeID);
             mArray = new ValueType[capacity];
         }
 

@@ -10,8 +10,6 @@ namespace tezcat.Framework.Game
 
         int calculate(ref int baseValue);
         float calculate(ref float baseValue);
-
-        void close();
     }
 
     /// <summary>

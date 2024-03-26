@@ -226,7 +226,7 @@ namespace tezcat.Framework.Core
             get { return WrapperID<T>.systemType; }
         }
 
-        public override TezValueType valueType
+        public sealed override TezValueType valueType
         {
             get { return WrapperID<T>.valueType; }
         }
@@ -240,12 +240,6 @@ namespace tezcat.Framework.Core
         public void assign(TezValueWrapper<T> wrapper)
         {
             this.value = wrapper.value;
-        }
-
-        public override void close()
-        {
-            base.close();
-            this.value = default;
         }
 
         public override string ToString()

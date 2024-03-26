@@ -3,11 +3,6 @@ using tezcat.Framework.Core;
 
 namespace tezcat.Framework.Game
 {
-    public class TezBonusableValueArray : TezValueWrapperArray<ITezBonusableValue>
-    {
-
-    }
-
     public interface ITezBonusSystemHolder
     {
         TezBonusSystem bonusSystem { get; }
@@ -49,6 +44,11 @@ namespace tezcat.Framework.Game
         {
             mArray = null;
         }
+    }
+
+    public class TezBonusableValueArray : TezValueWrapperArray<ITezBonusableValue>
+    {
+
     }
 }
 
