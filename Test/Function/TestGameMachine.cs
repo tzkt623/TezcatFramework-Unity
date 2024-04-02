@@ -1,5 +1,6 @@
 ﻿using System;
-using tezcat.Framework.Event;
+using tezcat.Framework.Core;
+using tezcat.Framework.Game;
 using tezcat.Framework.Utility;
 
 namespace tezcat.Framework.Test
@@ -27,8 +28,9 @@ namespace tezcat.Framework.Test
 
         public class GameMachineBlackboard : TezGameMachineBlackborad
         {
-            public override void close()
+            protected override void onClose()
             {
+
             }
 
             public override void init()
@@ -50,7 +52,7 @@ namespace tezcat.Framework.Test
         {
             public override string name => "Idle";
 
-            public override void close()
+            protected override void onClose()
             {
 
             }
@@ -92,7 +94,7 @@ namespace tezcat.Framework.Test
         {
             public override string name => "Fun1";
 
-            public override void close()
+            protected override void onClose()
             {
 
             }
@@ -163,7 +165,7 @@ namespace tezcat.Framework.Test
             mGameMachine.push<GameMachineState_Idle>();
         }
 
-        public override void close()
+        protected override void onClose()
         {
             mGameMachine.close();
             mBlackboard.close();

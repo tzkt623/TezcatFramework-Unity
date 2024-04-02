@@ -8,7 +8,7 @@
         /// <summary>
         /// 关闭并删除整个对象
         /// </summary>
-        void close();
+        void deleteThis();
     }
 
     /// <summary>
@@ -17,5 +17,13 @@
     public interface ITezNonCloseable
     {
 
+    }
+
+    public static class TezCloseableHelper
+    {
+        public static void close(this ITezCloseable closeable)
+        {
+            closeable.deleteThis();
+        }
     }
 }

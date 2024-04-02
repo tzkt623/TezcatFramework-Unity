@@ -1,4 +1,4 @@
-﻿namespace tezcat.Framework.AI
+﻿namespace tezcat.Framework.Game
 {
     /// <summary>
     /// 强制顺序运行节点

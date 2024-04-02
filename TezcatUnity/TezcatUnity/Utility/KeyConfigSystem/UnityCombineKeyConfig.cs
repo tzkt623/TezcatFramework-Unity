@@ -48,9 +48,9 @@
             this.setWrapper(1, mWrapper2);
         }
 
-        public override void close()
+        protected override void onClose()
         {
-            base.close();
+            base.onClose();
             mWrapper1 = null;
             mWrapper2 = null;
         }
@@ -78,9 +78,9 @@
             this.setWrapper(2, mWrapper3);
         }
 
-        public override void close()
+        protected override void onClose()
         {
-            base.close();
+            base.onClose();
             mWrapper1 = null;
             mWrapper2 = null;
             mWrapper3 = null;

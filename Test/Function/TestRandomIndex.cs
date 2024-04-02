@@ -1,4 +1,5 @@
 ﻿using System;
+using tezcat.Framework.Core;
 using tezcat.Framework.TMath;
 using tezcat.Framework.Utility;
 
@@ -16,7 +17,7 @@ namespace tezcat.Framework.Test
 
         }
 
-        public override void close()
+        protected override void onClose()
         {
             mIndexRandom.close();
             mIndexRandom2.close();

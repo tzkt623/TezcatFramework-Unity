@@ -27,7 +27,12 @@ namespace tezcat.Framework.Game
                 this.index = index;
             }
 
-            public virtual void close()
+            void ITezCloseable.deleteThis()
+            {
+                this.onClose();
+            }
+
+            protected virtual void onClose()
             {
                 mName = null;
             }
@@ -63,9 +68,9 @@ namespace tezcat.Framework.Game
                 return mFunction(slotData);
             }
 
-            public override void close()
+            protected override void onClose()
             {
-                base.close();
+                base.onClose();
                 mFunction = null;
             }
 
@@ -128,7 +133,7 @@ namespace tezcat.Framework.Game
             return mCurrentFilter.calculate(slotData);
         }
 
-        public void close()
+        void ITezCloseable.deleteThis()
         {
             mCurrentFilter = null;
             evtFilterChanged = null;

@@ -1,6 +1,6 @@
 using tezcat.Framework.Core;
 
-namespace tezcat.Framework.AI
+namespace tezcat.Framework.Game
 {
     public interface ITezBTContext : ITezCloseable
     {

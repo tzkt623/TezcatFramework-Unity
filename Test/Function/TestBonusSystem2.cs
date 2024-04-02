@@ -138,7 +138,7 @@ namespace tezcat.Framework.Test
             this.showData();
         }
 
-        public override void close()
+        protected override void onClose()
         {
             mShip.close();
             mShip = null;
@@ -166,11 +166,11 @@ namespace tezcat.Framework.Test
             var hull_capacity = mShip.bonusableValueArray.get<TezBonusableInt>(MyDescriptorConfig.ShipPorperty.HullCapacity);
             Console.WriteLine($"{hull_capacity.name}: {hull_capacity.value}");
 
-            var hull = mShip.litPropertyArray.get<TezLitPropertyInt>(MyDescriptorConfig.ShipValue.Hull);
+            var hull = mShip.litPropertyArray.get<TezValueInt>(MyDescriptorConfig.ShipValue.Hull);
             Console.WriteLine($"{hull.name}: {hull.value}");
         }
 
-        public override void close()
+        protected override void onClose()
         {
             mShip.close();
             mShip = null;

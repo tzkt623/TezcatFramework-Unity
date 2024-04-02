@@ -4,6 +4,7 @@
 
 using System;
 using System.Collections.Generic;
+using tezcat.Framework.Core;
 using tezcat.Framework.Extension;
 using tezcat.Framework.Shape;
 
@@ -13,7 +14,7 @@ namespace tezcat.Framework.Utility
     /// TODO:优化四叉树的插入 先查找大概位置
     /// </summary>
     /// <typeparam name="Object"></typeparam>
-    public class TezQuadtree
+    public class TezQuadtree : ITezCloseable
     {
         const int Quadrant_1 = 0;
         const int Quadrant_2 = 1;
@@ -350,7 +351,7 @@ namespace tezcat.Framework.Utility
             }
         }
 
-        public void close()
+        void ITezCloseable.deleteThis()
         {
             m_Objects.Clear();
 

@@ -17,7 +17,12 @@ namespace tezcat.Framework.Game
         bool mNeedHash = true;
         int mHashCode = 0;
 
-        public virtual void close()
+        void ITezCloseable.deleteThis()
+        {
+            this.onClose();
+        }
+
+        protected virtual void onClose()
         {
 
         }

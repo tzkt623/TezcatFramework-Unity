@@ -41,9 +41,9 @@ namespace tezcat.Framework.BonusSystem
             }
         }
 
-        public override void close()
+        protected override void onClose()
         {
-            base.close();
+            base.onClose();
             mHandlerList.Clear();
             mHandlerList = null;
         }

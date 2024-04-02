@@ -1,10 +1,15 @@
 ﻿using tezcat.Framework.Core;
 
-namespace tezcat.Framework.AI
+namespace tezcat.Framework.Game
 {
     public abstract class TezBaseFSMBlackboard : ITezCloseable
     {
-        public abstract void close();
+        void ITezCloseable.deleteThis()
+        {
+            this.onClose();
+        }
+
+        protected abstract void onClose();
         public abstract void init();
     }
 }

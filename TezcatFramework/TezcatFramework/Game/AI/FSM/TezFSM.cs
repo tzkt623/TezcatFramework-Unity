@@ -1,6 +1,6 @@
-﻿using tezcat.Framework.Event;
+﻿using tezcat.Framework.Core;
 
-namespace tezcat.Framework.AI
+namespace tezcat.Framework.Game
 {
     public class TezFSM<TBlackboard, TState>
         : TezBaseFSM<TBlackboard, TState>
@@ -41,9 +41,9 @@ namespace tezcat.Framework.AI
             }
         }
 
-        public override void close()
+        protected override void onClose()
         {
-            base.close();
+            base.onClose();
 
             mGlobalState?.close();
             mGlobalState = null;

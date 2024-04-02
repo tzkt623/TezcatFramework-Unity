@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using tezcat.Framework.Core;
 
-namespace tezcat.Framework.AI
+namespace tezcat.Framework.Game
 {
     public abstract class TezBTComposite : TezBTNode
     {
@@ -68,9 +68,9 @@ namespace tezcat.Framework.AI
             }
         }
 
-        public override void close()
+        protected override void onClose()
         {
-            base.close();
+            base.onClose();
 
             for (int i = 0; i < mList.Count; i++)
             {

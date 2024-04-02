@@ -1,4 +1,6 @@
-﻿namespace tezcat.Framework.BonusSystem
+﻿using tezcat.Framework.Core;
+
+namespace tezcat.Framework.BonusSystem
 {
     /// <summary>
     /// <para>加成树</para>
@@ -17,10 +19,15 @@
         const int cPrimaryBegin = 0;
         TezBonusTreeContainer mContainer = new Container();
 
+        void ITezCloseable.deleteThis()
+        {
+            this.onClose();
+        }
+
         /// <summary>
         /// 关闭
         /// </summary>
-        public virtual void close()
+        protected virtual void onClose()
         {
             mContainer.close();
             mContainer = null;

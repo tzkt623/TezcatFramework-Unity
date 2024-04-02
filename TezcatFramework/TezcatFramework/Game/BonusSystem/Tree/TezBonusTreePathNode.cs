@@ -1,4 +1,5 @@
-﻿using tezcat.Framework.Utility;
+﻿using tezcat.Framework.Core;
+using tezcat.Framework.Utility;
 
 namespace tezcat.Framework.BonusSystem
 {
@@ -49,9 +50,9 @@ namespace tezcat.Framework.BonusSystem
             }
         }
 
-        public override void close()
+        protected override void onClose()
         {
-            base.close();
+            base.onClose();
             mChildren.close();
             mChildren = null;
         }

@@ -20,7 +20,12 @@ namespace tezcat.Framework.Game
         public object source { get; set; }
         public abstract TezBufferType bufferType { get; }
 
-        public virtual void close()
+        void ITezCloseable.deleteThis()
+        {
+            this.onClose();
+        }
+
+        protected virtual void onClose()
         {
             this.source = null;
         }
@@ -29,8 +34,8 @@ namespace tezcat.Framework.Game
     public abstract class TezPropertyBuffer : TezBuffer
     {
         public sealed override TezBufferType bufferType => TezBufferType.Property;
-        public abstract void onAdd(ITezLitProperty current_property);
-        public abstract void onRemove(ITezLitProperty current_property);
+        public abstract void onAdd(ITezValue current_property);
+        public abstract void onRemove(ITezValue current_property);
     }
 
     public abstract class TezFunctionBuffer : TezBuffer

@@ -13,10 +13,15 @@
             get { return this.GetType().Name; }
         }
 
+        void ITezCloseable.deleteThis()
+        {
+            this.onClose();
+        }
+
         /// <summary>
         /// 销毁对象
         /// </summary>
-        public abstract void close();
+        protected abstract void onClose();
 
         /// <summary>
         /// 序列化对象

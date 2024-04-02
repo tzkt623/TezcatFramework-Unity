@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using tezcat.Framework.Core;
 using tezcat.Framework.Extension;
 using tezcat.Framework.Utility;
 
@@ -56,7 +57,7 @@ namespace tezcat.Framework.Game
             this.onFilterChanged();
         }
 
-        public override void close()
+        protected override void onClose()
         {
             foreach (var item in mSlots)
             {
@@ -78,7 +79,7 @@ namespace tezcat.Framework.Game
             evtSlotRefresh = null;
             evtPageChanged = null;
 
-            base.close();
+            base.onClose();
         }
 
         public void setPageCapacity(int capacity)

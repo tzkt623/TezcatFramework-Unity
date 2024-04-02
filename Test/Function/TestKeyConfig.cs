@@ -1,5 +1,5 @@
 ﻿using tezcat.Framework.Core;
-using tezcat.Framework.Utility;
+using tezcat.Framework.Game;
 using tezcat.Unity;
 using tezcat.Unity.Utility;
 using UnityEngine;
@@ -109,7 +109,7 @@ namespace tezcat.Framework.Test
             }
         }
 
-        public override void close()
+        protected override void onClose()
         {
             TezcatUnity.unityKeyConfigSystem.close();
         }

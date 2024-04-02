@@ -1,6 +1,5 @@
 ﻿using System;
 using tezcat.Framework.Core;
-using tezcat.Framework.Core;
 using tezcat.Framework.Game;
 
 namespace tezcat.Framework.Test
@@ -42,7 +41,7 @@ namespace tezcat.Framework.Test
             mInventory.setView(mPageView);
         }
 
-        public override void close()
+        protected override void onClose()
         {
             mInventory.close();
             mPageView.close();

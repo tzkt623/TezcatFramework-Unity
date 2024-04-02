@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using tezcat.Framework.Core;
 
 namespace tezcat.Framework.BonusSystem
 {
@@ -103,7 +104,12 @@ namespace tezcat.Framework.BonusSystem
         /// </summary>
         public abstract void removeBonusObjectFromChildren(ITezBonusCarrier obj);
 
-        public virtual void close()
+        void ITezCloseable.deleteThis()
+        {
+            this.onClose();
+        }
+
+        protected virtual void onClose()
         {
             recycle(mObjects);
             mObjects = null;

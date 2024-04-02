@@ -5,12 +5,13 @@ namespace tezcat.Framework.Core
 {
     public class TezTags : ITezCloseable
     {
-        public IEnumerable<int> tags => mSet;
+        public IEnumerable<int> tags1 => mSet;
 
         HashSet<int> mSet = new HashSet<int>();
 
         public TezTags()
         {
+
         }
 
         public bool add(string name)
@@ -33,7 +34,7 @@ namespace tezcat.Framework.Core
             return mSet.Remove(TezTagManager.get(tag).id);
         }
 
-        public void close()
+        void ITezCloseable.deleteThis()
         {
             mSet.Clear();
             mSet = null;

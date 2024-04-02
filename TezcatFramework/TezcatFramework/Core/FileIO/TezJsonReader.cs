@@ -15,7 +15,7 @@ namespace tezcat.Framework.Core
         /// <summary>
         /// 用于抛出错误
         /// </summary>
-        private class Data
+        private class Data : ITezCloseable
         {
             public int index = -1;
             public string name = string.Empty;
@@ -33,7 +33,7 @@ namespace tezcat.Framework.Core
                 this.jsonData = data;
             }
 
-            public void close()
+            void ITezCloseable.deleteThis()
             {
                 this.name = null;
                 this.jsonData = null;
@@ -55,9 +55,9 @@ namespace tezcat.Framework.Core
             get { return mCurrent.Count; }
         }
 
-        public override void close()
+        protected override void onClose()
         {
-            base.close();
+            base.onClose();
 
             foreach (var item in mPreRoot)
             {

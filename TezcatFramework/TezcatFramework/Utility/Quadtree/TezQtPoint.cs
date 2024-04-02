@@ -19,9 +19,9 @@ namespace tezcat.Framework.Utility
             mPoint.originY = y;
         }
 
-        public override void close()
+        protected override void onClose()
         {
-            base.close();
+            base.onClose();
             mPoint = null;
         }
     }

@@ -1,5 +1,5 @@
 ﻿using System;
-using tezcat.Framework.Utility;
+using tezcat.Framework.Game;
 using UnityEngine;
 
 namespace tezcat.Unity.Utility

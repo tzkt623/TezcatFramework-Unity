@@ -297,7 +297,7 @@ namespace tezcat.Framework.Core
 
         private TezItemID() { }
 
-        public void close()
+        void ITezCloseable.deleteThis()
         {
             if (mRTID > -1)
             {

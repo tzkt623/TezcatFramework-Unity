@@ -25,7 +25,7 @@ namespace tezcat.Unity.Database
             this.name = name;
         }
 
-        public void close()
+        void ITezCloseable.deleteThis()
         {
             m_Sprite = null;
         }

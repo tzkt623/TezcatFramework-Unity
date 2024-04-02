@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using tezcat.Framework.Core;
 using tezcat.Framework.Game;
 using tezcat.Framework.TMath;
 using tezcat.Framework.Utility;
@@ -102,9 +103,9 @@ namespace tezcat.Framework.Test
         public Map map { get; set; }
         TezBinaryHeap<PathWrapper> mHeap = new TezBinaryHeap<PathWrapper>();
 
-        public override void close()
+        protected override void onClose()
         {
-            base.close();
+            base.onClose();
             mHeap.close();
             mHeap = null;
             this.map = null;
@@ -155,7 +156,7 @@ namespace tezcat.Framework.Test
 
         }
 
-        public override void close()
+        protected override void onClose()
         {
             mPathFinder.close();
             mMap.close();

@@ -80,7 +80,7 @@ namespace tezcat.Framework.Utility
             mRef.retain();
         }
 
-        public void close()
+        void ITezCloseable.deleteThis()
         {
             mRef.release();
             mRef = null;

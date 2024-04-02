@@ -228,7 +228,7 @@ namespace tezcat.Framework.Utility
             item2.index = temp;
         }
 
-        public void close()
+        void ITezCloseable.deleteThis()
         {
             mItems = null;
         }

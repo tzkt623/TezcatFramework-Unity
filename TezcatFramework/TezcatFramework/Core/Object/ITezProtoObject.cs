@@ -5,6 +5,9 @@
     /// </summary>
     public interface ITezProtoObject : ITezSerializable
     {
+        /// <summary>
+        /// 生成对象
+        /// </summary>
         ITezProtoObject spawnObject();
     }
 }

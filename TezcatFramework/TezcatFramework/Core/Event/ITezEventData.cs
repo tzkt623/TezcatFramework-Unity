@@ -1,6 +1,4 @@
-﻿using tezcat.Framework.Core;
-
-namespace tezcat.Framework.Event
+﻿namespace tezcat.Framework.Core
 {
     public interface ITezEventData : ITezCloseable
     {

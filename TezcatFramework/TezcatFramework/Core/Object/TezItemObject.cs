@@ -2,6 +2,11 @@ using System;
 
 namespace tezcat.Framework.Core
 {
+    public interface ITezItemObject
+    {
+        TezGameItemInfo itemInfo { get; }
+    }
+
     /// <summary>
     /// 游戏物品对象
     /// 
@@ -14,9 +19,9 @@ namespace tezcat.Framework.Core
         protected TezGameItemInfo mItemInfo = null;
         public TezGameItemInfo itemInfo => mItemInfo;
 
-        public override void close()
+        protected override void onClose()
         {
-            base.close();
+            base.onClose();
             mItemInfo.close();
             if(mItemInfo.invalid)
             {
@@ -71,7 +76,7 @@ namespace tezcat.Framework.Core
         /// </summary>
         public ITezProtoObject spawnObject()
         {
-            return mItemInfo.isShared ? this.share() : this.remodify();
+            return mItemInfo.isShared ? this.shareObject() : this.remodifyObject();
         }
 
         public T spawnObject<T>() where T : TezItemObject
@@ -79,7 +84,7 @@ namespace tezcat.Framework.Core
             return (T)this.spawnObject();
         }
 
-        public TezItemObject share()
+        public TezItemObject shareObject()
         {
             mItemInfo.share();
             return this;
@@ -90,7 +95,7 @@ namespace tezcat.Framework.Core
             throw new NotImplementedException(this.GetType().Name);
         }
 
-        public TezItemObject remodify()
+        public TezItemObject remodifyObject()
         {
             var obj = this.copy();
             obj.copyDataFrom(this);
@@ -114,11 +119,16 @@ namespace tezcat.Framework.Core
         }
     }
 
-    public static class TezItemObjectTool
+    public static class TezItemObjectHelper
     {
-        public static T remodify<T>(this TezItemObject obj) where T : TezItemObject
+        public static T remodifyObject<T>(this TezItemObject obj) where T : TezItemObject
         {
-            return (T)obj.remodify();
+            return (T)obj.remodifyObject();
+        }
+
+        public static T shareObject<T>(this TezItemObject obj) where T : TezItemObject
+        {
+            return (T)obj.shareObject();
         }
     }
 }

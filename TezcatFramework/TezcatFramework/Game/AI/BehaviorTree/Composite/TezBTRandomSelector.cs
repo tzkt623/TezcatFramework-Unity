@@ -1,6 +1,6 @@
 ﻿using tezcat.Framework.Extension;
 
-namespace tezcat.Framework.AI
+namespace tezcat.Framework.Game
 {
     /// <summary>
     /// 随机选择节点

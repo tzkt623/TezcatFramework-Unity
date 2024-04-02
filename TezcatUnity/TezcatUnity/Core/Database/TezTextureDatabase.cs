@@ -81,7 +81,7 @@ namespace tezcat.Unity.Database
             return m_Missing;
         }
 
-        public void close()
+        void ITezCloseable.deleteThis()
         {
             foreach (var pair in m_SpriteDic)
             {

@@ -1,6 +1,8 @@
-﻿namespace tezcat.Framework.Test
+﻿using tezcat.Framework.Core;
+
+namespace tezcat.Framework.Test
 {
-    public abstract class TezBaseTest
+    public abstract class TezBaseTest : ITezCloseable
     {
         public string name { get; }
 
@@ -11,6 +13,12 @@
 
         public abstract void run();
         public abstract void init();
-        public abstract void close();
+
+        void ITezCloseable.deleteThis()
+        {
+            this.onClose();
+        }
+
+        protected abstract void onClose();
     }
 }

@@ -1,4 +1,6 @@
-﻿namespace tezcat.Framework.Test
+﻿using tezcat.Framework.Core;
+
+namespace tezcat.Framework.Test
 {
     public class TestLifeMonitor : TezBaseTest
     {
@@ -15,7 +17,7 @@
 
         }
 
-        public override void close()
+        protected override void onClose()
         {
             mShip.close();
             mMissle.close();

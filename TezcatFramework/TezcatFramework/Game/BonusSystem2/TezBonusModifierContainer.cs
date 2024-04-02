@@ -106,7 +106,7 @@ namespace tezcat.Framework.Game
             return final;
         }
 
-        public void close()
+        void ITezCloseable.deleteThis()
         {
             mList.Clear();
             mList = null;
@@ -188,7 +188,7 @@ namespace tezcat.Framework.Game
             return final;
         }
 
-        public void close()
+        void ITezCloseable.deleteThis()
         {
 
         }

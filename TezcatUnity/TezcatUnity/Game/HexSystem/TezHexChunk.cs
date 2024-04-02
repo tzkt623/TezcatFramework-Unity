@@ -102,7 +102,12 @@ namespace tezcat.Framework.Game
             }
         }
 
-        public virtual void close()
+        void ITezCloseable.deleteThis()
+        {
+            this.onClose();
+        }
+
+        protected virtual void onClose()
         {
             foreach (var block in mBlockArray)
             {

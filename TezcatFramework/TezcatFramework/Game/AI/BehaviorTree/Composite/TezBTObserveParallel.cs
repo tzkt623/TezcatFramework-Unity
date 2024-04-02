@@ -1,4 +1,4 @@
-﻿namespace tezcat.Framework.AI
+﻿namespace tezcat.Framework.Game
 {
 #if false
     public class TezBTObserveParallel : TezBTComposite_List

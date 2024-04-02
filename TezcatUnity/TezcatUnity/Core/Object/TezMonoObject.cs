@@ -132,7 +132,7 @@ namespace tezcat.Unity.Core
         /// <summary>
         /// 
         /// </summary>
-        public void close()
+        void ITezCloseable.deleteThis()
         {
             mClosed = true;
             this.onClose();

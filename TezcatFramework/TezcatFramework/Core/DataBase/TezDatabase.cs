@@ -9,7 +9,7 @@ namespace tezcat.Framework.Core
         public int typeID { get; }
         public int indexID { get; }
 
-        ITezProtoObject mProtoObject = null;
+        protected ITezProtoObject mProtoObject = null;
 
         public TezProtoCreator(string name, int typeID, int indexID, ITezProtoObject protoObject)
         {

@@ -56,7 +56,7 @@ namespace tezcat.Framework.ECS
         /// <summary>
         /// 删除Object
         /// </summary>
-        public override void close()
+        protected override void onClose()
         {
             this.NID = null;
         }

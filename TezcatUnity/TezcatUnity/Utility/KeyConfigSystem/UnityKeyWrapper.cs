@@ -1,6 +1,6 @@
 ﻿using System;
 using tezcat.Framework.Core;
-using tezcat.Framework.Utility;
+using tezcat.Framework.Game;
 using UnityEngine;
 
 namespace tezcat.Unity.Utility

@@ -46,7 +46,8 @@ namespace tezcat.Unity.Database
             this.prefab = prefab;
         }
 
-        public void close()
+
+        void ITezCloseable.deleteThis()
         {
             this.prefab = null;
         }
@@ -133,7 +134,7 @@ namespace tezcat.Unity.Database
             return (T)m_MultiDic[multi_name];
         }
 
-        public void close()
+        void ITezCloseable.deleteThis()
         {
 
         }

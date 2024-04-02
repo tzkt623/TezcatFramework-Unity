@@ -32,7 +32,12 @@ namespace tezcat.Framework.Game
         public abstract int indexID { get; }
         public abstract string name { get; }
         public abstract TezAffixType affixType { get; }
-        public abstract void close();
+        void ITezCloseable.deleteThis()
+        {
+            this.onClose();
+        }
+
+        protected abstract void onClose();
     }
 }
 

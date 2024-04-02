@@ -137,7 +137,7 @@ namespace tezcat.Framework.Utility
             mOnPageChanged(mCurrentPageBegin, this.pageCapacity);
         }
 
-        public void close()
+        void ITezCloseable.deleteThis()
         {
             mOnPageChanged = null;
             mOnPageEmpty = null;

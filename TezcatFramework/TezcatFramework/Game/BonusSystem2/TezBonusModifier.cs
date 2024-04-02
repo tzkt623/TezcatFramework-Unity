@@ -40,7 +40,12 @@ namespace tezcat.Framework.Game
             this.bonusToken = bonusToken;
         }
 
-        public virtual void close()
+        void ITezCloseable.deleteThis()
+        {
+            this.onClose();
+        }
+
+        protected virtual void onClose()
         {
             //onDelete?.Invoke(this);
             this.bonusToken = null;
@@ -85,9 +90,9 @@ namespace tezcat.Framework.Game
             this.entry = entry;
         }
 
-        public override void close()
+        protected override void onClose()
         {
-            base.close();
+            base.onClose();
             this.entry = null;
         }
     }

@@ -1,12 +1,8 @@
 ﻿using System.Collections.Generic;
-using tezcat.Framework.Core;
 using tezcat.Framework.Extension;
 using tezcat.Framework.TypeTraits;
-#if UNITY_EDITOR
-using UnityEngine;
-#endif
 
-namespace tezcat.Framework.Event
+namespace tezcat.Framework.Core
 {
     public sealed class TezEventDispatcher : ITezCloseable
     {
@@ -32,7 +28,7 @@ namespace tezcat.Framework.Event
             public int ID;
             public ITezEventData data;
 
-            public void close()
+            void ITezCloseable.deleteThis()
             {
                 data = null;
             }
@@ -70,9 +66,6 @@ namespace tezcat.Framework.Event
             switch (EventID<EventData>.ID)
             {
                 case TezTypeInfo.ErrorID:
-#if UNITY_EDITOR
-                    Debug.Log(string.Format("{0} : no one subscribe this event", EventID<EventData>.Name));
-#endif
                     data.close();
                     break;
                 default:
@@ -83,9 +76,6 @@ namespace tezcat.Framework.Event
 
         private void dispatchEvent(int id, ITezEventData data)
         {
-#if UNITY_EDITOR
-            Debug.Log(string.Format("{0}", data.name));
-#endif
             var dic = mListeners[id];
             foreach (var pair in dic)
             {
@@ -106,9 +96,6 @@ namespace tezcat.Framework.Event
             switch (EventID<EventData>.ID)
             {
                 case TezTypeInfo.ErrorID:
-#if UNITY_EDITOR
-            Debug.Log(string.Format("{0} : no one subscribe this event", EventID<EventData>.Name));
-#endif
                     data.close();
                     break;
                 default:
@@ -127,7 +114,7 @@ namespace tezcat.Framework.Event
             }
         }
 
-        public void close()
+        void ITezCloseable.deleteThis()
         {
             foreach (var listener in mListeners)
             {

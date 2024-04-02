@@ -1,5 +1,6 @@
 ﻿using System;
-using tezcat.Framework.AI;
+using tezcat.Framework.Core;
+using tezcat.Framework.Game;
 
 namespace tezcat.Framework.Test
 {
@@ -10,7 +11,7 @@ namespace tezcat.Framework.Test
         public int rice;
         public int dish;
 
-        public void close()
+        void ITezCloseable.deleteThis()
         {
 
         }
@@ -394,7 +395,7 @@ namespace tezcat.Framework.Test
             mTree.setContext(new Context());
         }
 
-        public override void close()
+        protected override void onClose()
         {
             mTree.close();
             mTree = null;

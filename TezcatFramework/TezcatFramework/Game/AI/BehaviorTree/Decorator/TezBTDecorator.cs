@@ -1,6 +1,6 @@
 ﻿using tezcat.Framework.Core;
 
-namespace tezcat.Framework.AI
+namespace tezcat.Framework.Game
 {
     /// <summary>
     /// 修饰节点
@@ -27,9 +27,9 @@ namespace tezcat.Framework.AI
             mChild.reset();
         }
 
-        public override void close()
+        protected override void onClose()
         {
-            base.close();
+            base.onClose();
             mChild = null;
         }
 

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace tezcat.Framework.AI
+namespace tezcat.Framework.Game
 {
     /// <summary>
     /// BTTree属性定义类

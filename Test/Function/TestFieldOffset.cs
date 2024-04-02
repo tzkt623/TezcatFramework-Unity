@@ -58,7 +58,7 @@ namespace tezcat.Framework.Test
             mField = new Field();
         }
 
-        public override void close()
+        protected override void onClose()
         {
             mField = null;
         }

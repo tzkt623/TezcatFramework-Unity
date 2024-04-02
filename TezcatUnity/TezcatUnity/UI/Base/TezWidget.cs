@@ -1,4 +1,5 @@
-﻿using tezcat.Unity.Core;
+﻿using tezcat.Framework.Core;
+using tezcat.Unity.Core;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -59,10 +60,15 @@ namespace tezcat.Unity.UI
         /// </summary>
         protected virtual void initWidget() { }
 
+        void ITezCloseable.deleteThis()
+        {
+            this.onClose();
+        }
+
         /// <summary>
         /// 关闭
         /// </summary>
-        public virtual void close()
+        protected virtual void onClose()
         {
             switch (life)
             {
@@ -121,7 +127,7 @@ namespace tezcat.Unity.UI
         /// <summary>
         /// 关闭并销毁控件
         /// </summary>
-        public sealed override void close()
+        void ITezCloseable.deleteThis()
         {
             switch (life)
             {

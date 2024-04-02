@@ -192,7 +192,7 @@ namespace tezcat.Framework.Test
             reader.close();
         }
 
-        public override void close()
+        protected override void onClose()
         {
 
         }

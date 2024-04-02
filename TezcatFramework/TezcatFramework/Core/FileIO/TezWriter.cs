@@ -2,14 +2,14 @@
 
 namespace tezcat.Framework.Core
 {
-    public abstract class TezWriter
+    public abstract class TezWriter : ITezCloseable
     {
-        class Checker
+        class Checker : ITezCloseable
         {
             public string name = null;
             public int index = -1;
 
-            public void close()
+            void ITezCloseable.deleteThis()
             {
                 this.name = null;
             }
@@ -169,7 +169,7 @@ namespace tezcat.Framework.Core
             mChecker.Clear();
         }
 
-        public void close()
+        void ITezCloseable.deleteThis()
         {
             this.clear();
             mChecker = null;

@@ -12,7 +12,13 @@ namespace tezcat.Framework.Game
         public abstract bool stacked { get; }
         public virtual int count { get; set; }
         public TezItemObject item { get; set; } = null;
-        public virtual void close()
+
+        void ITezCloseable.deleteThis()
+        {
+            this.onClose();
+        }
+
+        protected virtual void onClose()
         {
             this.item = null;
         }
@@ -36,9 +42,9 @@ namespace tezcat.Framework.Game
         }
         public TezInventory inventory { get; set; }
 
-        public override void close()
+        protected override void onClose()
         {
-            base.close();
+            base.onClose();
             this.inventory = null;
         }
     }
@@ -60,6 +66,7 @@ namespace tezcat.Framework.Game
     public class TezInventoryStackedItemData
         : ITezInventoryViewSlotData
         , ITezInventoryFilterData
+        , ITezCloseable
     {
         TezInventoryStackedItemInfo mInfo;
         public TezInventory inventory { get; set; }
@@ -76,7 +83,7 @@ namespace tezcat.Framework.Game
             mInfo.list.Add(this);
         }
 
-        public void close()
+        void ITezCloseable.deleteThis()
         {
             mInfo = null;
             this.inventory = null;
@@ -330,7 +337,7 @@ namespace tezcat.Framework.Game
             return null;
         }
 
-        public void close()
+        void ITezCloseable.deleteThis()
         {
             mLifeMonitor.close();
 

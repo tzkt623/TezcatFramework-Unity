@@ -1,8 +1,9 @@
 ﻿using System.Collections.Generic;
+using tezcat.Framework.Core;
 
 namespace tezcat.Framework.ECS
 {
-    public class TezEntityManager
+    public class TezEntityManager : ITezCloseable
     {
         public static TezEntityManager instance { get; } = new TezEntityManager();
 
@@ -29,7 +30,7 @@ namespace tezcat.Framework.ECS
             mFreeEntity.Enqueue(entity);
         }
 
-        public void close()
+        void ITezCloseable.deleteThis()
         {
             mFreeEntity.Clear();
             mFreeEntity = null;

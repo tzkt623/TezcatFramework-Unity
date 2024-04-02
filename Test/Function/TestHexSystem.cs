@@ -69,7 +69,7 @@ namespace tezcat.Framework.Test
 //             mHexArea = new MyHexArea(100, 100, 100);
         }
 
-        public override void close()
+        protected override void onClose()
         {
 //             mHexGrid.close();
 //             mHexArea.close();

@@ -1,7 +1,6 @@
 ﻿using tezcat.Framework.Core;
-using tezcat.Framework.Core;
 
-namespace tezcat.Framework.AI
+namespace tezcat.Framework.Game
 {
     public abstract class TezBTNode : ITezCloseable
     {
@@ -37,7 +36,12 @@ namespace tezcat.Framework.AI
 
         public abstract void reset();
 
-        public virtual void close()
+        void ITezCloseable.deleteThis()
+        {
+            this.onClose();
+        }
+
+        protected virtual void onClose()
         {
             mTree = null;
             this.parent = null;

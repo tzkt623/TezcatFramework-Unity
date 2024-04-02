@@ -1,4 +1,4 @@
-﻿using tezcat.Framework.Utility;
+﻿using tezcat.Framework.Game;
 
 namespace tezcat.Unity.Utility
 {
@@ -28,9 +28,9 @@ namespace tezcat.Unity.Utility
             this.setWrapper(0, mWrapper);
         }
 
-        public override void close()
+        protected override void onClose()
         {
-            base.close();
+            base.onClose();
             mWrapper = null;
         }
 
@@ -54,9 +54,9 @@ namespace tezcat.Unity.Utility
             this.setWrapper(1, mWrapper2);
         }
 
-        public override void close()
+        protected override void onClose()
         {
-            base.close();
+            base.onClose();
             mWrapper1 = null;
             mWrapper2 = null;
         }
@@ -84,9 +84,9 @@ namespace tezcat.Unity.Utility
             this.setWrapper(2, mWrapper3);
         }
 
-        public override void close()
+        protected override void onClose()
         {
-            base.close();
+            base.onClose();
             mWrapper1 = null;
             mWrapper2 = null;
             mWrapper3 = null;

@@ -60,7 +60,7 @@
             writer.write(TezBuildInName.CID, this.CID);
         }
 
-        public override void close()
+        protected override void onClose()
         {
 
         }

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using tezcat.Framework.Core;
-using tezcat.Framework.Core;
 
 namespace tezcat.Framework.Game
 {
@@ -12,12 +11,12 @@ namespace tezcat.Framework.Game
     {
         #region Config
 
-        class LanguageInfo
+        class LanguageInfo : ITezCloseable
         {
             public string name;
             public string path;
 
-            public void close()
+            void ITezCloseable.deleteThis()
             {
                 this.name = null;
                 this.path = null;

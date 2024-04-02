@@ -40,7 +40,7 @@ namespace tezcat.Framework.Game
             mArray[iid].removeModifier(modifier);
         }
 
-        public void close()
+        void ITezCloseable.deleteThis()
         {
             mArray = null;
         }

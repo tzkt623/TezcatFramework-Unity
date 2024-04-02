@@ -52,6 +52,7 @@ namespace tezcat.Framework.Game
         public ITezBonusModifierContainer modifierContainer => mModifierContainer;
 
         protected bool mDirty = true;
+
         protected T mBaseValue = default;
         public T baseValue
         {
@@ -119,9 +120,9 @@ namespace tezcat.Framework.Game
             }
         }
 
-        public override void close()
+        protected override void onClose()
         {
-            base.close();
+            base.onClose();
             mModifierContainer.close();
 
             mBonusToken = null;

@@ -1,4 +1,5 @@
-﻿using tezcat.Framework.Utility;
+﻿using tezcat.Framework.Core;
+using tezcat.Framework.Utility;
 
 namespace tezcat.Framework.Game
 {
@@ -81,7 +82,12 @@ namespace tezcat.Framework.Game
             return this.blockData.Equals(other.blockData);
         }
 
-        public virtual void close()
+        void ITezCloseable.deleteThis()
+        {
+            this.onClose();
+        }
+
+        protected virtual void onClose()
         {
             this.parent = null;
             this.blockData = default;

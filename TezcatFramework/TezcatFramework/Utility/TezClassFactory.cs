@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using tezcat.Framework.Core;
 
 namespace tezcat.Framework.Utility
 {
@@ -12,7 +13,7 @@ namespace tezcat.Framework.Utility
     /// 主要使用在反序列化时
     /// 不同子类共用父类存储器导致无法获得实际类型时
     /// </summary>
-    public class TezClassFactory
+    public class TezClassFactory : ITezCloseable
     {
         public delegate T Creator<out T>();
 
@@ -66,7 +67,7 @@ namespace tezcat.Framework.Utility
             return (Creator<T>)mDictWithName[name];
         }
 
-        public void close()
+        void ITezCloseable.deleteThis()
         {
             mDictWithName.Clear();
             mDictWithName = null;

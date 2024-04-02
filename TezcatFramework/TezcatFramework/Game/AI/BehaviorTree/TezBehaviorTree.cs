@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using tezcat.Framework.Core;
 using tezcat.Framework.Extension;
 
-namespace tezcat.Framework.AI
+namespace tezcat.Framework.Game
 {
     /// <summary>
     /// 行为树
@@ -127,8 +127,10 @@ namespace tezcat.Framework.AI
             return node;
         }
 
-        public void close()
+        protected override void onClose()
         {
+            base.onClose();
+
             mRoot.close();
             mContext.close();
 

@@ -12,6 +12,11 @@
             return string.Format("{0}.{1}.{2}", major, minor, build);
         }
 
-        public abstract void close();
+        void ITezCloseable.deleteThis()
+        {
+            this.onClose();
+        }
+
+        protected abstract void onClose();
     }
 }

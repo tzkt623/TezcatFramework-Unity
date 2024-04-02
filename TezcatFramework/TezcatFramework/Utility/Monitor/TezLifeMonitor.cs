@@ -1,5 +1,4 @@
-﻿using System;
-using tezcat.Framework.Core;
+﻿using tezcat.Framework.Core;
 
 namespace tezcat.Framework.Utility
 {
@@ -48,7 +47,12 @@ namespace tezcat.Framework.Utility
             return false;
         }
 
-        public abstract void close();
+        void ITezCloseable.deleteThis()
+        {
+            this.onClose();
+        }
+
+        protected abstract void onClose();
     }
 
     /// <summary>
@@ -103,7 +107,7 @@ namespace tezcat.Framework.Utility
             mMetaData.valid = true;
         }
 
-        public override void close()
+        protected override void onClose()
         {
             mMetaData.holdObject = null;
             mMetaData.valid = false;
@@ -140,7 +144,7 @@ namespace tezcat.Framework.Utility
             mMetaData = info.metaData;
         }
 
-        public override void close()
+        protected override void onClose()
         {
             mMetaData = null;
         }

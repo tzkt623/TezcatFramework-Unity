@@ -1,6 +1,5 @@
 using System;
 using tezcat.Framework.Core;
-using tezcat.Framework.Core;
 using tezcat.Framework.Game;
 using tezcat.Framework.Utility;
 
@@ -166,7 +165,7 @@ namespace tezcat.Framework.Test
             Console.WriteLine($"{name}: Find Other Target......");
         }
 
-        public override void close()
+        protected override void onClose()
         {
             this.target?.close();
         }
@@ -174,7 +173,7 @@ namespace tezcat.Framework.Test
 
     abstract class Armor : Equipment
     {
-        public TezLitPropertyInt armorAdd { get; private set; } = new TezLitPropertyInt(MyDescriptorConfig.Modifier.ArmorAdd);
+        public TezValueInt armorAdd { get; private set; } = new TezValueInt(MyDescriptorConfig.Modifier.ArmorAdd);
 
         protected override void onCopyDataFrome(TezItemObject template)
         {
@@ -245,12 +244,12 @@ namespace tezcat.Framework.Test
         public TezLifeHolder lifeMonitor { get; } = new TezLifeHolder();
 
         //Property
-        TezLitPropertyArray mLitPropertyArray = new TezLitPropertyArray();
-        public TezLitPropertyArray litPropertyArray => mLitPropertyArray;
-        public TezLitPropertyInt hull { get; private set; } = new TezLitPropertyInt(MyDescriptorConfig.ShipValue.Hull);
-        public TezLitPropertyInt armor { get; private set; } = new TezLitPropertyInt(MyDescriptorConfig.ShipValue.Armor);
-        public TezLitPropertyInt shield { get; private set; } = new TezLitPropertyInt(MyDescriptorConfig.ShipValue.Shield);
-        public TezLitPropertyInt power { get; private set; } = new TezLitPropertyInt(MyDescriptorConfig.ShipValue.Power);
+        TezValueArray mLitPropertyArray = new TezValueArray();
+        public TezValueArray litPropertyArray => mLitPropertyArray;
+        public TezValueInt hull { get; private set; } = new TezValueInt(MyDescriptorConfig.ShipValue.Hull);
+        public TezValueInt armor { get; private set; } = new TezValueInt(MyDescriptorConfig.ShipValue.Armor);
+        public TezValueInt shield { get; private set; } = new TezValueInt(MyDescriptorConfig.ShipValue.Shield);
+        public TezValueInt power { get; private set; } = new TezValueInt(MyDescriptorConfig.ShipValue.Power);
 
         //Bonusable
         TezBonusSystem mBonusSystem = new TezBonusSystem();
@@ -366,9 +365,9 @@ namespace tezcat.Framework.Test
             return new Ship();
         }
 
-        public override void close()
+        protected override void onClose()
         {
-            base.close();
+            base.onClose();
             this.hull.close();
             this.armor.close();
             this.shield.close();
@@ -430,7 +429,7 @@ namespace tezcat.Framework.Test
 
             Console.WriteLine($"Potion1==Potion2 : {potion1 == potion2}");
 
-            var potion3 = potion1.remodify<HealthPotion>();
+            var potion3 = potion1.remodifyObject<HealthPotion>();
             potion3.init();
             Console.WriteLine($"Potion1==Potion3 : {potion1 == potion3}");
 
@@ -450,7 +449,7 @@ namespace tezcat.Framework.Test
             wall.close();
         }
 
-        public override void close()
+        protected override void onClose()
         {
 
         }

@@ -21,9 +21,9 @@ namespace tezcat.Framework.Utility
             mRectangle.height = height;
         }
 
-        public override void close()
+        protected override void onClose()
         {
-            base.close();
+            base.onClose();
             mRectangle = null;
         }
     }

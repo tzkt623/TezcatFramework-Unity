@@ -59,7 +59,7 @@ namespace tezcat.Framework.Game
             this.sourceSlot = null;
         }
 
-        public virtual void close()
+        protected virtual void onClose()
         {
             this.sourceInventory = null;
             this.targetInventory = null;

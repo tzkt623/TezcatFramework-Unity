@@ -1,4 +1,4 @@
-﻿namespace tezcat.Framework.AI
+﻿namespace tezcat.Framework.Game
 {
     public abstract class TezPuppet
     {

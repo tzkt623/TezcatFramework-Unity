@@ -18,10 +18,6 @@ namespace tezcat.Framework.Core
     /// 通过一个分类序列将对象进行分类
     /// 序列中最后一个为实际类型
     /// 其他则为分类路径
-    /// 
-    /// 如果数据库的分类和游戏内分类无法对齐
-    /// 那分类就没有意义
-    /// 理论上所有在游戏中的物品,都应该有一个原型数据存在
     /// </para>
     /// 
     /// <para>
@@ -49,7 +45,7 @@ namespace tezcat.Framework.Core
         /// <summary>
         /// 最后一个Token的Name
         /// </summary>
-        public string name => mFinalToken.name;
+        public string finalName => mFinalToken.name;
 
         /// <summary>
         /// 主Token

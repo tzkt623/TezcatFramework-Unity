@@ -4,37 +4,37 @@ namespace tezcat.Framework.Game
 {
     public abstract class TezCommandSequence
     {
-        int m_Index = 0;
-        List<TezCommand> m_CommandList = new List<TezCommand>();
+        int mIndex = 0;
+        List<TezCommand> mCommandList = new List<TezCommand>();
 
         public void add(TezCommand command)
         {
             command.sequence = this;
-            command.ID = m_CommandList.Count;
-            m_CommandList.Add(command);
+            command.ID = mCommandList.Count;
+            mCommandList.Add(command);
         }
 
         public void remove(TezCommand command)
         {
-            var last = m_CommandList[m_CommandList.Count - 1];
+            var last = mCommandList[mCommandList.Count - 1];
         }
 
         public void nextCommand()
         {
-            m_CommandList[m_Index].onEnter();
+            mCommandList[mIndex].onEnter();
         }
 
         public void commandExit(TezCommand command)
         {
-            m_Index = command.ID + 1;
-            if(m_Index >= m_CommandList.Count)
+            mIndex = command.ID + 1;
+            if(mIndex >= mCommandList.Count)
             {
-                m_Index = 0;
+                mIndex = 0;
                 this.onSequenceEnd();
             }
             else
             {
-                m_CommandList[m_Index].onEnter();
+                mCommandList[mIndex].onEnter();
             }
         }
 

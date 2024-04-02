@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using tezcat.Framework.Core;
 
 namespace tezcat.Framework.BonusSystem
 {
@@ -10,11 +11,17 @@ namespace tezcat.Framework.BonusSystem
     /// 或者继承TezAttributeTreeContainer自己实现
     /// </para>
     /// </summary>
-    public abstract class TezBonusTreeContainer
+    public abstract class TezBonusTreeContainer : ITezCloseable
     {
         public abstract void addNode(int id, TezBonusTreeNode node);
         public abstract bool tryGetNode(int id, out TezBonusTreeNode node);
-        public abstract void close();
+        
+        void ITezCloseable.deleteThis()
+        {
+            this.onClose();
+        }
+
+        protected abstract void onClose();
     }
 
     public class TezBonusTreeListContainer : TezBonusTreeContainer
@@ -43,7 +50,7 @@ namespace tezcat.Framework.BonusSystem
             }
         }
 
-        public override void close()
+        protected override void onClose()
         {
             foreach (var item in mNodeList)
             {
@@ -75,7 +82,7 @@ namespace tezcat.Framework.BonusSystem
             mNodeDict.Add(id, node);
         }
 
-        public override void close()
+        protected override void onClose()
         {
             foreach (var pair in mNodeDict)
             {

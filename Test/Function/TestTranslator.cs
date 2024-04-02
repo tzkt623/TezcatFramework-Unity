@@ -9,7 +9,7 @@ namespace tezcat.Framework.Test
         {
         }
 
-        public override void close()
+        protected override void onClose()
         {
             TezTranslator.clearConfig();
         }

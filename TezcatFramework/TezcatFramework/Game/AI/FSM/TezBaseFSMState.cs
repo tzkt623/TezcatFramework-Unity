@@ -1,7 +1,6 @@
 ﻿using tezcat.Framework.Core;
-using tezcat.Framework.Event;
 
-namespace tezcat.Framework.AI
+namespace tezcat.Framework.Game
 {
     public abstract class TezBaseFSMState<TBlackboard>
         : ITezCloseable
@@ -16,6 +15,12 @@ namespace tezcat.Framework.AI
         public abstract void execute(TBlackboard blackboard);
 
         public abstract bool onEvent(ITezEventData eventData);
-        public abstract void close();
+
+        void ITezCloseable.deleteThis()
+        {
+            this.onClose();
+        }
+
+        protected abstract void onClose();
     }
 }

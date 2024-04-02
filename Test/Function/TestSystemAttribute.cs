@@ -53,7 +53,7 @@ namespace tezcat.Framework.Test
             Console.WriteLine();
         }
 
-        public override void close()
+        protected override void onClose()
         {
         }
 
