@@ -243,7 +243,7 @@ namespace tezcat.Framework.Utility
         }
 
 
-        void ITezCloseable.deleteThis()
+        void ITezCloseable.closeThis()
         {
             mFlagData.release();
             mFlagData = null;
@@ -524,7 +524,7 @@ namespace tezcat.Framework.Utility
         }
 
 
-        void ITezCloseable.deleteThis()
+        void ITezCloseable.closeThis()
         {
             m_Valider.release();
             m_Valider = null;

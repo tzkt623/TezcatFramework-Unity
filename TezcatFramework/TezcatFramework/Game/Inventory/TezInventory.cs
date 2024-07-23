@@ -13,7 +13,7 @@ namespace tezcat.Framework.Game
         public virtual int count { get; set; }
         public TezItemObject item { get; set; } = null;
 
-        void ITezCloseable.deleteThis()
+        void ITezCloseable.closeThis()
         {
             this.onClose();
         }
@@ -83,7 +83,7 @@ namespace tezcat.Framework.Game
             mInfo.list.Add(this);
         }
 
-        void ITezCloseable.deleteThis()
+        void ITezCloseable.closeThis()
         {
             mInfo = null;
             this.inventory = null;
@@ -337,7 +337,7 @@ namespace tezcat.Framework.Game
             return null;
         }
 
-        void ITezCloseable.deleteThis()
+        void ITezCloseable.closeThis()
         {
             mLifeMonitor.close();
 

@@ -106,7 +106,6 @@
     <Compile Include="TezcatUnity\UI\Base\TezLayout.cs" />
     <Compile Include="TezcatUnity\UI\Base\TezNullGraphic.cs" />
     <Compile Include="TezcatUnity\UI\Base\TezOverlay.cs" />
-    <Compile Include="TezcatUnity\UI\Window\TezSubwindow.cs" />
     <Compile Include="TezcatUnity\UI\Base\TezTitle.cs" />
     <Compile Include="TezcatUnity\UI\Window\TezToolWindow.cs" />
     <Compile Include="TezcatUnity\UI\Base\TezWidget.cs" />
@@ -135,6 +134,7 @@
     <Compile Include="TezcatUnity\Utility\KeyConfigSystem\UnityKeyUpWrapper.cs" />
     <Compile Include="TezcatUnity\Utility\KeyConfigSystem\UnityKeyWrapper.cs" />
     <Compile Include="TezcatUnity\Utility\TezNoise.cs" />
+    <Compile Include="TezcatUnity\UI\TezUIManager.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

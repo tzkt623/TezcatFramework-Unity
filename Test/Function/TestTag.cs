@@ -16,6 +16,7 @@ namespace tezcat.Framework.Test
 
         public TestTag() : base("Tags")
         {
+
         }
 
         protected override void onClose()

@@ -50,6 +50,12 @@ namespace tezcat.Unity.UI
             this.initWidget();
         }
 
+        protected override void OnDestroy()
+        {
+            base.OnDestroy();
+            this.onCloseThis();
+        }
+
         /// <summary>
         /// 在Widget初始化之前调用
         /// </summary>
@@ -60,26 +66,19 @@ namespace tezcat.Unity.UI
         /// </summary>
         protected virtual void initWidget() { }
 
-        void ITezCloseable.deleteThis()
-        {
-            this.onClose();
-        }
-
         /// <summary>
         /// 关闭
         /// </summary>
-        protected virtual void onClose()
+        protected virtual void onCloseThis()
         {
             switch (life)
             {
                 case TezWidgetLife.TypeOnly:
-                    TezcatUnity.removeTypeOnlyWidget(this);
+                    TezUIManager.removeTypeOnlyWidget(this);
                     break;
                 default:
                     break;
             }
-
-            Destroy(this.gameObject);
         }
 
         /// <summary>
@@ -101,6 +100,11 @@ namespace tezcat.Unity.UI
         {
             this.gameObject.SetActive(false);
         }
+
+        void ITezCloseable.closeThis()
+        {
+            Destroy(this.gameObject);
+        }
     }
 
     /// <summary>
@@ -115,6 +119,17 @@ namespace tezcat.Unity.UI
         bool mRefreshMask = false;
 
 
+        protected sealed override void onCloseThis()
+        {
+            base.onCloseThis();
+
+            ///设置关闭位
+            ///这样是为了让控件可以立即释放资源
+            ///而不是等到Destroy执行导致时间不确定
+            mClosed = true;
+            this.onClose(mClosed);
+        }
+
         /// <summary>
         /// 在这里清理所有资源
         /// </summary>
@@ -123,28 +138,6 @@ namespace tezcat.Unity.UI
         /// false:由其他对象带动进行的销毁,资源由Unity自身函数OnDestroy释放
         /// </param>
         protected virtual void onClose(bool self_close) { }
-
-        /// <summary>
-        /// 关闭并销毁控件
-        /// </summary>
-        void ITezCloseable.deleteThis()
-        {
-            switch (life)
-            {
-                case TezWidgetLife.TypeOnly:
-                    TezcatUnity.removeTypeOnlyWidget(this);
-                    break;
-                default:
-                    break;
-            }
-
-            ///设置关闭位
-            ///这样是为了让控件可以立即释放资源
-            ///而不是等到Destroy执行导致时间不确定
-            mClosed = true;
-            this.onClose(mClosed);
-            Destroy(this.gameObject);
-        }
 
         #region 规范流程
         /*
@@ -255,18 +248,6 @@ namespace tezcat.Unity.UI
         /// </summary>
         protected virtual void onHide() { }
 
-        #endregion
-
-        #region 重载操作
-        public static bool operator true(TezUIWidget obj)
-        {
-            return !object.ReferenceEquals(obj, null);
-        }
-
-        public static bool operator false(TezUIWidget obj)
-        {
-            return object.ReferenceEquals(obj, null);
-        }
         #endregion
     }
 

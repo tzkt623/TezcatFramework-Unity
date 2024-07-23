@@ -16,12 +16,12 @@ namespace tezcat.Framework.Test
 
         public override void init()
         {
-            TezTranslator.loadConfig(Path.root + "Res/Localization");
+            TezTranslator.loadConfig($"{Path.root}Res/Localization");
         }
 
         public override void run()
         {
-            Console.Write("Input: (en, zh, jp)\n");
+            Console.WriteLine("Input: (en, zh, jp)");
             Console.Write("Language:");
             string language = Console.ReadLine();
             TezcatFramework.translator.loadLanguage(language, "en");
@@ -32,4 +32,3 @@ namespace tezcat.Framework.Test
         }
     }
 }
-

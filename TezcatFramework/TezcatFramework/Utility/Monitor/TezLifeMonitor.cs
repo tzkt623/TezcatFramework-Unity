@@ -47,7 +47,17 @@ namespace tezcat.Framework.Utility
             return false;
         }
 
-        void ITezCloseable.deleteThis()
+        public object getObject()
+        {
+            return mMetaData.holdObject;
+        }
+
+        public T getObject<T>() where T : class
+        {
+            return (T)mMetaData.holdObject;
+        }
+
+        void ITezCloseable.closeThis()
         {
             this.onClose();
         }

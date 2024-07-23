@@ -54,7 +54,7 @@
         /// </summary>
         public ITezValueDescriptor target = null;
 
-        void ITezCloseable.deleteThis()
+        void ITezCloseable.closeThis()
         {
             this.onClose();
         }

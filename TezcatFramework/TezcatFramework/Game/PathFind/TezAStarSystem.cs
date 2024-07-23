@@ -76,7 +76,7 @@ namespace tezcat.Framework.Game
         /// </summary>
         public event TezEventExtension.Action evtPathNotFound;
 
-        void ITezCloseable.deleteThis()
+        void ITezCloseable.closeThis()
         {
             this.onClose();
         }

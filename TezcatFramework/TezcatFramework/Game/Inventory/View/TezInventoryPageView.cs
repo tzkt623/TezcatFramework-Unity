@@ -13,12 +13,12 @@ namespace tezcat.Framework.Game
     {
         /// <summary>
         /// 通知单个槽位刷新
-        /// <需要刷新的数据,当前索引>
+        /// 需要刷新的数据,当前索引
         /// </summary>
         public event TezEventExtension.Action<TezInventoryViewSlot, int> evtSlotRefresh;
 
         /// <summary>
-        /// <当前页码,最大页码>
+        /// 当前页码,最大页码
         /// </summary>
         public event TezEventExtension.Action<int, int> evtPageChanged;
 

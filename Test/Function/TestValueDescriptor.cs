@@ -10,6 +10,7 @@ namespace tezcat.Framework.Test
             public static readonly short ShipProperty = TezValueDescriptor.generateTypeID("ShipProperty");
             public static readonly short ShipValue = TezValueDescriptor.generateTypeID("ShipValue");
             public static readonly short Modifier = TezValueDescriptor.generateTypeID("Modifier");
+            public static readonly short HumanProperty = TezValueDescriptor.generateTypeID("HumanProperty");
         }
 
         public static class ShipPorperty
@@ -44,9 +45,15 @@ namespace tezcat.Framework.Test
             public static readonly ITezValueDescriptor PowerAdd = TezValueDescriptor.register(TypeID.Modifier, "PowerAdd");
             public static readonly ITezValueDescriptor SpeedAdd = TezValueDescriptor.register(TypeID.Modifier, "SpeedAdd");
             public static readonly ITezValueDescriptor ArmorAdd = TezValueDescriptor.register(TypeID.Modifier, "ArmorAdd");
-
             public static readonly ITezValueDescriptor HealthAdd = TezValueDescriptor.register(TypeID.Modifier, "HealthAdd");
         }
+
+        public static class HumanProperty
+        {
+            public static readonly ITezValueDescriptor HealthCapacity = TezValueDescriptor.register(TypeID.HumanProperty, "HealthCapacity");
+        }
+
+        public static void init() { }
     }
 
     class TestValueDescriptor : TezBaseTest

@@ -126,10 +126,7 @@ namespace tezcat.Framework.Core
 
         public static void registerTypeIDFrom(TezReader reader)
         {
-            foreach (var item in mCategoryList)
-            {
-                item.finalToken.setTypeID(reader.readInt(item.finalToken.parent.name));
-            }
+
         }
         #endregion
 

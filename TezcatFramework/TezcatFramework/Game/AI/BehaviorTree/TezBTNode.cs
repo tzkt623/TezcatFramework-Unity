@@ -36,7 +36,7 @@ namespace tezcat.Framework.Game
 
         public abstract void reset();
 
-        void ITezCloseable.deleteThis()
+        void ITezCloseable.closeThis()
         {
             this.onClose();
         }

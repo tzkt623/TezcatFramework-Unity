@@ -34,7 +34,7 @@ namespace tezcat.Framework.Core
             return mSet.Remove(TezTagManager.get(tag).id);
         }
 
-        void ITezCloseable.deleteThis()
+        void ITezCloseable.closeThis()
         {
             mSet.Clear();
             mSet = null;

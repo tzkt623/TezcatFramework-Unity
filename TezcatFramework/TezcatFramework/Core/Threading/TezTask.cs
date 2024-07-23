@@ -12,7 +12,7 @@ namespace tezcat.Framework.Threading
 
         List<Task> m_Task = new List<Task>();
 
-        void ITezCloseable.deleteThis()
+        void ITezCloseable.closeThis()
         {
             m_Task.Clear();
             m_Task = null;
@@ -126,7 +126,7 @@ namespace tezcat.Framework.Threading
                 this.name = name;
             }
 
-            void ITezCloseable.deleteThis()
+            void ITezCloseable.closeThis()
             {
                 m_Thread?.Abort();
                 m_AutoEvent.Close();

@@ -1,4 +1,3 @@
-using System;
 using tezcat.Framework.Core;
 
 namespace tezcat.Framework.Game
@@ -8,41 +7,63 @@ namespace tezcat.Framework.Game
         TezBonusSystem bonusSystem { get; }
     }
 
+    /// <summary>
+    /// 属性加成系统
+    /// 一个对象一般来说只会有一套属性加成系统
+    /// 比如
+    /// 飞船有飞船的整套属性
+    /// 炮台有炮台的整套属性
+    /// </summary>
     public class TezBonusSystem : ITezCloseable
     {
-        ITezBonusableValue[] mArray = null;
+        //ITezBonusableValue[] mArray = null;
+        ITezBonusableValue[][] mArrays = null;
 
-        public void init(int bonusTokenTypeID)
+        public void init()
         {
-            var capacity =TezBonusToken.getTokenCapacity(bonusTokenTypeID);
-            mArray = new ITezBonusableValue[capacity];
+            //var capacity = TezValueDescriptor.getTypeCapacity(bonusTokenTypeID);
+            //mArray = new ITezBonusableValue[capacity];
+
+            if (mArrays == null)
+            {
+                mArrays = new ITezBonusableValue[TezValueDescriptor.getTypeCount()][];
+            }
         }
 
         public void set(ITezBonusableValue bonusableValue)
         {
-            var token = bonusableValue.bonusToken;
-            if (mArray[token.indexID] != null)
+            var token = bonusableValue.descriptor;
+
+            if (mArrays[token.typeID] == null)
             {
-                throw new Exception();
+                mArrays[token.typeID] = new ITezBonusableValue[TezValueDescriptor.getTypeCapacity((short)token.typeID)];
             }
-            mArray[token.indexID] = bonusableValue;
+
+            mArrays[token.typeID][token.indexID] = bonusableValue;
+
+            //mArray[token.indexID] = bonusableValue;
         }
 
         public void addModifier(ITezBonusModifier modifier)
         {
-            var iid = modifier.bonusToken.indexID;
-            mArray[iid].addModifier(modifier);
+            var descriptor = modifier.valueDescriptor;
+            mArrays[descriptor.typeID][descriptor.indexID].addModifier(modifier);
         }
 
         public void removeModifier(ITezBonusModifier modifier)
         {
-            var iid = modifier.bonusToken.indexID;
-            mArray[iid].removeModifier(modifier);
+            var descriptor = modifier.valueDescriptor;
+            mArrays[descriptor.typeID][descriptor.indexID].removeModifier(modifier);
         }
 
-        void ITezCloseable.deleteThis()
+        void ITezCloseable.closeThis()
         {
-            mArray = null;
+            mArrays = null;
+        }
+
+        public T get<T>(ITezValueDescriptor valueDescriptor) where T : ITezBonusableValue
+        {
+            return (T)mArrays[valueDescriptor.typeID][valueDescriptor.indexID];
         }
     }
 
@@ -51,4 +72,3 @@ namespace tezcat.Framework.Game
 
     }
 }
-

@@ -43,7 +43,7 @@ namespace tezcat.Framework.Game
             evtSave?.Invoke(this);
         }
 
-        void ITezCloseable.deleteThis()
+        void ITezCloseable.closeThis()
         {
             this.onClose();
         }

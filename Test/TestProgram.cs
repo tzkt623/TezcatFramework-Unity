@@ -25,14 +25,11 @@ namespace tezcat.Framework.Test
         void init()
         {
             Path.init();
-
             MyCategory.init();
+            MyDescriptorConfig.init();
             TezcatFramework.set(new TezProtoDatabase());
             //TezcatFramework.set(new TezRunTimeDatabase());
-        }
 
-        void register()
-        {
             mTestList.Add(new TestObject());
             mTestList.Add(new TestValueDescriptor());
             mTestList.Add(new TestValueArrayManager());
@@ -50,9 +47,10 @@ namespace tezcat.Framework.Test
             mTestList.Add(new TestBonusSystem2());
             mTestList.Add(new TestHexSystem());
             mTestList.Add(new TestCategoryGenerator());
+        }
 
-
-
+        void register()
+        {
             TezcatFramework.classFactory.register<Axe>();
             TezcatFramework.classFactory.register<Gun>();
 
@@ -67,31 +65,12 @@ namespace tezcat.Framework.Test
             TezcatFramework.classFactory.register<Ship>();
         }
 
-        void loadRes()
-        {
-            TezJsonReader reader = new TezJsonReader();
-            if (reader.load(Path.root + "Res/Config/ProtoConfig.json"))
-            {
-                TezProtoID.loadConfigFile(reader);
-            }
-            reader.close();
-
-            reader = new TezJsonReader();
-            if (reader.load(Path.root + "Res/Config/ItemConfig.json"))
-            {
-                TezItemID.loadConfigFile(reader);
-                TezCategorySystem.registerTypeIDFrom(reader);
-            }
-            reader.close();
-
-            TezcatFramework.protoDB.load(Path.root + "Res/Proto/Item/");
-        }
-
         public void run()
         {
             this.init();
             this.register();
-            this.loadRes();
+
+            new TestProtoDB().run();
 
             while (true)
             {
@@ -139,7 +118,6 @@ namespace tezcat.Framework.Test
         }
 
     }
-
 
     class TestProgram
     {

@@ -351,7 +351,7 @@ namespace tezcat.Framework.Utility
             }
         }
 
-        void ITezCloseable.deleteThis()
+        void ITezCloseable.closeThis()
         {
             m_Objects.Clear();
 

@@ -171,7 +171,7 @@ namespace tezcat.Framework.Core
             return info.itemID.DBID == 0;
         }
 
-        void ITezCloseable.deleteThis()
+        void ITezCloseable.closeThis()
         {
             mOwner = null;
             if ((--mMetaData.refCount) > 0)

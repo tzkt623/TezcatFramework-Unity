@@ -8,7 +8,7 @@
         /// <summary>
         /// 关闭并删除整个对象
         /// </summary>
-        void deleteThis();
+        void closeThis();
     }
 
     /// <summary>
@@ -23,7 +23,7 @@
     {
         public static void close(this ITezCloseable closeable)
         {
-            closeable.deleteThis();
+            closeable.closeThis();
         }
     }
 }

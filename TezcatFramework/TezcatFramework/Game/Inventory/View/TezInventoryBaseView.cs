@@ -43,7 +43,7 @@ namespace tezcat.Framework.Game
 
         protected abstract void onFilterChanged();
 
-        void ITezCloseable.deleteThis()
+        void ITezCloseable.closeThis()
         {
             this.onClose();
         }

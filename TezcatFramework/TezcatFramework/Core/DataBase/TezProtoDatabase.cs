@@ -1,8 +1,132 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 
 namespace tezcat.Framework.Core
 {
+    /*
+     * 对象原型
+     * 
+     * 对每一个需要原型的叶子类对象生成一份原型数据并保存
+     * 
+     * 例如
+     * 父类Weapon类下有叶子类Gun和Axe
+     * 会对叶子类Gun和Axe分别生成一份原型数据
+     * 但是不会把Gun和Axe生成在父类Weapon类型下
+     * 
+     * 即,用getProto<Gun>(index or name)来获取原型
+     * 而不是用getProto<Weapon>(...)来获取原型
+     * 
+     */
+
+
+    /// <para>
+    /// 原型ID管理器
+    /// 
+    /// <para>
+    /// 一个Proto
+    /// 1.ProtoID
+    ///  a.IndexID 人工设定
+    ///  b.TypeID 人工设定
+    /// </para>
+    /// 
+    /// <para>
+    /// 一个Item
+    /// 1.ItemID
+    ///  a.TypeID
+    ///  b.IndexID
+    /// 2.stackCount
+    /// </para>
+    /// 
+    /// <para>
+    /// RuntimeID
+    /// </para>
+    [StructLayout(LayoutKind.Explicit)]
+    public class TezProtoIDManager
+        : ITezNonCloseable
+        , IEquatable<TezProtoIDManager>
+    {
+        [FieldOffset(0)]
+        int mID = -1;
+        [FieldOffset(0)]
+        ushort mIndexID;
+        [FieldOffset(2)]
+        ushort mTypeID;
+
+        public int typeID => mTypeID;
+        public int indexID => mIndexID;
+
+        public override int GetHashCode()
+        {
+            return mID.GetHashCode();
+        }
+
+        public override bool Equals(object obj)
+        {
+            return this.Equals((TezProtoIDManager)obj);
+        }
+
+        public bool Equals(TezProtoIDManager other)
+        {
+            if (object.ReferenceEquals(other, null))
+            {
+                return false;
+            }
+
+            return mID == other.mID;
+        }
+
+        public static bool operator ==(TezProtoIDManager a, TezProtoIDManager b)
+        {
+            if (object.ReferenceEquals(a, null) || object.ReferenceEquals(b, null))
+            {
+                return false;
+            }
+
+            return a.mID == b.mID;
+        }
+
+        public static bool operator !=(TezProtoIDManager a, TezProtoIDManager b)
+        {
+            if (object.ReferenceEquals(a, null) || object.ReferenceEquals(b, null))
+            {
+                return true;
+            }
+
+            return a.mID != b.mID;
+        }
+
+
+        #region Tool
+        static List<string> sTypeList = new List<string>();
+        static Dictionary<string, ushort> sTypeDict = new Dictionary<string, ushort>();
+
+        public static void loadConfigFile(TezReader reader)
+        {
+            foreach (var key in reader.getKeys())
+            {
+                registerTypeID(key, reader.readInt(key));
+            }
+        }
+
+        public static int getTypeID(string name)
+        {
+            return sTypeDict[name];
+        }
+
+        public static void registerTypeID(string typeName, int typeID)
+        {
+            while (sTypeList.Count <= typeID)
+            {
+                sTypeList.Add(null);
+            }
+
+            sTypeList[typeID] = typeName;
+            sTypeDict.Add(typeName, (ushort)typeID);
+        }
+        #endregion
+    }
+
     public class TezProtoCreator
     {
         public string name { get; }
@@ -30,13 +154,12 @@ namespace tezcat.Framework.Core
         }
     }
 
-    /*
-     * 原型数据库
-     * 
-     * 用于读取原型文件
-     * 并创建原型对象用于实时生成
-     * 
-     */
+    /// <summary>
+    /// 原型数据库
+    /// 
+    /// 用于读取原型文件
+    /// 并创建原型对象用于实时生成
+    /// </summary>
     public class TezProtoDatabase
     {
         static class TypeIDGetter<T> where T : ITezProtoObject
@@ -45,7 +168,7 @@ namespace tezcat.Framework.Core
             {
                 if (ID < 0)
                 {
-                    ID = TezProtoID.getTypeID(typeof(T).Name);
+                    ID = TezProtoIDManager.getTypeID(typeof(T).Name);
 
                     //ID = TezItemID.getTypeID(typeof(T).Name);
                 }
@@ -80,7 +203,7 @@ namespace tezcat.Framework.Core
                     var CID = reader.readString(TezBuildInName.CID);
                     var item = TezcatFramework.classFactory.create<ITezProtoObject>(CID);
                     item.deserialize(reader);
-                    int type_id = TezProtoID.getTypeID(CID);
+                    int type_id = TezProtoIDManager.getTypeID(CID);
 
                     reader.beginObject(TezBuildInName.ProtoInfo);
                     var index_id = reader.readInt(TezBuildInName.IID);
@@ -179,68 +302,6 @@ namespace tezcat.Framework.Core
         public void deserialize(TezReader reader)
         {
 
-        }
-    }
-
-    /// <summary>
-    /// 运行时数据库
-    /// 用于保存运行时利用模板数据新生成的物品数据
-    /// 使数据得以共享
-    /// 如果一个数据的索引值为0
-    /// 那么它将被删除
-    /// </summary>
-    [Obsolete("Don`t use this", true)]
-    public class TezRunTimeDatabase
-    {
-        protected List<TezGameItemInfo> mItemList = new List<TezGameItemInfo>();
-
-        public bool registerItem(TezGameItemInfo info)
-        {
-            var modified_id = info.itemID.RTID;
-            while (modified_id >= mItemList.Count)
-            {
-                mItemList.Add(null);
-            }
-
-            if (mItemList[modified_id] != null)
-            {
-                return false;
-            }
-
-            mItemList[modified_id] = info;
-            return true;
-        }
-
-        public void unregisterItem(int RTID)
-        {
-            mItemList[RTID] = null;
-        }
-
-        public TezGameItemInfo getItem(int RTID)
-        {
-            var info = mItemList[RTID];
-            return info;
-        }
-
-        /*
-         * 记得保存剩余ID
-         */
-        /// <summary>
-        /// 
-        /// </summary>
-        public void serialize(TezWriter writer)
-        {
-
-        }
-
-        public void deserialize(TezReader reader)
-        {
-
-        }
-
-        public bool isModified(int modifiedID)
-        {
-            return !object.ReferenceEquals(mItemList[modifiedID], null);
         }
     }
 }

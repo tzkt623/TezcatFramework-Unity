@@ -13,7 +13,7 @@
             get { return this.GetType().Name; }
         }
 
-        void ITezCloseable.deleteThis()
+        void ITezCloseable.closeThis()
         {
             this.onClose();
         }

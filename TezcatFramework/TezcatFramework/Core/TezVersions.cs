@@ -12,7 +12,7 @@
             return string.Format("{0}.{1}.{2}", major, minor, build);
         }
 
-        void ITezCloseable.deleteThis()
+        void ITezCloseable.closeThis()
         {
             this.onClose();
         }

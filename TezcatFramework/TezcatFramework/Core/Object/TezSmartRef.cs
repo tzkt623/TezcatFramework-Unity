@@ -49,7 +49,7 @@
             return true;
         }
 
-        void ITezCloseable.deleteThis()
+        void ITezCloseable.closeThis()
         {
             mRef.countor--;
             if (mRef.countor == 0)

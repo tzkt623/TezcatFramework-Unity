@@ -64,10 +64,6 @@ namespace tezcat.Framework.Core
         /// 可用于索引
         /// </summary>
         int globalID { get; }
-
-        int typeID { get; }
-
-        void setTypeID(int id);
     }
 
     public abstract class TezCategoryBaseToken<Self, TEnumValue>
@@ -167,9 +163,6 @@ namespace tezcat.Framework.Core
         /// </summary>
         public int globalID => mGlobalID;
 
-        int mTypeID = -1;
-        public int typeID => mTypeID;
-
         protected TezCategoryFinalToken(TValue value, ITezCategoryBaseToken parentToken) : base(value, parentToken.layerID + 1, parentToken)
         {
 
@@ -179,21 +172,6 @@ namespace tezcat.Framework.Core
         {
             mGlobalID = TezCategorySystem.registerFinalToken(this);
             TezCategorySystem.createCategory(this);
-        }
-
-        void ITezCategoryFinalToken.setTypeID(int id)
-        {
-            if(mTypeID == -1)
-            {
-                mTypeID = id;
-            }
-            else
-            {
-                if(mTypeID != id)
-                {
-                    throw new Exception();
-                }
-            }
         }
     }
 }

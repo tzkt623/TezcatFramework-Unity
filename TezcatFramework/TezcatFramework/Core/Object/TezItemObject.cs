@@ -7,6 +7,8 @@ namespace tezcat.Framework.Core
         TezGameItemInfo itemInfo { get; }
     }
 
+
+
     /// <summary>
     /// 游戏物品对象
     /// 
@@ -110,10 +112,10 @@ namespace tezcat.Framework.Core
             mItemInfo = new TezGameItemInfo(this);
             mItemInfo.remodifyFrom(template.itemInfo);
             mItemInfo.setProto(this);
-            this.onCopyDataFrome(template);
+            this.onCopyDataFrom(template);
         }
 
-        protected virtual void onCopyDataFrome(TezItemObject template)
+        protected virtual void onCopyDataFrom(TezItemObject template)
         {
 
         }

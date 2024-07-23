@@ -17,14 +17,14 @@ namespace tezcat.Framework.Test
             /// 数据库ID
             /// </summary>
             [FieldOffset(0)]
-            public int mDBID = 20;
+            public int m0_3 = 20;
 
             /// <summary>
             /// 重定义ID
             /// 用于当物品被修改时用于确定物品是否相同
             /// </summary>
             [FieldOffset(4)]
-            public int mModifiedID = 30;
+            public int m4_7 = 30;
         }
 
         Field mField = null;
@@ -36,21 +36,25 @@ namespace tezcat.Framework.Test
 
         public override void run()
         {
-            Console.WriteLine("ItemID = -1");
-            mField.mItemID = -1;
-            Console.WriteLine($"DBID:{mField.mDBID}");
-            Console.WriteLine($"ModifiedID:{mField.mModifiedID}");
-            Console.WriteLine($"ItemID:{mField.mItemID}");
-
-            Console.WriteLine("");
-
-            Console.WriteLine("DBID = 1, ModifiedID = 1");
-            mField.mDBID = 1;
-            mField.mModifiedID = 1;
-            Console.WriteLine($"DBID:{mField.mDBID}");
-            Console.WriteLine($"ModifiedID:{mField.mModifiedID}");
-            Console.WriteLine($"ItemID:{mField.mItemID}");
+            void show()
+            {
+                Console.WriteLine($"0-3:{mField.m0_3}");
+                Console.WriteLine($"4-7:{mField.m4_7}");
+                Console.WriteLine($"ID:{mField.mItemID}");
+                Console.WriteLine("");
+            }
             Console.WriteLine($"##UInt32.MaxValue:{UInt32.MaxValue}##");
+
+            mField.mItemID = -1;
+            show();
+
+            mField.m0_3 = 1;
+            mField.m4_7 = 0;
+            show();
+
+            mField.m0_3 = 0;
+            mField.m4_7 = 1;
+            show();
         }
 
         public override void init()

@@ -47,17 +47,17 @@ namespace tezcat.Unity.Database
         }
 
 
-        void ITezCloseable.deleteThis()
+        void ITezCloseable.closeThis()
         {
             this.prefab = null;
         }
     }
 
-    public class TezPrefabDatabase : ITezCloseable
+    public static class TezPrefabDatabase
     {
-        Dictionary<string, ITezMultiPrefab> m_MultiDic = new Dictionary<string, ITezMultiPrefab>();
+        static Dictionary<string, ITezMultiPrefab> mMultiDic = new Dictionary<string, ITezMultiPrefab>();
 
-        public int count { get; private set; } = 0;
+        public static int count { get; private set; } = 0;
 
         class SinglePrefabContainer<Prefab> where Prefab : class, ITezSinglePrefab
         {
@@ -70,25 +70,25 @@ namespace tezcat.Unity.Database
             }
         }
 
-        public void register(GameObject go)
+        public static void register(GameObject go)
         {
             var prefab = go.GetComponent<ITezPrefab>();
-            if (prefab is ITezSinglePrefab)
+            if (prefab is ITezSinglePrefab sprefab)
             {
-                this.register((ITezSinglePrefab)prefab);
+                register(sprefab);
                 return;
             }
 
-            if (prefab is ITezMultiPrefab)
+            if (prefab is ITezMultiPrefab mprefab)
             {
-                m_MultiDic.Add(go.name, (ITezMultiPrefab)prefab);
+                mMultiDic.Add(go.name, mprefab);
                 return;
             }
 
             Debug.LogWarning(string.Format("{0}`s Prefab Not Found", go.name));
         }
 
-        private void register(ITezSinglePrefab prefab)
+        private static void register(ITezSinglePrefab prefab)
         {
             Type type = typeof(SinglePrefabContainer<>);
             type = type.MakeGenericType(prefab.GetType());
@@ -107,7 +107,7 @@ namespace tezcat.Unity.Database
                 , new object[] { count++ });
         }
 
-        public void register<T>(ITezSinglePrefab prefab) where T : class, ITezSinglePrefab
+        public static void register<T>(ITezSinglePrefab prefab) where T : class, ITezSinglePrefab
         {
             switch (SinglePrefabContainer<T>.ID)
             {
@@ -119,24 +119,19 @@ namespace tezcat.Unity.Database
             SinglePrefabContainer<T>.prefab = prefab;
         }
 
-        public int getID<T>() where T : class, ITezSinglePrefab
+        public static int getID<T>() where T : class, ITezSinglePrefab
         {
             return SinglePrefabContainer<T>.ID;
         }
 
-        public T get<T>() where T : class, ITezSinglePrefab
+        public static T get<T>() where T : class, ITezSinglePrefab
         {
             return (T)SinglePrefabContainer<T>.prefab;
         }
 
-        public T get<T>(string multi_name) where T : class, ITezMultiPrefab
+        public static T get<T>(string name) where T : class, ITezMultiPrefab
         {
-            return (T)m_MultiDic[multi_name];
-        }
-
-        void ITezCloseable.deleteThis()
-        {
-
+            return (T)mMultiDic[name];
         }
     }
 }

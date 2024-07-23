@@ -16,7 +16,7 @@ namespace tezcat.Framework.Game
         public int count => data.count;
         public int index { get; set; }
 
-        void ITezCloseable.deleteThis()
+        void ITezCloseable.closeThis()
         {
             this.data = null;
         }

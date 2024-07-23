@@ -182,7 +182,7 @@ namespace tezcat.Framework.Game
             }
         }
 
-        void ITezCloseable.deleteThis()
+        void ITezCloseable.closeThis()
         {
             this.onClose();
         }

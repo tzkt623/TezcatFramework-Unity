@@ -16,7 +16,7 @@ namespace tezcat.Framework.Game
             public string name;
             public string path;
 
-            void ITezCloseable.deleteThis()
+            void ITezCloseable.closeThis()
             {
                 this.name = null;
                 this.path = null;

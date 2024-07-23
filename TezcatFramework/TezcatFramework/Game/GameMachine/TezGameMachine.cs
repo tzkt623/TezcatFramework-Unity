@@ -28,7 +28,7 @@ namespace tezcat.Framework.Game
         public IReadOnlyCollection<TState> stack => mStack;
         Stack<TState> mStack = new Stack<TState>();
 
-        public void push<State>() where State : TState, new()
+        public State push<State>() where State : TState, new()
         {
             evtPush?.Invoke(Singleton<State>.instance);
 
@@ -43,6 +43,7 @@ namespace tezcat.Framework.Game
             mCurrentState.enter(mBlackboard);
 
             evtRefresh?.Invoke();
+            return (State)mCurrentState;
         }
 
         /// <summary>

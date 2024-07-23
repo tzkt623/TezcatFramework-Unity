@@ -117,7 +117,7 @@ namespace tezcat.Framework.Core
             mList.Clear();
         }
 
-        void ITezCloseable.deleteThis()
+        void ITezCloseable.closeThis()
         {
 
         }

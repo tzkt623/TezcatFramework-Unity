@@ -182,7 +182,7 @@ namespace tezcat.Framework.ECS
             }
         }
 
-        void ITezCloseable.deleteThis()
+        void ITezCloseable.closeThis()
         {
             for (int i = 0; i < m_Components.Length; i++)
             {

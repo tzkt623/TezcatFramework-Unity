@@ -33,7 +33,7 @@ namespace tezcat.Framework.Core
             [FieldOffset(0)]
             public int ID;
             [FieldOffset(0)]
-            public short indexID;
+            public ushort indexID;
             [FieldOffset(2)]
             public short typeID;
         }
@@ -46,7 +46,7 @@ namespace tezcat.Framework.Core
         public int indexID => mData.indexID;
         public string name => mName;
 
-        TezValueDescriptor(short typeID, short indexID, string name)
+        TezValueDescriptor(short typeID, ushort indexID, string name)
         {
             mData.typeID = typeID;
             mData.indexID = indexID;
@@ -97,6 +97,11 @@ namespace tezcat.Framework.Core
             return mList[id].list.Count;
         }
 
+        public static int getTypeCount()
+        {
+            return mList.Count;
+        }
+
         public static ITezValueDescriptor register(short typeID, string name)
         {
             //             while (mList.Count <= typeID)
@@ -108,11 +113,11 @@ namespace tezcat.Framework.Core
             cell.ID = typeID;
             if (cell.dict.TryGetValue(name, out var descriptor))
             {
-                throw new ArgumentException(descriptor.name);
+                throw new ArgumentException($"Name Registered {descriptor.name}, Type ID {typeID}");
             }
             else
             {
-                descriptor = new TezValueDescriptor(typeID, (short)cell.list.Count, name);
+                descriptor = new TezValueDescriptor(typeID, (ushort)cell.list.Count, name);
                 cell.dict.Add(name, descriptor);
                 cell.list.Add(descriptor);
             }

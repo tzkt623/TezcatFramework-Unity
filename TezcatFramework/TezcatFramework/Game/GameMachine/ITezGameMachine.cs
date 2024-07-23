@@ -7,7 +7,7 @@ namespace tezcat.Framework.Game
         where TState : TezGameMachineState<TBlackboard, TState>
     {
         TBlackboard blackboard { get; }
-        void push<State>() where State : TState, new();
+        State push<State>() where State : TState, new();
         void pop<State>() where State : TState, new();
         void change<State>() where State : TState, new();
         bool isThis<State>() where State : TState, new();

@@ -72,7 +72,7 @@ namespace tezcat.Framework.TMath
             m_Value.clear();
         }
 
-        void ITezCloseable.deleteThis()
+        void ITezCloseable.closeThis()
         {
             m_Value.close();
             m_Value = null;

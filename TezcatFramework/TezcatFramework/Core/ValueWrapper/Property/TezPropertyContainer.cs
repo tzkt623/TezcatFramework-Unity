@@ -8,7 +8,7 @@ namespace tezcat.Framework.Core
         public abstract bool remove(ITezValueDescriptor descriptor);
         public abstract void clear();
 
-        void ITezCloseable.deleteThis()
+        void ITezCloseable.closeThis()
         {
             this.onClose();
         }

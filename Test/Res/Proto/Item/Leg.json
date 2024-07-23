@@ -5,9 +5,9 @@
         "IID": 0
     },
     "ItemInfo": {
-        "Name": "Ring",
         "Type": "Armor",
         "IID": 2,
+        "Name": "Ring",
         "StackCount": -1,
         "Category": "Leg",
         "IsProto": true

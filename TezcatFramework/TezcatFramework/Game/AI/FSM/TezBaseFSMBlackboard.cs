@@ -4,7 +4,7 @@ namespace tezcat.Framework.Game
 {
     public abstract class TezBaseFSMBlackboard : ITezCloseable
     {
-        void ITezCloseable.deleteThis()
+        void ITezCloseable.closeThis()
         {
             this.onClose();
         }

@@ -54,6 +54,14 @@ namespace tezcat.Framework.Game
         static List<Cell> mCellList = new List<Cell>();
         static Dictionary<string, Cell> mCellDict = new Dictionary<string, Cell>();
 
+        /// <summary>
+        /// 创建一个Token
+        /// typeid是token的大类
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="typeID"></param>
+        /// <param name="indexID"></param>
+        /// <returns></returns>
         public static TezBonusToken createToken(string name, int typeID, int indexID)
         {
             var type_id = typeID;

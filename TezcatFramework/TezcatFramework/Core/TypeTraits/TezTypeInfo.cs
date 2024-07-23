@@ -26,12 +26,12 @@ namespace tezcat.Framework.TypeTraits
     /// </typeparam>
     public class TezTypeInfo<Type, Belong> : TezTypeInfo
     {
-        protected static int m_ID = ErrorID;
+        protected static int mID = ErrorID;
         public static int ID
         {
-            get { return m_ID; }
+            get { return mID; }
         }
-        public static string Name { get; } = typeof(Type).Name;
+        public static string name { get; } = typeof(Type).Name;
         public static System.Type systemType { get; } = typeof(Type);
 
         public static Action onInit { get; set; }
@@ -43,9 +43,9 @@ namespace tezcat.Framework.TypeTraits
         /// <param name="id"></param>
         public static void setID(int id)
         {
-            if (m_ID == ErrorID)
+            if (mID == ErrorID)
             {
-                m_ID = id;
+                mID = id;
                 onInit?.Invoke();
             }
             else
@@ -59,11 +59,11 @@ namespace tezcat.Framework.TypeTraits
 
     public sealed class TezTypeInfoID
     {
-        static int m_ID = 0;
+        static int mID = 0;
 
         public static int giveID()
         {
-            return m_ID++;
+            return mID++;
         }
     }
 
@@ -80,14 +80,14 @@ namespace tezcat.Framework.TypeTraits
         {
             get
             {
-                switch (m_ID)
+                switch (mID)
                 {
                     case TezTypeInfo.ErrorID:
-                        m_ID = TezTypeInfoID.giveID();
+                        mID = TezTypeInfoID.giveID();
                         break;
                 }
 
-                return m_ID;
+                return mID;
             }
         }
 

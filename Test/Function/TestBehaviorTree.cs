@@ -11,7 +11,7 @@ namespace tezcat.Framework.Test
         public int rice;
         public int dish;
 
-        void ITezCloseable.deleteThis()
+        void ITezCloseable.closeThis()
         {
 
         }
@@ -424,4 +424,3 @@ namespace tezcat.Framework.Test
         }
     }
 }
-

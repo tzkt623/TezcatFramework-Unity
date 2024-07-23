@@ -103,7 +103,7 @@ namespace tezcat.Framework.Utility
         }
         #endregion
 
-        void ITezCloseable.deleteThis()
+        void ITezCloseable.closeThis()
         {
             foreach (var item in mDict)
             {

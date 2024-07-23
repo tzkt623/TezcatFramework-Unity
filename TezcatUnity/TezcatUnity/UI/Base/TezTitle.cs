@@ -1,8 +1,6 @@
 ﻿using System;
-using tezcat.Framework.Core;
-using tezcat.Framework.Extension;
-using UnityEngine.EventSystems;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 namespace tezcat.Unity.UI
 {

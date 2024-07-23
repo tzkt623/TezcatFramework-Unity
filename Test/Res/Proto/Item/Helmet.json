@@ -5,9 +5,9 @@
         "IID": 0
     },
     "ItemInfo": {
-        "Name": "Monster",
         "Type": "Armor",
         "IID": 1,
+        "Name": "Monster",
         "StackCount": -1,
         "Category": "Helmet",
         "IsProto": true

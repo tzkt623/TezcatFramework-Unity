@@ -82,7 +82,7 @@ namespace tezcat.Framework.Game
             return this.blockData.Equals(other.blockData);
         }
 
-        void ITezCloseable.deleteThis()
+        void ITezCloseable.closeThis()
         {
             this.onClose();
         }

@@ -33,7 +33,7 @@ namespace tezcat.Framework.Core
                 this.jsonData = data;
             }
 
-            void ITezCloseable.deleteThis()
+            void ITezCloseable.closeThis()
             {
                 this.name = null;
                 this.jsonData = null;

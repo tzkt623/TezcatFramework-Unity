@@ -106,7 +106,7 @@
     <Compile Include="TezcatFramework\Core\ValueWrapper\Property\Other\TezNotificationValue.cs" />
     <Compile Include="TezcatFramework\Core\Object\TezObjectUIDManager.cs" />
     <Compile Include="TezcatFramework\Core\ValueWrapper\Property\Other\TezBindable.cs" />
-    <Compile Include="TezcatFramework\Core\DataBase\TezDatabase.cs" />
+    <Compile Include="TezcatFramework\Core\DataBase\TezProtoDatabase.cs" />
     <Compile Include="TezcatFramework\Game\BonusSystem\ITezBonusObjectHandler.cs" />
     <Compile Include="TezcatFramework\Game\BonusSystem\TezBonusTokenCreator.cs" />
     <Compile Include="TezcatFramework\Game\BonusSystem\TezBonusAgent.cs" />

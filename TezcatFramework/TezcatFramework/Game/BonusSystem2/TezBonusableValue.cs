@@ -10,7 +10,7 @@ namespace tezcat.Framework.Game
     {
         event TezEventExtension.Action<ITezBonusableValue> onValueChanged;
 
-        TezBonusToken bonusToken { get; set; }
+        //TezBonusToken bonusToken { get; set; }
         ITezBonusModifierContainer modifierContainer { get; }
 
         void createContainer<Container>() where Container : ITezBonusModifierContainer, new();
@@ -41,12 +41,12 @@ namespace tezcat.Framework.Game
         public event TezEventExtension.Action<ITezBonusableValue> onValueChanged;
         public sealed override TezWrapperType wrapperType => TezWrapperType.Bonusable;
 
-        protected TezBonusToken mBonusToken = null;
-        public TezBonusToken bonusToken
-        {
-            get => mBonusToken;
-            set => mBonusToken = value;
-        }
+//         protected TezBonusToken mBonusToken = null;
+//         public TezBonusToken bonusToken
+//         {
+//             get => mBonusToken;
+//             set => mBonusToken = value;
+//         }
 
         protected ITezBonusModifierContainer mModifierContainer = null;
         public ITezBonusModifierContainer modifierContainer => mModifierContainer;
@@ -71,7 +71,7 @@ namespace tezcat.Framework.Game
             {
                 if (mDirty)
                 {
-                    mDirty = true;
+                    mDirty = false;
                     mValue = this.calculateValue();
                     this.onValueChanged?.Invoke(this);
                 }
@@ -84,9 +84,9 @@ namespace tezcat.Framework.Game
             }
         }
 
-        public TezBaseBonusableValue(TezBonusToken bonusToken, ITezValueDescriptor valueDescriptor) : base(valueDescriptor)
+        public TezBaseBonusableValue(ITezValueDescriptor valueDescriptor) : base(valueDescriptor)
         {
-            mBonusToken = bonusToken;
+            //mBonusToken = bonusToken;
         }
 
         public TezBaseBonusableValue()
@@ -125,7 +125,7 @@ namespace tezcat.Framework.Game
             base.onClose();
             mModifierContainer.close();
 
-            mBonusToken = null;
+            //mBonusToken = null;
             mModifierContainer = null;
             mDescriptor = null;
 
@@ -160,7 +160,7 @@ namespace tezcat.Framework.Game
 
         }
 
-        public TezBonusableInt(TezBonusToken bonusToken, ITezValueDescriptor valueDescriptor) : base(bonusToken, valueDescriptor)
+        public TezBonusableInt(ITezValueDescriptor valueDescriptor) : base(valueDescriptor)
         {
 
         }
@@ -189,7 +189,7 @@ namespace tezcat.Framework.Game
 
         }
 
-        public TezBonusableFloat(TezBonusToken bonusToken, ITezValueDescriptor valueDescriptor) : base(bonusToken, valueDescriptor)
+        public TezBonusableFloat(ITezValueDescriptor valueDescriptor) : base(valueDescriptor)
         {
 
         }

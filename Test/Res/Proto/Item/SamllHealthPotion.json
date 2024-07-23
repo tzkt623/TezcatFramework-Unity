@@ -5,9 +5,9 @@
         "IID": 0
     },
     "ItemInfo": {
-        "Name": "SmallHealthPotion",
         "Type": "Potion",
         "IID": 1,
+        "Name": "SmallHealthPotion",
         "StackCount": 10,
         "Category": "HealthPotion",
         "IsProto": true

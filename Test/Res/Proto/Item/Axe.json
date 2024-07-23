@@ -5,9 +5,9 @@
         "IID": 0
     },
     "ItemInfo": {
-        "Name": "FireAxe",
         "Type": "Weapon",
         "IID": 0,
+        "Name": "FireAxe",
         "StackCount": -1,
         "Category": "Axe",
         "IsProto": true

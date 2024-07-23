@@ -51,7 +51,7 @@ namespace tezcat.Framework.Core
             mModifiers.Clear();
         }
 
-        void ITezCloseable.deleteThis()
+        void ITezCloseable.closeThis()
         {
             this.onClose();
         }

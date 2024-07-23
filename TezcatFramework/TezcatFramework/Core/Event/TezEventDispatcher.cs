@@ -28,7 +28,7 @@ namespace tezcat.Framework.Core
             public int ID;
             public ITezEventData data;
 
-            void ITezCloseable.deleteThis()
+            void ITezCloseable.closeThis()
             {
                 data = null;
             }
@@ -81,14 +81,7 @@ namespace tezcat.Framework.Core
             {
                 pair.Value(data);
             }
-
             data.close();
-
-            while (mDeleteQueue.Count > 0)
-            {
-                var pair = mDeleteQueue.Dequeue();
-                mListeners[pair.Key].Remove(pair.Value);
-            }
         }
 
         public void pushEvent<EventData>(EventData data) where EventData : ITezEventData
@@ -112,9 +105,15 @@ namespace tezcat.Framework.Core
                 this.dispatchEvent(pair.ID, pair.data);
                 pair.close();
             }
+
+            while (mDeleteQueue.Count > 0)
+            {
+                var pair = mDeleteQueue.Dequeue();
+                mListeners[pair.Key].Remove(pair.Value);
+            }
         }
 
-        void ITezCloseable.deleteThis()
+        void ITezCloseable.closeThis()
         {
             foreach (var listener in mListeners)
             {

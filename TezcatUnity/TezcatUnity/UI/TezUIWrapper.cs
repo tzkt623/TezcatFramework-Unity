@@ -11,7 +11,7 @@ namespace tezcat.Unity.UI
     /// </summary>
     public abstract class TezUIWrapper : ITezCloseable
     {
-        void ITezCloseable.deleteThis()
+        void ITezCloseable.closeThis()
         {
             this.onClose();
         }

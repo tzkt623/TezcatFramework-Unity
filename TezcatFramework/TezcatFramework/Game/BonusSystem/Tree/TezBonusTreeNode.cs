@@ -104,7 +104,7 @@ namespace tezcat.Framework.BonusSystem
         /// </summary>
         public abstract void removeBonusObjectFromChildren(ITezBonusCarrier obj);
 
-        void ITezCloseable.deleteThis()
+        void ITezCloseable.closeThis()
         {
             this.onClose();
         }

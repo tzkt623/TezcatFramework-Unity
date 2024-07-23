@@ -1,6 +1,4 @@
-﻿using System;
-using tezcat.Framework.Core;
-using tezcat.Framework.Extension;
+﻿using tezcat.Framework.Core;
 
 namespace tezcat.Framework.Game
 {
@@ -17,7 +15,8 @@ namespace tezcat.Framework.Game
 
         object owner { get; set; }
         byte modifyType { get; set; }
-        TezBonusToken bonusToken { get; set; }
+        //TezBonusToken bonusToken { get; set; }
+        ITezValueDescriptor valueDescriptor { get; set; }
         float value { get; set; }
     }
 
@@ -27,7 +26,8 @@ namespace tezcat.Framework.Game
 
         public object owner { get; set; }
         public byte modifyType { get; set; }
-        public TezBonusToken bonusToken { get; set; }
+        //public TezBonusToken bonusToken { get; set; }
+        public ITezValueDescriptor valueDescriptor { get; set; }
         public float value { get; set; }
 
         public TezBonusModifier()
@@ -35,12 +35,17 @@ namespace tezcat.Framework.Game
 
         }
 
-        public TezBonusModifier(TezBonusToken bonusToken)
+        public TezBonusModifier(ITezValueDescriptor valueDescriptor)
         {
-            this.bonusToken = bonusToken;
+            this.valueDescriptor = valueDescriptor;
         }
 
-        void ITezCloseable.deleteThis()
+//         public TezBonusModifier(TezBonusToken bonusToken)
+//         {
+//             this.bonusToken = bonusToken;
+//         }
+
+        void ITezCloseable.closeThis()
         {
             this.onClose();
         }
@@ -48,14 +53,15 @@ namespace tezcat.Framework.Game
         protected virtual void onClose()
         {
             //onDelete?.Invoke(this);
-            this.bonusToken = null;
+            //this.bonusToken = null;
+            this.valueDescriptor = null;
             this.owner = null;
             //onDelete = null;
         }
 
         public override string ToString()
         {
-            return $"[Modifier]{this.bonusToken.name}: {this.value}[{(TezBonusModifierType)this.modifyType}]";
+            return $"[Modifier]{this.valueDescriptor.name}: {this.value}[{(TezBonusModifierType)this.modifyType}]";
         }
     }
 

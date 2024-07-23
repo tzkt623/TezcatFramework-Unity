@@ -9,7 +9,7 @@ namespace tezcat.Framework.Utility
         public bool dead { get; set; } = false;
         public object usrData { get; set; }
 
-        void ITezCloseable.deleteThis()
+        void ITezCloseable.closeThis()
         {
             this.onClose();
         }

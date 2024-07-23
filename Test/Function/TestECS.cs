@@ -57,7 +57,7 @@ namespace tezcat.Framework.Test
 
         public TezEntity entity { get; private set; }
 
-        void ITezCloseable.deleteThis()
+        void ITezCloseable.closeThis()
         {
             this.entity = null;
         }

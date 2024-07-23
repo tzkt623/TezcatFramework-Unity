@@ -120,7 +120,7 @@ namespace tezcat.Framework.Utility
         /// 清空一切数据
         /// 此对象将不可再用
         /// </summary>
-        void ITezCloseable.deleteThis()
+        void ITezCloseable.closeThis()
         {
             m_Data = null;
             m_Count = 0;

@@ -64,7 +64,8 @@ namespace tezcat.Framework.Test
             {
                 owner = this,
                 modifyType = (byte)TezBonusModifierType.Base_SumAdd,
-                bonusToken = MyBonusConfig.Ship.Hull,
+                //bonusToken = MyBonusConfig.Ship.Hull,
+                valueDescriptor = MyDescriptorConfig.ShipPorperty.HullCapacity,
                 value = 10
             };
 
@@ -72,7 +73,8 @@ namespace tezcat.Framework.Test
             {
                 owner = this,
                 modifyType = (byte)TezBonusModifierType.Base_SumAdd,
-                bonusToken = MyBonusConfig.Ship.Armor,
+                //bonusToken = MyBonusConfig.Ship.Armor,
+                valueDescriptor = MyDescriptorConfig.ShipPorperty.ArmorCapacity,
                 value = 20
             };
 
@@ -80,7 +82,8 @@ namespace tezcat.Framework.Test
             {
                 owner = this,
                 modifyType = (byte)TezBonusModifierType.Base_SumAdd,
-                bonusToken = MyBonusConfig.Ship.Shield,
+                //bonusToken = MyBonusConfig.Ship.Shield,
+                valueDescriptor = MyDescriptorConfig.ShipPorperty.ShieldCapacity,
                 value = 30
             };
 
@@ -88,7 +91,8 @@ namespace tezcat.Framework.Test
             {
                 owner = this,
                 modifyType = (byte)TezBonusModifierType.Base_SumAdd,
-                bonusToken = MyBonusConfig.Ship.Power,
+                //bonusToken = MyBonusConfig.Ship.Power,
+                valueDescriptor = MyDescriptorConfig.ShipPorperty.PowerCapacity,
                 value = 40
             };
 
@@ -108,7 +112,8 @@ namespace tezcat.Framework.Test
             {
                 owner = this,
                 modifyType = (byte)TezBonusModifierType.Base_PercentAdd,
-                bonusToken = MyBonusConfig.Ship.Hull,
+                //bonusToken = MyBonusConfig.Ship.Hull,
+                valueDescriptor = MyDescriptorConfig.ShipPorperty.HullCapacity,
                 value = 2
             };
 
@@ -116,7 +121,8 @@ namespace tezcat.Framework.Test
             {
                 owner = this,
                 modifyType = (byte)TezBonusModifierType.Base_PercentAdd,
-                bonusToken = MyBonusConfig.Ship.Power,
+                //bonusToken = MyBonusConfig.Ship.Power,
+                valueDescriptor = MyDescriptorConfig.ShipPorperty.PowerCapacity,
                 value = 3
             };
 
@@ -163,10 +169,10 @@ namespace tezcat.Framework.Test
 
         public override void run()
         {
-            var hull_capacity = mShip.bonusableValueArray.get<TezBonusableInt>(MyDescriptorConfig.ShipPorperty.HullCapacity);
+            var hull_capacity = mShip.bonusSystem.get<TezBonusableInt>(MyDescriptorConfig.ShipPorperty.HullCapacity);
             Console.WriteLine($"{hull_capacity.name}: {hull_capacity.value}");
 
-            var hull = mShip.litPropertyArray.get<TezValueInt>(MyDescriptorConfig.ShipValue.Hull);
+            var hull = mShip.valueArray.get<TezValueInt>(MyDescriptorConfig.ShipValue.Hull);
             Console.WriteLine($"{hull.name}: {hull.value}");
         }
 

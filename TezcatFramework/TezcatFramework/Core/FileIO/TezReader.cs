@@ -213,7 +213,7 @@ namespace tezcat.Framework.Core
         public abstract ValueType getValueType(string key);
         public abstract ValueType getValueType(int index);
 
-        void ITezCloseable.deleteThis()
+        void ITezCloseable.closeThis()
         {
             this.onClose();
         }
