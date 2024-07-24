@@ -5,18 +5,11 @@ using UnityEngine.EventSystems;
 
 namespace tezcat.Unity.UI
 {
-    public enum TezWidgetLife
-    {
-        Normal,
-        TypeOnly
-    }
-
     public abstract class TezBaseWidget
         : UIBehaviour
         , ITezBaseWidget
     {
         public RectTransform rectTransform => (RectTransform)this.transform;
-        public TezWidgetLife life { get; set; } = TezWidgetLife.Normal;
 
         bool mInteractable = true;
 
@@ -37,6 +30,8 @@ namespace tezcat.Unity.UI
                 mInteractable = value;
             }
         }
+
+        public virtual TezInstanceCount instanceCount => TezInstanceCount.Invaild;
 
         protected sealed override void Awake()
         {
@@ -71,14 +66,7 @@ namespace tezcat.Unity.UI
         /// </summary>
         protected virtual void onCloseThis()
         {
-            switch (life)
-            {
-                case TezWidgetLife.TypeOnly:
-                    TezUIManager.removeTypeOnlyWidget(this);
-                    break;
-                default:
-                    break;
-            }
+
         }
 
         /// <summary>

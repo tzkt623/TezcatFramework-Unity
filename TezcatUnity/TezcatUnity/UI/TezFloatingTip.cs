@@ -10,7 +10,7 @@ namespace tezcat.Unity.UI
     /// </summary>
     public class TezFloatingTip
         : TezUIWidget
-        , ITezSinglePrefab
+        , ITezPrefab
     {
         [SerializeField]
         protected RectTransform m_Content = null;
@@ -24,6 +24,8 @@ namespace tezcat.Unity.UI
 
         List<ITezBaseWidget> m_Widgets = new List<ITezBaseWidget>();
         bool m_NeedClear = false;
+
+        public override TezInstanceCount instanceCount => TezInstanceCount.Single;
 
         protected override void initWidget()
         {

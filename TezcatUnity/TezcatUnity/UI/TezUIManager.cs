@@ -30,7 +30,7 @@ namespace tezcat.Unity.UI
         /// <summary>
         /// 获得一个类型唯一的控件
         /// </summary>
-        public static Widget getTypeOnlyWidget<Widget>() where Widget : TezBaseWidget, ITezSinglePrefab
+        public static Widget getTypeOnlyWidget<Widget>() where Widget : TezBaseWidget, ITezPrefab
         {
             sWidgetWithType.TryGetValue(typeof(Widget), out TezBaseWidget widget);
             return (Widget)widget;
@@ -39,15 +39,15 @@ namespace tezcat.Unity.UI
         /// <summary>
         /// 用Prefab创建一个Widget
         /// </summary>
-        public static TezBaseWidget createWidget(TezBaseWidget prefab, RectTransform parent, TezWidgetLife life)
+        public static TezBaseWidget createWidget(ITezPrefab prefab, RectTransform parent)
         {
             TezBaseWidget widget = null;
-            switch (life)
+            switch (prefab.instanceCount)
             {
-                case TezWidgetLife.Normal:
-                    widget = UnityEngine.Object.Instantiate(prefab, parent, false);
+                case TezInstanceCount.Multiple:
+                    widget = UnityEngine.Object.Instantiate((TezBaseWidget)prefab, parent, false);
                     break;
-                case TezWidgetLife.TypeOnly:
+                case TezInstanceCount.Single:
                     var type = prefab.GetType();
                     if (sWidgetWithType.TryGetValue(type, out widget))
                     {
@@ -56,7 +56,7 @@ namespace tezcat.Unity.UI
                     }
                     else
                     {
-                        widget = UnityEngine.Object.Instantiate(prefab, parent, false);
+                        widget = UnityEngine.Object.Instantiate((TezBaseWidget)prefab, parent, false);
                         sWidgetWithType.Add(type, widget);
                     }
                     break;
@@ -64,7 +64,6 @@ namespace tezcat.Unity.UI
                     break;
             }
 
-            widget.life = life;
             return widget;
         }
 
@@ -82,31 +81,33 @@ namespace tezcat.Unity.UI
         /// <param name="parent">父级</param>
         /// <param name="life">控件类型(普通类型,还是类型唯一类型)</param>
         /// <returns></returns>
-        public static Widget createWidget<Widget>(RectTransform parent, TezWidgetLife life = TezWidgetLife.Normal) where Widget : TezBaseWidget, ITezSinglePrefab
+        public static Widget createWidget<Widget>(RectTransform parent) where Widget : TezBaseWidget, ITezPrefab
         {
-            return (Widget)createWidget(TezPrefabDatabase.get<Widget>(), parent, life);
+            return (Widget)createWidget(TezPrefabDatabase.get<Widget>(), parent);
         }
 
-        public static Widget createWidget<Widget>(TezLayer layer, TezWidgetLife life = TezWidgetLife.Normal) where Widget : TezBaseWidget, ITezSinglePrefab
+        public static Widget createWidget<Widget>(TezLayer layer) where Widget : TezBaseWidget, ITezPrefab
         {
-            return createWidget<Widget>(layer.rectTransform, life);
+            return createWidget<Widget>(layer.rectTransform);
         }
 
-        private static Window createWindow<Window>(Window prefab
-            , TezLayer layer
-            , TezWidgetLife life) where Window : TezWindow, ITezSinglePrefab
+        public static void removeTypeOnlyWidget(TezBaseWidget widget)
+        {
+            sWidgetWithType.Remove(widget.GetType());
+        }
+
+        private static Window createWindow<Window>(Window prefab, TezLayer layer) where Window : TezWindow, ITezPrefab
         {
             TezWindow window = null;
 
-            switch (life)
+            switch (prefab.instanceCount)
             {
-                case TezWidgetLife.Normal:
+                case TezInstanceCount.Multiple:
                     window = UnityEngine.Object.Instantiate(prefab, layer.transform, false);
                     break;
-                case TezWidgetLife.TypeOnly:
-                    TezBaseWidget widget = null;
+                case TezInstanceCount.Single:
                     var type = typeof(Window);
-                    if (sWidgetWithType.TryGetValue(type, out widget))
+                    if (sWidgetWithType.TryGetValue(type, out var widget))
                     {
                         widget.reset();
                         return (Window)widget;
@@ -123,19 +124,18 @@ namespace tezcat.Unity.UI
 
 
             window.layer = layer;
-            window.life = life;
 
             return (Window)window;
         }
 
-        public static Window createWindow<Window>(TezLayer layer, TezWidgetLife life = TezWidgetLife.Normal) where Window : TezWindow, ITezSinglePrefab
+        public static Window createWindow<Window>(TezLayer layer) where Window : TezWindow, ITezPrefab
         {
-            return createWindow(TezPrefabDatabase.get<Window>(), layer, life);
+            return createWindow(TezPrefabDatabase.get<Window>(), layer);
         }
 
-        public static TezWindow createWindow(TezWindow prefab, TezLayer layer, TezWidgetLife life = TezWidgetLife.Normal)
+        public static TezWindow createWindow(TezWindow prefab, TezLayer layer)
         {
-            return createWindow(prefab, layer, life);
+            return createWindow(prefab, layer);
         }
 
         public static void removeWindow(TezWindow window)
@@ -145,10 +145,7 @@ namespace tezcat.Unity.UI
             sWindowList[window.windowID] = null;
         }
 
-        public static void removeTypeOnlyWidget(TezBaseWidget widget)
-        {
-            sWidgetWithType.Remove(widget.GetType());
-        }
+
         #endregion
     }
 }

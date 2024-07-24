@@ -3,14 +3,13 @@ using UnityEngine;
 
 namespace tezcat.Unity.UI
 {
-
     /// <summary>
     /// UI窗口
     /// 窗口中包含各种UI设计
     /// </summary>
     public abstract class TezWindow
         : TezUIWidget
-        , ITezSinglePrefab
+        , ITezPrefab
     {
         TezLayer mLayer = null;
         public TezLayer layer
@@ -84,6 +83,10 @@ namespace tezcat.Unity.UI
                 return mFullName;
             }
         }
+
+        [SerializeField]
+        TezInstanceCount mInstanceCount = TezInstanceCount.Invaild;
+        public override TezInstanceCount instanceCount => mInstanceCount;
 
         protected ITezFocusableWidget mFocusWidget = null;
         protected TezWidgetEvent.Dispatcher mEventDispatcher = new TezWidgetEvent.Dispatcher();

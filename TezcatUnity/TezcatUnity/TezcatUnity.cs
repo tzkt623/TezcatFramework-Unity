@@ -167,21 +167,21 @@ namespace tezcat.Unity
 
         #region Renderer
         public static Renderer createRenderer<Renderer>(Transform parent)
-            where Renderer : MonoBehaviour, ITezSinglePrefab
+            where Renderer : MonoBehaviour, ITezPrefab
         {
             var prefab = TezPrefabDatabase.get<Renderer>();
             return Instantiate(prefab, parent);
         }
 
         public static Renderer createRenderer<Renderer>(Transform parent, string prefabName)
-            where Renderer : MonoBehaviour, ITezMultiPrefab
+            where Renderer : MonoBehaviour, ITezPrefab
         {
             var prefab = TezPrefabDatabase.get<Renderer>(prefabName);
             return Instantiate(prefab, parent);
         }
 
         public static GMO createGMO<GMO>(Transform parent)
-            where GMO : TezGameMonoObject, ITezSinglePrefab
+            where GMO : TezGameMonoObject, ITezPrefab
         {
             var prefab = TezPrefabDatabase.get<GMO>();
             return Instantiate(prefab, parent);

@@ -5,10 +5,25 @@ using UnityEngine.EventSystems;
 
 namespace tezcat.Unity.UI
 {
+    public enum TezInstanceCount
+    {
+        Invaild,
+        Single,
+        Multiple
+    }
+
+    public interface ITezInstanceInfo
+    {
+        TezInstanceCount instanceCount { get; }
+    }
+
+
     /// <summary>
     /// 基础控件
     /// </summary>
-    public interface ITezBaseWidget : ITezCloseable
+    public interface ITezBaseWidget
+        : ITezCloseable
+        , ITezInstanceInfo
     {
         RectTransform rectTransform { get; }
         void open();
