@@ -1,5 +1,6 @@
 ﻿using tezcat.Framework.Core;
 using tezcat.Unity.Core;
+using tezcat.Unity.Database;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -31,7 +32,7 @@ namespace tezcat.Unity.UI
             }
         }
 
-        public virtual TezInstanceCount instanceCount => TezInstanceCount.Invaild;
+        public virtual TezPrefabCount prefabCount => TezPrefabCount.Invaild;
 
         protected sealed override void Awake()
         {

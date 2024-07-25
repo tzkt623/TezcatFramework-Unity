@@ -85,8 +85,8 @@ namespace tezcat.Unity.UI
         }
 
         [SerializeField]
-        TezInstanceCount mInstanceCount = TezInstanceCount.Invaild;
-        public override TezInstanceCount instanceCount => mInstanceCount;
+        TezPrefabCount mInstanceCount = TezPrefabCount.Invaild;
+        public override TezPrefabCount prefabCount => mInstanceCount;
 
         protected ITezFocusableWidget mFocusWidget = null;
         protected TezWidgetEvent.Dispatcher mEventDispatcher = new TezWidgetEvent.Dispatcher();

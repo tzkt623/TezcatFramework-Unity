@@ -214,7 +214,7 @@
     <Compile Include="TezcatFramework\Utility\Container\TezBinaryHeap.cs" />
     <Compile Include="TezcatFramework\Utility\TezBitMask.cs" />
     <Compile Include="TezcatFramework\Utility\TezCodeWriter.cs" />
-    <Compile Include="TezcatFramework\Utility\TezGlobalState.cs" />
+    <Compile Include="TezcatFramework\Utility\TezGameState.cs" />
     <Compile Include="TezcatFramework\Utility\Container\TezList.cs" />
     <Compile Include="TezcatFramework\Core\FileIO\TezFilePath.cs" />
     <Compile Include="TezcatFramework\Utility\SamplePool\TezSamplePool.cs" />

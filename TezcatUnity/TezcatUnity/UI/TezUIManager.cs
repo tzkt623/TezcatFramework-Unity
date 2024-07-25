@@ -42,12 +42,12 @@ namespace tezcat.Unity.UI
         public static TezBaseWidget createWidget(ITezPrefab prefab, RectTransform parent)
         {
             TezBaseWidget widget = null;
-            switch (prefab.instanceCount)
+            switch (prefab.prefabCount)
             {
-                case TezInstanceCount.Multiple:
+                case TezPrefabCount.Multiple:
                     widget = UnityEngine.Object.Instantiate((TezBaseWidget)prefab, parent, false);
                     break;
-                case TezInstanceCount.Single:
+                case TezPrefabCount.Single:
                     var type = prefab.GetType();
                     if (sWidgetWithType.TryGetValue(type, out widget))
                     {
@@ -100,12 +100,12 @@ namespace tezcat.Unity.UI
         {
             TezWindow window = null;
 
-            switch (prefab.instanceCount)
+            switch (prefab.prefabCount)
             {
-                case TezInstanceCount.Multiple:
+                case TezPrefabCount.Multiple:
                     window = UnityEngine.Object.Instantiate(prefab, layer.transform, false);
                     break;
-                case TezInstanceCount.Single:
+                case TezPrefabCount.Single:
                     var type = typeof(Window);
                     if (sWidgetWithType.TryGetValue(type, out var widget))
                     {

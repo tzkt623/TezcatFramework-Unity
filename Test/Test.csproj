@@ -62,6 +62,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Function\TestBonusSystem2.cs" />
+    <Compile Include="Function\TestGameState.cs" />
     <Compile Include="Function\TestObject.cs" />
     <Compile Include="Function\TestProtoDB.cs" />
     <Compile Include="TestProgram.cs" />

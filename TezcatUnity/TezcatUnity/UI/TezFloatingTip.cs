@@ -25,7 +25,7 @@ namespace tezcat.Unity.UI
         List<ITezBaseWidget> m_Widgets = new List<ITezBaseWidget>();
         bool m_NeedClear = false;
 
-        public override TezInstanceCount instanceCount => TezInstanceCount.Single;
+        public override TezPrefabCount prefabCount => TezPrefabCount.Single;
 
         protected override void initWidget()
         {

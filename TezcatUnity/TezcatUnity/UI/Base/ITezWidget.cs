@@ -1,21 +1,12 @@
 ﻿using tezcat.Framework.Core;
 using tezcat.Unity.Core;
+using tezcat.Unity.Database;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
 namespace tezcat.Unity.UI
 {
-    public enum TezInstanceCount
-    {
-        Invaild,
-        Single,
-        Multiple
-    }
 
-    public interface ITezInstanceInfo
-    {
-        TezInstanceCount instanceCount { get; }
-    }
 
 
     /// <summary>
@@ -23,7 +14,7 @@ namespace tezcat.Unity.UI
     /// </summary>
     public interface ITezBaseWidget
         : ITezCloseable
-        , ITezInstanceInfo
+        , ITezPrefab
     {
         RectTransform rectTransform { get; }
         void open();

@@ -3,14 +3,20 @@ using System.Collections.Generic;
 using System.Reflection;
 using tezcat.Framework.Core;
 using tezcat.Framework.TypeTraits;
-using tezcat.Unity.UI;
 using UnityEngine;
 
 namespace tezcat.Unity.Database
 {
-    public interface ITezPrefab : ITezInstanceInfo
+    public enum TezPrefabCount
     {
+        Invaild,
+        Single,
+        Multiple
+    }
 
+    public interface ITezPrefab
+    {
+        TezPrefabCount prefabCount { get; }
     }
 
     public sealed class TezPrefabID : ITezCloseable
@@ -68,12 +74,12 @@ namespace tezcat.Unity.Database
                 return;
             }
 
-            switch (prefab.instanceCount)
+            switch (prefab.prefabCount)
             {
-                case TezInstanceCount.Multiple:
+                case TezPrefabCount.Multiple:
                     mMultiDic.Add(go.name, prefab);
                     break;
-                case TezInstanceCount.Single:
+                case TezPrefabCount.Single:
                     register(prefab);
                     break;
                 default:

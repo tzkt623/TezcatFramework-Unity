@@ -22,8 +22,8 @@ namespace tezcat.Framework.Test
     {
         public class State
         {
-            public static readonly uint Idle = TezGlobalState.createOrGet("Idle");
-            public static readonly uint Fun1 = TezGlobalState.createOrGet("Fun1");
+            public static readonly TezGameState<TestGameMachine>.Mask Idle = TezGameState<TestGameMachine>.createOrGet("Idle");
+            public static readonly TezGameState<TestGameMachine>.Mask Fun1 = TezGameState<TestGameMachine>.createOrGet("Fun1");
         }
 
         public class GameMachineBlackboard : TezGameMachineBlackborad
@@ -59,13 +59,13 @@ namespace tezcat.Framework.Test
 
             public override void enter(GameMachineBlackboard blackboard)
             {
-                TezGlobalState.add(State.Idle);
+                TezGameState<TestGameMachine>.add(State.Idle);
                 Console.WriteLine($"{this.GetType().Name} enter");
             }
 
             public override void exit(GameMachineBlackboard blackboard)
             {
-                TezGlobalState.remove(State.Idle);
+                TezGameState<TestGameMachine>.remove(State.Idle);
                 Console.WriteLine($"{this.GetType().Name} exit");
             }
 
@@ -101,13 +101,13 @@ namespace tezcat.Framework.Test
 
             public override void enter(GameMachineBlackboard blackboard)
             {
-                TezGlobalState.add(State.Fun1);
+                TezGameState<TestGameMachine>.add(State.Fun1);
                 Console.WriteLine($"{this.GetType().Name} enter");
             }
 
             public override void exit(GameMachineBlackboard blackboard)
             {
-                TezGlobalState.remove(State.Fun1);
+                TezGameState<TestGameMachine>.remove(State.Fun1);
                 Console.WriteLine($"{this.GetType().Name} exit");
             }
 

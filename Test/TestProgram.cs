@@ -45,6 +45,7 @@ namespace tezcat.Framework.Test
             mTestList.Add(new TestSystemAttribute());
             //mTestList.Add(new TestBonusSystem());
             mTestList.Add(new TestBonusSystem2());
+            mTestList.Add(new TestGameState());
             mTestList.Add(new TestHexSystem());
             mTestList.Add(new TestCategoryGenerator());
         }
