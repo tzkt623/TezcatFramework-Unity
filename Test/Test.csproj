@@ -47,17 +47,8 @@
     <Reference Include="TezcatUnity">
       <HintPath>..\TezcatUnity\bin\Debug\TezcatUnity.dll</HintPath>
     </Reference>
-    <Reference Include="UnityEditor">
-      <HintPath>..\UnityDLL\UnityEditor.dll</HintPath>
-    </Reference>
-    <Reference Include="UnityEditor.UI">
-      <HintPath>..\UnityDLL\UnityEditor.UI.dll</HintPath>
-    </Reference>
-    <Reference Include="UnityEngine">
-      <HintPath>..\UnityDLL\UnityEngine.dll</HintPath>
-    </Reference>
-    <Reference Include="UnityEngine.UI">
-      <HintPath>..\UnityDLL\UnityEngine.UI.dll</HintPath>
+    <Reference Include="UnityEngine.CoreModule">
+      <HintPath>..\UnityDLL\UnityEngine.CoreModule.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>

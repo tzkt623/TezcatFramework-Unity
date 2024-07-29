@@ -40,14 +40,17 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Xml" />
-    <Reference Include="UnityEditor">
-      <HintPath>..\UnityDLL\UnityEditor.dll</HintPath>
+    <Reference Include="UnityEditor.CoreModule">
+      <HintPath>..\UnityDLL\UnityEditor.CoreModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEditor.UI">
       <HintPath>..\UnityDLL\UnityEditor.UI.dll</HintPath>
     </Reference>
-    <Reference Include="UnityEngine">
-      <HintPath>..\UnityDLL\UnityEngine.dll</HintPath>
+    <Reference Include="UnityEngine.CoreModule">
+      <HintPath>..\UnityDLL\UnityEngine.CoreModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.IMGUIModule">
+      <HintPath>..\UnityDLL\UnityEngine.IMGUIModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.UI">
       <HintPath>..\UnityDLL\UnityEngine.UI.dll</HintPath>
