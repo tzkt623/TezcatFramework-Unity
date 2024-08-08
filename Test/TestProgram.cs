@@ -30,24 +30,53 @@ namespace tezcat.Framework.Test
             TezcatFramework.set(new TezProtoDatabase());
             //TezcatFramework.set(new TezRunTimeDatabase());
 
+            //A
+            mTestList.Add(new TestAStarSystem());
+            //B
+            mTestList.Add(new TestBehaviorTree());
+            mTestList.Add(new TestBonusSystem2());
+            //C
+            mTestList.Add(new TestCategoryGenerator());
+            //D
+            //E
+            //F
+            mTestList.Add(new TestFieldOffset());
+            //G
+            mTestList.Add(new TestGameMachine());
+            mTestList.Add(new TestGameState());
+            //H
+            mTestList.Add(new TestHexSystem());
+            //I
+            mTestList.Add(new TestInventory());
+            //J
+            //K
+            //L
+            mTestList.Add(new TestLifeMonitor());
+            mTestList.Add(new TestTask());
+            mTestList.Add(new TestTaskAsync());
+            //M
+            //N
+            //O
             mTestList.Add(new TestObject());
+            //P
+            //Q
+            //R
+            mTestList.Add(new TestRandomIndex());
+            //S
+            mTestList.Add(new TestSystemAttribute());
+            //T
+            mTestList.Add(new TestTag());
+            mTestList.Add(new TestTranslator());
+            //U
+            //V
             mTestList.Add(new TestValueDescriptor());
             mTestList.Add(new TestValueArrayManager());
-            mTestList.Add(new TestAStarSystem());
-            mTestList.Add(new TestTag());
-            mTestList.Add(new TestRandomIndex());
-            mTestList.Add(new TestFieldOffset());
-            mTestList.Add(new TestBehaviorTree());
-            mTestList.Add(new TestLifeMonitor());
-            mTestList.Add(new TestGameMachine());
-            mTestList.Add(new TestInventory());
-            mTestList.Add(new TestTranslator());
-            mTestList.Add(new TestSystemAttribute());
+            //W
+            //X
+            //Y
+            //Z
+
             //mTestList.Add(new TestBonusSystem());
-            mTestList.Add(new TestBonusSystem2());
-            mTestList.Add(new TestGameState());
-            mTestList.Add(new TestHexSystem());
-            mTestList.Add(new TestCategoryGenerator());
         }
 
         void register()

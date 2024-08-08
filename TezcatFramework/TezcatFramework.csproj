@@ -223,6 +223,7 @@
     <Compile Include="TezcatFramework\Utility\Container\TezTuple.cs" />
     <Compile Include="TezcatFramework\Utility\Monitor\TezLifeMonitor.cs" />
     <Compile Include="TezcatFramework\Utility\Monitor\TezStateMonitor.cs" />
+    <Compile Include="TezcatFramework\Utility\TezTask.cs" />
   </ItemGroup>
   <ItemGroup>
     <WCFMetadata Include="Connected Services\" />
