@@ -17,9 +17,7 @@ namespace tezcat.Framework.Test
             }
         }
 
-        bool[] mRunning = null;
         int mRunningCount = 0;
-        int mAnimationCount = 0;
 
         public TestTask() : base("Task")
         {
@@ -28,7 +26,7 @@ namespace tezcat.Framework.Test
 
         public override void init()
         {
-            mRunning = new bool[2] { true, true };
+            mRunningCount = 0;
         }
 
         private TezTask.BaseTask sequence()
@@ -137,26 +135,18 @@ namespace tezcat.Framework.Test
                 });
         }
 
-        private void beginBattle()
-        {
-            TezTask.task((TezTask.Task me) =>
-            {
-                //等待此任务执行完成
-                //当前task进入等待状态
-                this.enemyPrepare(me);
-            })
-            .onComplete(() =>
-            {
-                Console.WriteLine("Begin Battle Complete");
-            })
-            .run();
-        }
-
         private void enemyPrepare(TezTask.ITask preTask)
         {
-            TezTask.task<Timer>((me) =>
+            var seq = TezTask.sequence()
+                .onComplete(() =>
+                {
+                    preTask.setComplete();
+                });
+
+            var task1 = TezTask.task<Timer>((me) =>
             {
                 me.userData.seconds = 2;
+                me.userData.begin = DateTime.Now;
                 Console.WriteLine("Deploying Ships ......");
             })
             .createAgentExecutor(executor =>
@@ -168,16 +158,81 @@ namespace tezcat.Framework.Test
             })
             .onComplete((me) =>
             {
-                Console.WriteLine("Deploying Complete ......");
+                Console.WriteLine("Deploying Completes ......");
+            })
+            .initUserData(new Timer());
+
+            var task2 = TezTask.task((me) =>
+            {
+                Console.WriteLine("Thinking ......");
+                this.aiThinking(me);
+            })
+            .onComplete(() =>
+            {
+                Console.WriteLine("Thinking Completes ......");
+            });
+
+            seq.add(task1);
+            seq.add(task2);
+
+            for (int i = 0; i < 4; i++)
+            {
+                int id = i;
+                var taskx = TezTask.task((me) =>
+                {
+                    this.movingShip(me, id);
+                });
+
+                seq.add(taskx);
+            }
+
+            seq.run();
+        }
+
+        private void movingShip(TezTask.ITask preTask, int index)
+        {
+            TezTask.task<Timer>((me) =>
+            {
+                Console.WriteLine($"Moving Ship ...... {index}");
+                me.userData.seconds = 2;
+                me.userData.begin = DateTime.Now;
+            })
+            .createAgentExecutor(executor =>
+            {
+                if (executor.masterTask.userData.timeOut())
+                {
+                    executor.setComplete();
+                }
+            })
+            .onComplete(me=>
+            {
+                Console.WriteLine($"Moving Completes ...... {index}");
                 preTask.setComplete();
             })
             .initUserData(new Timer())
             .run();
         }
 
-        public void playAnimation()
+        private void aiThinking(TezTask.ITask preTask)
         {
-            Console.WriteLine("PlayAnimation......");
+            TezTask.task<Timer>(me =>
+            {
+                me.userData.seconds = 2;
+                me.userData.begin = DateTime.Now;
+            })
+            .createAgentExecutor(executor =>
+            {
+                if (executor.masterTask.userData.timeOut())
+                {
+                    executor.setComplete();
+                }
+            })
+            .onComplete(me=>
+            {
+                preTask.setComplete();
+            })
+            .initUserData(new Timer())
+            .run();
         }
 
         private TezTask.BaseTask battle()
@@ -209,7 +264,6 @@ namespace tezcat.Framework.Test
 
             Console.WriteLine($"Main Thread >> Waiting ThreadID:{System.Threading.Thread.CurrentThread.ManagedThreadId}");
 
-            //while (mRunning[0])
             while (mRunningCount < 3)
             {
                 TezTask.update();
@@ -218,13 +272,13 @@ namespace tezcat.Framework.Test
 
         protected override void onClose()
         {
-            mRunning = null;
+
         }
     }
 
     public class TestTaskAsync : TezBaseTest
     {
-        bool[] mRunning = null;
+        int mRunningCount = 0;
 
         public TestTaskAsync() : base("TaskAsync")
         {
@@ -233,7 +287,7 @@ namespace tezcat.Framework.Test
 
         public override void init()
         {
-            mRunning = new bool[2] { true, true };
+            mRunningCount = 0;
         }
 
         private void sequence()
@@ -241,31 +295,23 @@ namespace tezcat.Framework.Test
             var task1 = TezTask.asyncTask(async () =>
             {
                 int ms = 1000;
-                Console.WriteLine($"Task1 >> Wait {ms / 1000}s ThreadID:{System.Threading.Thread.CurrentThread.ManagedThreadId}");
+                Console.WriteLine($"Task1({System.Threading.Thread.CurrentThread.ManagedThreadId}) >> Dispath Wait {ms / 1000}s");
                 await Task.Delay(ms);
-
-                return TezTask.AsyncState.Complete;
-            }).onInit(() =>
+            })
+            .onComplete(() =>
             {
-                Console.WriteLine($"Task1 >> Init ThreadID:{System.Threading.Thread.CurrentThread.ManagedThreadId}");
-            }).onComplete(() =>
-            {
-                Console.WriteLine($"Task1 >> Complete ThreadID:{System.Threading.Thread.CurrentThread.ManagedThreadId}");
+                Console.WriteLine($"Task1({System.Threading.Thread.CurrentThread.ManagedThreadId}) >> Complete");
             });
 
             var task2 = TezTask.asyncTask(async () =>
             {
                 int ms = 4000;
-                Console.WriteLine($"Task2 >> Wait {ms / 1000}s ThreadID:{System.Threading.Thread.CurrentThread.ManagedThreadId}");
+                Console.WriteLine($"Task2({System.Threading.Thread.CurrentThread.ManagedThreadId}) >> Dispath Wait {ms / 1000}s");
                 await Task.Delay(ms);
-
-                return TezTask.AsyncState.Complete;
-            }).onInit(() =>
+            })
+            .onComplete(() =>
             {
-                Console.WriteLine($"Task2 >> Init ThreadID:{System.Threading.Thread.CurrentThread.ManagedThreadId}");
-            }).onComplete(() =>
-            {
-                Console.WriteLine($"Task2 >> Complete ThreadID:{System.Threading.Thread.CurrentThread.ManagedThreadId}");
+                Console.WriteLine($"Task2({System.Threading.Thread.CurrentThread.ManagedThreadId}) >> Complete");
             });
 
             TezTask.asyncSequence()
@@ -273,7 +319,7 @@ namespace tezcat.Framework.Test
                 .add(task2)
                 .onComplete(() =>
                 {
-                    mRunning[0] = false;
+                    mRunningCount++;
                 })
                 .run();
         }
@@ -283,31 +329,23 @@ namespace tezcat.Framework.Test
             var task1 = TezTask.asyncTask(async () =>
             {
                 int ms = 6000;
-                Console.WriteLine($"Task3 >> Wait {ms / 1000}s ThreadID:{System.Threading.Thread.CurrentThread.ManagedThreadId}");
+                Console.WriteLine($"Task3({System.Threading.Thread.CurrentThread.ManagedThreadId}) >> Dispath Wait {ms / 1000}s");
                 await Task.Delay(ms);
-
-                return TezTask.AsyncState.Complete;
-            }).onInit(() =>
+            })
+            .onComplete(() =>
             {
-                Console.WriteLine($"Task3 >> Init ThreadID:{System.Threading.Thread.CurrentThread.ManagedThreadId}");
-            }).onComplete(() =>
-            {
-                Console.WriteLine($"Task3 >> Complete ThreadID:{System.Threading.Thread.CurrentThread.ManagedThreadId}");
+                Console.WriteLine($"Task3({System.Threading.Thread.CurrentThread.ManagedThreadId}) >> Complete");
             });
 
             var task2 = TezTask.asyncTask(async () =>
             {
                 int ms = 8000;
-                Console.WriteLine($"Task4 >> Wait {ms / 1000}s ThreadID:{System.Threading.Thread.CurrentThread.ManagedThreadId}");
+                Console.WriteLine($"Task4({System.Threading.Thread.CurrentThread.ManagedThreadId}) >> Dispath Wait {ms / 1000}s");
                 await Task.Delay(ms);
-
-                return TezTask.AsyncState.Complete;
-            }).onInit(() =>
+            })
+            .onComplete(() =>
             {
-                Console.WriteLine($"Task4 >> Init ThreadID:{System.Threading.Thread.CurrentThread.ManagedThreadId}");
-            }).onComplete(() =>
-            {
-                Console.WriteLine($"Task4 >> Complete ThreadID:{System.Threading.Thread.CurrentThread.ManagedThreadId}");
+                Console.WriteLine($"Task4({System.Threading.Thread.CurrentThread.ManagedThreadId}) >> Complete");
             });
 
             TezTask.asyncParallel()
@@ -315,19 +353,19 @@ namespace tezcat.Framework.Test
                 .add(task2)
                 .onComplete(() =>
                 {
-                    mRunning[1] = false;
+                    mRunningCount++;
                 })
                 .run();
         }
 
         public override void run()
         {
+            Console.WriteLine($"Main Thread({System.Threading.Thread.CurrentThread.ManagedThreadId}) >> Waiting");
+
             this.sequence();
             this.parallel();
 
-            Console.WriteLine($"Main Thread >> Waiting ThreadID:{System.Threading.Thread.CurrentThread.ManagedThreadId}");
-
-            while (mRunning[0] || mRunning[1])
+            while (mRunningCount < 2)
             {
 
             }
@@ -335,7 +373,6 @@ namespace tezcat.Framework.Test
 
         protected override void onClose()
         {
-            mRunning = null;
             Console.WriteLine("END");
         }
     }

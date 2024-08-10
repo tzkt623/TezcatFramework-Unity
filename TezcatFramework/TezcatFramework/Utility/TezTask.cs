@@ -8,15 +8,22 @@ namespace tezcat.Framework.Utility
     /// 
     /// 任务系统
     /// 
+    /// <para>
     /// 基本逻辑
-    /// 当前任务做完了,通知并开始下一项任务
+    /// 发布一个任务,当前任务状态变为等待,等待任务执行完成
+    /// 比如发布一个执行动画的任务,动画就自己去执行了
+    /// 具体谁负责执行,不重要,执行完毕之后通知当前任务执行完毕
+    /// </para>
     /// 
-    /// 1.发布一个任务,当前任务状态变为等待,等待任务执行完成
-    ///   比如发布一个执行动画的任务,动画就自己去执行了,执行完毕之后才会通知当前任务执行完毕
-    /// 2.任务逻辑每一帧都会执行一次,直到执行完毕
-    /// 3.任务执行器和等待器并不是同一个
+    /// <para>
+    /// 附加功能
+    /// 执行器代理
+    /// 可以使用执行器代理来帮助执行任务,执行器代理每一帧执行一次
+    /// 注意!不要在执行器代理中写循环执行逻辑,只能写一帧的逻辑
+    /// </para>
     /// 
-    /// C#自带的await会卡住当前函数位置,当当前await执行完毕之后
+    /// 
+    /// C#自带的await会卡住当前函数位置,当前await执行完毕之后
     /// 才继续后续逻辑,所以他不用手动保存一个回调器来通知完毕动作
     /// 
     /// </summary>
@@ -27,6 +34,7 @@ namespace tezcat.Framework.Utility
         static void defaultDelegate() { }
         static void defaultDelegate(Task task) { }
         static void defaultDelegate<T>(Task<T> task) { }
+        static void defaultDelegate<T>(AsyncTask<T> task) { }
 
         #region AsyncTask
         public enum AsyncState
@@ -37,27 +45,19 @@ namespace tezcat.Framework.Utility
 
         public abstract class AsyncBaseTask : ITezCloseable
         {
-            protected AsyncState mState = AsyncState.Running;
-            public AsyncState state => mState;
-
-            protected abstract void onInit();
             protected abstract void onComplete();
             protected abstract void onClose();
 
-            protected async virtual System.Threading.Tasks.Task<AsyncState> onExecute() { return AsyncState.Running; }
+            protected async virtual System.Threading.Tasks.Task onExecute() {  }
 
             public System.Threading.Tasks.Task run()
             {
-                return System.Threading.Tasks.Task.Run(async () => await this.execute());
+                return System.Threading.Tasks.Task.Run(this.execute);
             }
 
             public async System.Threading.Tasks.Task execute()
             {
-                this.onInit();
-
-                mState = AsyncState.Running;
-                mState = await this.onExecute();
-                mState = AsyncState.Complete;
+                await this.onExecute();
 
                 this.onComplete();
                 this.close();
@@ -71,19 +71,12 @@ namespace tezcat.Framework.Utility
 
         public class AsyncTask : AsyncBaseTask
         {
-            Func<System.Threading.Tasks.Task<AsyncState>> mOnExecute;
+            Func<System.Threading.Tasks.Task> mOnExecute;
             Action mOnComplete = defaultDelegate;
-            Action mOnInit = defaultDelegate;
 
-            public AsyncTask(Func<System.Threading.Tasks.Task<AsyncState>> task)
+            public AsyncTask(Func<System.Threading.Tasks.Task> task)
             {
                 mOnExecute = task;
-            }
-
-            public AsyncTask onInit(Action action)
-            {
-                mOnInit = action;
-                return this;
             }
 
             public AsyncTask onComplete(Action action)
@@ -96,7 +89,6 @@ namespace tezcat.Framework.Utility
             {
                 mOnComplete = null;
                 mOnExecute = null;
-                mOnInit = null;
             }
 
             protected override void onComplete()
@@ -104,12 +96,7 @@ namespace tezcat.Framework.Utility
                 mOnComplete();
             }
 
-            protected override void onInit()
-            {
-                mOnInit();
-            }
-
-            protected override System.Threading.Tasks.Task<AsyncState> onExecute()
+            protected override System.Threading.Tasks.Task onExecute()
             {
                 return mOnExecute();
             }
@@ -117,14 +104,17 @@ namespace tezcat.Framework.Utility
 
         public class AsyncTask<T> : AsyncBaseTask
         {
-            Func<System.Threading.Tasks.Task<AsyncState>> mOnExecute;
-            Action mOnComplete = defaultDelegate;
-            Action mOnInit = defaultDelegate;
+            Func<AsyncTask<T>, System.Threading.Tasks.Task> mOnExecute;
+            Action<AsyncTask<T>> mOnComplete = defaultDelegate;
 
             T mUserData;
-            public T userData => mUserData;
+            public T userData
+            {
+                get { return mUserData; }
+                set { mUserData = value; }
+            }
 
-            public AsyncTask(Func<System.Threading.Tasks.Task<AsyncState>> task)
+            public AsyncTask(Func<AsyncTask<T>, System.Threading.Tasks.Task> task)
             {
                 mOnExecute = task;
             }
@@ -135,13 +125,7 @@ namespace tezcat.Framework.Utility
                 return this;
             }
 
-            public AsyncTask<T> onInit(Action action)
-            {
-                mOnInit = action;
-                return this;
-            }
-
-            public AsyncTask<T> onComplete(Action action)
+            public AsyncTask<T> onComplete(Action<AsyncTask<T>> action)
             {
                 mOnComplete = action;
                 return this;
@@ -151,29 +135,23 @@ namespace tezcat.Framework.Utility
             {
                 mOnComplete = null;
                 mOnExecute = null;
-                mOnInit = null;
             }
 
             protected override void onComplete()
             {
-                mOnComplete();
+                mOnComplete(this);
             }
 
-            protected override void onInit()
+            protected override System.Threading.Tasks.Task onExecute()
             {
-                mOnInit();
-            }
-
-            protected override System.Threading.Tasks.Task<AsyncState> onExecute()
-            {
-                return mOnExecute();
+                return mOnExecute(this);
             }
         }
 
         public class AsyncSequence : AsyncBaseTask
         {
             List<AsyncBaseTask> mList = new List<AsyncBaseTask>();
-            Action mOnComplete;
+            Action mOnComplete = defaultDelegate;
 
             public AsyncSequence add(AsyncBaseTask task)
             {
@@ -187,14 +165,12 @@ namespace tezcat.Framework.Utility
                 return this;
             }
 
-            protected async override System.Threading.Tasks.Task<AsyncState> onExecute()
+            protected async override System.Threading.Tasks.Task onExecute()
             {
                 foreach (var item in mList)
                 {
                     await item.execute();
                 }
-
-                return AsyncState.Complete;
             }
 
             protected override void onClose()
@@ -213,17 +189,12 @@ namespace tezcat.Framework.Utility
             {
                 mOnComplete();
             }
-
-            protected override void onInit()
-            {
-
-            }
         }
 
         public class AsyncParallel : AsyncBaseTask
         {
             List<AsyncBaseTask> mList = new List<AsyncBaseTask>();
-            Action mOnComplete;
+            Action mOnComplete = defaultDelegate;
 
             public AsyncParallel add(AsyncBaseTask task)
             {
@@ -237,7 +208,7 @@ namespace tezcat.Framework.Utility
                 return this;
             }
 
-            protected async override System.Threading.Tasks.Task<AsyncState> onExecute()
+            protected async override System.Threading.Tasks.Task onExecute()
             {
                 System.Threading.Tasks.Task[] ary = new System.Threading.Tasks.Task[mList.Count];
 
@@ -247,8 +218,6 @@ namespace tezcat.Framework.Utility
                 }
 
                 await System.Threading.Tasks.Task.WhenAll(ary);
-
-                return AsyncState.Complete;
             }
 
             protected override void onClose()
@@ -267,20 +236,15 @@ namespace tezcat.Framework.Utility
             {
                 mOnComplete();
             }
-
-            protected override void onInit()
-            {
-
-            }
         }
 
 
-        public static AsyncTask asyncTask(Func<System.Threading.Tasks.Task<AsyncState>> func)
+        public static AsyncTask asyncTask(Func<System.Threading.Tasks.Task> func)
         {
             return new AsyncTask(func);
         }
 
-        public static AsyncTask<T> asyncTask<T>(Func<System.Threading.Tasks.Task<AsyncState>> func)
+        public static AsyncTask<T> asyncTask<T>(Func<AsyncTask<T>, System.Threading.Tasks.Task> func)
         {
             return new AsyncTask<T>(func);
         }
@@ -413,7 +377,6 @@ namespace tezcat.Framework.Utility
             protected ITaskParent mParent = null;
 
             public abstract BaseExecutor executor { get; }
-            public abstract void insert(BaseTask task);
 
             public void dispath()
             {
@@ -423,11 +386,6 @@ namespace tezcat.Framework.Utility
                 {
                     sTaskExecutor.AddLast(this.executor);
                 }
-            }
-
-            public void insert()
-            {
-                this.insert(this);
             }
 
             public abstract void setComplete();
@@ -498,11 +456,6 @@ namespace tezcat.Framework.Utility
                 mOnDispath = null;
                 mOnComplete = null;
             }
-
-            public override void insert(BaseTask task)
-            {
-
-            }
         }
 
         public class Task<T> : BaseTask
@@ -514,7 +467,11 @@ namespace tezcat.Framework.Utility
             public override BaseExecutor executor => mExecutor;
 
             T mUserData;
-            public T userData => mUserData;
+            public T userData
+            {
+                get { return mUserData; }
+                set { mUserData = value; }
+            }
 
             public Task(Action<Task<T>> dispathFunction)
             {
@@ -558,11 +515,6 @@ namespace tezcat.Framework.Utility
                 mExecutor = null;
                 mOnDispath = null;
                 mOnComplete = null;
-            }
-
-            public override void insert(BaseTask task)
-            {
-
             }
         }
 
@@ -625,11 +577,6 @@ namespace tezcat.Framework.Utility
                 mList = null;
                 mOnComplete = null;
             }
-
-            public override void insert(BaseTask task)
-            {
-                mList.Insert(mIndex + 1, task);
-            }
         }
         #endregion
 
@@ -688,11 +635,6 @@ namespace tezcat.Framework.Utility
 
                 mOnComplete = null;
             }
-
-            public override void insert(BaseTask task)
-            {
-                mList.Insert(mIndex + 1, task);
-            }
         }
         #endregion
 
@@ -700,19 +642,6 @@ namespace tezcat.Framework.Utility
         static LinkedList<IExecutor> sTaskExecutor = new LinkedList<IExecutor>();
         static LinkedListNode<BaseTask> mCurrentTask = null;
         public static BaseTask currentTask => mCurrentTask.Value;
-
-
-        private static void add(BaseTask task)
-        {
-            if (mCurrentTask != null)
-            {
-                mCurrentTask.Value.insert(task);
-            }
-            else
-            {
-
-            }
-        }
 
         public static Task task(Action<Task> dispathFunction)
         {
