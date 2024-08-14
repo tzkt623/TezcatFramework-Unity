@@ -1,4 +1,4 @@
-﻿namespace tezcat.Framework.TMath
+﻿namespace tezcat.Framework.Utility
 {
     public class TezRemapF
     {

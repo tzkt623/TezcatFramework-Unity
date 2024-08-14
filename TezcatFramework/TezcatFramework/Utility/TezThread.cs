@@ -4,7 +4,7 @@ using System.Threading;
 using tezcat.Framework.Core;
 using tezcat.Framework.Extension;
 
-namespace tezcat.Framework.Threading
+namespace tezcat.Framework.Utility
 {
     public class TezThread : ITezCloseable
     {

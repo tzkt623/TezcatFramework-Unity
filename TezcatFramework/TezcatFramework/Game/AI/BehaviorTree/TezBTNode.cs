@@ -2,11 +2,22 @@
 
 namespace tezcat.Framework.Game
 {
-    public abstract class TezBTNode : ITezCloseable
+    public interface ITezBTNode : ITezCloseable
+    {
+        void execute();
+    }
+
+    public interface ITezBTParentNode
+    {
+        void addChild(TezBTNode node);
+        void childReport(TezBTNode.Result result);
+    }
+
+    public abstract class TezBTNode : ITezBTNode
     {
         public enum Result : byte
         {
-            Success = 0,
+            Success,
             Fail,
             Running
         }
@@ -28,13 +39,40 @@ namespace tezcat.Framework.Game
             set { mTree = value; }
         }
 
-        public TezBTNode parent { get; set; } = null;
+        protected ITezBTParentNode mParent = null;
+        public ITezBTParentNode parent
+        {
+            get { return mParent; }
+            set { mParent = value; }
+        }
         public int deep { get; set; } = 0;
         public int index { get; set; } = 0;
 
-        public abstract void init();
+        private Result mState = Result.Running;
 
-        public abstract void reset();
+        public abstract void init();
+        public virtual void reset() { }
+        public virtual void loadConfig(TezReader reader) { }
+
+        protected void setFail()
+        {
+            mState = Result.Fail;
+        }
+
+        protected void setSuccess()
+        {
+            mState = Result.Success;
+        }
+
+        protected void setRunning()
+        {
+            mState = Result.Running;
+        }
+
+        private void reportState()
+        {
+            mParent?.childReport(mState);
+        }
 
         void ITezCloseable.closeThis()
         {
@@ -44,32 +82,16 @@ namespace tezcat.Framework.Game
         protected virtual void onClose()
         {
             mTree = null;
-            this.parent = null;
+            mParent = null;
         }
 
-        public abstract Result imdExecute();
-
-        public virtual void loadConfig(TezReader reader) { }
-
-
-        [System.Obsolete("这套系统已经弃用,请使用[imdExecute]函数代替")]
-        public virtual void execute()
+        public void execute()
         {
-            throw new System.Exception(string.Format("TezBTComposite : Obsolete Method {0}", nameof(execute)));
+            mState = Result.Running;
+            this.onExecute();
+            this.reportState();
         }
 
-        [System.Obsolete("这套系统已经弃用,请使用[imdExecute]函数代替")]
-        protected virtual void reportToParent(Result result)
-        {
-            throw new System.Exception(string.Format("TezBTComposite : Obsolete Method {0}", nameof(reportToParent)));
-            this.parent.onReport(this, result);
-        }
-
-        [System.Obsolete("这套系统已经弃用,请使用[imdExecute]函数代替")]
-        public virtual void onReport(TezBTNode node, Result result)
-        {
-            throw new System.Exception(string.Format("TezBTComposite : Obsolete Method {0}", nameof(onReport)));
-        }
+        protected abstract void onExecute();
     }
-
 }

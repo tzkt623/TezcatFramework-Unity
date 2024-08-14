@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using tezcat.Framework.Core;
 using tezcat.Framework.Game;
-using tezcat.Framework.TMath;
 using tezcat.Framework.Utility;
 
 namespace tezcat.Framework.Test

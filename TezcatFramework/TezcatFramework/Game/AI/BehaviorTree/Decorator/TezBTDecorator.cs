@@ -6,20 +6,16 @@ namespace tezcat.Framework.Game
     /// 修饰节点
     /// 用来做辅助功能的节点
     /// </summary>
-    public abstract class TezBTDecorator : TezBTNode
+    public abstract class TezBTDecorator 
+        : TezBTNode
+        , ITezBTParentNode
     {
         public override Category category => Category.Decorator;
-
         protected TezBTNode mChild = null;
 
-        public override void execute()
+        protected override void onExecute()
         {
             mChild.execute();
-        }
-
-        public virtual void setChild(TezBTNode node)
-        {
-            mChild = node;
         }
 
         public override void reset()
@@ -40,6 +36,13 @@ namespace tezcat.Framework.Game
             mChild.loadConfig(reader);
             reader.endObject("Node");
         }
+
+        public void addChild(TezBTNode node)
+        {
+            mChild = node;
+        }
+
+        public abstract void childReport(Result result);
     }
 
     [TezBTRegister(name = "Inverter")]
@@ -50,33 +53,17 @@ namespace tezcat.Framework.Game
 
         }
 
-        public override Result imdExecute()
-        {
-            switch (mChild.imdExecute())
-            {
-                case Result.Fail:
-                    return Result.Success;
-                case Result.Success:
-                    return Result.Fail;
-            }
-
-            return Result.Running;
-        }
-
-        public override void execute()
-        {
-            mChild.execute();
-        }
-
-        public override void onReport(TezBTNode node, Result result)
+        public override void childReport(Result result)
         {
             switch (result)
             {
-                case Result.Running:
-                    this.reportToParent(Result.Running);
+                case Result.Success:
+                    this.setFail();
+                    break;
+                case Result.Fail:
+                    this.setSuccess();
                     break;
                 default:
-                    this.reportToParent(1 - result);
                     break;
             }
         }
@@ -87,35 +74,16 @@ namespace tezcat.Framework.Game
     {
         public override void init()
         {
-
         }
 
-        public override Result imdExecute()
+        public override void childReport(Result result)
         {
-            if (mChild.imdExecute() != Result.Running)
+            if(result == Result.Running)
             {
-                return Result.Success;
+                return;
             }
 
-            return Result.Running;
-        }
-
-        public override void execute()
-        {
-            mChild.execute();
-        }
-
-        public override void onReport(TezBTNode node, Result result)
-        {
-            switch (result)
-            {
-                case Result.Running:
-                    this.reportToParent(Result.Running);
-                    break;
-                default:
-                    this.reportToParent(Result.Success);
-                    break;
-            }
+            this.setSuccess();
         }
     }
 
@@ -127,32 +95,14 @@ namespace tezcat.Framework.Game
 
         }
 
-        public override Result imdExecute()
+        public override void childReport(Result result)
         {
-            if (mChild.imdExecute() != Result.Running)
+            if (result == Result.Running)
             {
-                return Result.Fail;
+                return;
             }
 
-            return Result.Running;
-        }
-
-        public override void execute()
-        {
-            mChild.execute();
-        }
-
-        public override void onReport(TezBTNode node, Result result)
-        {
-            switch (result)
-            {
-                case Result.Running:
-                    this.reportToParent(Result.Running);
-                    break;
-                default:
-                    this.reportToParent(Result.Fail);
-                    break;
-            }
+            this.setFail();
         }
     }
 }

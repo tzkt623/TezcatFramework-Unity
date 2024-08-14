@@ -1,4 +1,6 @@
-﻿namespace tezcat.Framework.Game
+﻿using System.Collections.Generic;
+
+namespace tezcat.Framework.Game
 {
     /// <summary>
     /// 并行节点
@@ -28,97 +30,62 @@
     [TezBTRegister(name = "Parallel")]
     public class TezBTParallel : TezBTCompositeList
     {
-        int mSuccessCount = 0;
+        List<TezBTNode> mRunningList = null;
+        bool mRunning = true;
 
-        public override Result imdExecute()
+        public override void init()
         {
-            mIndex = 0;
-            mSuccessCount = 0;
-            while (mIndex < mList.Count)
-            {
-                switch (mList[mIndex].imdExecute())
-                {
-                    ///如果有一个执行失败,就立即返回
-                    case Result.Fail:
-                        //                        this.reset();
-                        mList[mIndex].reset();
-                        return Result.Fail;
-                    ///不管是执行成功还是运行中
-                    ///都要继续执行下一个
-                    case Result.Success:
-                        mList[mIndex].reset();
-                        mSuccessCount++;
-                        break;
-                }
+            base.init();
+            mRunningList = new List<TezBTNode>(mList);
+        }
 
+        protected override void onChildReport(Result result)
+        {
+            switch (result)
+            {
+                case Result.Success:
+                    mRunningList.RemoveAt(mIndex);
+                    mIndex--;
+                    if (mRunningList.Count == 0)
+                    {
+                        mRunning = false;
+                        this.reset();
+                        this.setSuccess();
+                    }
+                    break;
+                case Result.Fail:
+                    mRunning = false;
+                    this.reset();
+                    this.setFail();
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        protected override void onExecute()
+        {
+            mRunning = true;
+            mIndex = 0;
+            while (mRunning && mIndex < mRunningList.Count)
+            {
+                mRunningList[mIndex].execute();
                 mIndex++;
             }
-
-            ///所有节点全部执行成功
-            ///则返回成功
-            if (mSuccessCount == mList.Count)
-            {
-                //                this.reset();
-                return Result.Success;
-            }
-
-            return Result.Running;
         }
 
         public override void reset()
         {
             base.reset();
-            mSuccessCount = 0;
-            //            mRunningNodes.Clear();
+            mRunningList.Clear();
+            mRunningList.AddRange(mList);
         }
 
-        /*
-        List<TezBTNode> mRunningNodes = new List<TezBTNode>();
-
-        public override void onReport(TezBTNode node, Result result)
+        protected override void onClose()
         {
-            switch (result)
-            {
-                ///如果成功,就继续执行下一个(同一帧内),并且删除当前
-                case Result.Success:
-                    mRunningNodes.RemoveAt(mIndex--);
-                    break;
-                ///如果有一个执行失败,就立即返回
-                case Result.Fail:
-                    this.reset();
-                    this.reportToParent(Result.Fail);
-                    break;
-                case Result.Running:
-                    mIndex--;
-                    this.reportToParent(Result.Running);
-                    break;
-                default:
-                    break;
-            }
-
-            ///所有节点全部执行成功
-            ///则返回成功
-            if (mRunningNodes.Count == 0)
-            {
-                this.reset();
-                this.reportToParent(Result.Success);
-            }
+            base.onClose();
+            mRunningList.Clear();
+            mRunningList = null;
         }
-
-        public override void execute()
-        {
-            if (mRunningNodes.Count == 0)
-            {
-                mRunningNodes.AddRange(mList);
-                mRunningNodes.Reverse();
-            }
-
-            mIndex = mRunningNodes.Count - 1;
-            while ((mRunningNodes.Count > 0) && (mIndex >= 0))
-            {
-                mRunningNodes[mIndex].execute();
-            }
-        }
-        */
     }
 }

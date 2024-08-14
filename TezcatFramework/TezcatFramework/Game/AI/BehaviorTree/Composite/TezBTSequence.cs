@@ -17,59 +17,28 @@ namespace tezcat.Framework.Game
     [TezBTRegister(name = "Sequence")]
     public class TezBTSequence : TezBTCompositeList
     {
-        public override Result imdExecute()
-        {
-            switch (mList[mIndex].imdExecute())
-            {
-                case Result.Success:
-                    mList[mIndex].reset();
-                    mIndex++;
-                    if (mIndex == mList.Count)
-                    {
-//                        this.reset();
-                        return Result.Success;
-                    }
-                    break;
-                case Result.Fail:
-                    //                    this.reset();
-                    mList[mIndex].reset();
-                    return Result.Fail;
-            }
-
-            return Result.Running;
-        }
-        public override void onReport(TezBTNode node, Result result)
+        protected override void onChildReport(Result result)
         {
             switch (result)
             {
-                ///如果成功,就运行下一个节点(不同帧)
-                ///直到所有节点运行完毕,才返回成功
                 case Result.Success:
                     mIndex++;
                     if (mIndex == mList.Count)
                     {
                         this.reset();
-                        this.reportToParent(Result.Success);
+                        this.setSuccess();
                     }
                     break;
-                ///如果失败,就立即返回
                 case Result.Fail:
                     this.reset();
-                    this.reportToParent(Result.Fail);
-                    break;
-                ///啥也不做
-                case Result.Running:
-                    this.reportToParent(Result.Running);
-                    break;
-                default:
+                    this.setFail();
                     break;
             }
         }
 
-        public override void execute()
+        protected override void onExecute()
         {
             mList[mIndex].execute();
         }
-
     }
 }

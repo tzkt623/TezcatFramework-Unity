@@ -20,41 +20,22 @@ namespace tezcat.Framework.Test
     [TezBTRegister(name = "NeedFoods")]
     class NeedFoods : TezBTCondition
     {
-        //         public override void execute()
-        //         {
-        //             var context = this.tree.getContext<Context>();
-        //             if (context.foods < 5)
-        //             {
-        //                 Console.WriteLine("需要食物!");
-        //                 this.reportToParent(Result.Success);
-        //             }
-        //             else
-        //             {
-        //                 Console.WriteLine("不需要食物!");
-        //                 this.reportToParent(Result.Fail);
-        //             }
-        //         }
-
-        public override Result imdExecute()
+        protected override void onExecute()
         {
             var context = this.tree.getContext<Context>();
             if (context.foods < 5)
             {
                 Console.WriteLine("需要食物!");
-                return Result.Success;
+                this.setSuccess();
             }
             else
             {
                 Console.WriteLine("不需要食物!");
-                return Result.Fail;
+                this.setFail();
             }
         }
 
         public override void init()
-        {
-        }
-
-        public override void reset()
         {
         }
     }
@@ -62,41 +43,22 @@ namespace tezcat.Framework.Test
     [TezBTRegister(name = "NeedTools")]
     class NeedTools : TezBTCondition
     {
-        //         public override void execute()
-        //         {
-        //             var context = this.tree.getContext<Context>();
-        //             if (context.tools < 5)
-        //             {
-        //                 Console.WriteLine("需要厨具!");
-        //                 this.reportToParent(Result.Success);
-        //             }
-        //             else
-        //             {
-        //                 Console.WriteLine("不需要厨具!");
-        //                 this.reportToParent(Result.Fail);
-        //             }
-        //         }
-
-        public override Result imdExecute()
+        protected override void onExecute()
         {
             var context = this.tree.getContext<Context>();
             if (context.tools < 5)
             {
                 Console.WriteLine("需要厨具!");
-                return Result.Success;
+                this.setSuccess();
             }
             else
             {
                 Console.WriteLine("不需要厨具!");
-                return Result.Fail;
+                this.setFail();
             }
         }
 
         public override void init()
-        {
-        }
-
-        public override void reset()
         {
         }
     }
@@ -109,35 +71,18 @@ namespace tezcat.Framework.Test
 
         }
 
-        //         public override void execute()
-        //         {
-        //             var context = this.tree.getContext<Context>();
-        //             if (context.foods < 5)
-        //             {
-        //                 context.foods += 1;
-        //                 Console.WriteLine(string.Format("取得食物{0}", context.foods));
-        //                 this.reportToParent(Result.Running);
-        //             }
-        //             else
-        //             {
-        //                 Console.WriteLine("食物获取完毕!");
-        //                 this.reportToParent(Result.Success);
-        //             }
-        //         }
-
-        public override Result imdExecute()
+        protected override void onExecute()
         {
             var context = this.tree.getContext<Context>();
             if (context.foods < 5)
             {
                 context.foods += 1;
                 Console.WriteLine($"取得食物{context.foods}");
-                return Result.Running;
             }
             else
             {
                 Console.WriteLine("食物获取完毕!");
-                return Result.Success;
+                this.setSuccess();
             }
         }
     }
@@ -145,35 +90,18 @@ namespace tezcat.Framework.Test
     [TezBTRegister(name = "GetTools")]
     class GetTools : TezBTAction
     {
-        //         public override void execute()
-        //         {
-        //             var context = this.tree.getContext<Context>();
-        //             if (context.tools < 5)
-        //             {
-        //                 context.tools += 1;
-        //                 Console.WriteLine(string.Format("取得厨具{0}", context.tools));
-        //                 this.reportToParent(Result.Running);
-        //             }
-        //             else
-        //             {
-        //                 Console.WriteLine("厨具获取完毕!");
-        //                 this.reportToParent(Result.Success);
-        //             }
-        //         }
-
-        public override Result imdExecute()
+        protected override void onExecute()
         {
             var context = this.tree.getContext<Context>();
             if (context.tools < 5)
             {
                 context.tools += 1;
                 Console.WriteLine($"取得厨具{context.tools}");
-                return Result.Running;
             }
             else
             {
                 Console.WriteLine("厨具获取完毕!");
-                return Result.Success;
+                this.setSuccess();
             }
         }
 
@@ -191,32 +119,7 @@ namespace tezcat.Framework.Test
 
         }
 
-        //         public override void execute()
-        //         {
-        //             var context = this.tree.getContext<Context>();
-        //             if (context.rice < 1)
-        //             {
-        //                 if (context.tools < 1 || context.foods < 1)
-        //                 {
-        //                     Console.WriteLine("无法做饭,资源不够");
-        //                     this.reportToParent(Result.Fail);
-        //                     return;
-        //                 }
-        // 
-        //                 context.rice += 1;
-        //                 context.tools -= 1;
-        //                 context.foods -= 1;
-        //                 Console.WriteLine(string.Format("蒸饭{0}", context.rice));
-        //                 this.reportToParent(Result.Running);
-        //             }
-        //             else
-        //             {
-        //                 Console.WriteLine("饭蒸好了!");
-        //                 this.reportToParent(Result.Success);
-        //             }
-        //         }
-
-        public override Result imdExecute()
+        protected override void onExecute()
         {
             var context = this.tree.getContext<Context>();
             if (context.rice < 1)
@@ -224,19 +127,19 @@ namespace tezcat.Framework.Test
                 if (context.tools < 1 || context.foods < 1)
                 {
                     Console.WriteLine("无法做饭,资源不够");
-                    return Result.Fail;
+                    this.setFail();
+                    return;
                 }
 
                 context.rice += 1;
                 context.tools -= 1;
                 context.foods -= 1;
                 Console.WriteLine($"蒸饭{context.rice}");
-                return Result.Running;
             }
             else
             {
                 Console.WriteLine("饭蒸好了!");
-                return Result.Success;
+                this.setSuccess();
             }
         }
     }
@@ -249,32 +152,7 @@ namespace tezcat.Framework.Test
 
         }
 
-        //         public override void execute()
-        //         {
-        //             var context = this.tree.getContext<Context>();
-        //             if (context.tools < 1 || context.foods < 2)
-        //             {
-        //                 Console.WriteLine("无法做菜,资源不够");
-        //                 this.reportToParent(Result.Fail);
-        //                 return;
-        //             }
-        // 
-        //             if (context.dish < 3)
-        //             {
-        //                 context.dish += 1;
-        //                 context.tools -= 1;
-        //                 context.foods -= 2;
-        //                 Console.WriteLine(string.Format("做菜{0}", context.dish));
-        //                 this.reportToParent(Result.Running);
-        //             }
-        //             else
-        //             {
-        //                 Console.WriteLine("菜做好了!");
-        //                 this.reportToParent(Result.Success);
-        //             }
-        //         }
-
-        public override Result imdExecute()
+        protected override void onExecute()
         {
             var context = this.tree.getContext<Context>();
             if (context.dish < 3)
@@ -282,19 +160,19 @@ namespace tezcat.Framework.Test
                 if (context.tools < 1 || context.foods < 2)
                 {
                     Console.WriteLine("无法做菜,资源不够");
-                    return Result.Fail;
+                    this.setFail();
+                    return;
                 }
 
                 context.dish += 1;
                 context.tools -= 1;
                 context.foods -= 2;
                 Console.WriteLine($"做菜{context.dish}");
-                return Result.Running;
             }
             else
             {
                 Console.WriteLine("菜做好了!");
-                return Result.Success;
+                this.setSuccess();
             }
         }
     }
@@ -307,38 +185,14 @@ namespace tezcat.Framework.Test
 
         }
 
-        //         public override void execute()
-        //         {
-        //             var context = this.tree.getContext<Context>();
-        //             if (context.dish == 0 && context.rice == 0)
-        //             {
-        //                 Console.WriteLine("饭吃完了");
-        //                 this.reportToParent(Result.Success);
-        //                 return;
-        //             }
-        // 
-        //             if (context.dish > 0)
-        //             {
-        //                 context.dish -= 1;
-        //                 Console.WriteLine("吃菜");
-        //             }
-        // 
-        //             if (context.rice > 0)
-        //             {
-        //                 context.rice -= 1;
-        //                 Console.WriteLine("吃饭");
-        //             }
-        // 
-        //             this.reportToParent(Result.Running);
-        //         }
-
-        public override Result imdExecute()
+        protected override void onExecute()
         {
             var context = this.tree.getContext<Context>();
             if (context.dish == 0 && context.rice == 0)
             {
                 Console.WriteLine("饭吃完了");
-                return Result.Success;
+                this.setSuccess();
+                return;
             }
 
             if (context.dish > 0)
@@ -352,14 +206,24 @@ namespace tezcat.Framework.Test
                 context.rice -= 1;
                 Console.WriteLine($"吃饭{context.rice}");
             }
-
-            return Result.Running;
         }
     }
 
     public class TestBehaviorTree : TezBaseTest
     {
         TezBehaviorTree mTree = null;
+        bool mBreak = false;
+
+        static TestBehaviorTree()
+        {
+            TezBehaviorTree.register<NeedFoods>();
+            TezBehaviorTree.register<NeedTools>();
+
+            TezBehaviorTree.register<GetFoods>();
+            TezBehaviorTree.register<CookRice>();
+            TezBehaviorTree.register<Cooking>();
+            TezBehaviorTree.register<Eating>();
+        }
 
         public TestBehaviorTree() : base("BehaviorTree")
         {
@@ -369,17 +233,18 @@ namespace tezcat.Framework.Test
         public void buildTree()
         {
             mTree = new TezBehaviorTree();
+            mTree.evtBehaviorComplete += onBehaviorComplete;
 
             ///做饭
             ///如果没有食物,先取得食物
-            ///如果没有工具,取得工具,
+            ///如果没有工具,取得工具
             ///先蒸饭,再炒菜,最后吃饭
             var root = mTree.createRoot<TezBTSequence>();
 
             var get_foods = root.createNode<TezBTSequence>();
 
-            get_foods.addNode(TezBehaviorTree.create("NeedFoods"));
-            get_foods.addNode(TezBehaviorTree.create("GetFoods"));
+            get_foods.addChild(TezBehaviorTree.create("NeedFoods"));
+            get_foods.addChild(TezBehaviorTree.create("GetFoods"));
 
             var get_tools = root.createNode<TezBTSequence>();
             get_tools.createNode<NeedTools>();
@@ -395,31 +260,32 @@ namespace tezcat.Framework.Test
             mTree.setContext(new Context());
         }
 
+        private void onBehaviorComplete(TezBTNode.Result result)
+        {
+            if(result == TezBTNode.Result.Success)
+            {
+                mBreak = true;
+            }
+        }
+
         protected override void onClose()
         {
             mTree.close();
             mTree = null;
+            mBreak = false;
         }
 
         public override void init()
         {
-            TezBehaviorTree.register<NeedFoods>();
-            TezBehaviorTree.register<NeedTools>();
-
-            TezBehaviorTree.register<GetFoods>();
-            TezBehaviorTree.register<CookRice>();
-            TezBehaviorTree.register<Cooking>();
-            TezBehaviorTree.register<Eating>();
-
             this.buildTree();
         }
 
         public override void run()
         {
             Console.WriteLine("Press Any key to run, Press Esc to exit");
-            while (Console.ReadKey(true).Key != ConsoleKey.Escape)
+            while (Console.ReadKey(true).Key != ConsoleKey.Escape && !mBreak)
             {
-                mTree.imdExecute();
+                mTree.execute();
             }
         }
     }

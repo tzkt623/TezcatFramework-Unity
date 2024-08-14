@@ -37,12 +37,6 @@ namespace tezcat.Framework.Utility
         static void defaultDelegate<T>(AsyncTask<T> task) { }
 
         #region AsyncTask
-        public enum AsyncState
-        {
-            Running,
-            Complete
-        }
-
         public abstract class AsyncBaseTask : ITezCloseable
         {
             protected abstract void onComplete();
@@ -261,7 +255,6 @@ namespace tezcat.Framework.Utility
         #endregion
 
         #region Task
-
         public enum State
         {
             Init,
@@ -384,7 +377,7 @@ namespace tezcat.Framework.Utility
                 mState = State.Await;
                 if (this.executor != null)
                 {
-                    sTaskExecutor.AddLast(this.executor);
+                    sExecutorList.AddLast(this.executor);
                 }
             }
 
@@ -397,7 +390,7 @@ namespace tezcat.Framework.Utility
 
             public void run()
             {
-                sTaskDispather.Enqueue(this);
+                sTaskQueue.Enqueue(this);
             }
 
             protected abstract void onDispath();
@@ -638,10 +631,8 @@ namespace tezcat.Framework.Utility
         }
         #endregion
 
-        static Queue<BaseTask> sTaskDispather = new Queue<BaseTask>();
-        static LinkedList<IExecutor> sTaskExecutor = new LinkedList<IExecutor>();
-        static LinkedListNode<BaseTask> mCurrentTask = null;
-        public static BaseTask currentTask => mCurrentTask.Value;
+        static Queue<BaseTask> sTaskQueue = new Queue<BaseTask>();
+        static LinkedList<IExecutor> sExecutorList = new LinkedList<IExecutor>();
 
         public static Task task(Action<Task> dispathFunction)
         {
@@ -671,26 +662,30 @@ namespace tezcat.Framework.Utility
 
         private static void dispath()
         {
-            while (sTaskDispather.Count > 0)
+            while (sTaskQueue.Count > 0)
             {
-                sTaskDispather.Dequeue().dispath();
+                sTaskQueue.Dequeue().dispath();
             }
         }
 
         private static void execute()
         {
-            var executor_node = sTaskExecutor.First;
+            var executor_node = sExecutorList.First;
             while (executor_node != null)
             {
                 var executor = executor_node.Value;
                 executor.execute();
                 if (executor.isCompleted)
                 {
-                    sTaskExecutor.Remove(executor_node);
+                    var temp = executor_node.Next;
+                    sExecutorList.Remove(executor_node);
                     executor.masterTask.setComplete();
+                    executor_node = temp;
                 }
-
-                executor_node = executor_node.Next;
+                else
+                {
+                    executor_node = executor_node.Next;
+                }
             }
         }
         #endregion

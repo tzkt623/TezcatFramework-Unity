@@ -1,5 +1,5 @@
 ﻿using System;
-using tezcat.Framework.TMath;
+using tezcat.Framework.Utility;
 using UnityEngine;
 
 namespace tezcat.Framework.Game

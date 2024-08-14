@@ -16,15 +16,5 @@
     public abstract class TezBTCondition : TezBTNode
     {
         public override Category category => Category.Condition;
-
-        protected override void reportToParent(Result result)
-        {
-            if(result == Result.Running)
-            {
-                throw new System.Exception();
-            }
-
-            base.reportToParent(result);
-        }
     }
 }

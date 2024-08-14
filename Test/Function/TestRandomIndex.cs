@@ -1,6 +1,5 @@
 ﻿using System;
 using tezcat.Framework.Core;
-using tezcat.Framework.TMath;
 using tezcat.Framework.Utility;
 
 namespace tezcat.Framework.Test

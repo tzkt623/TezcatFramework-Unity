@@ -1,12 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using tezcat.Framework.Core;
-using tezcat.Framework.Extension;
 
 namespace tezcat.Framework.Game
 {
     /// <summary>
     /// 行为树
+    /// 
+    /// 行为树有三种状态,成功,失败,运行中
+    /// 当行为树返回成功或者失败时,都代表行为树要重新进行判断
+    /// 
     /// <para>启动流程</para>
     /// <para>LoadConfig (or) ManualBuildTree->setContext->init</para>
     /// <para>请参考TestBehaviorTree</para>
@@ -29,10 +32,12 @@ namespace tezcat.Framework.Game
     /// <para>条件节点(Condition)</para>
     /// <para>--自己实现</para>
     /// </summary>
-    public class TezBehaviorTree : TezBTNode
+    public class TezBehaviorTree
+        : ITezBTParentNode
+        , ITezCloseable
     {
         #region Factory
-        static Dictionary<string, TezEventExtension.Function<TezBTNode>> sCreator = new Dictionary<string, TezEventExtension.Function<TezBTNode>>();
+        static Dictionary<string, Func<TezBTNode>> sCreator = new Dictionary<string, Func<TezBTNode>>();
 
         public static void register<T>() where T : TezBTNode, new()
         {
@@ -78,7 +83,7 @@ namespace tezcat.Framework.Game
             register<TezBTSequence>();
             register<TezBTSelector>();
             register<TezBTRandomSelector>();
-            register<TezBTForce>();
+            register<TezBTForceSequence>();
 
             ///Decorator
             register<TezBTInverter>();
@@ -87,15 +92,16 @@ namespace tezcat.Framework.Game
         }
         #endregion
 
-        public event TezEventExtension.Action<Result> onTraversalComplete;
-
-        public override Category category => throw new Exception("Tree Don`t has Category");
-        public ITezBTContext context => mContext;
+        public event Action<TezBTNode.Result> evtBehaviorComplete;
 
         ITezBTContext mContext = null;
+        public ITezBTContext context => mContext;
+
         TezBTComposite mRoot = null;
 
-        public override void loadConfig(TezReader reader)
+        LinkedList<TezBTAction> mActionList = new LinkedList<TezBTAction>();
+
+        public void loadConfig(TezReader reader)
         {
             mRoot = (TezBTComposite)create(reader.readString("CID"));
             mRoot.tree = this;
@@ -103,7 +109,7 @@ namespace tezcat.Framework.Game
             mRoot.loadConfig(reader);
         }
 
-        public override void init()
+        public void init()
         {
             mRoot.init();
         }
@@ -127,58 +133,42 @@ namespace tezcat.Framework.Game
             return node;
         }
 
-        protected override void onClose()
+        protected void onClose()
         {
-            base.onClose();
-
             mRoot.close();
             mContext.close();
 
             mRoot = null;
             mContext = null;
+
+            this.evtBehaviorComplete = null;
         }
 
-        public override void reset()
-        {
-            //             m_DeleteActionList.Clear();
-            // 
-            //             for (init i = 0; i < m_RunningActionList.Count; i++)
-            //             {
-            //                 m_RunningActionList[i].reset();
-            //             }
-            //             m_RunningActionList.Clear();
-        }
-
-        public override Result imdExecute()
-        {
-            switch (mRoot.imdExecute())
-            {
-                case Result.Success:
-                    mRoot.reset();
-                    onTraversalComplete?.Invoke(Result.Success);
-                    break;
-                case Result.Fail:
-                    mRoot.reset();
-                    onTraversalComplete?.Invoke(Result.Fail);
-                    break;
-            }
-
-            return Result.Running;
-        }
-
-        public override void execute()
+        public void execute()
         {
             mRoot.execute();
         }
 
-        public override void onReport(TezBTNode node, Result result)
+        void ITezCloseable.closeThis()
         {
-            ///如果没有在运行中
-            ///才返回状态给外界查询
-            if (result != Result.Running)
+            this.onClose();
+        }
+
+        void ITezBTParentNode.addChild(TezBTNode node)
+        {
+
+        }
+
+        void ITezBTParentNode.childReport(TezBTNode.Result result)
+        {
+            switch (result)
             {
-                this.reset();
-                onTraversalComplete?.Invoke(result);
+                case TezBTNode.Result.Success:
+                    evtBehaviorComplete?.Invoke(result);
+                    break;
+                case TezBTNode.Result.Fail:
+                    evtBehaviorComplete?.Invoke(result);
+                    break;
             }
         }
     }

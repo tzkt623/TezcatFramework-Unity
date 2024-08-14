@@ -3,12 +3,19 @@ using tezcat.Framework.Core;
 
 namespace tezcat.Framework.Game
 {
-    public abstract class TezBTComposite : TezBTNode
+    public abstract class TezBTComposite 
+        : TezBTNode
+        , ITezBTParentNode
     {
         public override Category category => Category.Composite;
         public abstract int childrenCount { get; }
 
-        public virtual void addNode(TezBTNode node)
+        public void addChild(TezBTNode node)
+        {
+            this.onAddChild(node);
+        }
+
+        protected virtual void onAddChild(TezBTNode node)
         {
             node.tree = this.tree;
             node.parent = this;
@@ -18,14 +25,8 @@ namespace tezcat.Framework.Game
         public T createNode<T>() where T : TezBTNode, new()
         {
             var node = new T();
-            this.addNode(node);
+            this.onAddChild(node);
             return node;
-        }
-
-        protected override void reportToParent(Result result)
-        {
-            throw new System.Exception(string.Format("TezBTComposite : Obsolete Method {0}", nameof(reportToParent)));
-//            this.parent.onReport(this, result);
         }
 
         public override void loadConfig(TezReader reader)
@@ -37,13 +38,20 @@ namespace tezcat.Framework.Game
             {
                 reader.beginObject(i);
                 var node = TezBehaviorTree.create(reader.readString("CID"));
-                this.addNode(node);
+                this.onAddChild(node);
                 node.loadConfig(reader);
                 reader.endObject(i);
             }
 
             reader.endArray("Nodes");
         }
+
+        void ITezBTParentNode.childReport(Result result)
+        {
+            this.onChildReport(result);
+        }
+
+        protected abstract void onChildReport(Result result);
     }
 
     /// <summary>
@@ -80,15 +88,16 @@ namespace tezcat.Framework.Game
             mList = null;
         }
 
-        public override void addNode(TezBTNode node)
+        protected override void onAddChild(TezBTNode node)
         {
-            base.addNode(node);
+            base.onAddChild(node);
             node.index = mList.Count;
             mList.Add(node);
         }
 
         public override void reset()
         {
+            base.reset();
             mIndex = 0;
         }
     }

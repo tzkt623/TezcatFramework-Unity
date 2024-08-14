@@ -1,14 +1,19 @@
 ﻿using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using tezcat.Framework.Core;
 
 namespace tezcat.Framework.Utility
 {
     public class TezLazyValueManager : ITezCloseable
     {
+        [StructLayout(LayoutKind.Explicit)]
         public class Value
         {
+            [FieldOffset(0)]
             public int iValue;
+            [FieldOffset(0)]
             public float fValue;
+            [FieldOffset(0)]
             public string sValue;
         }
 

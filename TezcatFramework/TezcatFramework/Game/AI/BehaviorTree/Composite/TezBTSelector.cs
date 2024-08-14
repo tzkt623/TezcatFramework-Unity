@@ -21,122 +21,38 @@
     [TezBTRegister(name = "Selector")]
     public class TezBTSelector : TezBTCompositeList
     {
-        TezBTNode mRunning = null;
+        bool mFlag = true;
 
-        public override Result imdExecute()
-        {
-            if (mRunning != null)
-            {
-                switch (mRunning.imdExecute())
-                {
-                    case Result.Success:
-                        ///如果有节点运行成功,立即中断并返回
-                        //                        this.reset();
-                        mRunning.reset();
-                        return Result.Success;
-                    case Result.Fail:
-                        ///如果有节点运行失败
-                        ///测试下一个节点
-                        ///如果测试完了都没有成功,就返回失败
-                        mRunning.reset();
-                        mRunning = null;
-                        mIndex++;
-                        if (mIndex == mList.Count)
-                        {
-                            //                            this.reset();
-                            return Result.Fail;
-                        }
-                        break;
-                }
-
-                return Result.Running;
-            }
-            else
-            {
-                while (mRunning == null)
-                {
-                    switch (mList[mIndex].imdExecute())
-                    {
-                        case Result.Success:
-                            ///如果有节点运行成功,立即中断并返回
-                            //                            this.reset();
-                            mList[mIndex].reset();
-                            return Result.Success;
-                        case Result.Fail:
-                            ///如果有节点运行失败
-                            ///测试下一个节点
-                            ///如果测试完了都没有成功,就返回失败
-                            mList[mIndex].reset();
-                            mIndex++;
-                            if (mIndex == mList.Count)
-                            {
-                                return Result.Fail;
-                            }
-                            break;
-                        case Result.Running:
-                            ///如果是running,就啥也不管
-                            mRunning = mList[mIndex];
-                            break;
-                    }
-                }
-
-                return Result.Running;
-            }
-        }
-
-        /// <summary>
-        /// 子节点向自己报告运行状态
-        /// </summary>
-        public override void onReport(TezBTNode node, Result result)
+        protected override void onChildReport(Result result)
         {
             switch (result)
             {
                 case Result.Success:
-                    ///如果有节点运行成功,立即中断并返回
+                    mFlag = false;
                     this.reset();
-                    this.reportToParent(Result.Success);
+                    this.setSuccess();
                     break;
                 case Result.Fail:
-                    ///如果有节点运行失败
-                    ///测试下一个节点
-                    ///如果测试完了都没有成功,就返回失败
-                    mRunning = null;
                     mIndex++;
                     if (mIndex == mList.Count)
                     {
+                        mFlag = false;
                         this.reset();
-                        this.reportToParent(Result.Fail);
+                        this.setFail();
                     }
-                    break;
-                case Result.Running:
-                    ///如果是running,就啥也不管
-                    mRunning = node;
-                    this.reportToParent(Result.Running);
                     break;
                 default:
                     break;
             }
         }
 
-        public override void execute()
+        protected override void onExecute()
         {
-            if (mRunning != null)
+            mFlag = true;
+            while (mFlag)
             {
-                mRunning.execute();
+                mList[mIndex].execute();
             }
-            else
-            {
-                while (mRunning == null)
-                {
-                    mList[mIndex].execute();
-                }
-            }
-        }
-
-        public override void reset()
-        {
-            base.reset();
-            mRunning = null;
         }
     }
 }

@@ -67,8 +67,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TezcatFramework\Game\AI\BehaviorTree\Action\TezBTAction.cs" />
     <Compile Include="TezcatFramework\Game\AI\BehaviorTree\Composite\TezBTComposite.cs" />
-    <Compile Include="TezcatFramework\Game\AI\BehaviorTree\Composite\TezBTForce.cs" />
-    <Compile Include="TezcatFramework\Game\AI\BehaviorTree\Composite\TezBTObserveParallel.cs" />
+    <Compile Include="TezcatFramework\Game\AI\BehaviorTree\Composite\TezBTForceSequence.cs" />
     <Compile Include="TezcatFramework\Game\AI\BehaviorTree\Composite\TezBTParallel.cs" />
     <Compile Include="TezcatFramework\Game\AI\BehaviorTree\Composite\TezBTRandomSelector.cs" />
     <Compile Include="TezcatFramework\Game\AI\BehaviorTree\Composite\TezBTSelector.cs" />
@@ -195,7 +194,7 @@
     <Compile Include="TezcatFramework\Utility\Shape\TezPoint.cs" />
     <Compile Include="TezcatFramework\Utility\Shape\TezRectangle.cs" />
     <Compile Include="TezcatFramework\Utility\Shape\TezShape.cs" />
-    <Compile Include="TezcatFramework\Core\Threading\TezTask.cs" />
+    <Compile Include="TezcatFramework\Utility\TezThread.cs" />
     <Compile Include="TezcatFramework\Core\TypeTraits\TezEnumeration.cs" />
     <Compile Include="TezcatFramework\Core\TypeTraits\TezType.cs" />
     <Compile Include="TezcatFramework\Core\TypeTraits\TezTypeInfo.cs" />
