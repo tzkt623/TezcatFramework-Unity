@@ -111,6 +111,10 @@ namespace tezcat.Framework.Game
 
         public void init()
         {
+            if(mRoot == null)
+            {
+                throw new Exception("BehaviorTree : Root Node Must be Setted Before Init");
+            }
             mRoot.init();
         }
 

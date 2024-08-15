@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Runtime.CompilerServices;
 
 namespace tezcat.Framework.Game
 {
@@ -17,23 +16,29 @@ namespace tezcat.Framework.Game
 
     public class TezBTLazyAction : TezBTAction
     {
-        Action<TezBehaviorTree, TezBTLazyAction> mOnInit;
-        Action<TezBehaviorTree, TezBTLazyAction> mOnExecute;
+        static void defaultFunc(TezBTLazyAction condition) { }
 
-        public void setLazyFunction(Action<TezBehaviorTree, TezBTLazyAction> onInit, Action<TezBehaviorTree, TezBTLazyAction> onExecute)
+        Action<TezBTLazyAction> mOnInit = defaultFunc;
+        Action<TezBTLazyAction> mOnExecute;
+
+        public void setInitFunc(Action<TezBTLazyAction> action)
         {
-            mOnInit = onInit;
-            mOnExecute = onExecute;
+            mOnInit = action;
+        }
+
+        public void setExecuteFunc(Action<TezBTLazyAction> action)
+        {
+            mOnExecute = action;
         }
 
         public override void init()
         {
-            mOnInit(this.tree, this);
+            mOnInit(this);
         }
 
         protected override void onExecute()
         {
-            mOnExecute(this.tree, this);
+            mOnExecute(this);
         }
 
         protected override void onClose()

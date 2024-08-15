@@ -47,7 +47,7 @@ namespace tezcat.Framework.Test
             {
                 if (executor.masterTask.userData.timeOut())
                 {
-                    executor.setComplete();
+                    executor.reportComplete();
                 }
             })
             .initUserData(new Timer());
@@ -68,7 +68,7 @@ namespace tezcat.Framework.Test
             {
                 if (executor.masterTask.userData.timeOut())
                 {
-                    executor.setComplete();
+                    executor.reportComplete();
                 }
             })
             .initUserData(new Timer());
@@ -100,7 +100,7 @@ namespace tezcat.Framework.Test
             {
                 if (executor.masterTask.userData.timeOut())
                 {
-                    executor.setComplete();
+                    executor.reportComplete();
                 }
             })
             .initUserData(new Timer());
@@ -121,7 +121,7 @@ namespace tezcat.Framework.Test
             {
                 if (executor.masterTask.userData.timeOut())
                 {
-                    executor.setComplete();
+                    executor.reportComplete();
                 }
             })
             .initUserData(new Timer());
@@ -140,7 +140,7 @@ namespace tezcat.Framework.Test
             var seq = TezTask.sequence()
                 .onComplete(() =>
                 {
-                    preTask.setComplete();
+                    preTask.reportComplete();
                 });
 
             var task1 = TezTask.task<Timer>((me) =>
@@ -153,7 +153,7 @@ namespace tezcat.Framework.Test
             {
                 if (executor.masterTask.userData.timeOut())
                 {
-                    executor.setComplete();
+                    executor.reportComplete();
                 }
             })
             .onComplete((me) =>
@@ -201,13 +201,13 @@ namespace tezcat.Framework.Test
             {
                 if (executor.masterTask.userData.timeOut())
                 {
-                    executor.setComplete();
+                    executor.reportComplete();
                 }
             })
             .onComplete(me=>
             {
                 Console.WriteLine($"Moving Completes ...... {index}");
-                preTask.setComplete();
+                preTask.reportComplete();
             })
             .initUserData(new Timer())
             .run();
@@ -224,12 +224,12 @@ namespace tezcat.Framework.Test
             {
                 if (executor.masterTask.userData.timeOut())
                 {
-                    executor.setComplete();
+                    executor.reportComplete();
                 }
             })
             .onComplete(me=>
             {
-                preTask.setComplete();
+                preTask.reportComplete();
             })
             .initUserData(new Timer())
             .run();

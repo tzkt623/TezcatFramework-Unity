@@ -1,4 +1,6 @@
-﻿namespace tezcat.Framework.Game
+﻿using System;
+
+namespace tezcat.Framework.Game
 {
     /// <summary>
     /// 条件节点
@@ -16,5 +18,40 @@
     public abstract class TezBTCondition : TezBTNode
     {
         public override Category category => Category.Condition;
+    }
+
+    public class TezBTLazyCondition : TezBTCondition
+    {
+        static void defaultFunc(TezBTLazyCondition condition) { }
+
+        Action<TezBTLazyCondition> mOnInit = defaultFunc;
+        Action<TezBTLazyCondition> mOnExecute;
+
+        public override void init()
+        {
+            mOnInit.Invoke(this);
+        }
+
+        public void setInitFunc(Action<TezBTLazyCondition> action)
+        {
+            mOnInit = action;
+        }
+
+        public void setExecuteFunc(Action<TezBTLazyCondition> action)
+        {
+            mOnExecute = action;
+        }
+
+        protected override void onExecute()
+        {
+            mOnExecute(this);
+        }
+
+        protected override void onClose()
+        {
+            mOnExecute = null;
+            mOnInit = null;
+            base.onClose();
+        }
     }
 }

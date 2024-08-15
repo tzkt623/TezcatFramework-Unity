@@ -1,5 +1,5 @@
-﻿using System.Collections.Generic;
-using tezcat.Framework.Extension;
+﻿using System;
+using System.Collections.Generic;
 
 namespace tezcat.Framework.Utility
 {
@@ -30,8 +30,14 @@ namespace tezcat.Framework.Utility
         }
 
         static Dictionary<string, Mask> mStateWithName = new Dictionary<string, Mask>(64);
+
         static ulong mMask = 0;
         static Mask[] mMaskArray = new Mask[64];
+
+        public static event Action<Mask> evtPrintState;
+        public static event Action evtBeforePrintState;
+
+        public static bool enablePrint { get; set; } = false;
 
         public static Mask createOrGet(string name, string[] mutexMaskNames = null)
         {
@@ -60,13 +66,14 @@ namespace tezcat.Framework.Utility
             }
         }
 
-        public static void printState(TezEventExtension.Action<Mask> onPrintFunc)
+        public static void printState()
         {
+            evtBeforePrintState?.Invoke();
             for (int i = 0; i < mStateWithName.Count; i++)
             {
-                if ((mMask & mMaskArray[i].maskID) == mMaskArray[i].maskID)
+                if (((1ul << i) & mMask) == mMaskArray[i])
                 {
-                    onPrintFunc(mMaskArray[i]);
+                    evtPrintState?.Invoke(mMaskArray[i]);
                 }
             }
         }
@@ -74,11 +81,19 @@ namespace tezcat.Framework.Utility
         public static void add(ulong states)
         {
             mMask |= states;
+            if(enablePrint)
+            {
+                printState();
+            }
         }
 
         public static void remove(ulong states)
         {
             mMask &= ~states;
+            if (enablePrint)
+            {
+                printState();
+            }
         }
 
         /// <summary>

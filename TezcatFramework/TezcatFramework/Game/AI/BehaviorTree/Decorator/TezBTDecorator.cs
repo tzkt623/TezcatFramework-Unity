@@ -37,7 +37,7 @@ namespace tezcat.Framework.Game
             reader.endObject("Node");
         }
 
-        public void addChild(TezBTNode node)
+        public virtual void addChild(TezBTNode node)
         {
             mChild = node;
         }

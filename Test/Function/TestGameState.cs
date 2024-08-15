@@ -22,7 +22,12 @@ namespace tezcat.Framework.Test
 
         public override void init()
         {
+            TezGameState<PrimaryState>.evtPrintState += onPrintState;
+        }
 
+        private void onPrintState(TezGameState<PrimaryState>.Mask mask)
+        {
+            Console.Write($"{mask.name},");
         }
 
         public override void run()
@@ -52,11 +57,9 @@ namespace tezcat.Framework.Test
 
 
             TezGameState<PrimaryState>.add(PrimaryState.End);
+
             Console.WriteLine("\nPrint State");
-            TezGameState<PrimaryState>.printState((TezGameState<PrimaryState>.Mask mask) =>
-            {
-                Console.Write($"{mask.name},");
-            });
+            TezGameState<PrimaryState>.printState();
             Console.WriteLine();
 
             Console.WriteLine($"allOf [End|PlayerTurn]:{TezGameState<PrimaryState>.allOf(PrimaryState.End | PrimaryState.PlayerTurn)}");

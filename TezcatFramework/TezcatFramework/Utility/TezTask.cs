@@ -42,7 +42,7 @@ namespace tezcat.Framework.Utility
             protected abstract void onComplete();
             protected abstract void onClose();
 
-            protected async virtual System.Threading.Tasks.Task onExecute() {  }
+            protected async virtual System.Threading.Tasks.Task onExecute() { }
 
             public System.Threading.Tasks.Task run()
             {
@@ -273,7 +273,7 @@ namespace tezcat.Framework.Utility
             bool isCompleted { get; }
 
             void execute();
-            void setComplete();
+            void reportComplete();
         }
 
         public abstract class BaseExecutor
@@ -294,7 +294,7 @@ namespace tezcat.Framework.Utility
 
             public abstract void execute();
 
-            public void setComplete()
+            public void reportComplete()
             {
                 mIsCompleted = true;
             }
@@ -352,12 +352,18 @@ namespace tezcat.Framework.Utility
 
         public interface ITask
         {
-            void setComplete();
+            void reportComplete();
         }
 
         public interface ITaskParent
         {
-            void setComplete();
+            void reportComplete();
+            void childComplete();
+        }
+
+        public interface ITaskExecutor
+        {
+            BaseExecutor executor { get; }
         }
 
         public abstract class BaseTask
@@ -366,22 +372,22 @@ namespace tezcat.Framework.Utility
         {
             protected State mState = State.Init;
             public State state => mState;
-
             protected ITaskParent mParent = null;
-
-            public abstract BaseExecutor executor { get; }
 
             public void dispath()
             {
-                this.onDispath();
                 mState = State.Await;
-                if (this.executor != null)
-                {
-                    sExecutorList.AddLast(this.executor);
-                }
+                this.onDispath();
             }
 
-            public abstract void setComplete();
+            public void reportComplete()
+            {
+                mState = State.Complete;
+                this.onComplete();
+                mParent?.childComplete();
+            }
+
+            protected abstract void onComplete();
 
             public void setParent(ITaskParent parent)
             {
@@ -404,13 +410,15 @@ namespace tezcat.Framework.Utility
         }
 
 
-        public class Task : BaseTask
+        public class Task
+            : BaseTask
+            , ITaskExecutor
         {
             Action<Task> mOnDispath = defaultDelegate;
             Action mOnComplete = defaultDelegate;
             Executor mExecutor = null;
 
-            public override BaseExecutor executor => mExecutor;
+            public BaseExecutor executor => mExecutor;
 
             public Task(Action<Task> dispathTask)
             {
@@ -432,13 +440,15 @@ namespace tezcat.Framework.Utility
             protected override void onDispath()
             {
                 mOnDispath(this);
+                if (mExecutor != null)
+                {
+                    sExecutorList.AddLast(mExecutor);
+                }
             }
 
-            public override void setComplete()
+            protected override void onComplete()
             {
-                mState = State.Complete;
                 mOnComplete.Invoke();
-                mParent?.setComplete();
             }
 
             protected override void onClose()
@@ -451,13 +461,15 @@ namespace tezcat.Framework.Utility
             }
         }
 
-        public class Task<T> : BaseTask
+        public class Task<T>
+            : BaseTask
+            , ITaskExecutor
         {
             Action<Task<T>> mOnDispath = defaultDelegate;
             Action<Task<T>> mOnComplete = defaultDelegate;
 
             Executor<T> mExecutor = null;
-            public override BaseExecutor executor => mExecutor;
+            public BaseExecutor executor => mExecutor;
 
             T mUserData;
             public T userData
@@ -480,6 +492,10 @@ namespace tezcat.Framework.Utility
             protected override void onDispath()
             {
                 mOnDispath(this);
+                if (mExecutor != null)
+                {
+                    sExecutorList.AddLast(mExecutor);
+                }
             }
 
             public Task<T> initUserData(T userData)
@@ -494,11 +510,9 @@ namespace tezcat.Framework.Utility
                 return this;
             }
 
-            public override void setComplete()
+            protected override void onComplete()
             {
-                mState = State.Complete;
                 mOnComplete.Invoke(this);
-                mParent?.setComplete();
             }
 
             protected override void onClose()
@@ -521,8 +535,6 @@ namespace tezcat.Framework.Utility
             int mIndex = 0;
             Action mOnComplete = defaultDelegate;
 
-            public override BaseExecutor executor => null;
-
             public Sequence add(BaseTask task)
             {
                 task.setParent(this);
@@ -532,8 +544,12 @@ namespace tezcat.Framework.Utility
 
             protected override void onDispath()
             {
-                mIndex = 0;
-                mList[mIndex].dispath();
+                if(mList.Count == 0)
+                {
+                    throw new Exception($"TezTask : Sequence Count {mList.Count}");
+                }
+
+                mList[0].dispath();
             }
 
             public Sequence onComplete(Action action)
@@ -542,21 +558,9 @@ namespace tezcat.Framework.Utility
                 return this;
             }
 
-            public override void setComplete()
+            protected override void onComplete()
             {
-                if (mList[mIndex].state == State.Complete)
-                {
-                    mIndex++;
-                    if (mIndex >= mList.Count)
-                    {
-                        mState = State.Complete;
-                        mOnComplete.Invoke();
-                        mParent?.setComplete();
-                        return;
-                    }
-                }
-
-                mList[mIndex].dispath();
+                mOnComplete.Invoke();
             }
 
             protected override void onClose()
@@ -569,6 +573,19 @@ namespace tezcat.Framework.Utility
                 mList.Clear();
                 mList = null;
                 mOnComplete = null;
+            }
+
+            void ITaskParent.childComplete()
+            {
+                mIndex++;
+                if (mIndex == mList.Count)
+                {
+                    this.reportComplete();
+                }
+                else
+                {
+                    mList[mIndex].dispath();
+                }
             }
         }
         #endregion
@@ -582,8 +599,6 @@ namespace tezcat.Framework.Utility
             Action mOnComplete = defaultDelegate;
             int mIndex = 0;
 
-            public override BaseExecutor executor => null;
-
             public Parallel add(BaseTask task)
             {
                 mList.Add(task);
@@ -593,6 +608,11 @@ namespace tezcat.Framework.Utility
 
             protected override void onDispath()
             {
+                if (mList.Count == 0)
+                {
+                    throw new Exception($"TezTask : Parallel Count {mList.Count}");
+                }
+
                 foreach (var item in mList)
                 {
                     item.dispath();
@@ -605,15 +625,9 @@ namespace tezcat.Framework.Utility
                 return this;
             }
 
-            public override void setComplete()
+            protected override void onComplete()
             {
-                mIndex++;
-                if (mIndex == mList.Count)
-                {
-                    mState = State.Complete;
-                    mOnComplete.Invoke();
-                    mParent?.setComplete();
-                }
+                mOnComplete();
             }
 
             protected override void onClose()
@@ -627,6 +641,15 @@ namespace tezcat.Framework.Utility
                 mList = null;
 
                 mOnComplete = null;
+            }
+
+            void ITaskParent.childComplete()
+            {
+                mIndex++;
+                if (mIndex == mList.Count)
+                {
+                    this.reportComplete();
+                }
             }
         }
         #endregion
@@ -679,7 +702,7 @@ namespace tezcat.Framework.Utility
                 {
                     var temp = executor_node.Next;
                     sExecutorList.Remove(executor_node);
-                    executor.masterTask.setComplete();
+                    executor.masterTask.reportComplete();
                     executor_node = temp;
                 }
                 else
