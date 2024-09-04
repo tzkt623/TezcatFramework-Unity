@@ -25,12 +25,10 @@ namespace tezcat.Framework.Game
                     mIndex++;
                     if (mIndex == mList.Count)
                     {
-                        this.reset();
                         this.setSuccess();
                     }
                     break;
                 case Result.Fail:
-                    this.reset();
                     this.setFail();
                     break;
             }

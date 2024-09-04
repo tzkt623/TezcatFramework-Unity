@@ -93,6 +93,7 @@ namespace tezcat.Framework.Game
         #endregion
 
         public event Action<TezBTNode.Result> evtBehaviorComplete;
+        public event Action<TezBTNode.Result> evtBehaviorRunning;
 
         ITezBTContext mContext = null;
         public ITezBTContext context => mContext;
@@ -103,18 +104,19 @@ namespace tezcat.Framework.Game
 
         public void loadConfig(TezReader reader)
         {
-            mRoot = (TezBTComposite)create(reader.readString("CID"));
+            mRoot = (TezBTComposite)create(reader.readString("Node"));
             mRoot.tree = this;
             mRoot.parent = this;
             mRoot.loadConfig(reader);
         }
 
-        public void init()
+        public void build()
         {
             if(mRoot == null)
             {
-                throw new Exception("BehaviorTree : Root Node Must be Setted Before Init");
+                throw new Exception("BehaviorTree : Root Node Must be Set Before Build");
             }
+
             mRoot.init();
         }
 
@@ -172,6 +174,9 @@ namespace tezcat.Framework.Game
                     break;
                 case TezBTNode.Result.Fail:
                     evtBehaviorComplete?.Invoke(result);
+                    break;
+                default:
+                    evtBehaviorRunning?.Invoke(result);
                     break;
             }
         }

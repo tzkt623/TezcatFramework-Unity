@@ -220,6 +220,8 @@ namespace tezcat.Framework.Test
             TezBehaviorTree.register<NeedTools>();
 
             TezBehaviorTree.register<GetFoods>();
+            TezBehaviorTree.register<GetTools>();
+
             TezBehaviorTree.register<CookRice>();
             TezBehaviorTree.register<Cooking>();
             TezBehaviorTree.register<Eating>();
@@ -232,13 +234,23 @@ namespace tezcat.Framework.Test
 
         public void buildTree()
         {
-            mTree = new TezBehaviorTree();
-            mTree.evtBehaviorComplete += onBehaviorComplete;
+
 
             ///做饭
             ///如果没有食物,先取得食物
             ///如果没有工具,取得工具
             ///先蒸饭,再炒菜,最后吃饭
+            ///
+            TezJsonReader reader = new TezJsonReader();
+            reader.load($"{Path.root}Res/BehaviorTree/Config.json");
+
+            mTree = new TezBehaviorTree();
+            mTree.evtBehaviorComplete += onBehaviorComplete;
+            mTree.loadConfig(reader);
+            reader.close();
+
+
+            /*
             var root = mTree.createRoot<TezBTSequence>();
 
             var get_foods = root.createNode<TezBTSequence>();
@@ -255,8 +267,9 @@ namespace tezcat.Framework.Test
             cook.createNode<Cooking>();
 
             root.createNode<Eating>();
+            */
 
-            mTree.init();
+            mTree.build();
             mTree.setContext(new Context());
         }
 

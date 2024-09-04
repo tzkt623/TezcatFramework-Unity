@@ -29,7 +29,6 @@
             {
                 case Result.Success:
                     mFlag = false;
-                    this.reset();
                     this.setSuccess();
                     break;
                 case Result.Fail:
@@ -37,11 +36,11 @@
                     if (mIndex == mList.Count)
                     {
                         mFlag = false;
-                        this.reset();
                         this.setFail();
                     }
                     break;
                 default:
+                    mFlag = false;
                     break;
             }
         }

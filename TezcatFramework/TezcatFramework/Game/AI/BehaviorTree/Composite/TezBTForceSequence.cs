@@ -17,7 +17,6 @@
                     mIndex++;
                     if (mIndex == mList.Count)
                     {
-                        this.reset();
                         this.setSuccess();
                     }
                     break;

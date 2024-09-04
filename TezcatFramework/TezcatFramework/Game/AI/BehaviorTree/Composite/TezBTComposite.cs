@@ -31,19 +31,19 @@ namespace tezcat.Framework.Game
 
         public override void loadConfig(TezReader reader)
         {
-            reader.beginArray("Nodes");
+            reader.beginArray("Children");
 
             var count = reader.count;
             for (int i = 0; i < count; i++)
             {
                 reader.beginObject(i);
-                var node = TezBehaviorTree.create(reader.readString("CID"));
+                var node = TezBehaviorTree.create(reader.readString("Node"));
                 this.onAddChild(node);
                 node.loadConfig(reader);
                 reader.endObject(i);
             }
 
-            reader.endArray("Nodes");
+            reader.endArray("Children");
         }
 
         void ITezBTParentNode.childReport(Result result)

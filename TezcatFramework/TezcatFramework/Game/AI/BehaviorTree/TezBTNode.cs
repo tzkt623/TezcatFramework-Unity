@@ -54,6 +54,11 @@ namespace tezcat.Framework.Game
         public virtual void reset() { }
         public virtual void loadConfig(TezReader reader) { }
 
+        public T getContext<T>() where T : ITezBTContext
+        {
+            return (T)mTree.context;
+        }
+
         protected void setFail()
         {
             mState = Result.Fail;
@@ -90,6 +95,10 @@ namespace tezcat.Framework.Game
             mState = Result.Running;
             this.onExecute();
             this.reportState();
+            if (mState != Result.Running)
+            {
+                this.reset();
+            }
         }
 
         protected abstract void onExecute();

@@ -49,13 +49,11 @@ namespace tezcat.Framework.Game
                     if (mRunningList.Count == 0)
                     {
                         mRunning = false;
-                        this.reset();
                         this.setSuccess();
                     }
                     break;
                 case Result.Fail:
                     mRunning = false;
-                    this.reset();
                     this.setFail();
                     break;
                 default:
@@ -67,7 +65,7 @@ namespace tezcat.Framework.Game
         {
             mRunning = true;
             mIndex = 0;
-            while (mRunning && mIndex < mRunningList.Count)
+            while (mRunning && (mIndex < mRunningList.Count))
             {
                 mRunningList[mIndex].execute();
                 mIndex++;
