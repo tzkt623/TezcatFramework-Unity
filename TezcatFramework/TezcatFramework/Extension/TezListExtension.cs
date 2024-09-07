@@ -115,54 +115,39 @@ namespace tezcat.Framework.Extension
         }
 
         /// <summary>
-        /// 输入插入位置的随机函数
-        /// </summary>
-        [Obsolete("不要在用这个菜鸡方法了,用shuffle")]
-        public static void randomSort<T>(this List<T> list, TezEventExtension.Function<int, int> insert_position)
-        {
-            List<T> sorter = new List<T>(list);
-            list.Clear();
-            foreach (var item in sorter)
-            {
-                list.Insert(insert_position(list.Count), item);
-            }
-        }
-
-        /// <summary>
         /// 随机打乱数组
         /// </summary>
-        public static void shuffle<T>(this List<T> list, TezEventExtension.Function<int, int> random)
+        public static void shuffle<T>(this List<T> list, Func<int, int> random)
         {
-            var count = list.Count;
-            while (count > 1)
+            var count = list.Count - 1;
+            while (count > -1)
             {
-                count--;
-                var index = random(count + 1);
+                var index = random(list.Count);
                 var value = list[index];
                 list[index] = list[count];
                 list[count] = value;
+                count--;
             }
         }
 
         public static void shuffle<T>(this List<T> list)
         {
             Random random = new Random();
-
             
-            var count = list.Count;
-            while (count > 1)
+            var count = list.Count - 1;
+            while (count > -1)
             {
-                count--;
-                var index = random.Next(count + 1);
+                var index = random.Next(count);
                 var value = list[index];
                 list[index] = list[count];
                 list[count] = value;
+                count--;
             }
         }
 
-        public static T randomGet<T>(this List<T> list, TezEventExtension.Function<int, int> insert_position)
+        public static T randomGet<T>(this List<T> list, Func<int, int> random)
         {
-            var index = insert_position(list.Count);
+            var index = random(list.Count);
             var result = list[index];
 
             var last = list.Count - 1;
