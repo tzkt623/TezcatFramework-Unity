@@ -1,12 +1,10 @@
 ﻿using System;
-using tezcat.Framework.Core;
 using tezcat.Framework.Utility;
 
 namespace tezcat.Framework.Game
 {
     public interface ITezAStarDataWrapper
-        : ITezCloseable
-        , ITezBinaryHeapItem
+        : ITezBinaryHeapItem
     {
         ITezAStarDataWrapper parent { get; set; }
 

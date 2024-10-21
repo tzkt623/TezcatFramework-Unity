@@ -42,17 +42,11 @@
 
 
         #region ItemInfo
-        /// <summary>
-        /// StackCount
-        /// </summary>
-        public const string ItemInfo = "ItemInfo";
-
         public const string ObjectData = "ObjectData";
 
-        /// <summary>
-        /// StackCount
-        /// </summary>
         public const string StackCount = "StackCount";
+
+        public const string Customizable = "Customizable";
 
         public const string DBID = "DBID";
 

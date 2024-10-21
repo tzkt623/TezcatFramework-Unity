@@ -37,7 +37,7 @@ namespace tezcat.Framework.Game
         public int filterIndex { get; set; }
         public override int count
         {
-            get { return -1; }
+            get { return 1; }
             set { }
         }
         public TezInventory inventory { get; set; }
@@ -139,13 +139,13 @@ namespace tezcat.Framework.Game
             mView.setInventory(this, mUniqueItemList, mStackedItemDict);
         }
 
-        public void store(TezItemObject item, int count = -1)
+        public void store(TezItemObject item, int count = 1)
         {
-            TezGameItemInfo item_info = item.itemInfo;
+            TezProtoItemInfo item_info = item.itemInfo;
             var stack_count = item_info.stackCount;
 
             //可堆叠物品
-            if (stack_count > 0)
+            if (stack_count > 1)
             {
                 if (!mStackedItemDict.TryGetValue(item_info.itemID.ID, out var stack_info))
                 {
@@ -233,7 +233,7 @@ namespace tezcat.Framework.Game
 
         public void take(TezItemObject item, int count = -1)
         {
-            if (item.itemInfo.stackCount > 0)
+            if (item.itemInfo.stackCount > 1)
             {
                 if (mStackedItemDict.TryGetValue(item.itemInfo.itemID.ID, out var stack_info) && stack_info.item == item)
                 {
@@ -293,7 +293,7 @@ namespace tezcat.Framework.Game
         /// </summary>
         public TezInventoryBaseItemInfo find(TezItemObject item)
         {
-            if (item.itemInfo.stackCount > 0)
+            if (item.itemInfo.stackCount > 1)
             {
                 if (mStackedItemDict.TryGetValue(item.itemInfo.itemID.ID, out var result))
                 {

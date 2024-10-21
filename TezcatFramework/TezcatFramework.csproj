@@ -53,7 +53,7 @@
     <Compile Include="TezcatFramework\Game\BonusSystem2\TezBonusModifierContainer.cs" />
     <Compile Include="TezcatFramework\Game\BonusSystem2\TezBonusModifier.cs" />
     <Compile Include="TezcatFramework\Game\Affix\TezAffix.cs" />
-    <Compile Include="TezcatFramework\Core\DataBase\TezGameItemInfo.cs" />
+    <Compile Include="TezcatFramework\Core\DataBase\TezProtoItemInfo.cs" />
     <Compile Include="TezcatFramework\Core\Object\TezGameObject.cs" />
     <Compile Include="TezcatFramework\Core\DataBase\TezItemID.cs" />
     <Compile Include="TezcatFramework\Core\Object\TezItemObject.cs" />
@@ -200,8 +200,6 @@
     <Compile Include="TezcatFramework\Core\TypeTraits\TezTypeInfo.cs" />
     <Compile Include="TezcatFramework\Utility\Container\TezArrayEnumerator.cs" />
     <Compile Include="TezcatFramework\Utility\Container\TezCountArrayEnumerator.cs" />
-    <Compile Include="TezcatFramework\Utility\SamplePool\ITezSamplePool.cs" />
-    <Compile Include="TezcatFramework\Utility\SamplePool\TezSamplePoolManager.cs" />
     <Compile Include="TezcatFramework\Utility\TezIDCreator.cs" />
     <Compile Include="TezcatFramework\Core\ValueWrapper\TezString.cs" />
     <Compile Include="TezcatFramework\Utility\TezPageController.cs" />
@@ -216,7 +214,7 @@
     <Compile Include="TezcatFramework\Utility\TezGameState.cs" />
     <Compile Include="TezcatFramework\Utility\Container\TezList.cs" />
     <Compile Include="TezcatFramework\Core\FileIO\TezFilePath.cs" />
-    <Compile Include="TezcatFramework\Utility\SamplePool\TezSamplePool.cs" />
+    <Compile Include="TezcatFramework\Utility\TezObjectPool.cs" />
     <Compile Include="TezcatFramework\Utility\TezSingleton.cs" />
     <Compile Include="TezcatFramework\Utility\TezSmartObject.cs" />
     <Compile Include="TezcatFramework\Utility\Container\TezTuple.cs" />

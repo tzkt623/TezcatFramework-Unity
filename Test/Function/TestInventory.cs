@@ -23,13 +23,13 @@ namespace tezcat.Framework.Test
 
             TezInventoryFilter.createFilter("TypeFilter", (ITezInventoryViewSlotData data) =>
             {
-                return data.item.itemInfo.itemID.TID == TezItemID.getTypeID(MyCategory.Equipment.Armor.name);
+                return data.item.itemInfo.itemID.TID == TezcatFramework.protoDB.getTypeID("HealthPotion");
             });
 
-            TezInventoryFilter.createFilter("CategoryFilter", (ITezInventoryViewSlotData data) =>
-            {
-                return data.item.itemInfo.category == TezCategorySystem.getCategory(MyCategory.Potion.HealthPotion);
-            });
+//             TezInventoryFilter.createFilter("CategoryFilter", (ITezInventoryViewSlotData data) =>
+//             {
+//                 return data.item.itemInfo.category == TezCategorySystem.getCategory(MyCategory.Potion.HealthPotion);
+//             });
 
             mPageView = new TezInventoryPageView();
 

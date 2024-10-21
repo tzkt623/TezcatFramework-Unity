@@ -1,16 +1,11 @@
 {
     "CID": "Breastplate",
     "ProtoInfo": {
-        "Name": "H355",
-        "IID": 0
-    },
-    "ItemInfo": {
         "Type": "Armor",
         "IID": 0,
         "Name": "H355",
         "StackCount": -1,
-        "Category": "Breastplate",
-        "IsProto": true
+        "Customizable": true
     },
     "ObjectData": {
         "ArmorAdd": 20

@@ -5,6 +5,8 @@ using System.Runtime.InteropServices;
 namespace tezcat.Framework.Core
 {
     /// <summary>
+    /// 
+    /// 
     /// 物品ID
     /// 用于判断两个物品是不是同一个
     /// 此类应该是共享数据类
@@ -35,7 +37,6 @@ namespace tezcat.Framework.Core
     /// 第一个DBID = 2, RTID = 1
     /// 第二个DBID = 2, RTID = 2
     /// </para>
-    /// 
     /// 
     /// 
     /// </summary>
@@ -119,44 +120,15 @@ namespace tezcat.Framework.Core
         }
         #endregion
 
-        /// <summary>
-        /// 是否运行存储
-        /// </summary>
-        public bool isEmpty => mID == 0;
-
         [FieldOffset(0)]
         long mID;
         public long ID => mID;
 
         [FieldOffset(0)]
-        uint mDBID = 0;
-        /// <summary>
-        /// Database ID
-        /// 存在于数据库中的物品的ID
-        /// 范围值为[0, int32.Max]
-        /// </summary>
-        public uint DBID => mDBID;
-
-        [FieldOffset(0)]
-        ushort mIndexID = 0;
-        /// <summary>
-        /// 唯一ID
-        /// </summary>
-        public ushort IID => mIndexID;
-
-        [FieldOffset(2)]
-        ushort mTypeID = 0;
-        /// <summary>
-        /// 类型ID
-        /// </summary>
-        public ushort TID => mTypeID;
-
-        [FieldOffset(4)]
         int mRTID = -1;
         /// <summary>
         /// Runtime ID
         /// 用于在游戏运行时赋予动态生成的物品
-        /// ID范围值为[int32.Max+1, int64.Max]
         /// 
         /// <para>
         /// 例如
@@ -170,6 +142,35 @@ namespace tezcat.Framework.Core
         /// 
         /// </summary>
         public int RTID => mRTID;
+
+        [FieldOffset(4)]
+        uint mDBID = 0;
+        /// <summary>
+        /// Database ID
+        /// 存在于数据库中的物品的ID
+        /// </summary>
+        public uint DBID => mDBID;
+
+        [FieldOffset(4)]
+        ushort mIndexID = 0;
+        /// <summary>
+        /// 索引ID
+        /// </summary>
+        public ushort IID => mIndexID;
+
+        [FieldOffset(6)]
+        ushort mTypeID = 0;
+        /// <summary>
+        /// 类型ID
+        /// 由类的Class类型决定
+        /// </summary>
+        public ushort TID => mTypeID;
+
+
+        /// <summary>
+        /// 是否运行存储
+        /// </summary>
+        public bool isEmpty => mID == 0;
 
         private TezItemID() { }
 
@@ -206,7 +207,7 @@ namespace tezcat.Framework.Core
 
         public bool Equals(TezItemID other)
         {
-            if (object.ReferenceEquals(other, null))
+            if (other is null)
             {
                 return false;
             }
@@ -219,7 +220,7 @@ namespace tezcat.Framework.Core
         /// </summary>
         public static bool operator ==(TezItemID a, TezItemID b)
         {
-            if (object.ReferenceEquals(a, null) || object.ReferenceEquals(b, null))
+            if (a is null || b is null)
             {
                 return false;
             }

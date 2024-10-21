@@ -2,6 +2,49 @@ using System.Collections.Generic;
 
 namespace tezcat.Framework.Utility
 {
+    public static class TezMath
+    {
+        public static int max(int a, int b)
+        {
+            if (a >= b)
+            {
+                return a;
+            }
+
+            return b;
+        }
+
+        public static int min(int a, int b)
+        {
+            if (a <= b)
+            {
+                return a;
+            }
+
+            return b;
+        }
+
+        public static float max(float a, float b)
+        {
+            if (a >= b)
+            {
+                return a;
+            }
+
+            return b;
+        }
+
+        public static float min(float a, float b)
+        {
+            if (a <= b)
+            {
+                return a;
+            }
+
+            return b;
+        }
+    }
+
     public static class TezHash
     {
         public static int SDBMLower(string s)

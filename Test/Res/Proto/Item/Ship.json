@@ -1,16 +1,11 @@
 {
     "CID": "Ship",
     "ProtoInfo": {
-        "Name": "Battleship",
-        "IID": 0
-    },
-    "ItemInfo": {
-        "Name": "Battleship",
         "Type": "Unit",
         "IID": 0,
+        "Name": "Battleship",
         "StackCount": -1,
-        "Category": "Ship",
-        "IsProto": true
+        "Customizable": true
     },
     "ObjectData": {
         "HullCapacity": 300,

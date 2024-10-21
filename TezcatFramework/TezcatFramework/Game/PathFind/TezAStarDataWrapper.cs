@@ -1,5 +1,4 @@
-﻿using tezcat.Framework.Core;
-using tezcat.Framework.Utility;
+﻿using tezcat.Framework.Utility;
 
 namespace tezcat.Framework.Game
 {
@@ -14,14 +13,12 @@ namespace tezcat.Framework.Game
     /// </summary>
     public abstract class TezAStarDataWrapper<Self, BlockData>
         : ITezAStarDataWrapper<Self, BlockData>
+        , ITezObjectPoolItem
         where Self : TezAStarDataWrapper<Self, BlockData>, new()
     {
         public ITezAStarDataWrapper parent { get; set; }
-
         public BlockData blockData { get; set; }
-
         public object data => this.blockData;
-
         int ITezBinaryHeapItem.index { get; set; } = -1;
 
         /// <summary>
@@ -43,6 +40,8 @@ namespace tezcat.Framework.Game
         {
             get { return this.gCost + this.hCost; }
         }
+
+        ITezObjectPool ITezObjectPoolItem.objectPool { get; set; }
 
         public virtual bool isBlocked()
         {
@@ -74,7 +73,7 @@ namespace tezcat.Framework.Game
 
         public virtual bool Equals(Self other)
         {
-            if (object.ReferenceEquals(other, null))
+            if (other is null)
             {
                 return false;
             }
@@ -82,9 +81,8 @@ namespace tezcat.Framework.Game
             return this.blockData.Equals(other.blockData);
         }
 
-        void ITezCloseable.closeThis()
+        void ITezObjectPoolItem.destroyThis()
         {
-            this.onClose();
         }
 
         protected virtual void onClose()
@@ -93,11 +91,17 @@ namespace tezcat.Framework.Game
             this.blockData = default;
         }
 
+        bool ITezObjectPoolItem.recycleThis()
+        {
+            this.onClose();
+            return true;
+        }
+
         public static bool operator ==(TezAStarDataWrapper<Self, BlockData> a, TezAStarDataWrapper<Self, BlockData> b)
         {
-            if (object.ReferenceEquals(a, null))
+            if (a is null)
             {
-                return object.ReferenceEquals(b, null);
+                return b is null;
             }
 
             return a.blockData.Equals(b.blockData);

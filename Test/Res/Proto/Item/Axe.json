@@ -1,16 +1,11 @@
 {
     "CID": "Axe",
     "ProtoInfo": {
-        "Name": "FireAxe",
-        "IID": 0
-    },
-    "ItemInfo": {
         "Type": "Weapon",
         "IID": 0,
         "Name": "FireAxe",
         "StackCount": -1,
-        "Category": "Axe",
-        "IsProto": true
+        "Customizable": true
     },
     "ObjectData": {
         "Attack": 5

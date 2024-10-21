@@ -58,6 +58,7 @@ namespace tezcat.Framework.Test
             //N
             //O
             mTestList.Add(new TestObject());
+            mTestList.Add(new TestObjectPool());
             //P
             //Q
             //R

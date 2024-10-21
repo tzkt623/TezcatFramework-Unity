@@ -1,12 +1,38 @@
 using System;
+using tezcat.Framework.Utility;
 
 namespace tezcat.Framework.Core
 {
+    /*
+     * 
+     * 
+     */
+
     public interface ITezItemObject
     {
-        TezGameItemInfo itemInfo { get; }
+        TezProtoItemInfo itemInfo { get; }
     }
 
+    /// <summary>
+    /// 可读可写物品
+    /// 玩家可自定义物品
+    /// 
+    /// 可自定义物品在保存的时候需要单独保存每一个数据
+    /// </summary>
+    public interface ITezCustomItemObject
+    {
+
+    }
+
+    /// <summary>
+    /// 只读物品
+    /// 玩家不能自定义物品
+    /// 
+    /// 不可自定义物品在保存的时候只需要保存数据库ID以及个数
+    /// </summary>
+    public interface ITezReadOnlyItemObject
+    {
+    }
 
 
     /// <summary>
@@ -18,14 +44,14 @@ namespace tezcat.Framework.Core
         : TezGameObject
         , ITezProtoObject
     {
-        protected TezGameItemInfo mItemInfo = null;
-        public TezGameItemInfo itemInfo => mItemInfo;
+        protected TezProtoItemInfo mItemInfo = null;
+        public TezProtoItemInfo itemInfo => mItemInfo;
 
         protected override void onClose()
         {
             base.onClose();
-            mItemInfo.close();
-            if(mItemInfo.invalid)
+            mItemInfo.poolRecycle();
+            if (mItemInfo.invalid)
             {
                 mItemInfo = null;
             }
@@ -52,8 +78,10 @@ namespace tezcat.Framework.Core
         public sealed override void deserialize(TezReader reader)
         {
             base.deserialize(reader);
-            mItemInfo = new TezGameItemInfo(this);
+            //mItemInfo = new TezGameItemInfo(this);
+            mItemInfo = TezObjectPool.create<TezProtoItemInfo>();
             mItemInfo.deserialize(reader);
+            mItemInfo.setProto(this);
 
             reader.beginObject(TezBuildInName.ObjectData);
             this.onDeserialize(reader);
@@ -78,7 +106,7 @@ namespace tezcat.Framework.Core
         /// </summary>
         public ITezProtoObject spawnObject()
         {
-            return mItemInfo.isShared ? this.shareObject() : this.remodifyObject();
+            return mItemInfo.isCustomizable ? this.shareObject() : this.remodifyObject();
         }
 
         public T spawnObject<T>() where T : TezItemObject
@@ -109,7 +137,8 @@ namespace tezcat.Framework.Core
         /// </summary>
         private void copyDataFrom(TezItemObject template)
         {
-            mItemInfo = new TezGameItemInfo(this);
+            //mItemInfo = new TezGameItemInfo(this);
+            mItemInfo = TezObjectPool.create<TezProtoItemInfo>();
             mItemInfo.remodifyFrom(template.itemInfo);
             mItemInfo.setProto(this);
             this.onCopyDataFrom(template);

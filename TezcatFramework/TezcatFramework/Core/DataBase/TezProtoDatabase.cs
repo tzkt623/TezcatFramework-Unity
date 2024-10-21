@@ -95,36 +95,6 @@ namespace tezcat.Framework.Core
 
             return a.mID != b.mID;
         }
-
-
-        #region Tool
-        static List<string> sTypeList = new List<string>();
-        static Dictionary<string, ushort> sTypeDict = new Dictionary<string, ushort>();
-
-        public static void loadConfigFile(TezReader reader)
-        {
-            foreach (var key in reader.getKeys())
-            {
-                registerTypeID(key, reader.readInt(key));
-            }
-        }
-
-        public static int getTypeID(string name)
-        {
-            return sTypeDict[name];
-        }
-
-        public static void registerTypeID(string typeName, int typeID)
-        {
-            while (sTypeList.Count <= typeID)
-            {
-                sTypeList.Add(null);
-            }
-
-            sTypeList[typeID] = typeName;
-            sTypeDict.Add(typeName, (ushort)typeID);
-        }
-        #endregion
     }
 
     public class TezProtoCreator
@@ -162,13 +132,54 @@ namespace tezcat.Framework.Core
     /// </summary>
     public class TezProtoDatabase
     {
+        #region ID Manager
+        List<string> mTypeList = new List<string>();
+        Dictionary<string, ushort> mTypeDict = new Dictionary<string, ushort>();
+
+        private void loadConfigFile(string configFilePath)
+        {
+            TezJsonReader reader = new TezJsonReader();
+
+            if (reader.load(configFilePath))
+            {
+                foreach (var key in reader.getKeys())
+                {
+                    registerTypeID(key, reader.readInt(key));
+                }
+            }
+
+            reader.close();
+        }
+
+        public int getTypeID(string name)
+        {
+            if(mTypeDict.TryGetValue(name, out ushort typeID))
+            {
+                return typeID;
+            }
+
+            return -1;
+        }
+
+        private void registerTypeID(string typeName, int typeID)
+        {
+            while (mTypeList.Count <= typeID)
+            {
+                mTypeList.Add(null);
+            }
+
+            mTypeList[typeID] = typeName;
+            mTypeDict.Add(typeName, (ushort)typeID);
+        }
+        #endregion
+
         static class TypeIDGetter<T> where T : ITezProtoObject
         {
             static TypeIDGetter()
             {
                 if (ID < 0)
                 {
-                    ID = TezProtoIDManager.getTypeID(typeof(T).Name);
+                    ID = TezcatFramework.protoDB.getTypeID(typeof(T).Name);
 
                     //ID = TezItemID.getTypeID(typeof(T).Name);
                 }
@@ -179,8 +190,8 @@ namespace tezcat.Framework.Core
 
         class Cell
         {
-            public List<TezProtoCreator> list = new List<TezProtoCreator>();
-            public Dictionary<string, TezProtoCreator> dict = new Dictionary<string, TezProtoCreator>();
+            public List<TezProtoItemInfo> list = new List<TezProtoItemInfo>();
+            public Dictionary<string, TezProtoItemInfo> dict = new Dictionary<string, TezProtoItemInfo>();
 
             public void memoryCut()
             {
@@ -189,28 +200,26 @@ namespace tezcat.Framework.Core
         }
 
         private List<Cell> mCellList = new List<Cell>();
-        protected List<TezProtoCreator> mFixedList = new List<TezProtoCreator>();
-        protected Dictionary<string, TezProtoCreator> mFixedDict = new Dictionary<string, TezProtoCreator>();
+        protected Dictionary<string, TezProtoItemInfo> mFixedDict = new Dictionary<string, TezProtoItemInfo>();
 
-        public void load(string path)
+        public void load(string configFilePath, string protoFilePath)
+        {
+            this.loadConfigFile(configFilePath);
+            this.loadProtoFile(protoFilePath);
+        }
+
+        private void loadProtoFile(string protoFilePath)
         {
             TezFileReader reader = new TezJsonReader();
-            var files = TezFilePath.getFiles(path, true);
+            var files = TezFilePath.getFiles(protoFilePath, true);
             for (int j = 0; j < files.Length; j++)
             {
                 if (reader.load(files[j]))
                 {
-                    var CID = reader.readString(TezBuildInName.CID);
-                    var item = TezcatFramework.classFactory.create<ITezProtoObject>(CID);
+                    var item = TezcatFramework.classFactory.create<ITezProtoObject>(reader.readString(TezBuildInName.CID));
                     item.deserialize(reader);
-                    int type_id = TezProtoIDManager.getTypeID(CID);
 
-                    reader.beginObject(TezBuildInName.ProtoInfo);
-                    var index_id = reader.readInt(TezBuildInName.IID);
-                    string proto_name = reader.readString(TezBuildInName.Name);
-                    reader.endObject(TezBuildInName.ProtoInfo);
-
-                    this.register(proto_name, type_id, index_id, item);
+                    this.register(item.itemInfo);
                 }
                 else
                 {
@@ -226,8 +235,11 @@ namespace tezcat.Framework.Core
             }
         }
 
-        private void register(string protoName, int typeID, int indexID, ITezProtoObject protoObject)
+        private void register(TezProtoItemInfo itemInfo)
         {
+            var typeID = itemInfo.itemID.TID;
+            var indexID = itemInfo.itemID.IID;
+
             while (typeID >= mCellList.Count)
             {
                 mCellList.Add(new Cell());
@@ -239,37 +251,37 @@ namespace tezcat.Framework.Core
                 cell.list.Add(null);
             }
 
-            if (cell.list[indexID] != null)
+            if (!(cell.list[indexID] is null))
             {
-                throw new Exception($"This item slot[{cell.list[indexID].name}:{cell.list[indexID].typeID}|{cell.list[indexID].indexID}] has registered! You want[{protoName}:{typeID}|{indexID}]");
+                throw new Exception($"This item slot[{cell.list[indexID].NID}:{cell.list[indexID].itemID.TID}|{cell.list[indexID].itemID.IID}] has registered! You want[{itemInfo.NID}:{typeID}|{indexID}]");
             }
 
-            var info = new TezProtoCreator(protoName, typeID, indexID, protoObject);
-            cell.list[indexID] = info;
-            cell.dict.Add(info.name, info);
+            cell.list[indexID] = itemInfo;
+            cell.dict.Add(itemInfo.NID, itemInfo);
+            mFixedDict.Add(itemInfo.NID, itemInfo);
         }
 
-        public TezProtoCreator getProto(string nid)
+        public TezProtoItemInfo getProto(string nid)
         {
             return mFixedDict[nid];
         }
 
-        public TezProtoCreator getProto(int typeID, int indexID)
+        public TezProtoItemInfo getProto(int typeID, int indexID)
         {
             return mCellList[typeID].list[indexID];
         }
 
-        public TezProtoCreator getProto<T>(int indexID) where T : ITezProtoObject
+        public TezProtoItemInfo getProto<T>(int indexID) where T : ITezProtoObject
         {
             return mCellList[TypeIDGetter<T>.ID].list[indexID];
         }
 
-        public TezProtoCreator getProto<T>(string name) where T : ITezProtoObject
+        public TezProtoItemInfo getProto<T>(string name) where T : ITezProtoObject
         {
             return mCellList[TypeIDGetter<T>.ID].dict[name];
         }
 
-        public bool tryGetProto(ushort TID, ushort UID, out TezProtoCreator info)
+        public bool tryGetProto(ushort TID, ushort UID, out TezProtoItemInfo info)
         {
             var list = mCellList[TID].list;
             if (UID < 0 || UID > list.Count)
@@ -282,9 +294,9 @@ namespace tezcat.Framework.Core
             return true;
         }
 
-        public bool tryGetProto(string nid, out TezProtoCreator info)
+        public bool tryGetProto(string NID, out TezProtoItemInfo info)
         {
-            if (mFixedDict.TryGetValue(nid, out var temp))
+            if (mFixedDict.TryGetValue(NID, out var temp))
             {
                 info = temp;
                 return true;

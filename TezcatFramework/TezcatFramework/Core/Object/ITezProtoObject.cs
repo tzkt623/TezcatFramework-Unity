@@ -5,6 +5,8 @@
     /// </summary>
     public interface ITezProtoObject : ITezSerializable
     {
+        TezProtoItemInfo itemInfo { get; }
+
         /// <summary>
         /// 生成对象
         /// </summary>

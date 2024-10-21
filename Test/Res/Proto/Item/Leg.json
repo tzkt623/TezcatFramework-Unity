@@ -1,16 +1,11 @@
 {
     "CID": "Leg",
     "ProtoInfo": {
-        "Name": "Ring",
-        "IID": 0
-    },
-    "ItemInfo": {
         "Type": "Armor",
-        "IID": 2,
+        "IID": 0,
         "Name": "Ring",
         "StackCount": -1,
-        "Category": "Leg",
-        "IsProto": true
+        "Customizable": true
     },
     "ObjectData": {
         "ArmorAdd": 1

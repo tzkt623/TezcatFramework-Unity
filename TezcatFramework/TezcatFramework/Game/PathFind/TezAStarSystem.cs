@@ -18,51 +18,51 @@ namespace tezcat.Framework.Game
         #region Tool
         public static void closePools()
         {
-            TezSamplePool<Wrapper>.instance.destroy();
-            TezSamplePool<HashSet<Wrapper>>.instance.destroy();
-            TezSamplePool<List<BlockData>>.instance.destroy();
-            TezSamplePool<List<Wrapper>>.instance.destroy();
+            TezObjectPool.destroy<Wrapper>();
+            TezObjectPool.destroy<TezObjectPool.HashSet<Wrapper>>();
+            TezObjectPool.destroy<TezObjectPool.List<BlockData>>();
+            TezObjectPool.destroy<TezObjectPool.List<Wrapper>>();
         }
 
-        protected static List<BlockData> createList_BlockData()
+        protected static TezObjectPool.List<BlockData> createBlockDataList()
         {
-            return TezSamplePool<List<BlockData>>.instance.create();
+            return TezObjectPool.create<TezObjectPool.List<BlockData>>();
         }
 
-        protected static void recycleList_BlockData(List<BlockData> blockDatas)
-        {
-            TezSamplePool<List<BlockData>>.instance.recycle(blockDatas);
-        }
+//         protected static void recycleBlockDataList(TezObjectPool.List<BlockData> blockDatas)
+//         {
+//             TezObjectPool.recycle(blockDatas);
+//         }
 
         protected static Wrapper createWrapper()
         {
-            return TezSamplePool<Wrapper>.instance.create();
+            return TezObjectPool.create<Wrapper>();
         }
 
-        protected static void recycleWrapper(Wrapper wrapper)
+//         protected static void recycleWrapper(Wrapper wrapper)
+//         {
+//             TezObjectPool.recycle(wrapper);
+//         }
+
+        protected static TezObjectPool.List<Wrapper> createWrapperList()
         {
-            TezSamplePool<Wrapper>.instance.recycle(wrapper);
+            return TezObjectPool.create<TezObjectPool.List<Wrapper>>();
         }
 
-        protected static List<Wrapper> createList_Wrapper()
+//         protected static void recycleWrapperList(TezObjectPool.List<Wrapper> wrappers)
+//         {
+//             TezObjectPool.recycle(wrappers);
+//         }
+
+        protected static TezObjectPool.HashSet<Wrapper> createWapperHashSet()
         {
-            return TezSamplePool<List<Wrapper>>.instance.create();
+            return TezObjectPool.create<TezObjectPool.HashSet<Wrapper>>();
         }
 
-        protected static void recycleList_Wrapper(List<Wrapper> wrappers)
-        {
-            TezSamplePool<List<Wrapper>>.instance.recycle(wrappers);
-        }
-
-        protected static HashSet<Wrapper> createHashSet_Wrapper()
-        {
-            return TezSamplePool<HashSet<Wrapper>>.instance.create();
-        }
-
-        protected static void recycleHashSet_Wrapper(HashSet<Wrapper> wrappers)
-        {
-            TezSamplePool<HashSet<Wrapper>>.instance.recycle(wrappers);
-        }
+//         protected static void recycleWrapperHashSet(TezObjectPool.HashSet<Wrapper> wrappers)
+//         {
+//             TezObjectPool.recycle(wrappers);
+//         }
         #endregion
 
         Dictionary<BlockData, Wrapper> mSaveWrappers = new Dictionary<BlockData, Wrapper>();
@@ -106,7 +106,7 @@ namespace tezcat.Framework.Game
                 return;
             }
 
-            HashSet<Wrapper> close_set = createHashSet_Wrapper();
+            var close_set = createWapperHashSet();
             openSet.push(start);
 
             while (openSet.count > 0)
@@ -145,18 +145,21 @@ namespace tezcat.Framework.Game
                         }
                     }
                 }
-                this.recycleNeighbourList(neighbours);
+
+                neighbours.poolRecycle();
+
+                //this.recycleNeighbourList(neighbours);
             }
 
             evtPathNotFound.Invoke();
             this.onPathFindComplete(openSet, close_set);
         }
 
-        private void recycleNeighbourList(List<Wrapper> neighbours)
-        {
-            neighbours.Clear();
-            recycleList_Wrapper(neighbours);
-        }
+//         private void recycleNeighbourList(TezObjectPool.List<Wrapper> neighbours)
+//         {
+//             neighbours.Clear();
+//             recycleWrapperList(neighbours);
+//         }
 
         public void retracePath(Wrapper start, Wrapper end)
         {
@@ -187,9 +190,9 @@ namespace tezcat.Framework.Game
         /// <summary>
         /// 计算当前块的邻居
         /// </summary>
-        private List<Wrapper> calculateNeighbours(Wrapper current)
+        private TezObjectPool.List<Wrapper> calculateNeighbours(Wrapper current)
         {
-            List<Wrapper> wrappers = createList_Wrapper();
+            TezObjectPool.List<Wrapper> wrappers = createWrapperList();
             this.calculateNeighbours(wrappers, current);
             return wrappers;
         }
@@ -223,19 +226,20 @@ namespace tezcat.Framework.Game
         {
             foreach (var pair in mSaveWrappers)
             {
-                pair.Value.close();
-                recycleWrapper(pair.Value);
+                pair.Value.poolRecycle();
+                //recycleWrapper(pair.Value);
             }
             mSaveWrappers.Clear();
         }
 
-        protected virtual void onPathFindComplete(TezBinaryHeap<Wrapper> openSet, HashSet<Wrapper> closeSet)
+        protected virtual void onPathFindComplete(TezBinaryHeap<Wrapper> openSet, TezObjectPool.HashSet<Wrapper> closeSet)
         {
             this.onPathFindComplete();
 
             openSet.clear();
-            closeSet.Clear();
-            recycleHashSet_Wrapper(closeSet);
+            //closeSet.Clear();
+            closeSet.poolRecycle();
+            //recycleWrapperHashSet(closeSet);
         }
 
         private void saveWrapper(Wrapper wrapper)
@@ -259,7 +263,7 @@ namespace tezcat.Framework.Game
             }
 
             List<Wrapper> open_set = new List<Wrapper>();
-            HashSet<Wrapper> close_set = createHashSet_Wrapper();
+            var close_set = createWapperHashSet();
 
             open_set.Add(start);
             int remove_index = 0;
@@ -285,7 +289,8 @@ namespace tezcat.Framework.Game
                 {
                     //                     stopwatch.Stop();
                     //                     UnityEngine.Debug.Log(stopwatch.ElapsedMilliseconds + "ms");
-                    recycleHashSet_Wrapper(close_set);
+                    //recycleWrapperHashSet(close_set);
+                    close_set.poolRecycle();
                     this.retracePath(start, current_node);
                     return;
                 }
@@ -328,7 +333,8 @@ namespace tezcat.Framework.Game
 
             }
 
-            recycleHashSet_Wrapper(close_set);
+            close_set.poolRecycle();
+            //recycleWrapperHashSet(close_set);
             evtPathNotFound.Invoke();
         }
     }

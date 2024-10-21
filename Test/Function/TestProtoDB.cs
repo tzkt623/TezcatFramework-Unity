@@ -6,22 +6,17 @@ namespace tezcat.Framework.Test
     {
         public void run()
         {
-            TezJsonReader reader = new TezJsonReader();
-            if (reader.load(Path.root + "Res/Config/ProtoConfig.json"))
-            {
-                TezProtoIDManager.loadConfigFile(reader);
-            }
-            reader.close();
+//             reader = new TezJsonReader();
+//             if (reader.load(Path.root + "Res/Config/ItemConfig.json"))
+//             {
+//                 TezItemID.loadConfigFile(reader);
+//                 TezCategorySystem.registerTypeIDFrom(reader);
+//             }
+//             reader.close();
 
-            reader = new TezJsonReader();
-            if (reader.load(Path.root + "Res/Config/ItemConfig.json"))
-            {
-                TezItemID.loadConfigFile(reader);
-                TezCategorySystem.registerTypeIDFrom(reader);
-            }
-            reader.close();
-
-            TezcatFramework.protoDB.load(Path.root + "Res/Proto/Item/");
+            TezcatFramework.protoDB.load(
+                $"{Path.root}Res/Config/ProtoConfig.json"
+                , $"{Path.root}Res/Proto/Item/");
         }
     }
 }
