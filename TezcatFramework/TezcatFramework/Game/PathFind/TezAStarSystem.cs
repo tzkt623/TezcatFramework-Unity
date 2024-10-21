@@ -197,7 +197,7 @@ namespace tezcat.Framework.Game
             return wrappers;
         }
 
-        protected abstract void calculateNeighbours(List<Wrapper> wrappers, Wrapper blockData);
+        protected abstract void calculateNeighbours(TezObjectPool.List<Wrapper> wrappers, Wrapper blockData);
 
         protected Wrapper getOrCreateWrapper(BlockData blockData)
         {

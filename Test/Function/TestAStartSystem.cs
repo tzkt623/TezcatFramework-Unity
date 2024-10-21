@@ -132,7 +132,7 @@ namespace tezcat.Framework.Test
             return end.blockData.getDistanceFrom(neighbour.blockData) * neighbour.blockData.costRate;
         }
 
-        protected override void calculateNeighbours(List<PathWrapper> wrappers, PathWrapper wrapper)
+        protected override void calculateNeighbours(TezObjectPool.List<PathWrapper> wrappers, PathWrapper wrapper)
         {
             this.map.getNeighbors(wrapper.blockData, (Block block) =>
             {
