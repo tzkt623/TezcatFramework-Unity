@@ -4,7 +4,7 @@ namespace tezcat.Framework.Game
 {
     public interface ITezInventoryViewSlotData
     {
-        TezItemObject item { get; }
+        TezProtoObject item { get; }
         TezInventory inventory { get; set; }
         int count { get; }
         int viewIndex { get; set; }

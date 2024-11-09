@@ -56,7 +56,7 @@
     <Compile Include="TezcatFramework\Core\DataBase\TezProtoItemInfo.cs" />
     <Compile Include="TezcatFramework\Core\Object\TezGameObject.cs" />
     <Compile Include="TezcatFramework\Core\DataBase\TezItemID.cs" />
-    <Compile Include="TezcatFramework\Core\Object\TezItemObject.cs" />
+    <Compile Include="TezcatFramework\Core\Object\TezProtoObject.cs" />
     <Compile Include="TezcatFramework\Core\Object\TezSmartRef.cs" />
     <Compile Include="TezcatFramework\Exp\TezAwaitable.cs" />
     <Compile Include="TezcatFramework\Game\AI\BehaviorTree\TezBTRegisterAttribute.cs" />

@@ -50,7 +50,7 @@ namespace tezcat.Framework.Core
             /// <summary>
             /// 原型对象
             /// </summary>
-            public TezItemObject proto = null;
+            public TezProtoObject proto = null;
 
 
             public void clear()
@@ -162,12 +162,12 @@ namespace tezcat.Framework.Core
             return mMetaData.itemID.GetHashCode();
         }
 
-        public void setProto(TezItemObject proto)
+        public void setProto(TezProtoObject proto)
         {
             mMetaData.proto = proto;
         }
 
-        public TezItemObject getProto()
+        public TezProtoObject getProto()
         {
             return mMetaData.proto;
         }
@@ -177,7 +177,7 @@ namespace tezcat.Framework.Core
             return mMetaData.proto.spawnObject();
         }
 
-        public T spawnObject<T>() where T : TezItemObject
+        public T spawnObject<T>() where T : TezProtoObject
         {
             return mMetaData.proto.spawnObject<T>();
         }

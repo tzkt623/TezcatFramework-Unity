@@ -19,7 +19,7 @@ namespace tezcat.Framework.Test
     }
 
     #region Useable
-    abstract class Useable : TezItemObject
+    abstract class Useable : TezProtoObject
     {
 
     }
@@ -33,7 +33,7 @@ namespace tezcat.Framework.Test
     {
         public int magicAdd;
 
-        protected override TezItemObject copy()
+        protected override TezProtoObject copy()
         {
             return new MagicPotion();
         }
@@ -51,7 +51,7 @@ namespace tezcat.Framework.Test
 
         public TezBonusModifier healthAdd { get; private set; } = new TezBonusModifier(MyDescriptorConfig.HumanProperty.HealthCapacity);
 
-        protected override TezItemObject copy()
+        protected override TezProtoObject copy()
         {
             return new HealthPotion();
         }
@@ -65,7 +65,7 @@ namespace tezcat.Framework.Test
     #endregion
 
     #region Equipment
-    abstract class Equipment : TezItemObject
+    abstract class Equipment : TezProtoObject
     {
 
     }
@@ -74,7 +74,7 @@ namespace tezcat.Framework.Test
     {
         public int attack;
 
-        protected override void onCopyDataFrom(TezItemObject template)
+        protected override void onCopyDataFrom(TezProtoObject template)
         {
             base.onCopyDataFrom(template);
             this.attack = ((Weapon)template).attack;
@@ -89,7 +89,7 @@ namespace tezcat.Framework.Test
 
     class Gun : Weapon
     {
-        protected override TezItemObject copy()
+        protected override TezProtoObject copy()
         {
             return new Gun();
         }
@@ -97,7 +97,7 @@ namespace tezcat.Framework.Test
 
     class Axe : Weapon
     {
-        protected override TezItemObject copy()
+        protected override TezProtoObject copy()
         {
             return new Axe();
         }
@@ -110,7 +110,7 @@ namespace tezcat.Framework.Test
         public TezLifeMonitor target = null;
         bool stop = false;
 
-        protected override TezItemObject copy()
+        protected override TezProtoObject copy()
         {
             return new Missle();
         }
@@ -175,7 +175,7 @@ namespace tezcat.Framework.Test
     {
         public TezValueInt armorAdd { get; private set; } = new TezValueInt(MyDescriptorConfig.Modifier.ArmorAdd);
 
-        protected override void onCopyDataFrom(TezItemObject template)
+        protected override void onCopyDataFrom(TezProtoObject template)
         {
             base.onCopyDataFrom(template);
             this.armorAdd.innerValue = ((Armor)template).armorAdd.value;
@@ -196,7 +196,7 @@ namespace tezcat.Framework.Test
     [TezPrototypeRegister("Helmet", 3)]
     class Helmet : Armor
     {
-        protected override TezItemObject copy()
+        protected override TezProtoObject copy()
         {
             return new Helmet();
         }
@@ -205,7 +205,7 @@ namespace tezcat.Framework.Test
     [TezPrototypeRegister("Breastplate", 2)]
     class Breastplate : Armor
     {
-        protected override TezItemObject copy()
+        protected override TezProtoObject copy()
         {
             return new Breastplate();
         }
@@ -214,7 +214,7 @@ namespace tezcat.Framework.Test
     [TezPrototypeRegister("Leg", 1)]
     class Leg : Armor
     {
-        protected override TezItemObject copy()
+        protected override TezProtoObject copy()
         {
             return new Leg();
         }
@@ -222,14 +222,14 @@ namespace tezcat.Framework.Test
     #endregion
 
     #region Unit
-    abstract class Unit : TezItemObject
+    abstract class Unit : TezProtoObject
     {
 
     }
 
     class Character : Unit
     {
-        protected override TezItemObject copy()
+        protected override TezProtoObject copy()
         {
             return new Character();
         }
@@ -289,7 +289,7 @@ namespace tezcat.Framework.Test
             this.setValue();
         }
 
-        protected override void onCopyDataFrom(TezItemObject template)
+        protected override void onCopyDataFrom(TezProtoObject template)
         {
             base.onCopyDataFrom(template);
             Ship data = (Ship)template;
@@ -351,7 +351,7 @@ namespace tezcat.Framework.Test
             }
         }
 
-        protected override TezItemObject copy()
+        protected override TezProtoObject copy()
         {
             return new Ship();
         }

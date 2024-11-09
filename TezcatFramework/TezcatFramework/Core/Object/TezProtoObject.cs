@@ -3,44 +3,12 @@ using tezcat.Framework.Utility;
 
 namespace tezcat.Framework.Core
 {
-    /*
-     * 
-     * 
-     */
-
-    public interface ITezItemObject
-    {
-        TezProtoItemInfo itemInfo { get; }
-    }
-
     /// <summary>
-    /// 可读可写物品
-    /// 玩家可自定义物品
+    /// 游戏原型对象
     /// 
-    /// 可自定义物品在保存的时候需要单独保存每一个数据
+    /// 用于管理原型数据 以及利用原型生成游戏对象
     /// </summary>
-    public interface ITezCustomItemObject
-    {
-
-    }
-
-    /// <summary>
-    /// 只读物品
-    /// 玩家不能自定义物品
-    /// 
-    /// 不可自定义物品在保存的时候只需要保存数据库ID以及个数
-    /// </summary>
-    public interface ITezReadOnlyItemObject
-    {
-    }
-
-
-    /// <summary>
-    /// 游戏物品对象
-    /// 
-    /// 动态生成的物品对象生命周期归持有它的对象管理
-    /// </summary>
-    public abstract class TezItemObject
+    public abstract class TezProtoObject
         : TezGameObject
         , ITezProtoObject
     {
@@ -106,26 +74,26 @@ namespace tezcat.Framework.Core
         /// </summary>
         public ITezProtoObject spawnObject()
         {
-            return mItemInfo.isCustomizable ? this.shareObject() : this.remodifyObject();
+            return mItemInfo.isCustomizable ? this.remodifyObject() : this.shareObject();
         }
 
-        public T spawnObject<T>() where T : TezItemObject
+        public T spawnObject<T>() where T : TezProtoObject
         {
             return (T)this.spawnObject();
         }
 
-        public TezItemObject shareObject()
+        public TezProtoObject shareObject()
         {
             mItemInfo.share();
             return this;
         }
 
-        protected virtual TezItemObject copy()
+        protected virtual TezProtoObject copy()
         {
             throw new NotImplementedException(this.GetType().Name);
         }
 
-        public TezItemObject remodifyObject()
+        public TezProtoObject remodifyObject()
         {
             var obj = this.copy();
             obj.copyDataFrom(this);
@@ -135,7 +103,7 @@ namespace tezcat.Framework.Core
         /// <summary>
         /// 使用模板对象初始化
         /// </summary>
-        private void copyDataFrom(TezItemObject template)
+        private void copyDataFrom(TezProtoObject template)
         {
             //mItemInfo = new TezGameItemInfo(this);
             mItemInfo = TezObjectPool.create<TezProtoItemInfo>();
@@ -144,20 +112,20 @@ namespace tezcat.Framework.Core
             this.onCopyDataFrom(template);
         }
 
-        protected virtual void onCopyDataFrom(TezItemObject template)
+        protected virtual void onCopyDataFrom(TezProtoObject template)
         {
 
         }
     }
 
-    public static class TezItemObjectHelper
+    public static class TezProtoObjectHelper
     {
-        public static T remodifyObject<T>(this TezItemObject obj) where T : TezItemObject
+        public static T remodifyObject<T>(this TezProtoObject obj) where T : TezProtoObject
         {
             return (T)obj.remodifyObject();
         }
 
-        public static T shareObject<T>(this TezItemObject obj) where T : TezItemObject
+        public static T shareObject<T>(this TezProtoObject obj) where T : TezProtoObject
         {
             return (T)obj.shareObject();
         }

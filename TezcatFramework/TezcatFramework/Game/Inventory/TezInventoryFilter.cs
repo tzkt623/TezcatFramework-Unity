@@ -6,7 +6,7 @@ namespace tezcat.Framework.Game
 {
     public interface ITezInventoryFilterData
     {
-        TezItemObject item { get; }
+        TezProtoObject item { get; }
         int filterIndex { get; set; }
     }
 
