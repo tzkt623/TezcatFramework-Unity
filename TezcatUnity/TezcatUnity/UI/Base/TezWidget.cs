@@ -1,11 +1,12 @@
 ﻿using tezcat.Framework.Core;
-using tezcat.Unity.Core;
 using tezcat.Unity.Database;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
 namespace tezcat.Unity.UI
 {
+
+
     public abstract class TezBaseWidget
         : UIBehaviour
         , ITezBaseWidget
@@ -34,7 +35,7 @@ namespace tezcat.Unity.UI
 
         public virtual TezPrefabCount prefabCount => TezPrefabCount.Invaild;
 
-        protected sealed override void Awake()
+        protected override void Awake()
         {
             base.Awake();
             this.preInit();
@@ -80,7 +81,7 @@ namespace tezcat.Unity.UI
         /// </summary>
         public virtual void reset() { }
 
-        public void open()
+        public void show()
         {
             this.gameObject.SetActive(true);
         }
@@ -103,10 +104,16 @@ namespace tezcat.Unity.UI
         : TezBaseWidget
         , ITezUIWidget
     {
-        bool mInited = false;
+        bool mInitComplete = false;
         bool mClosed = false;
-        bool mRefreshMask = false;
+        bool mAllowAdd = true;
 
+        bool ITezUpdateHandler.allowAdd
+        {
+            get { return this.gameObject.activeInHierarchy && mAllowAdd; }
+            set { mAllowAdd = value; }
+        }
+        bool ITezUpdateHandler.isComplete { get; set; }
 
         protected sealed override void onCloseThis()
         {
@@ -139,17 +146,23 @@ namespace tezcat.Unity.UI
         protected sealed override void OnEnable()
         {
             base.OnEnable();
-            if (mInited)
+            if (mInitComplete)
             {
                 this.onShow();
-                this.needRefresh();
             }
+        }
+
+        protected sealed override void Awake()
+        {
+            base.Awake();
+            mAllowAdd = true;
         }
 
         protected sealed override void Start()
         {
-            this.initWidget();
-            TezcatUnity.pushDelayInitHandler(this);
+            base.Start();
+            this.addDelayInitHandler();
+            mInitComplete = true;
         }
 
         /// <summary>
@@ -159,18 +172,24 @@ namespace tezcat.Unity.UI
         /// 会在队列中集中处理这个过程
         /// 避免了unity的随机性
         /// </summary>
-        void ITezDelayInitHandler.delayInit()
+        void ITezUpdateHandler.updateOnDelayInit()
         {
             this.onDelayInit();
-            mInited = true;
         }
 
         protected virtual void onDelayInit() { }
 
+        void ITezUpdateHandler.updateOnMainLoop(float dt)
+        {
+            this.onUpdateOnMainLoop(dt);
+        }
+
+        protected virtual void onUpdateOnMainLoop(float dt) { }
+
         protected sealed override void OnDisable()
         {
             base.OnDisable();
-            if (mInited)
+            if (mInitComplete)
             {
                 this.onHide();
             }
@@ -197,30 +216,30 @@ namespace tezcat.Unity.UI
         /// <summary>
         /// 通知UI刷新自己
         /// </summary>
-        public void needRefresh()
-        {
-            if (this.gameObject.activeInHierarchy
-//                && mInited
-                && !mRefreshMask)
-            {
-                mRefreshMask = true;
-                TezcatUnity.pushRefreshHandler(this);
-            }
-        }
+        //         public void needRefresh()
+        //         {
+        //             if (this.gameObject.activeInHierarchy
+        //                 //                && mInited
+        //                 && !mRefreshMask)
+        //             {
+        //                 mRefreshMask = true;
+        //                 TezcatUnity.pushRefreshHandler(this);
+        //             }
+        //         }
 
         /// <summary>
         /// 刷新
         /// </summary>
-        void ITezRefreshHandler.refresh()
-        {
-            this.onRefresh();
-            mRefreshMask = false;
-        }
+        //         void ITezRefreshHandler.refresh()
+        //         {
+        //             this.onRefresh();
+        //             mRefreshMask = false;
+        //         }
 
         /// <summary>
         /// 立即刷新阶段
         /// </summary>
-        protected virtual void onRefresh() { }
+        //protected virtual void onRefresh() { }
 
 
         /// <summary>
@@ -236,6 +255,9 @@ namespace tezcat.Unity.UI
         /// 未初始化完成不会调用
         /// </summary>
         protected virtual void onHide() { }
+
+
+
 
         #endregion
     }

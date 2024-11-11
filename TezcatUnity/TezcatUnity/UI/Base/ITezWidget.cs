@@ -17,14 +17,14 @@ namespace tezcat.Unity.UI
         , ITezPrefab
     {
         RectTransform rectTransform { get; }
-        void open();
+        void show();
         void hide();
     }
 
     public interface ITezUIWidget
         : ITezBaseWidget
-        , ITezRefreshHandler
-        , ITezDelayInitHandler
+        , ITezUpdateHandler
+        //, ITezDelayInitHandler
     {
 
     }

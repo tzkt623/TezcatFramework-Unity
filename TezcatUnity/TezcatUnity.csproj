@@ -97,6 +97,7 @@
     <Compile Include="TezcatUnity\Game\Planet\TezPlanetGenerator.cs" />
     <Compile Include="TezcatUnity\Game\Planet\TezPlanetGMO.cs" />
     <Compile Include="TezcatUnity\Game\Planet\TezPlanetTerrainFace.cs" />
+    <Compile Include="TezcatUnity\TezUpdateHandlerManager.cs" />
     <Compile Include="TezcatUnity\UI\TezTipController.cs" />
     <Compile Include="TezcatUnity\GraphicSystem\TezBasicMesh.cs" />
     <Compile Include="TezcatUnity\GraphicSystem\TezGraphicObject.cs" />

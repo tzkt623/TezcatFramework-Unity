@@ -118,7 +118,7 @@ namespace tezcat.Unity.UI
             this.windowID = -1;
         }
 
-        protected override void onRefresh()
+        protected override void onUpdateOnMainLoop(float dt)
         {
 
         }

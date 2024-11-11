@@ -8,43 +8,50 @@ namespace tezcat.Unity.Core
     /// </summary>
     public abstract class TezMonoObject
         : MonoBehaviour
-        , ITezRefreshHandler
-        , ITezDelayInitHandler
+        , ITezUpdateHandler
         , ITezCloseable
     {
-        bool mInited = false;
+        bool mInitComplete = false;
         bool mClosed = false;
-        bool mRefresh = false;
+        bool mAllowAdd = false;
 
-        protected void Awake()
+        bool ITezUpdateHandler.allowAdd 
+        { 
+            get { return this.gameObject.activeInHierarchy && mAllowAdd; }
+            set { mAllowAdd = value; }
+        }
+        bool ITezUpdateHandler.isComplete { get; set; }
+
+        private void Awake()
         {
+            mAllowAdd = true;
             this.preInit();
         }
 
-        protected void Start()
+        private void Start()
         {
             this.initObject();
-            TezcatUnity.pushDelayInitHandler(this);
+            this.addDelayInitHandler();
+            mInitComplete = true;
         }
 
-        protected void OnEnable()
+        private void OnEnable()
         {
-            if (mInited)
+            if (mInitComplete)
             {
                 this.onShow();
-                this.needRefresh();
             }
         }
 
-        protected void OnDisable()
+        private void OnDisable()
         {
-            if (mInited)
+            if (mInitComplete)
             {
                 this.onHide();
             }
         }
 
-        protected void OnDestroy()
+        private void OnDestroy()
         {
             if (!mClosed)
             {
@@ -54,27 +61,14 @@ namespace tezcat.Unity.Core
 
         protected virtual void onDelayInit() { }
 
-        void ITezDelayInitHandler.delayInit()
+        void ITezUpdateHandler.updateOnDelayInit()
         {
             this.onDelayInit();
-            mInited = true;
         }
 
-        void ITezRefreshHandler.refresh()
+        void ITezUpdateHandler.updateOnMainLoop(float dt)
         {
-            mRefresh = false;
-            this.onRefresh();
-        }
-
-        public void needRefresh()
-        {
-            if (this.gameObject.activeInHierarchy
-//                && mInited
-                && !mRefresh)
-            {
-                mRefresh = true;
-                TezcatUnity.pushRefreshHandler(this);
-            }
+            this.onUpdateOnMainLoop(dt);
         }
 
         /// <summary>
@@ -90,7 +84,7 @@ namespace tezcat.Unity.Core
         /// <summary>
         /// 初始化刷新阶段
         /// </summary>
-        protected virtual void onRefresh() { }
+        protected virtual void onUpdateOnMainLoop(float dt) { }
 
 
         /// <summary>
@@ -138,5 +132,7 @@ namespace tezcat.Unity.Core
             this.onClose();
             Destroy(this.gameObject);
         }
+
+
     }
 }

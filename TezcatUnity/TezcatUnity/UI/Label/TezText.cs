@@ -80,10 +80,10 @@ namespace tezcat.Unity.UI
         public void setGetter(TezEventExtension.Function<string> getter)
         {
             m_Getter = getter;
-            this.needRefresh();
+            this.addMainLoopUpdateHandler(TezUpdateHandlerType.Once);
         }
 
-        protected override void onRefresh()
+        protected override void onUpdateOnMainLoop(float dt)
         {
             this.refreshData();
         }

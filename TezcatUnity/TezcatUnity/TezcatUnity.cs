@@ -54,7 +54,7 @@ namespace tezcat.Unity
             }
         }
 
-        protected override void onRefresh()
+        protected override void onUpdateOnMainLoop(float dt)
         {
 
         }
@@ -69,24 +69,28 @@ namespace tezcat.Unity
 
         }
 
-        protected virtual void Update() { }
+        protected virtual void Update()
+        {
+//             while (sInitQueue.Count > 0)
+//             {
+//                 sInitQueue.Dequeue().delayInit();
+//             }
+// 
+//             while (sUIRefreshQueue.Count > 0)
+//             {
+//                 sUIRefreshQueue.Dequeue().refresh();
+//             }
+// 
+//             while (sRendererRefreshQueue.Count > 0)
+//             {
+//                 sRendererRefreshQueue.Dequeue().refresh();
+//             }
+            TezUpdateHandlerManager.update();
+        }
 
         protected virtual void LateUpdate()
         {
-            while (sInitQueue.Count > 0)
-            {
-                sInitQueue.Dequeue().delayInit();
-            }
 
-            while (sUIRefreshQueue.Count > 0)
-            {
-                sUIRefreshQueue.Dequeue().refresh();
-            }
-
-            while (sRendererRefreshQueue.Count > 0)
-            {
-                sRendererRefreshQueue.Dequeue().refresh();
-            }
         }
         #endregion
 
@@ -126,6 +130,7 @@ namespace tezcat.Unity
         /// </summary>
         protected virtual void registerFramework()
         {
+            TezUpdateHandlerManager.monoBehaviour = this;
             TezcatFramework.set(new TezProtoDatabase());
             //TezcatFramework.set(new TezRunTimeDatabase());
         }
@@ -197,7 +202,7 @@ namespace tezcat.Unity
 
         public static void pushRendererToRefresh(TezGameRenderer gameRenderer)
         {
-            sRendererRefreshQueue.Enqueue(gameRenderer);
+            //sRendererRefreshQueue.Enqueue(gameRenderer);
         }
 
         public static void pushRefreshHandler(ITezRefreshHandler handler)
