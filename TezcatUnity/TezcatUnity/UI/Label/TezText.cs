@@ -83,7 +83,7 @@ namespace tezcat.Unity.UI
             this.addMainLoopUpdateHandler(TezUpdateHandlerType.Once);
         }
 
-        protected override void onUpdateOnMainLoop(float dt)
+        protected override void onUpdateOnMainLoopOnce(float dt)
         {
             this.refreshData();
         }

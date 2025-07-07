@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -22,7 +23,8 @@ namespace tezcat.Unity
         /// <summary>
         /// 主循环更新
         /// </summary>
-        void updateOnMainLoop(float dt);
+        void updateOnMainLoopOnce(float dt);
+        void updateOnMainLoopLoop(float dt);
         /// <summary>
         /// 对象延迟初始化时更新
         /// </summary>
@@ -36,9 +38,12 @@ namespace tezcat.Unity
             Queue<ITezUpdateHandler> mQueue = new Queue<ITezUpdateHandler>();
 
             public int queueCount => mQueue.Count;
+            public event Action<int> evtCountor;
 
             public void update()
             {
+                evtCountor?.Invoke(mQueue.Count);
+
                 var dt = Time.deltaTime;
                 ITezUpdateHandler handler;
                 while (mQueue.Count > 0)
@@ -62,14 +67,18 @@ namespace tezcat.Unity
             public int queueCount => mQueue.Count;
             public int listCount => mLinkedList.Count;
 
+            public event Action<int, int> evtCountor;
+
             public void update()
             {
+                evtCountor?.Invoke(mQueue.Count, mLinkedList.Count);
+
                 var dt = Time.deltaTime;
                 ITezUpdateHandler handler;
                 while (mQueue.Count > 0)
                 {
                     handler = mQueue.Dequeue();
-                    handler.updateOnMainLoop(dt);
+                    handler.updateOnMainLoopOnce(dt);
                     handler.allowAdd = true;
                 }
 
@@ -87,7 +96,7 @@ namespace tezcat.Unity
                     }
                     else
                     {
-                        current.Value.updateOnMainLoop(dt);
+                        current.Value.updateOnMainLoopLoop(dt);
                         current = current.Next;
                     }
                 }
@@ -115,7 +124,7 @@ namespace tezcat.Unity
             }
         }
 
-        public class HandlerPackCoroutine : HandlerPack
+        public class CoroutineHandlerPack : HandlerPack
         {
             bool mRunning = false;
             YieldInstruction mYieldInstruction = null;
@@ -151,22 +160,28 @@ namespace tezcat.Unity
         }
 
         public static MonoBehaviour monoBehaviour { get; set; }
+        public static OncePack delayInit => mDelayInitPack;
+        public static HandlerPack mainLoop => mMainLoopPack;
+        public static IReadOnlyDictionary<string, CoroutineHandlerPack> coroutineHandlerDict => mCoroutineHandlerPackDict;
+
+        public static event Action<CoroutineHandlerPack> evtCoroutineHandlerPackCreated;
 
         static OncePack mDelayInitPack = new OncePack();
         static HandlerPack mMainLoopPack = new HandlerPack();
 
-        static Dictionary<string, HandlerPackCoroutine> mHandlerPackCoroutineDict = new Dictionary<string, HandlerPackCoroutine>();
+        static Dictionary<string, CoroutineHandlerPack> mCoroutineHandlerPackDict = new Dictionary<string, CoroutineHandlerPack>();
 
-        static HandlerPackCoroutine createPack(string name, YieldInstruction yieldInstruction)
+        static CoroutineHandlerPack createPack(string name, YieldInstruction yieldInstruction)
         {
-            if (mHandlerPackCoroutineDict.TryGetValue(name, out HandlerPackCoroutine handlerPack))
+            if (mCoroutineHandlerPackDict.TryGetValue(name, out CoroutineHandlerPack handlerPack))
             {
                 return handlerPack;
             }
 
-            HandlerPackCoroutine pack = new HandlerPackCoroutine();
+            CoroutineHandlerPack pack = new CoroutineHandlerPack();
             pack.setYieldInstruction(yieldInstruction);
-            mHandlerPackCoroutineDict.Add(name, pack);
+            mCoroutineHandlerPackDict.Add(name, pack);
+            evtCoroutineHandlerPackCreated?.Invoke(pack);
 
             return pack;
         }

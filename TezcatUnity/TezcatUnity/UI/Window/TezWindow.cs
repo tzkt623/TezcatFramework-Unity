@@ -118,11 +118,6 @@ namespace tezcat.Unity.UI
             this.windowID = -1;
         }
 
-        protected override void onUpdateOnMainLoop(float dt)
-        {
-
-        }
-
         public void setFocusWidget(ITezFocusableWidget widget)
         {
             mFocusWidget = widget;

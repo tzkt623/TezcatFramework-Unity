@@ -5,6 +5,7 @@ using tezcat.Framework.Core;
 
 namespace tezcat.Framework.Utility
 {
+
     public class TezList<T> : IList<T>, ICollection<T>, ITezCloseable
     {
         static T[] Default = new T[0];

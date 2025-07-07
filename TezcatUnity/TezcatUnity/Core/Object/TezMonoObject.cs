@@ -15,11 +15,12 @@ namespace tezcat.Unity.Core
         bool mClosed = false;
         bool mAllowAdd = false;
 
-        bool ITezUpdateHandler.allowAdd 
-        { 
+        bool ITezUpdateHandler.allowAdd
+        {
             get { return this.gameObject.activeInHierarchy && mAllowAdd; }
             set { mAllowAdd = value; }
         }
+
         bool ITezUpdateHandler.isComplete { get; set; }
 
         private void Awake()
@@ -59,16 +60,31 @@ namespace tezcat.Unity.Core
             }
         }
 
-        protected virtual void onDelayInit() { }
-
         void ITezUpdateHandler.updateOnDelayInit()
         {
             this.onDelayInit();
         }
 
-        void ITezUpdateHandler.updateOnMainLoop(float dt)
+        protected virtual void onDelayInit() { }
+
+        void ITezUpdateHandler.updateOnMainLoopLoop(float dt)
         {
             this.onUpdateOnMainLoop(dt);
+        }
+
+        /// <summary>
+        /// 初始化刷新阶段
+        /// </summary>
+        protected virtual void onUpdateOnMainLoop(float dt) { }
+
+        void ITezUpdateHandler.updateOnMainLoopOnce(float dt)
+        {
+            this.onUpdateOnMainLoopOnce(dt);
+        }
+
+        protected virtual void onUpdateOnMainLoopOnce(float dt)
+        {
+
         }
 
         /// <summary>
@@ -81,10 +97,6 @@ namespace tezcat.Unity.Core
         /// </summary>
         protected abstract void initObject();
 
-        /// <summary>
-        /// 初始化刷新阶段
-        /// </summary>
-        protected virtual void onUpdateOnMainLoop(float dt) { }
 
 
         /// <summary>

@@ -145,7 +145,6 @@ namespace tezcat.Unity.UI
             sWindowList[window.windowID] = null;
         }
 
-
         #endregion
     }
 }

@@ -8,6 +8,9 @@
         , ITezSerializable
         //, IEquatable<TezBaseObject>
     {
+        /// <summary>
+        /// 类型ID
+        /// </summary>
         public virtual string CID
         {
             get { return this.GetType().Name; }

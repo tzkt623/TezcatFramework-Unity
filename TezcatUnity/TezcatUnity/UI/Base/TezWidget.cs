@@ -5,8 +5,6 @@ using UnityEngine.EventSystems;
 
 namespace tezcat.Unity.UI
 {
-
-
     public abstract class TezBaseWidget
         : UIBehaviour
         , ITezBaseWidget
@@ -179,12 +177,19 @@ namespace tezcat.Unity.UI
 
         protected virtual void onDelayInit() { }
 
-        void ITezUpdateHandler.updateOnMainLoop(float dt)
+        void ITezUpdateHandler.updateOnMainLoopLoop(float dt)
         {
-            this.onUpdateOnMainLoop(dt);
+            this.onUpdateOnMainLoopLoop(dt);
         }
 
-        protected virtual void onUpdateOnMainLoop(float dt) { }
+        protected virtual void onUpdateOnMainLoopLoop(float dt) { }
+
+        void ITezUpdateHandler.updateOnMainLoopOnce(float dt)
+        {
+            this.onUpdateOnMainLoopOnce(dt);
+        }
+
+        protected virtual void onUpdateOnMainLoopOnce(float dt) { }
 
         protected sealed override void OnDisable()
         {

@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using tezcat.Framework;
 using tezcat.Framework.Core;
@@ -54,7 +53,12 @@ namespace tezcat.Unity
             }
         }
 
-        protected override void onUpdateOnMainLoop(float dt)
+        protected override void onUpdateOnMainLoopLoop(float dt)
+        {
+
+        }
+
+        protected override void onUpdateOnMainLoopOnce(float dt)
         {
 
         }

@@ -50,11 +50,19 @@
         }
 
 
+        /// <summary>
+        /// 反序列化数据
+        /// </summary>
+        /// <param name="reader"></param>
         public override void deserialize(TezReader reader)
         {
 
         }
 
+        /// <summary>
+        /// 序列化数据
+        /// </summary>
+        /// <param name="writer"></param>
         public override void serialize(TezWriter writer)
         {
             writer.write(TezBuildInName.CID, this.CID);

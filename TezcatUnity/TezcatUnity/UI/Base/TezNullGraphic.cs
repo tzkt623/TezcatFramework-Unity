@@ -2,7 +2,7 @@
 
 namespace tezcat.Unity.UI
 {
-    public class TezNullGraphic : UnityEngine.UI.Graphic
+    public class TezNullGraphic : Graphic
     {
         public override void SetMaterialDirty()
         {

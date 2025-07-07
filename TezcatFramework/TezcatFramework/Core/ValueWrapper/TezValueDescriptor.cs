@@ -110,7 +110,7 @@ namespace tezcat.Framework.Core
             //             }
 
             var cell = mList[typeID];
-            cell.ID = typeID;
+            //cell.ID = typeID;
             if (cell.dict.TryGetValue(name, out var descriptor))
             {
                 throw new ArgumentException($"Name Registered {descriptor.name}, Type ID {typeID}");

@@ -52,8 +52,7 @@ namespace tezcat.Framework.Test
             //K
             //L
             mTestList.Add(new TestLifeMonitor());
-            mTestList.Add(new TestTask());
-            mTestList.Add(new TestTaskAsync());
+            mTestList.Add(new TestLinkedList());
             //M
             //N
             //O
@@ -68,6 +67,9 @@ namespace tezcat.Framework.Test
             //T
             mTestList.Add(new TestTag());
             mTestList.Add(new TestTranslator());
+            mTestList.Add(new TestTriggerListSystem());
+            mTestList.Add(new TestTask());
+            mTestList.Add(new TestTaskAsync());
             //U
             //V
             mTestList.Add(new TestValueDescriptor());

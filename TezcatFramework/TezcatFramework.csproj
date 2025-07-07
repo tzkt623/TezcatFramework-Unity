@@ -132,6 +132,7 @@
     <Compile Include="TezcatFramework\Game\KeyConfigSystem\TezKeyConfigLayer.cs" />
     <Compile Include="TezcatFramework\Game\KeyConfigSystem\TezKeyConfigSystem.cs" />
     <Compile Include="TezcatFramework\Game\KeyConfigSystem\TezKeyWrapper.cs" />
+    <Compile Include="TezcatFramework\Utility\Container\TezSparseSet.cs" />
     <Compile Include="TezcatFramework\Utility\Math\TezRemap.cs" />
     <Compile Include="TezcatFramework\Utility\TezClassFactory.cs" />
     <Compile Include="TezcatFramework\Extension\TezBitMaskExtension.cs" />
@@ -176,7 +177,7 @@
     <Compile Include="TezcatFramework\Extension\TezStringExtension.cs" />
     <Compile Include="TezcatFramework\Extension\TezValueWrapperExtension.cs" />
     <Compile Include="TezcatFramework\Game\Command\TezCommand.cs" />
-    <Compile Include="TezcatFramework\Game\Command\TezCommandSequence.cs" />
+    <Compile Include="TezcatFramework\Game\Command\TezTriggerListSystem.cs" />
     <Compile Include="TezcatFramework\Game\PathFind\TezAStarSystem.cs" />
     <Compile Include="TezcatFramework\Thirdparty\LitJson\IJsonWrapper.cs" />
     <Compile Include="TezcatFramework\Thirdparty\LitJson\JsonData.cs" />
@@ -221,6 +222,7 @@
     <Compile Include="TezcatFramework\Utility\Monitor\TezLifeMonitor.cs" />
     <Compile Include="TezcatFramework\Utility\Monitor\TezStateMonitor.cs" />
     <Compile Include="TezcatFramework\Utility\TezTask.cs" />
+    <Compile Include="TezcatFramework\Utility\Container\TezLinkedList.cs" />
   </ItemGroup>
   <ItemGroup>
     <WCFMetadata Include="Connected Services\" />
