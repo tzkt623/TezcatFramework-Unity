@@ -60,14 +60,19 @@ namespace tezcat.Framework.Game
             for (int i = mTriggerList.Count - 1; i >= 0; i--)
             {
                 var trigger = mTriggerList[i];
+                //trigger.execute();
                 switch (trigger.state)
                 {
                     case TezTriggerState.Error:
                         throw new Exception();
                     case TezTriggerState.Success:
-                    case TezTriggerState.Fail:
-                    case TezTriggerState.Waiting:
                         mTriggerList.RemoveAt(i);
+                        break;
+                    case TezTriggerState.Fail:
+                        mTriggerList.RemoveAt(i);
+                        trigger.onFail();
+                        break;
+                    case TezTriggerState.Waiting:
                         break;
                     case TezTriggerState.NextPhase:
                         trigger.execute();
@@ -88,6 +93,8 @@ namespace tezcat.Framework.Game
     {
         TezTriggerState state { get; }
         void execute();
+
+        void onFail();
     }
 
     public interface ITezTriggerUserData
@@ -112,12 +119,12 @@ namespace tezcat.Framework.Game
             public Action<TezTrigger> onExecute;
         }
 
-        Action mOnComplete;
+        Action<TezTriggerState> mOnComplete;
         TezLinkedList<Phase> mPhaseList = new TezLinkedList<Phase>();
         TezLinkedList<TezTrigger> mBeTriggeredList = new TezLinkedList<TezTrigger>();
 
         ITezTriggerUserData mUserData = null;
-        public ITezTriggerUserData userData { get => mUserData; set=> mUserData = value; }
+        public ITezTriggerUserData userData { get => mUserData; set => mUserData = value; }
 
         TezTrigger mMasterTrigger = null;
 
@@ -131,7 +138,7 @@ namespace tezcat.Framework.Game
 
         public TezTrigger(TezTrigger master)
         {
-            if(master == this)
+            if (master == this)
             {
                 throw new ArgumentNullException(nameof(master));
             }
@@ -140,7 +147,7 @@ namespace tezcat.Framework.Game
             mMasterTrigger?.wait(this);
         }
 
-        public void setOnComplete(Action funcComplete)
+        public void setOnComplete(Action<TezTriggerState> funcComplete)
         {
             mOnComplete = funcComplete;
         }
@@ -153,7 +160,7 @@ namespace tezcat.Framework.Game
         public void resume()
         {
             mState = TezTriggerState.NextPhase;
-            TezTriggerListSystem.addTrigger(this);
+            //TezTriggerListSystem.addTrigger(this);
         }
 
         public void pause()
@@ -175,10 +182,10 @@ namespace tezcat.Framework.Game
                     }
                     else
                     {
-                        if(mPhaseList.count == 0)
+                        if (mPhaseList.count == 0)
                         {
                             mState = TezTriggerState.Success;
-                            mOnComplete?.Invoke();
+                            mOnComplete?.Invoke(mState);
                             if (mMasterTrigger != null)
                             {
                                 mMasterTrigger.resume();
@@ -191,11 +198,13 @@ namespace tezcat.Framework.Game
                     }
                     break;
                 case TezTriggerState.Fail:
+                    mOnComplete?.Invoke(mState);
                     if (mMasterTrigger != null)
                     {
-                        mOnComplete?.Invoke();
                         mMasterTrigger.resume();
                     }
+                    break;
+                case TezTriggerState.Waiting:
                     break;
                 default:
                     throw new Exception("");
@@ -221,6 +230,20 @@ namespace tezcat.Framework.Game
             }
 
             TezTriggerListSystem.addTrigger(this);
+        }
+
+        public void fail()
+        {
+            mState = TezTriggerState.Fail;
+        }
+
+        void ITezTrigger.onFail()
+        {
+            mOnComplete?.Invoke(mState);
+            if (mMasterTrigger != null)
+            {
+                mMasterTrigger.resume();
+            }
         }
     }
 

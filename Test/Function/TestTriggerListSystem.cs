@@ -186,10 +186,10 @@ namespace tezcat.Framework.Test
                 {
                     userData = this.owner.userData
                 };
-                trigger.setOnComplete(() =>
+                trigger.setOnComplete((state) =>
                 {
                     this.actived = false;
-                    Helper.writeLine(this.owner.camp, $"{this.name}: Completed");
+                    Helper.writeLine(this.owner.camp, $"{this.name}: Completed {state}");
                 });
 
                 trigger.addPhase((me) =>
@@ -324,6 +324,7 @@ namespace tezcat.Framework.Test
                 this.trigger(masterTrigger, (trigger) =>
                 {
                     Helper.writeLine(this.owner.camp, $"{this.name}: Execute......");
+                    masterTrigger.fail();
                 });
             }
         }
