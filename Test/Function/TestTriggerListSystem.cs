@@ -26,13 +26,23 @@ namespace tezcat.Framework.Test
         enum TimingPhase : byte
         {
             Empty = 0,
+
             BeforeExecute,
             AfterExecute,
+        }
+
+        enum TriggerPhase : byte
+        {
+            Empty = 0,
+            PhaseBefore,
+            PhaseAfter,
+            PhaseUnitDead,
         }
 
         enum EffectPhase : byte
         {
             Empty = 0,
+
             NormalDamage,
             FireDamage,
             IceDamage,
@@ -44,9 +54,17 @@ namespace tezcat.Framework.Test
             UnitDead,
         }
 
+        enum Notifier : byte
+        {
+            AnyOne = 0,
+            Self,
+            NotSelf,
+        }
+
         enum NotifyWhoPhase : byte
         {
             Empty = 0,
+
             AnyOne,
             Self,
             Friend,
@@ -82,26 +100,45 @@ namespace tezcat.Framework.Test
         /// 
         /// </summary>
         [StructLayout(LayoutKind.Explicit)]
-        class TriggerPhaseID
+        class TriggerPhaseID : ITezTriggerPhaseID
         {
             [FieldOffset(0)]
-            ulong mID;
+            ulong mID = 0;
 
             [FieldOffset(0)]
-            byte mActionPhase = 0;
-            public TimingPhase timingPhase
-            {
-                set { mActionPhase = (byte)value; }
-            }
-
-            [FieldOffset(1)]
             byte mEffectPhase = 0;
             public EffectPhase effectPhase
             {
                 set { mEffectPhase = (byte)value; }
             }
 
+            [FieldOffset(1)]
+            byte mNotifier = 0;
+            public Notifier notifier
+            {
+                set { mNotifier = (byte)value; }
+            }
+
+            [FieldOffset(2)]
+            byte mTriggerPhase = 0;
+            public TriggerPhase triggerPhase
+            {
+                set { mTriggerPhase = (byte)value; }
+            }
+
+            [FieldOffset(3)]
+            byte mActionPhase = 0;
+            public TimingPhase timingPhase
+            {
+                set { mActionPhase = (byte)value; }
+            }
+
             public ulong ID => mID;
+
+            public void setID(ulong ID)
+            {
+                mID = ID;
+            }
         }
 
         static class Helper
@@ -196,24 +233,30 @@ namespace tezcat.Framework.Test
                 {
                     Helper.writeLine(this.owner.camp, $"{this.name}: Active");
                     Helper.writeLine(this.owner.camp, $"{this.name}: BeforeAction1");
-                    this.owner.notify(new TriggerPhaseID()
+                    var phase_id = new TriggerPhaseID()
                     {
                         effectPhase = this.effectPhase,
                         timingPhase = TimingPhase.BeforeExecute,
-                    }
-                    , me);
+                        triggerPhase = TriggerPhase.PhaseBefore,
+                        notifier = Notifier.Self
+                    };
+                    me.phaseID = phase_id;
+
+                    this.owner.notify(phase_id, me);
                 });
 
                 trigger.addPhase((me) =>
                 {
                     Helper.writeLine(this.owner.camp, $"{this.name}: BeforeAction2");
-                    this.owner.gameManager.notify(this.getRival(this.owner.camp),
-                        new TriggerPhaseID()
-                        {
-                            effectPhase = this.effectPhase,
-                            timingPhase = TimingPhase.BeforeExecute,
-                        },
-                        me);
+                    var phase_id = new TriggerPhaseID()
+                    {
+                        effectPhase = this.effectPhase,
+                        timingPhase = TimingPhase.BeforeExecute,
+                        triggerPhase = TriggerPhase.PhaseBefore,
+                        notifier = Notifier.NotSelf
+                    };
+                    me.phaseID = phase_id;
+                    this.owner.gameManager.notify(this.getRival(this.owner.camp), phase_id, me);
                 });
 
                 trigger.addPhase((me) =>
@@ -227,24 +270,29 @@ namespace tezcat.Framework.Test
                 trigger.addPhase((me) =>
                 {
                     Helper.writeLine(this.owner.camp, $"{this.name}: AfterAction1");
-                    this.owner.gameManager.notify(this.getRival(this.owner.camp),
-                        new TriggerPhaseID()
-                        {
-                            effectPhase = this.effectPhase,
-                            timingPhase = TimingPhase.AfterExecute,
-                        },
-                        me);
+                    var phase_id = new TriggerPhaseID()
+                    {
+                        effectPhase = this.effectPhase,
+                        timingPhase = TimingPhase.AfterExecute,
+                        triggerPhase = TriggerPhase.PhaseAfter,
+                        notifier = Notifier.NotSelf
+                    };
+                    me.phaseID = phase_id;
+                    this.owner.gameManager.notify(this.getRival(this.owner.camp), phase_id, me);
                 });
 
                 trigger.addPhase((me) =>
                 {
                     Helper.writeLine(this.owner.camp, $"{this.name}: AfterAction2");
-                    this.owner.notify(new TriggerPhaseID()
+                    var phase_id = new TriggerPhaseID()
                     {
                         effectPhase = this.effectPhase,
                         timingPhase = TimingPhase.AfterExecute,
-                    }
-                    , me);
+                        triggerPhase = TriggerPhase.PhaseAfter,
+                        notifier = Notifier.Self
+                    };
+                    me.phaseID = phase_id;
+                    this.owner.notify(phase_id, me);
                 });
 
                 trigger.run();
@@ -288,10 +336,18 @@ namespace tezcat.Framework.Test
             {
                 this.name = "AttackBack";
 
+                //此技能只能被
+                //  正常伤害
+                //  执行后阶段
+                //  执行后触发器
+                //  非自己
+                //的效果触发
                 this.registerTrigger(new TriggerPhaseID()
                 {
                     effectPhase = EffectPhase.NormalDamage,
                     timingPhase = TimingPhase.AfterExecute,
+                    triggerPhase = TriggerPhase.PhaseAfter,
+                    notifier = Notifier.NotSelf
                 }
                 , this.trigger);
             }
@@ -311,10 +367,54 @@ namespace tezcat.Framework.Test
             {
                 this.name = "FirstAttack";
 
+                //此技能只能被
+                //  正常伤害
+                //  执行前阶段
+                //  执行前触发器
+                //  非自己
+                //的效果触发
                 this.registerTrigger(new TriggerPhaseID()
                 {
                     effectPhase = EffectPhase.NormalDamage,
                     timingPhase = TimingPhase.BeforeExecute,
+                    triggerPhase = TriggerPhase.PhaseBefore,
+                    notifier = Notifier.NotSelf,
+                }
+                , this.trigger);
+
+                this.registerTrigger(new TriggerPhaseID()
+                {
+                    effectPhase = EffectPhase.IceDamage,
+                    timingPhase = TimingPhase.BeforeExecute,
+                    triggerPhase = TriggerPhase.PhaseBefore,
+                    notifier = Notifier.NotSelf,
+                }
+                , this.trigger);
+
+                this.registerTrigger(new TriggerPhaseID()
+                {
+                    effectPhase = EffectPhase.FireDamage,
+                    timingPhase = TimingPhase.BeforeExecute,
+                    triggerPhase = TriggerPhase.PhaseBefore,
+                    notifier = Notifier.NotSelf,
+                }
+                , this.trigger);
+
+                this.registerTrigger(new TriggerPhaseID()
+                {
+                    effectPhase = EffectPhase.WindDamage,
+                    timingPhase = TimingPhase.BeforeExecute,
+                    triggerPhase = TriggerPhase.PhaseBefore,
+                    notifier = Notifier.NotSelf,
+                }
+                , this.trigger);
+
+                this.registerTrigger(new TriggerPhaseID()
+                {
+                    effectPhase = EffectPhase.LightningDamage,
+                    timingPhase = TimingPhase.BeforeExecute,
+                    triggerPhase = TriggerPhase.PhaseBefore,
+                    notifier = Notifier.NotSelf,
                 }
                 , this.trigger);
             }
@@ -324,7 +424,7 @@ namespace tezcat.Framework.Test
                 this.trigger(masterTrigger, (trigger) =>
                 {
                     Helper.writeLine(this.owner.camp, $"{this.name}: Execute......");
-                    masterTrigger.fail();
+                    //masterTrigger.fail();
                 });
             }
         }
@@ -448,7 +548,9 @@ namespace tezcat.Framework.Test
                     mSkillManager.notify(new TriggerPhaseID()
                     {
                         effectPhase = EffectPhase.UnitDead,
-                        timingPhase = TimingPhase.BeforeExecute,
+                        timingPhase = TimingPhase.AfterExecute,
+                        triggerPhase = TriggerPhase.PhaseUnitDead,
+                        notifier = Notifier.Self,
                     },
                     masterTrigger);
                 }
@@ -458,6 +560,8 @@ namespace tezcat.Framework.Test
                     {
                         effectPhase = EffectPhase.NormalDamage,
                         timingPhase = TimingPhase.AfterExecute,
+                        triggerPhase = TriggerPhase.PhaseAfter,
+                        notifier = Notifier.Self,
                     },
                     masterTrigger);
                 }

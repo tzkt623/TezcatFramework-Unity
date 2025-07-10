@@ -93,8 +93,12 @@ namespace tezcat.Framework.Game
     {
         TezTriggerState state { get; }
         void execute();
-
         void onFail();
+    }
+
+    public interface ITezTriggerPhaseID
+    {
+        ulong ID { get; }
     }
 
     public interface ITezTriggerUserData
@@ -130,6 +134,8 @@ namespace tezcat.Framework.Game
 
         TezTriggerState mState = TezTriggerState.Error;
         public TezTriggerState state => mState;
+
+        public ITezTriggerPhaseID phaseID { get; set; }
 
         public TezTrigger()
         {
