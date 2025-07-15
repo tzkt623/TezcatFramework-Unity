@@ -1,3 +1,4 @@
+using tezcat.Framework.Game;
 using tezcat.Framework.Utility;
 
 namespace tezcat.Framework.Core
@@ -200,9 +201,9 @@ namespace tezcat.Framework.Core
         /// 如果是实时生成的新物品
         /// 需要保存所有数据
         /// </summary>
-        public void serialize(TezWriter writer)
+        public void serialize(TezSaveController.Writer writer)
         {
-            writer.beginObject(TezBuildInName.ProtoInfo);
+            writer.enterObject(TezBuildInName.ProtoInfo);
 
             //writer.write(TezBuildInName.Type, TezItemID.getTypeName(this.itemID.TID));
 
@@ -220,14 +221,14 @@ namespace tezcat.Framework.Core
                 writer.write(TezBuildInName.StackCount, this.stackCount);
             }
 
-            writer.endObject(TezBuildInName.ProtoInfo);
+            writer.exitObject(TezBuildInName.ProtoInfo);
         }
 
-        public void deserialize(TezReader reader)
+        public void deserialize(TezSaveController.Reader reader)
         {
             var CID = reader.readString(TezBuildInName.CID);
 
-            reader.beginObject(TezBuildInName.ProtoInfo);
+            reader.enterObject(TezBuildInName.ProtoInfo);
 
             if (!reader.tryRead(TezBuildInName.RTID, out int runtime_id))
             {
@@ -241,7 +242,7 @@ namespace tezcat.Framework.Core
                 , (ushort)reader.readInt(TezBuildInName.IID)
                 , runtime_id);
 
-            reader.endObject(TezBuildInName.ProtoInfo);
+            reader.exitObject(TezBuildInName.ProtoInfo);
         }
 
         bool ITezObjectPoolItem.recycleThis()

@@ -102,7 +102,7 @@ namespace tezcat.Unity
                 }
             }
 
-            public void register(ITezUpdateHandler handler, TezUpdateHandlerType type)
+            public void add(ITezUpdateHandler handler, TezUpdateHandlerType type)
             {
                 if (handler.allowAdd)
                 {
@@ -193,7 +193,7 @@ namespace tezcat.Unity
 
         public static void addMainLoopUpdateHandler(this ITezUpdateHandler updateHandler, TezUpdateHandlerType type)
         {
-            mMainLoopPack.register(updateHandler, type);
+            mMainLoopPack.add(updateHandler, type);
         }
 
         public static void removeMainLoopUpdateHandler(this ITezUpdateHandler updateHandler)

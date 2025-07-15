@@ -85,6 +85,7 @@
     <Compile Include="TezcatFramework\Game\BonusSystem2\TezBonusSystem.cs" />
     <Compile Include="TezcatFramework\Game\BonusSystem2\TezBonusToken.cs" />
     <Compile Include="TezcatFramework\Game\BonusSystem\Tree\ITezBonusTree.cs" />
+    <Compile Include="TezcatFramework\Game\Save\Reader.cs" />
     <Compile Include="TezcatFramework\TezcatFramework.cs" />
     <Compile Include="TezcatFramework\Game\GameMachine\ITezGameMachine.cs" />
     <Compile Include="TezcatFramework\Game\GameMachine\TezGameMachine.cs" />
@@ -176,7 +177,6 @@
     <Compile Include="TezcatFramework\Extension\TezListExtension.cs" />
     <Compile Include="TezcatFramework\Extension\TezStringExtension.cs" />
     <Compile Include="TezcatFramework\Extension\TezValueWrapperExtension.cs" />
-    <Compile Include="TezcatFramework\Game\Command\TezCommand.cs" />
     <Compile Include="TezcatFramework\Game\Command\TezTriggerListSystem.cs" />
     <Compile Include="TezcatFramework\Game\PathFind\TezAStarSystem.cs" />
     <Compile Include="TezcatFramework\Thirdparty\LitJson\IJsonWrapper.cs" />
@@ -195,6 +195,7 @@
     <Compile Include="TezcatFramework\Utility\Shape\TezPoint.cs" />
     <Compile Include="TezcatFramework\Utility\Shape\TezRectangle.cs" />
     <Compile Include="TezcatFramework\Utility\Shape\TezShape.cs" />
+    <Compile Include="TezcatFramework\Utility\TezSignalSystem.cs" />
     <Compile Include="TezcatFramework\Utility\TezThread.cs" />
     <Compile Include="TezcatFramework\Core\TypeTraits\TezEnumeration.cs" />
     <Compile Include="TezcatFramework\Core\TypeTraits\TezType.cs" />

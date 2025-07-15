@@ -1,4 +1,5 @@
 using System;
+using tezcat.Framework.Game;
 using tezcat.Framework.Utility;
 
 namespace tezcat.Framework.Core
@@ -28,22 +29,22 @@ namespace tezcat.Framework.Core
         /// <summary>
         /// 向数据库保存数据
         /// </summary>
-        public sealed override void serialize(TezWriter writer)
+        public sealed override void serialize(TezSaveController.Writer writer)
         {
             base.serialize(writer);
             mItemInfo.serialize(writer);
 
-            writer.beginObject(TezBuildInName.ObjectData);
+            writer.enterObject(TezBuildInName.ObjectData);
             this.onSerialize(writer);
-            writer.endObject(TezBuildInName.ObjectData);
+            writer.exitObject(TezBuildInName.ObjectData);
         }
 
-        protected virtual void onSerialize(TezWriter reader)
+        protected virtual void onSerialize(TezSaveController.Writer reader)
         {
 
         }
 
-        public sealed override void deserialize(TezReader reader)
+        public sealed override void deserialize(TezSaveController.Reader reader)
         {
             base.deserialize(reader);
             //mItemInfo = new TezGameItemInfo(this);
@@ -51,12 +52,12 @@ namespace tezcat.Framework.Core
             mItemInfo.deserialize(reader);
             mItemInfo.setProto(this);
 
-            reader.beginObject(TezBuildInName.ObjectData);
+            reader.enterObject(TezBuildInName.ObjectData);
             this.onDeserialize(reader);
-            reader.endObject(TezBuildInName.ObjectData);
+            reader.exitObject(TezBuildInName.ObjectData);
         }
 
-        protected virtual void onDeserialize(TezReader reader)
+        protected virtual void onDeserialize(TezSaveController.Reader reader)
         {
 
         }

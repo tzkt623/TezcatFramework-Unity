@@ -27,7 +27,7 @@ namespace tezcat.Framework.Test
             Path.init();
             MyCategory.init();
             MyDescriptorConfig.init();
-            TezcatFramework.set(new TezProtoDatabase());
+            //TezcatFramework.set(new TezProtoDatabase());
             //TezcatFramework.set(new TezRunTimeDatabase());
 
             //A
@@ -64,6 +64,8 @@ namespace tezcat.Framework.Test
             mTestList.Add(new TestRandomIndex());
             //S
             mTestList.Add(new TestSystemAttribute());
+            mTestList.Add(new TestSaveController());
+            mTestList.Add(new TestSignalSystem());
             //T
             mTestList.Add(new TestTag());
             mTestList.Add(new TestTranslator());

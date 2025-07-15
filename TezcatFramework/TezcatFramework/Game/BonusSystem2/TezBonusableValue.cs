@@ -24,12 +24,12 @@ namespace tezcat.Framework.Game
     public interface ITezBonusableValue<T> : ITezBonusableValue
     {
         /// <summary>
-        /// Êµ¼ÊÊýÖµ
+        /// å®žé™…æ•°å€¼
         /// </summary>
         T value { get; }
 
         /// <summary>
-        /// »ù´¡ÊýÖµ
+        /// åŸºç¡€æ•°å€¼
         /// </summary>
         T baseValue { get; set; }
     }
@@ -143,8 +143,8 @@ namespace tezcat.Framework.Game
             this.onValueChanged?.Invoke(this);
         }
 
-        public abstract void serialize(TezWriter writer);
-        public abstract void deserialize(TezReader reader);
+        public abstract void serialize(TezSaveController.Writer writer);
+        public abstract void deserialize(TezSaveController.Reader reader);
 
         public string valueToString()
         {
@@ -170,12 +170,12 @@ namespace tezcat.Framework.Game
             return mModifierContainer.calculate(ref mBaseValue);
         }
 
-        public override void serialize(TezWriter writer)
+        public override void serialize(TezSaveController.Writer writer)
         {
             writer.write(this.name, mBaseValue);
         }
 
-        public override void deserialize(TezReader reader)
+        public override void deserialize(TezSaveController.Reader reader)
         {
             mBaseValue = reader.readInt(this.name);
         }
@@ -199,12 +199,12 @@ namespace tezcat.Framework.Game
             return mModifierContainer.calculate(ref mBaseValue);
         }
 
-        public override void serialize(TezWriter writer)
+        public override void serialize(TezSaveController.Writer writer)
         {
             writer.write(this.name, mBaseValue);
         }
 
-        public override void deserialize(TezReader reader)
+        public override void deserialize(TezSaveController.Reader reader)
         {
             mBaseValue = reader.readFloat(this.name);
         }

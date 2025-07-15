@@ -4,8 +4,9 @@ namespace tezcat.Unity.UI
 {
     public class TezLayer : TezBaseWidget
     {
-        #region Manater
+        #region Manager
         static List<TezLayer> Manager = new List<TezLayer>();
+        static int sLastID = -1;
 
         public static TezLayer get(int index)
         {
@@ -14,7 +15,7 @@ namespace tezcat.Unity.UI
 
         public static TezLayer last
         {
-            get { return Manager[Manager.Count - 1]; }
+            get { return Manager[sLastID]; }
         }
 
         public static TezLayer overlay { get; protected set; } = null;
@@ -35,6 +36,8 @@ namespace tezcat.Unity.UI
 
                 Manager[layer.ID] = layer;
             }
+
+            sLastID = Manager.Count - 1;
         }
 
         public static void sortLayers()

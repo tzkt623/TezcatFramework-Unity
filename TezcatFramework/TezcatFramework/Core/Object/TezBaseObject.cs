@@ -1,4 +1,6 @@
-﻿namespace tezcat.Framework.Core
+﻿using tezcat.Framework.Game;
+
+namespace tezcat.Framework.Core
 {
     /// <summary>
     /// 基础Object
@@ -29,12 +31,12 @@
         /// <summary>
         /// 序列化对象
         /// </summary>
-        public abstract void serialize(TezWriter writer);
+        public abstract void serialize(TezSaveController.Writer writer);
 
         /// <summary>
         /// 反序列化对象
         /// </summary>
-        public abstract void deserialize(TezReader reader);
+        public abstract void deserialize(TezSaveController.Reader reader);
 
         /*
         #region Override

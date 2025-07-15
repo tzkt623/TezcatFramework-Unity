@@ -12,7 +12,7 @@ namespace tezcat.Framework.Test
 
     class Wall : TezGameObject
     {
-        public override void deserialize(TezReader reader)
+        public override void deserialize(TezSaveController.Reader reader)
         {
             base.deserialize(reader);
         }
@@ -38,7 +38,7 @@ namespace tezcat.Framework.Test
             return new MagicPotion();
         }
 
-        protected override void onDeserialize(TezReader reader)
+        protected override void onDeserialize(TezSaveController.Reader reader)
         {
             base.onDeserialize(reader);
             this.magicAdd = reader.readInt("MagicAdd");
@@ -56,7 +56,7 @@ namespace tezcat.Framework.Test
             return new HealthPotion();
         }
 
-        protected override void onDeserialize(TezReader reader)
+        protected override void onDeserialize(TezSaveController.Reader reader)
         {
             base.onDeserialize(reader);
             this.healthAdd.value = reader.readInt("HealthAdd");
@@ -80,7 +80,7 @@ namespace tezcat.Framework.Test
             this.attack = ((Weapon)template).attack;
         }
 
-        protected override void onDeserialize(TezReader reader)
+        protected override void onDeserialize(TezSaveController.Reader reader)
         {
             base.onDeserialize(reader);
             this.attack = reader.readInt("Attack");
@@ -181,7 +181,7 @@ namespace tezcat.Framework.Test
             this.armorAdd.innerValue = ((Armor)template).armorAdd.value;
         }
 
-        protected override void onDeserialize(TezReader reader)
+        protected override void onDeserialize(TezSaveController.Reader reader)
         {
             base.onDeserialize(reader);
             armorAdd.innerValue = reader.readInt("ArmorAdd");
@@ -299,7 +299,7 @@ namespace tezcat.Framework.Test
             this.powerCapacity.baseValue = data.powerCapacity.baseValue;
         }
 
-        protected override void onDeserialize(TezReader reader)
+        protected override void onDeserialize(TezSaveController.Reader reader)
         {
             base.onDeserialize(reader);
             this.hullCapacity.baseValue = reader.readInt(MyDescriptorConfig.ShipPorperty.HullCapacity.name);

@@ -1,5 +1,6 @@
 ﻿using tezcat.Framework.Core;
 using tezcat.Framework.ECS;
+using tezcat.Framework.Game;
 
 namespace tezcat.Framework.Test
 {
@@ -30,12 +31,12 @@ namespace tezcat.Framework.Test
 
         }
 
-        public override void serialize(TezWriter writer)
+        public override void serialize(TezSaveController.Writer writer)
         {
             throw new System.NotImplementedException();
         }
 
-        public override void deserialize(TezReader reader)
+        public override void deserialize(TezSaveController.Reader reader)
         {
             throw new System.NotImplementedException();
         }

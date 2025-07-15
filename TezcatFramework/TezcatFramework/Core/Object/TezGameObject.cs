@@ -1,4 +1,6 @@
-﻿namespace tezcat.Framework.Core
+﻿using tezcat.Framework.Game;
+
+namespace tezcat.Framework.Core
 {
     /// <summary>
     /// 基础游戏对象
@@ -54,7 +56,7 @@
         /// 反序列化数据
         /// </summary>
         /// <param name="reader"></param>
-        public override void deserialize(TezReader reader)
+        public override void deserialize(TezSaveController.Reader reader)
         {
 
         }
@@ -63,7 +65,7 @@
         /// 序列化数据
         /// </summary>
         /// <param name="writer"></param>
-        public override void serialize(TezWriter writer)
+        public override void serialize(TezSaveController.Writer writer)
         {
             writer.write(TezBuildInName.CID, this.CID);
         }

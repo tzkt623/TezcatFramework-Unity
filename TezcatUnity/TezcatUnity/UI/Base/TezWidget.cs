@@ -64,10 +64,7 @@ namespace tezcat.Unity.UI
         /// <summary>
         /// 关闭
         /// </summary>
-        protected virtual void onCloseThis()
-        {
-
-        }
+        protected virtual void onCloseThis() { }
 
         /// <summary>
         /// 是否可以交互
@@ -108,7 +105,7 @@ namespace tezcat.Unity.UI
 
         bool ITezUpdateHandler.allowAdd
         {
-            get { return this.gameObject.activeInHierarchy && mAllowAdd; }
+            get { return mAllowAdd && this.gameObject.activeInHierarchy; }
             set { mAllowAdd = value; }
         }
         bool ITezUpdateHandler.isComplete { get; set; }

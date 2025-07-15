@@ -135,7 +135,7 @@ namespace tezcat.Unity
         protected virtual void registerFramework()
         {
             TezUpdateHandlerManager.monoBehaviour = this;
-            TezcatFramework.set(new TezProtoDatabase());
+            //TezcatFramework.set(new TezProtoDatabase());
             //TezcatFramework.set(new TezRunTimeDatabase());
         }
 

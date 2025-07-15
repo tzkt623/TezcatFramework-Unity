@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
+using tezcat.Framework.Game;
 
 namespace tezcat.Framework.Core
 {
@@ -210,7 +211,8 @@ namespace tezcat.Framework.Core
 
         private void loadProtoFile(string protoFilePath)
         {
-            TezFileReader reader = new TezJsonReader();
+            TezSaveController.Reader reader = new TezSaveController.Reader();
+            //TezFileReader reader = new TezJsonReader();
             var files = TezFilePath.getFiles(protoFilePath, true);
             for (int j = 0; j < files.Length; j++)
             {
@@ -306,12 +308,12 @@ namespace tezcat.Framework.Core
             return false;
         }
 
-        public void serialize(TezWriter writer)
+        public void serialize(TezSaveController.Writer writer)
         {
 
         }
 
-        public void deserialize(TezReader reader)
+        public void deserialize(TezSaveController.Reader reader)
         {
 
         }
