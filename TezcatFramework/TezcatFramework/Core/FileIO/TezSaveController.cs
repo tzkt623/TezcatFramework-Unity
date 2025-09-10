@@ -3,9 +3,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using LitJson;
-using tezcat.Framework.Core;
 
-namespace tezcat.Framework.Game
+namespace tezcat.Framework.Core
 {
     public class TezSaveController
     {
@@ -51,7 +50,7 @@ namespace tezcat.Framework.Game
                     this.Add(name, data);
                 }
 
-                void ITezCloseable.closeThis()
+                public void close()
                 {
                     foreach (var item in this)
                     {
@@ -87,7 +86,7 @@ namespace tezcat.Framework.Game
                     this.Add(data);
                 }
 
-                void ITezCloseable.closeThis()
+                public void close()
                 {
                     foreach (var item in this)
                     {
@@ -134,7 +133,7 @@ namespace tezcat.Framework.Game
                     throw new NotImplementedException();
                 }
 
-                void ITezCloseable.closeThis()
+                public void close()
                 {
                     this.value = default;
                 }
@@ -488,6 +487,11 @@ namespace tezcat.Framework.Game
 
             public bool load(string filePath)
             {
+                if(mRoot != null)
+                {
+                    throw new Exception("Root is already created, please close it first.");
+                }
+
                 var content = File.ReadAllText(filePath, Encoding.UTF8);
                 if (content != null)
                 {
@@ -569,9 +573,10 @@ namespace tezcat.Framework.Game
                 return false;
             }
 
-            void ITezCloseable.closeThis()
+            public void close()
             {
                 mRoot.close();
+                //mRoot.close();
                 mRoot = null;
             }
         }
@@ -749,7 +754,7 @@ namespace tezcat.Framework.Game
                 mWriter.Write(value);
             }
 
-            void ITezCloseable.closeThis()
+            public void close()
             {
                 mWriter = null;
                 mStringBuilder = null;

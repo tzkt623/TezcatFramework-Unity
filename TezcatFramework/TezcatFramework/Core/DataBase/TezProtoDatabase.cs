@@ -1,129 +1,41 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Runtime.InteropServices;
-using tezcat.Framework.Game;
 
 namespace tezcat.Framework.Core
 {
     /*
-     * 对象原型
-     * 
-     * 对每一个需要原型的叶子类对象生成一份原型数据并保存
-     * 
-     * 例如
-     * 父类Weapon类下有叶子类Gun和Axe
-     * 会对叶子类Gun和Axe分别生成一份原型数据
-     * 但是不会把Gun和Axe生成在父类Weapon类型下
-     * 
-     * 即,用getProto<Gun>(index or name)来获取原型
-     * 而不是用getProto<Weapon>(...)来获取原型
-     * 
+    ProtoConfig.json(item config)
+    {
+        "NewUnit":0
+    }
+
+    L7.json(item)
+    {
+        "CID": "NewUnitData",
+        "ProtoInfo": {
+            "TID": "NewUnit",
+            "IID": 6,
+            "Name": "L7",
+            "StackCount": -1,
+            "CopyType": true
+        },
+        "ObjectData": {
+            "Health": 250,
+            "Attack": 30,
+            "Defense": 30,
+            "Damage": 50,
+            "Speed": 18,
+            "WoundedRate": 80,
+            "Spawn": 1
+        }
+     }
+
+    class NewUnitData : TezProtoObjectData
+
+    class NewUnit : TezProtoObject
      */
 
 
-    /// <para>
-    /// 原型ID管理器
-    /// 
-    /// <para>
-    /// 一个Proto
-    /// 1.ProtoID
-    ///  a.IndexID 人工设定
-    ///  b.TypeID 人工设定
-    /// </para>
-    /// 
-    /// <para>
-    /// 一个Item
-    /// 1.ItemID
-    ///  a.TypeID
-    ///  b.IndexID
-    /// 2.stackCount
-    /// </para>
-    /// 
-    /// <para>
-    /// RuntimeID
-    /// </para>
-    [StructLayout(LayoutKind.Explicit)]
-    public class TezProtoIDManager
-        : ITezNonCloseable
-        , IEquatable<TezProtoIDManager>
-    {
-        [FieldOffset(0)]
-        int mID = -1;
-        [FieldOffset(0)]
-        ushort mIndexID;
-        [FieldOffset(2)]
-        ushort mTypeID;
-
-        public int typeID => mTypeID;
-        public int indexID => mIndexID;
-
-        public override int GetHashCode()
-        {
-            return mID.GetHashCode();
-        }
-
-        public override bool Equals(object obj)
-        {
-            return this.Equals((TezProtoIDManager)obj);
-        }
-
-        public bool Equals(TezProtoIDManager other)
-        {
-            if (object.ReferenceEquals(other, null))
-            {
-                return false;
-            }
-
-            return mID == other.mID;
-        }
-
-        public static bool operator ==(TezProtoIDManager a, TezProtoIDManager b)
-        {
-            if (object.ReferenceEquals(a, null) || object.ReferenceEquals(b, null))
-            {
-                return false;
-            }
-
-            return a.mID == b.mID;
-        }
-
-        public static bool operator !=(TezProtoIDManager a, TezProtoIDManager b)
-        {
-            if (object.ReferenceEquals(a, null) || object.ReferenceEquals(b, null))
-            {
-                return true;
-            }
-
-            return a.mID != b.mID;
-        }
-    }
-
-    public class TezProtoCreator
-    {
-        public string name { get; }
-        public int typeID { get; }
-        public int indexID { get; }
-
-        protected ITezProtoObject mProtoObject = null;
-
-        public TezProtoCreator(string name, int typeID, int indexID, ITezProtoObject protoObject)
-        {
-            mProtoObject = protoObject;
-            this.name = name;
-            this.typeID = typeID;
-            this.indexID = indexID;
-        }
-
-        public ITezProtoObject spawnObject()
-        {
-            return mProtoObject.spawnObject();
-        }
-
-        public T spawnObject<T>() where T : ITezProtoObject
-        {
-            return (T)mProtoObject.spawnObject();
-        }
-    }
 
     /// <summary>
     /// 原型数据库
@@ -191,8 +103,8 @@ namespace tezcat.Framework.Core
 
         class Cell
         {
-            public List<TezProtoItemInfo> list = new List<TezProtoItemInfo>();
-            public Dictionary<string, TezProtoItemInfo> dict = new Dictionary<string, TezProtoItemInfo>();
+            public List<TezProtoObjectData> list = new List<TezProtoObjectData>();
+            public Dictionary<string, TezProtoObjectData> dict = new Dictionary<string, TezProtoObjectData>();
 
             public void memoryCut()
             {
@@ -201,7 +113,7 @@ namespace tezcat.Framework.Core
         }
 
         private List<Cell> mCellList = new List<Cell>();
-        protected Dictionary<string, TezProtoItemInfo> mFixedDict = new Dictionary<string, TezProtoItemInfo>();
+        protected Dictionary<string, TezProtoObjectData> mFixedDict = new Dictionary<string, TezProtoObjectData>();
 
         public void load(string configFilePath, string protoFilePath)
         {
@@ -218,10 +130,12 @@ namespace tezcat.Framework.Core
             {
                 if (reader.load(files[j]))
                 {
-                    var item = TezcatFramework.classFactory.create<ITezProtoObject>(reader.readString(TezBuildInName.CID));
+                    var item = TezcatFramework.classFactory.create<TezProtoObjectData>(reader.readString(TezBuildInName.CID));
                     item.deserialize(reader);
 
-                    this.register(item.itemInfo);
+                    this.register(item);
+
+                    reader.close();
                 }
                 else
                 {
@@ -229,7 +143,6 @@ namespace tezcat.Framework.Core
                 }
             }
 
-            reader.close();
 
             foreach (var item in mCellList)
             {
@@ -237,10 +150,10 @@ namespace tezcat.Framework.Core
             }
         }
 
-        private void register(TezProtoItemInfo itemInfo)
+        private void register(TezProtoObjectData protoData)
         {
-            var typeID = itemInfo.itemID.TID;
-            var indexID = itemInfo.itemID.IID;
+            var typeID = protoData.itemInfo.itemID.TID;
+            var indexID = protoData.itemInfo.itemID.IID;
 
             while (typeID >= mCellList.Count)
             {
@@ -255,56 +168,56 @@ namespace tezcat.Framework.Core
 
             if (!(cell.list[indexID] is null))
             {
-                throw new Exception($"This item slot[{cell.list[indexID].NID}:{cell.list[indexID].itemID.TID}|{cell.list[indexID].itemID.IID}] has registered! You want[{itemInfo.NID}:{typeID}|{indexID}]");
+                throw new Exception($"This item slot[{cell.list[indexID].itemInfo.NID}:{cell.list[indexID].itemInfo.itemID.TID}|{cell.list[indexID].itemInfo.itemID.IID}] has registered! You want[{protoData.itemInfo.NID}:{typeID}|{indexID}]");
             }
 
-            cell.list[indexID] = itemInfo;
-            cell.dict.Add(itemInfo.NID, itemInfo);
-            mFixedDict.Add(itemInfo.NID, itemInfo);
+            cell.list[indexID] = protoData;
+            cell.dict.Add(protoData.itemInfo.NID, protoData);
+            mFixedDict.Add(protoData.itemInfo.NID, protoData);
         }
 
-        public TezProtoItemInfo getProto(string nid)
+        public TezProtoObject createObject(string nid)
         {
-            return mFixedDict[nid];
+            return mFixedDict[nid].createObject();
         }
 
-        public TezProtoItemInfo getProto(int typeID, int indexID)
+        public TezProtoObject createObject(int typeID, int indexID)
         {
-            return mCellList[typeID].list[indexID];
+            return mCellList[typeID].list[indexID].createObject();
         }
 
-        public TezProtoItemInfo getProto<T>(int indexID) where T : ITezProtoObject
+        public T createObject<T>(int indexID) where T : TezProtoObject
         {
-            return mCellList[TypeIDGetter<T>.ID].list[indexID];
+            return (T)mCellList[TypeIDGetter<T>.ID].list[indexID].createObject();
         }
 
-        public TezProtoItemInfo getProto<T>(string name) where T : ITezProtoObject
+        public T createObject<T>(string name) where T : TezProtoObject
         {
-            return mCellList[TypeIDGetter<T>.ID].dict[name];
+            return (T)mCellList[TypeIDGetter<T>.ID].dict[name].createObject();
         }
 
-        public bool tryGetProto(ushort TID, ushort UID, out TezProtoItemInfo info)
+        public bool tryCreateObject(ushort TID, ushort UID, out TezProtoObject protoObject)
         {
             var list = mCellList[TID].list;
             if (UID < 0 || UID > list.Count)
             {
-                info = null;
+                protoObject = null;
                 return false;
             }
 
-            info = list[UID];
+            protoObject = list[UID].createObject();
             return true;
         }
 
-        public bool tryGetProto(string NID, out TezProtoItemInfo info)
+        public bool tryCreateObject(string NID, out TezProtoObject protoObject)
         {
             if (mFixedDict.TryGetValue(NID, out var temp))
             {
-                info = temp;
+                protoObject = temp.createObject();
                 return true;
             }
 
-            info = null;
+            protoObject = null;
             return false;
         }
 

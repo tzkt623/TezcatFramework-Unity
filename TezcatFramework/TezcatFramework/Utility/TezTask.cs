@@ -57,7 +57,7 @@ namespace tezcat.Framework.Utility
                 this.close();
             }
 
-            void ITezCloseable.closeThis()
+            public void close()
             {
                 this.onClose();
             }
@@ -299,7 +299,7 @@ namespace tezcat.Framework.Utility
                 mIsCompleted = true;
             }
 
-            void ITezCloseable.closeThis()
+            public void close()
             {
                 mTask = null;
                 this.onClose();
@@ -402,7 +402,7 @@ namespace tezcat.Framework.Utility
             protected abstract void onDispath();
             protected abstract void onClose();
 
-            void ITezCloseable.closeThis()
+            public void close()
             {
                 this.onClose();
                 mParent = null;

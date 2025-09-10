@@ -81,7 +81,7 @@ namespace tezcat.Framework.Game
             return this.blockData.Equals(other.blockData);
         }
 
-        void ITezObjectPoolItem.destroyThis()
+        void ITezObjectPoolItem.onDestroyThis()
         {
         }
 
@@ -91,7 +91,7 @@ namespace tezcat.Framework.Game
             this.blockData = default;
         }
 
-        bool ITezObjectPoolItem.recycleThis()
+        bool ITezObjectPoolItem.tryRecycleThis()
         {
             this.onClose();
             return true;

@@ -56,7 +56,7 @@ namespace tezcat.Unity.GraphicSystem
             m_CMDs.Add(cmd);
         }
 
-        void ITezCloseable.closeThis()
+        public void close()
         {
             foreach (var item in m_Pool)
             {

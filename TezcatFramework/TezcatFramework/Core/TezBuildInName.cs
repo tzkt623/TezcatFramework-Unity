@@ -13,7 +13,6 @@
         /// </summary>
         public const string CID = "CID";
         public const string ClassName = "ClassName";
-        public const string ProtoInfo = "ProtoInfo";
         public const string ProtoIndex = "ProtoIndex";
         public const string ProtoName = "ProtoName";
         public const string IsProto = "IsProto";
@@ -39,24 +38,23 @@
         #endregion
 
 
+        public static class SaveChunkName
+        {
+            public const string ObjectData = "ObjectData";
+            public const string ProtoInfo = "ProtoInfo";
+        }
 
+        public static class ProtoInfo
+        {
+            public const string Name = "Name";
 
-        #region ItemInfo
-        public const string ObjectData = "ObjectData";
+            public const string TID = "TID";
+            public const string IID = "IID";
+            public const string RTID = "RTID";
+            public const string DBID = "DBID";
 
-        public const string StackCount = "StackCount";
-
-        public const string Customizable = "Customizable";
-
-        public const string DBID = "DBID";
-
-        public const string NID = "NID";
-
-        public const string TID = "TID";
-
-        public const string IID = "IID";
-
-        public const string RTID = "RTID";
-        #endregion
+            public const string CopyType = "CopyType";
+            public const string StackCount = "StackCount";
+        }
     }
 }

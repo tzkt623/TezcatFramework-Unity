@@ -8,10 +8,11 @@ namespace tezcat.Framework.Core
         public abstract bool remove(ITezValueDescriptor descriptor);
         public abstract void clear();
 
-        void ITezCloseable.closeThis()
+        public void close()
         {
             this.onClose();
         }
+
         protected abstract void onClose();
 
         public abstract ITezProperty get(int id);
@@ -125,6 +126,7 @@ namespace tezcat.Framework.Core
         {
             for (int i = 0; i < mList.count; i++)
             {
+                //TezCloseableHelper.close(mList[i]);
                 mList[i].close();
             }
 

@@ -50,7 +50,7 @@ namespace tezcat.Framework.Utility
             this.list = null;
         }
 
-        void ITezCloseable.closeThis()
+        public void close()
         {
             this.list = null;
             this.prev = null;
@@ -104,7 +104,7 @@ namespace tezcat.Framework.Utility
                 throw new NotImplementedException();
             }
 
-            void ITezCloseable.closeThis()
+            public void close()
             {
 
             }
@@ -154,7 +154,7 @@ namespace tezcat.Framework.Utility
                 throw new NotImplementedException();
             }
 
-            void ITezCloseable.closeThis()
+            public void close()
             {
 
             }
@@ -376,7 +376,7 @@ namespace tezcat.Framework.Utility
             mBackMark.prev = mFrontMark;
         }
 
-        void ITezCloseable.closeThis()
+        public void close()
         {
             this.deleteList();
 

@@ -10,12 +10,12 @@ namespace tezcat.Framework.Test
 
         public int index;
 
-        void ITezObjectPoolItem.destroyThis()
+        void ITezObjectPoolItem.onDestroyThis()
         {
 
         }
 
-        bool ITezObjectPoolItem.recycleThis()
+        bool ITezObjectPoolItem.tryRecycleThis()
         {
             return true;
         }
@@ -69,7 +69,8 @@ namespace tezcat.Framework.Test
 
             foreach (var item in list)
             {
-                item.poolRecycle();
+                item.recycleToPool();
+                //TezObjectPool.recycle<MyBasePoolItem>(item);
             }
 
             this.showFreeCount();

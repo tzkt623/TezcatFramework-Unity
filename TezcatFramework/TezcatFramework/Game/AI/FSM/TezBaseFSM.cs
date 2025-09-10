@@ -36,7 +36,7 @@ namespace tezcat.Framework.Game
             mCurrentState.onEvent(eventData);
         }
 
-        void ITezCloseable.closeThis()
+        public void close()
         {
             this.onClose();
         }

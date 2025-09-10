@@ -12,7 +12,7 @@ namespace tezcat.Framework.Utility
 
         List<Task> m_Task = new List<Task>();
 
-        void ITezCloseable.closeThis()
+        public void close()
         {
             m_Task.Clear();
             m_Task = null;
@@ -126,7 +126,7 @@ namespace tezcat.Framework.Utility
                 this.name = name;
             }
 
-            void ITezCloseable.closeThis()
+            public void close()
             {
                 m_Thread?.Abort();
                 m_AutoEvent.Close();

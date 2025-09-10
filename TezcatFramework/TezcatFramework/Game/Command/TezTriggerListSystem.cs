@@ -238,7 +238,7 @@ namespace tezcat.Framework.Game
             }
         }
 
-        void ITezCloseable.closeThis()
+        public void close()
         {
             mBeTriggeredList.close();
             mPhaseList.close();

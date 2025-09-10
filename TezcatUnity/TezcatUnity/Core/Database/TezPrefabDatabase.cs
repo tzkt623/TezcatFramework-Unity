@@ -43,7 +43,7 @@ namespace tezcat.Unity.Database
             this.prefab = prefab;
         }
 
-        void ITezCloseable.closeThis()
+        public void close()
         {
             this.prefab = null;
         }

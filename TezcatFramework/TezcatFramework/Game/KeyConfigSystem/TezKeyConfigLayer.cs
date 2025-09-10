@@ -35,7 +35,7 @@ namespace tezcat.Framework.Game
             this.readFromSave(reader);
         }
 
-        void ITezCloseable.closeThis()
+        public void close()
         {
             m_Dic.Clear();
         }

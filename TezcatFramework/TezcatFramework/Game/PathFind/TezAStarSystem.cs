@@ -76,7 +76,7 @@ namespace tezcat.Framework.Game
         /// </summary>
         public event TezEventExtension.Action evtPathNotFound;
 
-        void ITezCloseable.closeThis()
+        public void close()
         {
             this.onClose();
         }
@@ -146,7 +146,9 @@ namespace tezcat.Framework.Game
                     }
                 }
 
-                neighbours.poolRecycle();
+                //TezObjectPool.recycle<TezObjectPool.List<Wrapper>>(neighbours);
+                neighbours.recycleToPool();
+                //neighbours.poolRecycle();
 
                 //this.recycleNeighbourList(neighbours);
             }
@@ -226,7 +228,8 @@ namespace tezcat.Framework.Game
         {
             foreach (var pair in mSaveWrappers)
             {
-                pair.Value.poolRecycle();
+                //TezObjectPool.recycle<Wrapper>(pair.Value);
+                pair.Value.recycleToPool();
                 //recycleWrapper(pair.Value);
             }
             mSaveWrappers.Clear();
@@ -238,7 +241,8 @@ namespace tezcat.Framework.Game
 
             openSet.clear();
             //closeSet.Clear();
-            closeSet.poolRecycle();
+            //TezObjectPool.recycle<TezObjectPool.HashSet<Wrapper>>(closeSet);
+            closeSet.recycleToPool();
             //recycleWrapperHashSet(closeSet);
         }
 
@@ -290,7 +294,9 @@ namespace tezcat.Framework.Game
                     //                     stopwatch.Stop();
                     //                     UnityEngine.Debug.Log(stopwatch.ElapsedMilliseconds + "ms");
                     //recycleWrapperHashSet(close_set);
-                    close_set.poolRecycle();
+                    close_set.recycleToPool();
+                    //TezObjectPool.recycle<TezObjectPool.HashSet<Wrapper>>(close_set);
+
                     this.retracePath(start, current_node);
                     return;
                 }
@@ -333,7 +339,9 @@ namespace tezcat.Framework.Game
 
             }
 
-            close_set.poolRecycle();
+            close_set.recycleToPool();
+            //TezObjectPool.recycle<TezObjectPool.HashSet<Wrapper>>(close_set);
+
             //recycleWrapperHashSet(close_set);
             evtPathNotFound.Invoke();
         }

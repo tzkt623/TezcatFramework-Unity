@@ -28,7 +28,7 @@ namespace tezcat.Framework.Core
             public int ID;
             public ITezEventData data;
 
-            void ITezCloseable.closeThis()
+            public void close()
             {
                 data = null;
             }
@@ -66,6 +66,7 @@ namespace tezcat.Framework.Core
             switch (EventID<EventData>.ID)
             {
                 case TezTypeInfo.ErrorID:
+                    //TezCloseableHelper.close(data);
                     data.close();
                     break;
                 default:
@@ -90,6 +91,7 @@ namespace tezcat.Framework.Core
             {
                 case TezTypeInfo.ErrorID:
                     data.close();
+                    //TezCloseableHelper.close(data);
                     break;
                 default:
                     mQueue.Enqueue(new QueuePair(EventID<EventData>.ID, data));
@@ -113,7 +115,7 @@ namespace tezcat.Framework.Core
             }
         }
 
-        void ITezCloseable.closeThis()
+        public void close()
         {
             foreach (var listener in mListeners)
             {

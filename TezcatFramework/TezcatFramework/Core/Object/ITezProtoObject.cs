@@ -6,10 +6,11 @@
     public interface ITezProtoObject : ITezSerializable
     {
         TezProtoItemInfo itemInfo { get; }
+        TezProtoObjectData basicProtoData { get; }
+    }
 
-        /// <summary>
-        /// 生成对象
-        /// </summary>
-        ITezProtoObject spawnObject();
+    public interface ITezProtoObject<T> where T : TezProtoObjectData
+    {
+        T protoData { get; }
     }
 }

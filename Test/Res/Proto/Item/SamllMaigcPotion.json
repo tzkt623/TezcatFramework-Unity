@@ -1,11 +1,11 @@
 {
-    "CID": "MagicPotion",
+    "CID": "MagicPotionData",
     "ProtoInfo": {
-        "Type": "Potion",
+        "TID": "MagicPotion",
         "IID": 0,
         "Name": "SmallMagicPotion",
         "StackCount": 10,
-        "Customizable": false
+        "CopyType": false
     },
     "ObjectData": {
         "MagicAdd": 5

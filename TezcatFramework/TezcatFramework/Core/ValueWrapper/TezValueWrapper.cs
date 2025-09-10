@@ -170,7 +170,7 @@ namespace tezcat.Framework.Core
             return mDescriptor.GetHashCode();
         }
 
-        void ITezCloseable.closeThis()
+        public void close()
         {
             this.onClose();
         }

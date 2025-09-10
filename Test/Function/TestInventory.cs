@@ -1,5 +1,4 @@
 ﻿using System;
-using tezcat.Framework.Core;
 using tezcat.Framework.Game;
 
 namespace tezcat.Framework.Test
@@ -49,12 +48,12 @@ namespace tezcat.Framework.Test
 
         public override void run()
         {
-            var proto = TezcatFramework.protoDB.getProto<HealthPotion>("SmallHealthPotion");
-            var hpPotion = proto.spawnObject<HealthPotion>();
+            //var proto = TezcatFramework.protoDB.createObject<HealthPotion>("SmallHealthPotion");
+            var hpPotion = TezcatFramework.protoDB.createObject<HealthPotion>("SmallHealthPotion");
             mInventory.store(hpPotion, 25);
 
-            proto = TezcatFramework.protoDB.getProto<Breastplate>("H355");
-            var armor = proto.spawnObject<Breastplate>();
+            //proto = TezcatFramework.protoDB.createObject<Breastplate>("H355");
+            var armor = TezcatFramework.protoDB.createObject<Breastplate>("H355");
             mInventory.store(armor);
             mPageView.debug();
 

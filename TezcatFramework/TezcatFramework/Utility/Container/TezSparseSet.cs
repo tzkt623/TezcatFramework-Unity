@@ -65,7 +65,7 @@ namespace tezcat.Framework.Utility
             mDenseArray.Clear();
         }
 
-        void ITezCloseable.closeThis()
+        public void close()
         {
             mDenseArray.Clear();
 

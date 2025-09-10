@@ -1,11 +1,11 @@
 {
-    "CID": "Gun",
+    "CID": "GunData",
     "ProtoInfo": {
-        "Type": "Weapon",
-        "IID": 0,
+        "TID": "Gun",
+        "IID": 1,
         "Name": "1911",
         "StackCount": -1,
-        "Customizable": true
+        "CopyType": true
     },
     "ObjectData": {
         "Attack": 500

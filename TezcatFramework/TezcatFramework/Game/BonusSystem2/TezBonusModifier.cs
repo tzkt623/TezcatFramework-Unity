@@ -45,7 +45,7 @@ namespace tezcat.Framework.Game
 //             this.bonusToken = bonusToken;
 //         }
 
-        void ITezCloseable.closeThis()
+        public void close()
         {
             this.onClose();
         }

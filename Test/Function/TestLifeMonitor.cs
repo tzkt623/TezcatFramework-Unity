@@ -30,9 +30,9 @@ namespace tezcat.Framework.Test
 
         public override void init()
         {
-            var proto = TezcatFramework.protoDB.getProto<Ship>("Battleship");
+            //var proto = TezcatFramework.protoDB.getProto<Ship>("Battleship");
 
-            mShip = proto.spawnObject<Ship>();
+            mShip = TezcatFramework.protoDB.createObject<Ship>("Battleship");
             mShip.init();
             mMissle = new Missle()
             {

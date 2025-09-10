@@ -299,7 +299,7 @@ namespace tezcat.Unity.UI
             return result;
         }
 
-        void ITezCloseable.closeThis()
+        public void close()
         {
             m_Builder.Clear();
             m_Builder = null;

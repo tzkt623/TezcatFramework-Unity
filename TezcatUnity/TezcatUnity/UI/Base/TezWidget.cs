@@ -86,7 +86,7 @@ namespace tezcat.Unity.UI
             this.gameObject.SetActive(false);
         }
 
-        void ITezCloseable.closeThis()
+        public void close()
         {
             Destroy(this.gameObject);
         }

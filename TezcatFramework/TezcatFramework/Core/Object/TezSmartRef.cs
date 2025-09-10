@@ -49,12 +49,13 @@
             return true;
         }
 
-        void ITezCloseable.closeThis()
+        public void close()
         {
             mRef.countor--;
             if (mRef.countor == 0)
             {
                 mRef.obj.close();
+                //TezCloseableHelper.close(mRef.obj);
                 mRef.obj = null;
             }
 

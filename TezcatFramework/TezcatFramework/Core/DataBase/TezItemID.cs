@@ -41,9 +41,8 @@ namespace tezcat.Framework.Core
     /// 
     /// </summary>
     [StructLayout(LayoutKind.Explicit)]
-    public class TezItemID
-        : ITezCloseable
-        , IEquatable<TezItemID>
+    public struct TezItemID
+        : IEquatable<TezItemID>
     {
         #region Pool
         static Queue<TezItemID> sPool = new Queue<TezItemID>();
@@ -121,30 +120,34 @@ namespace tezcat.Framework.Core
         #endregion
 
         [FieldOffset(0)]
-        long mID;
-        public long ID => mID;
+        ulong mID;
+        public ulong ID => mID;
 
         [FieldOffset(0)]
-        int mRTID = -1;
+        int mRTID;
         /// <summary>
+        /// 
         /// Runtime ID
         /// 用于在游戏运行时赋予动态生成的物品
+        /// 也就是并没有记录在内建数据库中的物品ID
         /// 
-        /// <para>
+        /// 此ID用于标记在运行时数据库存在的物品数据
+        /// </summary>
+        /// 
+        /// <remarks>
         /// 例如
-        /// RPG游戏里面掉落的一个装备
+        /// RPG游戏里面的一个模版装备
+        /// 坚固盔甲的TID = 2, IID = 1, RTID = -1
         /// 
-        /// 坚固盔甲的TID = 2, UID = 1, RTID = -1
         /// 爆了两个圣神之强化的坚固盔甲
         /// 第一个DBID = 2, RTID = 1
         /// 第二个DBID = 2, RTID = 2
-        /// </para>
         /// 
-        /// </summary>
+        /// </remarks>
         public int RTID => mRTID;
 
         [FieldOffset(4)]
-        uint mDBID = 0;
+        uint mDBID;
         /// <summary>
         /// Database ID
         /// 存在于数据库中的物品的ID
@@ -152,48 +155,46 @@ namespace tezcat.Framework.Core
         public uint DBID => mDBID;
 
         [FieldOffset(4)]
-        ushort mIndexID = 0;
+        ushort mIndexID;
         /// <summary>
         /// 索引ID
         /// </summary>
         public ushort IID => mIndexID;
 
         [FieldOffset(6)]
-        ushort mTypeID = 0;
+        ushort mTypeID;
         /// <summary>
         /// 类型ID
         /// 由类的Class类型决定
         /// </summary>
         public ushort TID => mTypeID;
 
-
         /// <summary>
         /// 是否运行存储
         /// </summary>
         public bool isEmpty => mID == 0;
 
-        private TezItemID() { }
-
-        void ITezCloseable.closeThis()
+        public void setID(ulong id)
         {
-            if (mRTID > -1)
-            {
-                sRTIDPool.Enqueue(mRTID);
-            }
-
-            mID = 0;
-            sPool.Enqueue(this);
+            mID = id;
         }
 
-        public bool sameAs(TezItemID other)
+        public void setDBID(ushort type, ushort index)
         {
-            //             if (mDBID == -1 || other.mDBID == -1)
-            //             {
-            //                 return false;
-            //             }
-
-            return mID == other.mID;
+            mTypeID = type;
+            mIndexID = index;
         }
+
+        //void ITezCloseable.closeThis()
+        //{
+        //    if (mRTID > -1)
+        //    {
+        //        sRTIDPool.Enqueue(mRTID);
+        //    }
+        //
+        //    mID = 0;
+        //    sPool.Enqueue(this);
+        //}
 
         public override int GetHashCode()
         {
@@ -207,24 +208,27 @@ namespace tezcat.Framework.Core
 
         public bool Equals(TezItemID other)
         {
-            if (other is null)
-            {
-                return false;
-            }
-
             return mID == other.mID;
         }
+
+        public void setRTID(int v)
+        {
+            mRTID = v;
+        }
+
+        //public void close()
+        //{
+        //    //if(mRTID > -1)
+        //    //{
+        //    //    TezcatFramework.runtimeDB.recycle(mRTID);
+        //    //}
+        //}
 
         /// <summary>
         /// 比较两个Item的DBID是否一样
         /// </summary>
         public static bool operator ==(TezItemID a, TezItemID b)
         {
-            if (a is null || b is null)
-            {
-                return false;
-            }
-
             return a.mID == b.mID;
         }
 
@@ -233,7 +237,7 @@ namespace tezcat.Framework.Core
         /// </summary>
         public static bool operator !=(TezItemID a, TezItemID b)
         {
-            return !(a == b);
+            return a.mID != b.mID;
         }
     }
 

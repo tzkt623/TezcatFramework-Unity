@@ -1,11 +1,11 @@
 {
-    "CID": "Ship",
+    "CID": "ShipData",
     "ProtoInfo": {
-        "Type": "Unit",
+        "TID": "Ship",
         "IID": 0,
         "Name": "Battleship",
         "StackCount": -1,
-        "Customizable": true
+        "CopyType": true
     },
     "ObjectData": {
         "HullCapacity": 300,

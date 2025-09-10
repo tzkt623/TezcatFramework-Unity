@@ -387,7 +387,7 @@ namespace tezcat.Framework.Game
             this.init(size, layout);
         }
 
-        void ITezCloseable.closeThis()
+        void ITezCloseable.close()
         {
 
         }

@@ -20,7 +20,7 @@ namespace tezcat.Framework.Game
         public object source { get; set; }
         public abstract TezBufferType bufferType { get; }
 
-        void ITezCloseable.closeThis()
+        public void close()
         {
             this.onClose();
         }

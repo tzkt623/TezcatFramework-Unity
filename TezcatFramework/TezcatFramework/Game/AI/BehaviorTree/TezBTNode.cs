@@ -79,7 +79,7 @@ namespace tezcat.Framework.Game
             mParent?.childReport(mState);
         }
 
-        void ITezCloseable.closeThis()
+        public void close()
         {
             this.onClose();
         }

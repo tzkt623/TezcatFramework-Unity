@@ -57,7 +57,7 @@ namespace tezcat.Framework.Utility
             return (T)mMetaData.holdObject;
         }
 
-        void ITezCloseable.closeThis()
+        public void close()
         {
             this.onClose();
         }

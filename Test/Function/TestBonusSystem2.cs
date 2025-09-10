@@ -40,17 +40,17 @@ namespace tezcat.Framework.Test
 
         public override void init()
         {
-            var prto = TezcatFramework.protoDB.getProto<Ship>("Battleship");
-            mShip = prto.spawnObject<Ship>();
+            //var prto = TezcatFramework.protoDB.createObject<Ship>("Battleship");
+            mShip = TezcatFramework.protoDB.createObject<Ship>("Battleship");
             mShip.init();
         }
 
         private void showData()
         {
-            Console.WriteLine($"Hull: {mShip.hull.value}/{mShip.hullCapacity.value}");
-            Console.WriteLine($"Armor: {mShip.armor.value}/{mShip.armorCapacity.value}");
-            Console.WriteLine($"Shield: {mShip.shield.value}/{mShip.shieldCapacity.value}");
-            Console.WriteLine($"Power: {mShip.power.value}/{mShip.powerCapacity.value}");
+            Console.WriteLine($"Hull: {mShip.protoData.hull.value}/{mShip.protoData.hullCapacity.value}");
+            Console.WriteLine($"Armor: {mShip.protoData.armor.value} / {mShip.protoData.armorCapacity.value}");
+            Console.WriteLine($"Shield: {mShip.protoData.shield.value} / {mShip.protoData.shieldCapacity.value}");
+            Console.WriteLine($"Power: {mShip.protoData.power.value}  /  {mShip.protoData.powerCapacity.value}");
             Console.WriteLine("");
         }
 
@@ -162,8 +162,8 @@ namespace tezcat.Framework.Test
 
         public override void init()
         {
-            var proto = TezcatFramework.protoDB.getProto<Ship>("Battleship");
-            mShip = proto.spawnObject<Ship>();
+            //var proto = TezcatFramework.protoDB.createObject<Ship>("Battleship");
+            mShip = TezcatFramework.protoDB.createObject<Ship>("Battleship");
             mShip.init();
         }
 

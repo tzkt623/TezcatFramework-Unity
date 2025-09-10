@@ -26,7 +26,7 @@ namespace tezcat.Framework.Game
             mLifeHolder.create(inventory);
         }
 
-        public virtual void setInventory(TezInventory inventory, List<TezInventoryUniqueItemInfo> uniqueList, Dictionary<long, TezInventoryStackedItemInfo> stackedDict)
+        public virtual void setInventory(TezInventory inventory, List<TezInventoryUniqueItemInfo> uniqueList, Dictionary<ulong, TezInventoryStackedItemInfo> stackedDict)
         {
             mLifeHolder.create(inventory);
         }
@@ -43,7 +43,7 @@ namespace tezcat.Framework.Game
 
         protected abstract void onFilterChanged();
 
-        void ITezCloseable.closeThis()
+        public void close()
         {
             this.onClose();
         }

@@ -72,7 +72,7 @@ namespace tezcat.Framework.Utility
             m_Value.clear();
         }
 
-        void ITezCloseable.closeThis()
+        public void close()
         {
             m_Value.close();
             m_Value = null;

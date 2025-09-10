@@ -30,7 +30,7 @@ namespace tezcat.Framework.ECS
             mFreeEntity.Enqueue(entity);
         }
 
-        void ITezCloseable.closeThis()
+        public void close()
         {
             mFreeEntity.Clear();
             mFreeEntity = null;

@@ -61,7 +61,7 @@
             mSortList.clear();
         }
 
-        void ITezCloseable.closeThis()
+        public void close()
         {
             this.clearAll();
             mSortList = null;

@@ -8,7 +8,7 @@ namespace tezcat.Framework.Core
         public TezBonusPath bonusPath { get; set; } = null;
         public object source { get; set; }
 
-        void ITezCloseable.closeThis()
+        public void close()
         {
             this.onClose();
         }

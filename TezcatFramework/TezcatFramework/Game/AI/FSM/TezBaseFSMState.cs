@@ -16,7 +16,7 @@ namespace tezcat.Framework.Game
 
         public abstract bool onEvent(ITezEventData eventData);
 
-        void ITezCloseable.closeThis()
+        public void close()
         {
             this.onClose();
         }

@@ -47,6 +47,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="TezcatFramework\Core\DataBase\TezRuntimeDatabase.cs" />
     <Compile Include="TezcatFramework\Core\Object\ITezProtoObject.cs" />
     <Compile Include="TezcatFramework\Core\ValueWrapper\TezValueWrapperArray.cs" />
     <Compile Include="TezcatFramework\Game\BonusSystem2\TezBonusableValue.cs" />
@@ -85,7 +86,7 @@
     <Compile Include="TezcatFramework\Game\BonusSystem2\TezBonusSystem.cs" />
     <Compile Include="TezcatFramework\Game\BonusSystem2\TezBonusToken.cs" />
     <Compile Include="TezcatFramework\Game\BonusSystem\Tree\ITezBonusTree.cs" />
-    <Compile Include="TezcatFramework\Game\Save\Reader.cs" />
+    <Compile Include="TezcatFramework\Core\FileIO\TezSaveController.cs" />
     <Compile Include="TezcatFramework\TezcatFramework.cs" />
     <Compile Include="TezcatFramework\Game\GameMachine\ITezGameMachine.cs" />
     <Compile Include="TezcatFramework\Game\GameMachine\TezGameMachine.cs" />
@@ -140,7 +141,6 @@
     <Compile Include="TezcatFramework\Utility\TezLazyValueManager.cs" />
     <Compile Include="TezcatFramework\Utility\TezRandomIndex.cs" />
     <Compile Include="TezcatFramework\Core\TezBuildInName.cs" />
-    <Compile Include="TezcatFramework\Core\DataBase\TezSaveManager.cs" />
     <Compile Include="TezcatFramework\Core\TezService.cs" />
     <Compile Include="TezcatFramework\Core\Tag\TezTagManager.cs" />
     <Compile Include="TezcatFramework\Game\Translator\TezTranslator.cs" />
@@ -228,6 +228,8 @@
   <ItemGroup>
     <WCFMetadata Include="Connected Services\" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="TezcatFramework\Game\Save\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

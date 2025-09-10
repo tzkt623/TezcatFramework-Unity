@@ -1,6 +1,4 @@
-﻿using tezcat.Framework.Game;
-
-namespace tezcat.Framework.Core
+﻿namespace tezcat.Framework.Core
 {
     /// <summary>
     /// 基础游戏对象

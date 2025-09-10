@@ -9,7 +9,7 @@ namespace tezcat.Framework.Core
             public string name = null;
             public int index = -1;
 
-            void ITezCloseable.closeThis()
+            public void close()
             {
                 this.name = null;
             }
@@ -169,7 +169,7 @@ namespace tezcat.Framework.Core
             mChecker.Clear();
         }
 
-        void ITezCloseable.closeThis()
+        public void close()
         {
             this.clear();
             mChecker = null;

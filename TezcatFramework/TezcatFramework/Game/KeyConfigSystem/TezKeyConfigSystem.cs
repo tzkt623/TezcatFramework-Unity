@@ -24,7 +24,7 @@ namespace tezcat.Framework.Game
 
         TezKeyWrapper mChangeKey = null;
 
-        void ITezCloseable.closeThis()
+        public void close()
         {
             this.onClose();
         }

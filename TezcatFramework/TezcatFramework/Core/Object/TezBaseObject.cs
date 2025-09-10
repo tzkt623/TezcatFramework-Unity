@@ -1,6 +1,4 @@
-﻿using tezcat.Framework.Game;
-
-namespace tezcat.Framework.Core
+﻿namespace tezcat.Framework.Core
 {
     /// <summary>
     /// 基础Object
@@ -18,7 +16,7 @@ namespace tezcat.Framework.Core
             get { return this.GetType().Name; }
         }
 
-        void ITezCloseable.closeThis()
+        public void close()
         {
             this.onClose();
         }

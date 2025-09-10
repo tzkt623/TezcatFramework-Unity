@@ -8,11 +8,11 @@ namespace tezcat.Framework.Game
     }
 
     /// <summary>
-    /// ÊôĞÔ¼Ó³ÉÏµÍ³
-    /// Ò»¸ö¶ÔÏóÒ»°ãÀ´ËµÖ»»áÓĞÒ»Ì×ÊôĞÔ¼Ó³ÉÏµÍ³
-    /// ±ÈÈç
-    /// ·É´¬ÓĞ·É´¬µÄÕûÌ×ÊôĞÔ
-    /// ÅÚÌ¨ÓĞÅÚÌ¨µÄÕûÌ×ÊôĞÔ
+    /// å±æ€§åŠ æˆç³»ç»Ÿ
+    /// ä¸€ä¸ªå¯¹è±¡ä¸€èˆ¬æ¥è¯´åªä¼šæœ‰ä¸€å¥—å±æ€§åŠ æˆç³»ç»Ÿ
+    /// æ¯”å¦‚
+    /// é£èˆ¹æœ‰é£èˆ¹çš„æ•´å¥—å±æ€§
+    /// ç‚®å°æœ‰ç‚®å°çš„æ•´å¥—å±æ€§
     /// </summary>
     public class TezBonusSystem : ITezCloseable
     {
@@ -56,7 +56,7 @@ namespace tezcat.Framework.Game
             mArrays[descriptor.typeID][descriptor.indexID].removeModifier(modifier);
         }
 
-        void ITezCloseable.closeThis()
+        public void close()
         {
             mArrays = null;
         }

@@ -48,7 +48,7 @@ namespace tezcat.Framework.Core
             onChanged = null;
         }
 
-        void ITezCloseable.closeThis()
+        public void close()
         {
             onChanged = null;
             innerValue = default;
@@ -116,7 +116,7 @@ namespace tezcat.Framework.Core
         }
 
 
-        void ITezCloseable.closeThis()
+        public void close()
         {
             onChanged = null;
         }

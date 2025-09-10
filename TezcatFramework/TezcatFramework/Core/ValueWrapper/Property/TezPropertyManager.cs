@@ -92,7 +92,7 @@
             mContainer.clear();
         }
 
-        void ITezCloseable.closeThis()
+        public void close()
         {
             this.onClose();
         }

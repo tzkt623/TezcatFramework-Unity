@@ -27,7 +27,7 @@ namespace tezcat.Framework.Game
                 this.index = index;
             }
 
-            void ITezCloseable.closeThis()
+            public void close()
             {
                 this.onClose();
             }
@@ -133,7 +133,7 @@ namespace tezcat.Framework.Game
             return mCurrentFilter.calculate(slotData);
         }
 
-        void ITezCloseable.closeThis()
+        public void close()
         {
             mCurrentFilter = null;
             evtFilterChanged = null;

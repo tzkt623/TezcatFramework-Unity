@@ -98,6 +98,20 @@ namespace tezcat.Framework.Test
 
             TezcatFramework.classFactory.register<Character>();
             TezcatFramework.classFactory.register<Ship>();
+
+
+            TezcatFramework.classFactory.register<AxeData>();
+            TezcatFramework.classFactory.register<GunData>();
+
+            TezcatFramework.classFactory.register<HelmetData>();
+            TezcatFramework.classFactory.register<BreastplateData>();
+            TezcatFramework.classFactory.register<LegData>();
+
+            TezcatFramework.classFactory.register<MagicPotionData>();
+            TezcatFramework.classFactory.register<HealthPotionData>();
+
+            TezcatFramework.classFactory.register<CharacterData>();
+            TezcatFramework.classFactory.register<ShipData>();
         }
 
         public void run()

@@ -14,7 +14,7 @@ namespace tezcat.Framework.Test
         public abstract void run();
         public abstract void init();
 
-        void ITezCloseable.closeThis()
+        public void close()
         {
             this.onClose();
         }

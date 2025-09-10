@@ -16,7 +16,7 @@ namespace tezcat.Framework.BonusSystem
         public abstract void addNode(int id, TezBonusTreeNode node);
         public abstract bool tryGetNode(int id, out TezBonusTreeNode node);
         
-        void ITezCloseable.closeThis()
+        public void close()
         {
             this.onClose();
         }

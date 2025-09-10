@@ -1,11 +1,11 @@
 {
-    "CID": "Helmet",
+    "CID": "HelmetData",
     "ProtoInfo": {
-        "Type": "Armor",
-        "IID": 0,
+        "TID": "Helmet",
+        "IID": 1,
         "Name": "Monster",
         "StackCount": -1,
-        "Customizable": true
+        "CopyType": true
     },
     "ObjectData": {
         "ArmorAdd": 20

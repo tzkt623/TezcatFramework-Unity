@@ -19,6 +19,71 @@ namespace tezcat.Framework.Test
     }
 
     #region Useable
+    class MagicPotionData : TezProtoObjectData/*继承ProtoData*/
+    {
+        public int magicAdd;
+
+        protected override void onInit()
+        {
+
+        }
+
+        protected override TezProtoObject createObjectInternal()
+        {
+            return new MagicPotion();
+        }
+
+        protected override TezProtoObjectData copySelfWithOutItemInfo()
+        {
+            return new MagicPotionData
+            {
+                magicAdd = this.magicAdd
+            };
+        }
+
+        protected override void onDeserializeObjectData(TezSaveController.Reader reader)
+        {
+            this.magicAdd = reader.readInt("MagicAdd");
+        }
+
+        protected override void onSerializeObjectData(TezSaveController.Writer writer)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    class HealthPotionData : TezProtoObjectData
+    {
+        public TezBonusModifier healthAdd { get; private set; } = new TezBonusModifier(MyDescriptorConfig.HumanProperty.HealthCapacity);
+
+        protected override void onInit()
+        {
+
+        }
+
+        protected override TezProtoObject createObjectInternal()
+        {
+            return new HealthPotion();
+        }
+
+        protected override TezProtoObjectData copySelfWithOutItemInfo()
+        {
+            var data = new HealthPotionData();
+            data.healthAdd.value = this.healthAdd.value;
+            return data;
+        }
+
+        protected override void onDeserializeObjectData(TezSaveController.Reader reader)
+        {
+            this.healthAdd.value = reader.readInt("HealthAdd");
+        }
+
+        protected override void onSerializeObjectData(TezSaveController.Writer writer)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
     abstract class Useable : TezProtoObject
     {
 
@@ -29,42 +94,108 @@ namespace tezcat.Framework.Test
 
     }
 
-    class MagicPotion : Potion
+    class MagicPotion : Potion, ITezProtoObject<MagicPotionData>/*指明protodata类*/
     {
-        public int magicAdd;
+        public MagicPotionData protoData => (MagicPotionData)mProtoData;
 
-        protected override TezProtoObject copy()
+        public override void initProtoData(TezProtoObjectData data)
         {
-            return new MagicPotion();
+            base.initProtoData(data);
         }
 
-        protected override void onDeserialize(TezSaveController.Reader reader)
+        protected override TezProtoObjectData createProtoData()
         {
-            base.onDeserialize(reader);
-            this.magicAdd = reader.readInt("MagicAdd");
+            return new MagicPotionData();
         }
     }
 
-    class HealthPotion : Potion
+    class HealthPotion : Potion, ITezProtoObject<HealthPotionData>
     {
         //public TezBonusableInt healthAdd { get; private set; } = new TezBonusableInt(MyDescriptorConfig.Modifier.HealthAdd);
 
-        public TezBonusModifier healthAdd { get; private set; } = new TezBonusModifier(MyDescriptorConfig.HumanProperty.HealthCapacity);
+        public HealthPotionData protoData => (HealthPotionData)mProtoData;
+        public TezBonusModifier healthAdd => this.protoData.healthAdd;
 
-        protected override TezProtoObject copy()
+        protected override TezProtoObjectData createProtoData()
         {
-            return new HealthPotion();
-        }
-
-        protected override void onDeserialize(TezSaveController.Reader reader)
-        {
-            base.onDeserialize(reader);
-            this.healthAdd.value = reader.readInt("HealthAdd");
+            return new HealthPotionData();
         }
     }
     #endregion
 
     #region Equipment
+    abstract class WeaponData : TezProtoObjectData
+    {
+        public int attack;
+
+        protected override void onInit()
+        {
+
+        }
+
+        protected override void onDeserializeObjectData(TezSaveController.Reader reader)
+        {
+            this.attack = reader.readInt("Attack");
+        }
+
+        protected override void onSerializeObjectData(TezSaveController.Writer writer)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    class GunData : WeaponData
+    {
+        protected override TezProtoObject createObjectInternal()
+        {
+            return new Gun();
+        }
+
+        protected override TezProtoObjectData copySelfWithOutItemInfo()
+        {
+            return new GunData
+            {
+                attack = this.attack
+            };
+        }
+    }
+
+    class AxeData : WeaponData
+    {
+        protected override TezProtoObject createObjectInternal()
+        {
+            return new Axe();
+        }
+
+        protected override TezProtoObjectData copySelfWithOutItemInfo()
+        {
+            return new AxeData
+            {
+                attack = this.attack
+            };
+        }
+    }
+
+    class MissleData : WeaponData
+    {
+        public string name = null;
+        public int step = 0;
+        protected override TezProtoObject createObjectInternal()
+        {
+            return new Missle();
+        }
+
+        protected override TezProtoObjectData copySelfWithOutItemInfo()
+        {
+            return new MissleData
+            {
+                attack = this.attack,
+                name = this.name,
+                step = 0
+            };
+        }
+    }
+
     abstract class Equipment : TezProtoObject
     {
 
@@ -72,48 +203,37 @@ namespace tezcat.Framework.Test
 
     abstract class Weapon : Equipment
     {
-        public int attack;
 
-        protected override void onCopyDataFrom(TezProtoObject template)
-        {
-            base.onCopyDataFrom(template);
-            this.attack = ((Weapon)template).attack;
-        }
-
-        protected override void onDeserialize(TezSaveController.Reader reader)
-        {
-            base.onDeserialize(reader);
-            this.attack = reader.readInt("Attack");
-        }
     }
 
-    class Gun : Weapon
+    class Gun : Weapon, ITezProtoObject<GunData>
     {
-        protected override TezProtoObject copy()
+        public GunData protoData => (GunData)mProtoData;
+
+        protected override TezProtoObjectData createProtoData()
         {
-            return new Gun();
+            return new GunData();
         }
     }
 
-    class Axe : Weapon
+    class Axe : Weapon, ITezProtoObject<AxeData>
     {
-        protected override TezProtoObject copy()
+        public AxeData protoData => (AxeData)mProtoData;
+
+        protected override TezProtoObjectData createProtoData()
         {
-            return new Axe();
+            return new AxeData();
         }
     }
 
-    class Missle : Weapon
+    class Missle : Weapon, ITezProtoObject<MissleData>
     {
         public string name = null;
         public int step = 0;
         public TezLifeMonitor target = null;
         bool stop = false;
 
-        protected override TezProtoObject copy()
-        {
-            return new Missle();
-        }
+        public MissleData protoData => (MissleData)mProtoData;
 
         public void update()
         {
@@ -152,7 +272,7 @@ namespace tezcat.Framework.Test
             if (step == 0)
             {
                 var ship = this.target.getObject<Ship>();
-                ship.hull.value = 0;
+                ship.protoData.hull.value = 0;
                 Console.WriteLine($"{name} hit target!!");
                 this.target.close();
                 this.target = null;
@@ -169,75 +289,264 @@ namespace tezcat.Framework.Test
         {
             this.target?.close();
         }
+
+        protected override TezProtoObjectData createProtoData()
+        {
+            return new MissleData();
+        }
+    }
+
+
+    abstract class ArmorData : TezProtoObjectData
+    {
+        public TezValueInt armorAdd { get; private set; } = new TezValueInt(MyDescriptorConfig.Modifier.ArmorAdd);
+
+        protected override void onInit()
+        {
+
+        }
+
+        protected override void onDeserializeObjectData(TezSaveController.Reader reader)
+        {
+            this.armorAdd.value = reader.readInt("ArmorAdd");
+        }
+
+        protected override void onSerializeObjectData(TezSaveController.Writer writer)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    class ArmorPlateData : ArmorData
+    {
+        protected override TezProtoObject createObjectInternal()
+        {
+            return new ArmorPlate();
+        }
+
+        protected override TezProtoObjectData copySelfWithOutItemInfo()
+        {
+            var data = new ArmorPlateData();
+            data.armorAdd.value = this.armorAdd.value;
+            return data;
+        }
     }
 
     abstract class Armor : Equipment
     {
-        public TezValueInt armorAdd { get; private set; } = new TezValueInt(MyDescriptorConfig.Modifier.ArmorAdd);
 
-        protected override void onCopyDataFrom(TezProtoObject template)
-        {
-            base.onCopyDataFrom(template);
-            this.armorAdd.innerValue = ((Armor)template).armorAdd.value;
-        }
+    }
 
-        protected override void onDeserialize(TezSaveController.Reader reader)
+    class ArmorPlate : Armor, ITezProtoObject<ArmorPlateData>
+    {
+        public ArmorPlateData protoData => (ArmorPlateData)mProtoData;
+
+        protected override TezProtoObjectData createProtoData()
         {
-            base.onDeserialize(reader);
-            armorAdd.innerValue = reader.readInt("ArmorAdd");
+            return new ArmorPlateData();
         }
     }
 
-    class ArmorPlate : Armor
+    class HelmetData : ArmorData
     {
+        protected override TezProtoObject createObjectInternal()
+        {
+            return new Helmet();
+        }
 
+        protected override TezProtoObjectData copySelfWithOutItemInfo()
+        {
+            var data = new HelmetData();
+            data.armorAdd.value = this.armorAdd.value;
+            return data;
+        }
+    }
+
+    class BreastplateData : ArmorData
+    {
+        protected override TezProtoObject createObjectInternal()
+        {
+            return new Breastplate();
+        }
+
+        protected override TezProtoObjectData copySelfWithOutItemInfo()
+        {
+            var data = new BreastplateData();
+            data.armorAdd.value = this.armorAdd.value;
+            return data;
+        }
+    }
+
+    class LegData : ArmorData
+    {
+        protected override TezProtoObject createObjectInternal()
+        {
+            return new Leg();
+        }
+
+        protected override TezProtoObjectData copySelfWithOutItemInfo()
+        {
+            var data = new LegData();
+            data.armorAdd.value = this.armorAdd.value;
+            return data;
+        }
     }
 
     [TezPrototypeRegister("Helmet", 3)]
-    class Helmet : Armor
+    class Helmet : Armor, ITezProtoObject<HelmetData>
     {
-        protected override TezProtoObject copy()
+        public HelmetData protoData => (HelmetData)mProtoData;
+
+        protected override TezProtoObjectData createProtoData()
         {
-            return new Helmet();
+            return new HelmetData();
         }
     }
 
     [TezPrototypeRegister("Breastplate", 2)]
-    class Breastplate : Armor
+    class Breastplate : Armor, ITezProtoObject<BreastplateData>
     {
-        protected override TezProtoObject copy()
+        public BreastplateData protoData =>(BreastplateData)mProtoData;
+
+        protected override TezProtoObjectData createProtoData()
         {
-            return new Breastplate();
+            return new BreastplateData();
         }
     }
 
     [TezPrototypeRegister("Leg", 1)]
-    class Leg : Armor
+    class Leg : Armor, ITezProtoObject<LegData>
     {
-        protected override TezProtoObject copy()
+        public LegData protoData =>(LegData)mProtoData;
+
+        protected override TezProtoObjectData createProtoData()
         {
-            return new Leg();
+            return new LegData();
         }
     }
     #endregion
 
     #region Unit
+    abstract class UnitData : TezProtoObjectData
+    {
+        protected override void onInit()
+        {
+
+        }
+    }
+
+    class CharacterData : UnitData
+    {
+        protected override TezProtoObject createObjectInternal()
+        {
+            return new Character();
+        }
+
+        protected override TezProtoObjectData copySelfWithOutItemInfo()
+        {
+            return new CharacterData();
+        }
+
+        protected override void onDeserializeObjectData(TezSaveController.Reader reader)
+        {
+
+        }
+
+        protected override void onSerializeObjectData(TezSaveController.Writer writer)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    class ShipData : UnitData
+    {
+        public TezValueInt hull { get; private set; } = new TezValueInt(MyDescriptorConfig.ShipValue.Hull);
+        public TezValueInt armor { get; private set; } = new TezValueInt(MyDescriptorConfig.ShipValue.Armor);
+        public TezValueInt shield { get; private set; } = new TezValueInt(MyDescriptorConfig.ShipValue.Shield);
+        public TezValueInt power { get; private set; } = new TezValueInt(MyDescriptorConfig.ShipValue.Power);
+
+        public TezBonusableInt hullCapacity { get; private set; } = new TezBonusableInt(MyDescriptorConfig.ShipPorperty.HullCapacity);
+        public TezBonusableInt armorCapacity { get; private set; } = new TezBonusableInt(MyDescriptorConfig.ShipPorperty.ArmorCapacity);
+        public TezBonusableInt shieldCapacity { get; private set; } = new TezBonusableInt(MyDescriptorConfig.ShipPorperty.ShieldCapacity);
+        public TezBonusableInt powerCapacity { get; private set; } = new TezBonusableInt(MyDescriptorConfig.ShipPorperty.PowerCapacity);
+
+        protected override TezProtoObject createObjectInternal()
+        {
+            return new Ship();
+        }
+
+        protected override void onClose()
+        {
+            this.hull.close();
+            this.armor.close();
+            this.shield.close();
+            this.power.close();
+
+            this.hullCapacity.close();
+            this.armorCapacity.close();
+            this.shieldCapacity.close();
+            this.powerCapacity.close();
+
+            this.hull = null;
+            this.armor = null;
+            this.shield = null;
+            this.power = null;
+
+            this.hullCapacity = null;
+            this.armorCapacity = null;
+            this.shieldCapacity = null;
+            this.powerCapacity = null;
+
+            base.onClose();
+        }
+
+        protected override TezProtoObjectData copySelfWithOutItemInfo()
+        {
+            var data = new ShipData();
+            data.hull.value = this.hull.value;
+            data.armor.value = this.armor.value;
+            data.shield.value = this.shield.value;
+            data.power.value = this.power.value;
+            data.hullCapacity.baseValue = this.hullCapacity.baseValue;
+            data.armorCapacity.baseValue = this.armorCapacity.baseValue;
+            data.shieldCapacity.baseValue = this.shieldCapacity.baseValue;
+            data.powerCapacity.baseValue = this.powerCapacity.baseValue;
+            return data;
+        }
+
+        protected override void onDeserializeObjectData(TezSaveController.Reader reader)
+        {
+            this.hullCapacity.baseValue = reader.readInt(MyDescriptorConfig.ShipPorperty.HullCapacity.name);
+            this.armorCapacity.baseValue = reader.readInt(MyDescriptorConfig.ShipPorperty.ArmorCapacity.name);
+            this.shieldCapacity.baseValue = reader.readInt(MyDescriptorConfig.ShipPorperty.ShieldCapacity.name);
+            this.powerCapacity.baseValue = reader.readInt(MyDescriptorConfig.ShipPorperty.PowerCapacity.name);
+        }
+
+        protected override void onSerializeObjectData(TezSaveController.Writer writer)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
     abstract class Unit : TezProtoObject
     {
 
     }
 
-    class Character : Unit
+    class Character : Unit, ITezProtoObject<CharacterData>
     {
-        protected override TezProtoObject copy()
+        public CharacterData protoData =>(CharacterData)mProtoData;
+
+        protected override TezProtoObjectData createProtoData()
         {
-            return new Character();
+            return new CharacterData();
         }
     }
 
     [TezPrototypeRegister("Ship", ItemClassIndexConfig.Ship)]
     class Ship
         : Unit
+        , ITezProtoObject<ShipData>
         , ITezBonusSystemHolder
     {
         //Life
@@ -246,29 +555,21 @@ namespace tezcat.Framework.Test
         //Property
         TezValueArray mValueArray = new TezValueArray();
         public TezValueArray valueArray => mValueArray;
-        public TezValueInt hull { get; private set; } = new TezValueInt(MyDescriptorConfig.ShipValue.Hull);
-        public TezValueInt armor { get; private set; } = new TezValueInt(MyDescriptorConfig.ShipValue.Armor);
-        public TezValueInt shield { get; private set; } = new TezValueInt(MyDescriptorConfig.ShipValue.Shield);
-        public TezValueInt power { get; private set; } = new TezValueInt(MyDescriptorConfig.ShipValue.Power);
 
         //Bonusable
         TezBonusSystem mBonusSystem = new TezBonusSystem();
         public TezBonusSystem bonusSystem => mBonusSystem;
 
-        public TezBonusableInt hullCapacity { get; private set; } = new TezBonusableInt(MyDescriptorConfig.ShipPorperty.HullCapacity);
-        public TezBonusableInt armorCapacity { get; private set; } = new TezBonusableInt(MyDescriptorConfig.ShipPorperty.ArmorCapacity);
-        public TezBonusableInt shieldCapacity { get; private set; } = new TezBonusableInt(MyDescriptorConfig.ShipPorperty.ShieldCapacity);
-        public TezBonusableInt powerCapacity { get; private set; } = new TezBonusableInt(MyDescriptorConfig.ShipPorperty.PowerCapacity);
-
+        public ShipData protoData => (ShipData)mProtoData;
 
         public Ship()
         {
             this.lifeHolder.create(this);
             //default value
-            this.hullCapacity.baseValue = 5;
-            this.armorCapacity.baseValue = 34;
-            this.shieldCapacity.baseValue = 8;
-            this.powerCapacity.baseValue = 50;
+            this.protoData.hullCapacity.baseValue = 5;
+            this.protoData.armorCapacity.baseValue = 34;
+            this.protoData.shieldCapacity.baseValue = 8;
+            this.protoData.powerCapacity.baseValue = 50;
         }
 
         protected override void preInit()
@@ -289,61 +590,43 @@ namespace tezcat.Framework.Test
             this.setValue();
         }
 
-        protected override void onCopyDataFrom(TezProtoObject template)
-        {
-            base.onCopyDataFrom(template);
-            Ship data = (Ship)template;
-            this.hullCapacity.baseValue = data.hullCapacity.baseValue;
-            this.armorCapacity.baseValue = data.armorCapacity.baseValue;
-            this.shieldCapacity.baseValue = data.shieldCapacity.baseValue;
-            this.powerCapacity.baseValue = data.powerCapacity.baseValue;
-        }
-
-        protected override void onDeserialize(TezSaveController.Reader reader)
-        {
-            base.onDeserialize(reader);
-            this.hullCapacity.baseValue = reader.readInt(MyDescriptorConfig.ShipPorperty.HullCapacity.name);
-            this.armorCapacity.baseValue = reader.readInt(MyDescriptorConfig.ShipPorperty.ArmorCapacity.name);
-            this.shieldCapacity.baseValue = reader.readInt(MyDescriptorConfig.ShipPorperty.ShieldCapacity.name);
-            this.powerCapacity.baseValue = reader.readInt(MyDescriptorConfig.ShipPorperty.PowerCapacity.name);
-        }
 
         private void initValue()
         {
             mValueArray.init(MyDescriptorConfig.TypeID.ShipValue);
-            mValueArray.set(this.hull);
-            mValueArray.set(this.armor);
-            mValueArray.set(this.shield);
-            mValueArray.set(this.power);
+            mValueArray.set(this.protoData.hull);
+            mValueArray.set(this.protoData.armor);
+            mValueArray.set(this.protoData.shield);
+            mValueArray.set(this.protoData.power);
         }
 
         public void initBonusSystem()
         {
-            this.hullCapacity.createContainer<TezBonusModifierCache>();
-            this.armorCapacity.createContainer<TezBonusModifierCache>();
-            this.shieldCapacity.createContainer<TezBonusModifierList>();
-            this.powerCapacity.createContainer<TezBonusModifierList>();
+            this.protoData.hullCapacity.createContainer<TezBonusModifierCache>();
+            this.protoData.armorCapacity.createContainer<TezBonusModifierCache>();
+            this.protoData.shieldCapacity.createContainer<TezBonusModifierList>();
+            this.protoData.powerCapacity.createContainer<TezBonusModifierList>();
 
             mBonusSystem.init();
-            mBonusSystem.set(this.hullCapacity);
-            mBonusSystem.set(this.armorCapacity);
-            mBonusSystem.set(this.shieldCapacity);
-            mBonusSystem.set(this.powerCapacity);
+            mBonusSystem.set(this.protoData.hullCapacity);
+            mBonusSystem.set(this.protoData.armorCapacity);
+            mBonusSystem.set(this.protoData.shieldCapacity);
+            mBonusSystem.set(this.protoData.powerCapacity);
         }
 
         private void setValue()
         {
-            this.hull.innerValue = this.hullCapacity.value;
-            this.armor.innerValue = this.armorCapacity.value;
-            this.shield.innerValue = this.shieldCapacity.value;
-            this.power.innerValue = this.powerCapacity.value;
+            this.protoData.hull.innerValue = this.protoData.hullCapacity.value;
+            this.protoData.armor.innerValue = this.protoData.armorCapacity.value;
+            this.protoData.shield.innerValue = this.protoData.shieldCapacity.value;
+            this.protoData.power.innerValue = this.protoData.powerCapacity.value;
         }
 
         public void update()
         {
             if (this.lifeHolder.isValied)
             {
-                if (this.hull.value == 0)
+                if (this.protoData.hull.value == 0)
                 {
                     Console.WriteLine("Ship Dead");
                     this.lifeHolder.setInvalid();
@@ -351,40 +634,21 @@ namespace tezcat.Framework.Test
             }
         }
 
-        protected override TezProtoObject copy()
-        {
-            return new Ship();
-        }
-
         protected override void onClose()
         {
             base.onClose();
-            this.hull.close();
-            this.armor.close();
-            this.shield.close();
-            this.power.close();
-
-            this.hullCapacity.close();
-            this.armorCapacity.close();
-            this.shieldCapacity.close();
-            this.powerCapacity.close();
 
             mBonusSystem.close();
             mValueArray.close();
             this.lifeHolder.close();
 
-            this.hull = null;
-            this.armor = null;
-            this.shield = null;
-            this.power = null;
-
-            this.hullCapacity = null;
-            this.armorCapacity = null;
-            this.shieldCapacity = null;
-            this.powerCapacity = null;
-
             mBonusSystem = null;
             mValueArray = null;
+        }
+
+        protected override TezProtoObjectData createProtoData()
+        {
+            return new ShipData();
         }
     }
     #endregion
@@ -404,33 +668,43 @@ namespace tezcat.Framework.Test
         public override void run()
         {
             //var item_info = TezcatFramework.mainDB.getItem(0, 0);
-            var proto = TezcatFramework.protoDB.getProto<HealthPotion>(0);
+            //var proto = TezcatFramework.protoDB.createObject<HealthPotion>(0);
 
-            var potion1 = proto.spawnObject<HealthPotion>();
+            Console.WriteLine("Create HealthPotion From ProtoDB");
+            var potion1 = TezcatFramework.protoDB.createObject<HealthPotion>(0);
             potion1.init();
 
-            Console.WriteLine($"Potion1: {potion1.itemInfo.NID}, HealthAdd: {potion1.healthAdd.value}");
+            Console.WriteLine($"Potion1: {potion1.itemInfo.NID}, HealthAdd: {potion1.protoData.healthAdd.value}");
 
-            var potion2 = potion1.spawnObject<HealthPotion>();
+            Console.WriteLine("Create HealthPotion From Potion1");
+            var potion2 = potion1.protoData.createObject<HealthPotion>();
             potion2.init();
 
             Console.WriteLine($"Potion2: {potion2.itemInfo.NID}, HealthAdd: {potion2.healthAdd.value}");
+            Console.WriteLine();
 
             Console.WriteLine($"Potion1==Potion2 : {potion1 == potion2}");
+            Console.WriteLine($"Potion1.isItemOf(Potion2) : {potion1.isItemOf(potion2)}");
+            Console.WriteLine();
 
-            var potion3 = potion1.remodifyObject<HealthPotion>();
+            Console.WriteLine("Potion1 MakeAnRuntimeProtoByThis");
+            potion1.makeAnRuntimeProtoByThis();
+            Console.WriteLine($"Potion1.isItemOf(Potion2) : {potion1.isItemOf(potion2)}");
+            var potion3 = potion1.protoData.createObject<HealthPotion>();
             potion3.init();
             Console.WriteLine($"Potion1==Potion3 : {potion1 == potion3}");
+            Console.WriteLine($"Potion1.isItemOf(Potion3) : {potion1.isItemOf(potion3)}");
 
             potion1.close();
             potion2.close();
             potion3.close();
 
-            proto = TezcatFramework.protoDB.getProto<Breastplate>(0);
-            var armor1 = proto.spawnObject<Breastplate>();
+
+            var armor1 = TezcatFramework.protoDB.createObject<Breastplate>(0);
             armor1.init();
 
-            Console.WriteLine($"Armor: {armor1.itemInfo.NID}, Armor: {armor1.armorAdd}");
+            Console.WriteLine();
+            Console.WriteLine($"Armor: {armor1.itemInfo.NID}, Armor: {armor1.protoData.armorAdd}");
 
             armor1.close();
 

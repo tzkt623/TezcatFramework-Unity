@@ -63,7 +63,7 @@ namespace tezcat.Framework.BonusSystem
             mOnRemoveBonusObject(obj);
         }
 
-        void ITezCloseable.closeThis()
+        public void close()
         {
             mBonusPath = null;
             mOnAddBonusObject = null;

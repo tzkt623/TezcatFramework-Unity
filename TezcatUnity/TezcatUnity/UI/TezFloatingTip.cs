@@ -60,6 +60,7 @@ namespace tezcat.Unity.UI
                 foreach (var widget in m_Widgets)
                 {
                     widget.close();
+                    //TezCloseableHelper.close(widget);
                 }
                 m_Widgets.Clear();
                 m_NeedClear = false;

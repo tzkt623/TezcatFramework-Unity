@@ -19,7 +19,7 @@ namespace tezcat.Framework.BonusSystem
         const int cPrimaryBegin = 0;
         TezBonusTreeContainer mContainer = new Container();
 
-        void ITezCloseable.closeThis()
+        public void close()
         {
             this.onClose();
         }

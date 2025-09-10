@@ -1,11 +1,11 @@
 {
-    "CID": "Leg",
+    "CID": "LegData",
     "ProtoInfo": {
-        "Type": "Armor",
+        "TID": "Leg",
         "IID": 0,
         "Name": "Ring",
         "StackCount": -1,
-        "Customizable": true
+        "CopyType": true
     },
     "ObjectData": {
         "ArmorAdd": 1

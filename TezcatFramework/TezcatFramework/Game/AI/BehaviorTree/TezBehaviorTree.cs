@@ -143,6 +143,7 @@ namespace tezcat.Framework.Game
         {
             mRoot.close();
             mContext.close();
+            //TezCloseableHelper.close(mContext);
 
             mRoot = null;
             mContext = null;
@@ -155,7 +156,7 @@ namespace tezcat.Framework.Game
             mRoot.execute();
         }
 
-        void ITezCloseable.closeThis()
+        public void close()
         {
             this.onClose();
         }

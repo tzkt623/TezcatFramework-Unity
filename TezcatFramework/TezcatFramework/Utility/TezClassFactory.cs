@@ -67,7 +67,7 @@ namespace tezcat.Framework.Utility
             return (Creator<T>)mDictWithName[name];
         }
 
-        void ITezCloseable.closeThis()
+        public void close()
         {
             mDictWithName.Clear();
             mDictWithName = null;

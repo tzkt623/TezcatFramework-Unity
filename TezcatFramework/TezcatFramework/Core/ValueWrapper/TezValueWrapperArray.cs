@@ -34,7 +34,7 @@ namespace tezcat.Framework.Core
             return (T)mArray[valueDescriptor.indexID];
         }
 
-        void ITezCloseable.closeThis()
+        public void close()
         {
             this.onClose();
         }

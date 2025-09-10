@@ -4,9 +4,23 @@ namespace tezcat.Framework.Utility
 {
     public interface ITezObjectPoolItem
     {
+        /// <summary>
+        /// 让对象池管理器知道此对象属于哪个对象池
+        /// </summary>
         ITezObjectPool objectPool { get; set; }
-        bool recycleThis();
-        void destroyThis();
+
+        /// <summary>
+        /// 尝试回收当前实例到对象池中。
+        /// </summary>
+        /// <remarks>
+        /// 如果回收成功，返回 true；否则返回 false。
+        /// </remarks>
+        bool tryRecycleThis();
+
+        /// <summary>
+        /// 销毁当前实例。
+        /// </summary>
+        void onDestroyThis();
     }
 
     public interface ITezObjectPool
@@ -22,22 +36,39 @@ namespace tezcat.Framework.Utility
 
     }
 
-    public static class TezObjectPoolHelper
-    {
-        public static void poolRecycle(this ITezObjectPoolItem item)
-        {
-            if(item.recycleThis())
-            {
-                item.objectPool.recycle(item);
-            }
-        }
-    }
-
     public static class TezObjectPool
     {
-        private static void poolDestroy(this ITezObjectPoolItem item)
+        //public static void poolRecycle<T>(this ITezObjectPoolItem item) where T : ITezObjectPoolItem, new()
+        //{
+        //    if (item.recycleThis())
+        //    {
+        //        TezObjectPool.recycle<T>(item);
+        //        //item.objectPool.recycle(item);
+        //    }
+        //}
+
+        /// <summary>
+        /// 回收当前实例到对象池中。
+        /// </summary>
+        /// <param name="item"></param>
+        public static bool recycleToPool(this ITezObjectPoolItem item)
         {
-            item.destroyThis();
+            if (item.tryRecycleThis())
+            {
+                item.objectPool.recycle(item);
+                return true;
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// 销毁当前实例。
+        /// </summary>
+        /// <param name="item"></param>
+        private static void destroyThisItem(this ITezObjectPoolItem item)
+        {
+            item.onDestroyThis();
             item.objectPool = null;
         }
 
@@ -135,7 +166,7 @@ namespace tezcat.Framework.Utility
                 {
                     foreach (var item in mList)
                     {
-                        item.poolDestroy();
+                        item.destroyThisItem();
                     }
 
                     mList.Clear();
@@ -150,7 +181,7 @@ namespace tezcat.Framework.Utility
                     while (count > 0)
                     {
                         index = mList.Count - 1;
-                        mList[index].poolDestroy();
+                        mList[index].destroyThisItem();
                         mList.RemoveAt(index);
                         count--;
                     }
@@ -174,7 +205,7 @@ namespace tezcat.Framework.Utility
                 return new MyObject() { objectPool = this };
             }
 
-            void ITezObjectPool.recycle(ITezObjectPoolItem item)
+            public void recycle(ITezObjectPoolItem item)
             {
                 mList.Add((MyObject)item);
             }
@@ -188,6 +219,15 @@ namespace tezcat.Framework.Utility
         {
             return Pool<T>.instance.create();
         }
+
+        //不提供此方法是为了实现抽象对象也能顺利回收
+        //public static void recycle<T>(ITezObjectPoolItem item) where T : ITezObjectPoolItem, new()
+        //{
+        //    if(item.recycleThis())
+        //    {
+        //        Pool<T>.instance.recycle(item);
+        //    }
+        //}
 
         /// <summary>
         /// 按百分比删除一定的数量,腾出内存
@@ -211,12 +251,12 @@ namespace tezcat.Framework.Utility
         {
             ITezObjectPool ITezObjectPoolItem.objectPool { get; set; }
 
-            void ITezObjectPoolItem.destroyThis()
+            void ITezObjectPoolItem.onDestroyThis()
             {
                 this.Clear();
             }
 
-            bool ITezObjectPoolItem.recycleThis()
+            bool ITezObjectPoolItem.tryRecycleThis()
             {
                 this.Clear();
                 return true;
@@ -227,12 +267,12 @@ namespace tezcat.Framework.Utility
         {
             ITezObjectPool ITezObjectPoolItem.objectPool { get; set; }
 
-            void ITezObjectPoolItem.destroyThis()
+            void ITezObjectPoolItem.onDestroyThis()
             {
                 this.Clear();
             }
 
-            bool ITezObjectPoolItem.recycleThis()
+            bool ITezObjectPoolItem.tryRecycleThis()
             {
                 this.Clear();
                 return true;
@@ -243,12 +283,12 @@ namespace tezcat.Framework.Utility
         {
             ITezObjectPool ITezObjectPoolItem.objectPool { get; set; }
 
-            void ITezObjectPoolItem.destroyThis()
+            void ITezObjectPoolItem.onDestroyThis()
             {
                 this.Clear();
             }
 
-            bool ITezObjectPoolItem.recycleThis()
+            bool ITezObjectPoolItem.tryRecycleThis()
             {
                 this.Clear();
                 return true;

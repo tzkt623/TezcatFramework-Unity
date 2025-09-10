@@ -13,7 +13,7 @@ namespace tezcat.Framework.Game
         public virtual int count { get; set; }
         public TezProtoObject item { get; set; } = null;
 
-        void ITezCloseable.closeThis()
+        public void close()
         {
             this.onClose();
         }
@@ -83,7 +83,7 @@ namespace tezcat.Framework.Game
             mInfo.list.Add(this);
         }
 
-        void ITezCloseable.closeThis()
+        public void close()
         {
             mInfo = null;
             this.inventory = null;
@@ -93,6 +93,11 @@ namespace tezcat.Framework.Game
     /// <summary>
     /// 
     /// 背包系统
+    /// 
+    /// 1.通过唯一ID来区分物品
+    /// 2.是否可以堆叠物品
+    /// 
+    /// 
     /// 
     /// 功能设计
     /// 
@@ -120,7 +125,7 @@ namespace tezcat.Framework.Game
         : ITezCloseable
     {
         protected List<TezInventoryUniqueItemInfo> mUniqueItemList = new List<TezInventoryUniqueItemInfo>();
-        protected Dictionary<long, TezInventoryStackedItemInfo> mStackedItemDict = new Dictionary<long, TezInventoryStackedItemInfo>();
+        protected Dictionary<ulong, TezInventoryStackedItemInfo> mStackedItemDict = new Dictionary<ulong, TezInventoryStackedItemInfo>();
 
         protected TezInventoryBaseView mView = null;
         public TezInventoryBaseView view => mView;
@@ -337,7 +342,7 @@ namespace tezcat.Framework.Game
             return null;
         }
 
-        void ITezCloseable.closeThis()
+        public void close()
         {
             mLifeMonitor.close();
 

@@ -47,7 +47,7 @@ namespace tezcat.Framework.Utility
             mGenerator = randomGenerator;
         }
         
-        void ITezCloseable.closeThis()
+        public void close()
         {
             mData = null;
             mGenerator = null;

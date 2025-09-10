@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using tezcat.Framework.Core;
 using tezcat.Framework.TypeTraits;
@@ -182,7 +181,7 @@ namespace tezcat.Framework.ECS
             }
         }
 
-        void ITezCloseable.closeThis()
+        public void close()
         {
             for (int i = 0; i < m_Components.Length; i++)
             {

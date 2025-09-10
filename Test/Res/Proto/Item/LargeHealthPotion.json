@@ -1,11 +1,11 @@
 {
-    "CID": "HealthPotion",
+    "CID": "HealthPotionData",
     "ProtoInfo": {
-        "Type": "Potion",
+        "TID": "HealthPotion",
         "IID": 2,
         "Name": "LargeHealthPotion",
         "StackCount": 10,
-        "Customizable": false
+        "CopyType": false
     },
     "ObjectData": {
         "HealthAdd": 20

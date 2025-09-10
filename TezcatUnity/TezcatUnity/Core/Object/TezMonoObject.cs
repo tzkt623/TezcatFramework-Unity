@@ -138,13 +138,11 @@ namespace tezcat.Unity.Core
         /// <summary>
         /// 
         /// </summary>
-        void ITezCloseable.closeThis()
+        public void close()
         {
             mClosed = true;
             this.onClose();
             Destroy(this.gameObject);
         }
-
-
     }
 }

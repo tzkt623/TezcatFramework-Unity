@@ -1,11 +1,11 @@
 {
-    "CID": "Axe",
+    "CID": "AxeData",
     "ProtoInfo": {
-        "Type": "Weapon",
+        "TID": "Axe",
         "IID": 0,
         "Name": "FireAxe",
         "StackCount": -1,
-        "Customizable": true
+        "CopyType": true
     },
     "ObjectData": {
         "Attack": 5

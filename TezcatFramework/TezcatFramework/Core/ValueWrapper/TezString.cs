@@ -163,7 +163,7 @@ namespace tezcat.Framework.Core
             sStringList[mID] = content;
         }
 
-        void ITezCloseable.closeThis()
+        public void close()
         {
             mID = 0;
             sPool.Enqueue(this);

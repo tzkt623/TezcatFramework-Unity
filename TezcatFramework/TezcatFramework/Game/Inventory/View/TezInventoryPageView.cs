@@ -35,7 +35,7 @@ namespace tezcat.Framework.Game
         public int maxPage => mMaxPage;
 
         List<TezInventoryUniqueItemInfo> mUniqueItems = null;
-        Dictionary<long, TezInventoryStackedItemInfo> mStackedItems = null;
+        Dictionary<ulong, TezInventoryStackedItemInfo> mStackedItems = null;
 
         public int capacity
         {
@@ -47,7 +47,7 @@ namespace tezcat.Framework.Game
             get { return mSlots[index]; }
         }
 
-        public override void setInventory(TezInventory inventory, List<TezInventoryUniqueItemInfo> uniqueList, Dictionary<long, TezInventoryStackedItemInfo> stackedDict)
+        public override void setInventory(TezInventory inventory, List<TezInventoryUniqueItemInfo> uniqueList, Dictionary<ulong, TezInventoryStackedItemInfo> stackedDict)
         {
             base.setInventory(inventory, uniqueList, stackedDict);
             mUniqueItems = uniqueList;

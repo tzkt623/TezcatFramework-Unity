@@ -54,6 +54,13 @@ namespace tezcat.Framework
         /// </summary>
         public static TezProtoDatabase protoDB => mProtoDB;
 
+
+        static TezRuntimeDatabase mRumTimeDB = new TezRuntimeDatabase();
+        /// <summary>
+        /// 原型数据库
+        /// </summary>
+        public static TezRuntimeDatabase runtimeDB => mRumTimeDB;
+
         static TezSignalSystem mSignal = new TezSignalSystem();
         public static TezSignalSystem signalSystem => mSignal;
 
