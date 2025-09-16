@@ -5,7 +5,7 @@ using tezcat.Framework.Game;
 
 namespace tezcat.Framework.Test
 {
-    public class TestTriggerListSystem : TezBaseTest
+    public class TestTriggerSystem : TezBaseTest
     {
         enum Camp
         {
@@ -174,7 +174,7 @@ namespace tezcat.Framework.Test
             public class TriggerFunction
             {
                 public TriggerPhaseID phaseID;
-                public Action<ITezTrigger> funcCreate = null;
+                public Action<TezTrigger<UserData>> funcCreate = null;
             }
 
             public Player owner;
@@ -185,7 +185,7 @@ namespace tezcat.Framework.Test
             List<TriggerFunction> mTriggerListener = null;
             public IReadOnlyCollection<TriggerFunction> triggerListener => mTriggerListener;
 
-            public void registerTrigger(TriggerPhaseID phaseID, Action<ITezTrigger> funcCreate)
+            public void registerTrigger(TriggerPhaseID phaseID, Action<TezTrigger<UserData>> funcCreate)
             {
                 if (mTriggerListener == null)
                 {
@@ -209,7 +209,7 @@ namespace tezcat.Framework.Test
                 return Camp.Error;
             }
 
-            protected void trigger(ITezTrigger masterTrigger, Action<ITezTrigger> funcExecute)
+            protected void trigger(TezTrigger<UserData> masterTrigger, Action<TezTrigger<UserData>> funcExecute)
             {
                 if (this.actived)
                 {
@@ -291,7 +291,7 @@ namespace tezcat.Framework.Test
                 .run(masterTrigger);
             }
 
-            public virtual void trigger(ITezTrigger masterTrigger)
+            public virtual void trigger(TezTrigger<UserData> masterTrigger)
             {
                 throw new NotImplementedException();
             }
@@ -345,7 +345,7 @@ namespace tezcat.Framework.Test
                 , this.trigger);
             }
 
-            public override void trigger(ITezTrigger masterTrigger)
+            public override void trigger(TezTrigger<UserData> masterTrigger)
             {
                 this.trigger(masterTrigger, (trigger) =>
                 {
@@ -412,7 +412,7 @@ namespace tezcat.Framework.Test
                 , this.trigger);
             }
 
-            public override void trigger(ITezTrigger masterTrigger)
+            public override void trigger(TezTrigger<UserData> masterTrigger)
             {
                 this.trigger(masterTrigger, (trigger) =>
                 {
@@ -464,7 +464,7 @@ namespace tezcat.Framework.Test
                 }
             }
 
-            public void notify(TriggerPhaseID phaseID, ITezTrigger masterTrigger)
+            public void notify(TriggerPhaseID phaseID, TezTrigger<UserData> masterTrigger)
             {
                 if (mTriggerSkills.TryGetValue(phaseID.ID, out var list))
                 {
@@ -512,7 +512,7 @@ namespace tezcat.Framework.Test
                 mSkillManager.addSkill(skill);
             }
 
-            public void notify(TriggerPhaseID phaseID, ITezTrigger masterTrigger)
+            public void notify(TriggerPhaseID phaseID, TezTrigger<UserData> masterTrigger)
             {
                 Helper.writeLine(this.camp, $"{this.name}: Notify Skill");
                 mSkillManager.notify(phaseID, masterTrigger);
@@ -535,7 +535,7 @@ namespace tezcat.Framework.Test
                 skill.execute();
             }
 
-            public void takeDamage(ITezTrigger masterTrigger, int damage)
+            public void takeDamage(TezTrigger<UserData> masterTrigger, int damage)
             {
                 this.health -= damage;
                 if (this.health < 0)
@@ -574,7 +574,7 @@ namespace tezcat.Framework.Test
             List<Player> mPlayerList = new List<Player>();
             List<Player> mEnemyList = new List<Player>();
 
-            private void notifyPlayer(TriggerPhaseID phaseID, ITezTrigger masterTrigger)
+            private void notifyPlayer(TriggerPhaseID phaseID, TezTrigger<UserData> masterTrigger)
             {
                 for (int i = 0; i < mPlayerList.Count; i++)
                 {
@@ -582,7 +582,7 @@ namespace tezcat.Framework.Test
                 }
             }
 
-            private void notifyEnemy(TriggerPhaseID phaseID, ITezTrigger masterTrigger)
+            private void notifyEnemy(TriggerPhaseID phaseID, TezTrigger<UserData> masterTrigger)
             {
                 for (int i = 0; i < mEnemyList.Count; i++)
                 {
@@ -590,7 +590,7 @@ namespace tezcat.Framework.Test
                 }
             }
 
-            public void notify(Camp camp, TriggerPhaseID phaseID, ITezTrigger masterTrigger)
+            public void notify(Camp camp, TriggerPhaseID phaseID, TezTrigger<UserData> masterTrigger)
             {
                 switch (camp)
                 {
@@ -637,7 +637,7 @@ namespace tezcat.Framework.Test
         Player player = null;
         Player enemy = null;
 
-        public TestTriggerListSystem() : base("TriggerListSystem")
+        public TestTriggerSystem() : base("TriggerSystem")
         {
 
         }
@@ -683,7 +683,7 @@ namespace tezcat.Framework.Test
                     action = null;
                 }
 
-                TezTriggerListSystem.update();
+                TezTriggerSystem.update();
             }
         }
 

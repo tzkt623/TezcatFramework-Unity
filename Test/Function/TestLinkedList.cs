@@ -117,7 +117,7 @@ namespace tezcat.Framework.Test
         {
             while (Console.ReadKey().Key != ConsoleKey.Escape)
             {
-                TezTriggerListSystem.update();
+                TezTriggerSystem.update();
             }
         }
 

@@ -69,7 +69,7 @@ namespace tezcat.Framework.Test
             //T
             mTestList.Add(new TestTag());
             mTestList.Add(new TestTranslator());
-            mTestList.Add(new TestTriggerListSystem());
+            mTestList.Add(new TestTriggerSystem());
             mTestList.Add(new TestTask());
             mTestList.Add(new TestTaskAsync());
             //U

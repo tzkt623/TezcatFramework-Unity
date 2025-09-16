@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace tezcat.Framework.Utility
+namespace tezcat.Framework.Game
 {
     public class TezGameState<Descriptor>
     {

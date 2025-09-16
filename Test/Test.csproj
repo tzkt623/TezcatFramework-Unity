@@ -61,7 +61,7 @@
     <Compile Include="Function\TestObject.cs" />
     <Compile Include="Function\TestProtoDB.cs" />
     <Compile Include="Function\TestLinkedList.cs" />
-    <Compile Include="Function\TestTriggerListSystem.cs" />
+    <Compile Include="Function\TestTriggerSystem.cs" />
     <Compile Include="TestProgram.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Function\TestFieldOffset.cs" />

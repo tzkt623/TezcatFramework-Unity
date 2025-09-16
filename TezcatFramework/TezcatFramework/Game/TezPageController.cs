@@ -2,7 +2,7 @@
 using tezcat.Framework.Core;
 using tezcat.Framework.Extension;
 
-namespace tezcat.Framework.Utility
+namespace tezcat.Framework.Game
 {
     /// <summary>
     /// 分页器

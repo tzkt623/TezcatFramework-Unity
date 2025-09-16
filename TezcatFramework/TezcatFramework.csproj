@@ -47,6 +47,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="TezcatFramework\Game\TezContext.cs" />
     <Compile Include="TezcatFramework\Core\DataBase\TezRuntimeDatabase.cs" />
     <Compile Include="TezcatFramework\Core\Object\ITezProtoObject.cs" />
     <Compile Include="TezcatFramework\Core\ValueWrapper\TezValueWrapperArray.cs" />
@@ -177,7 +178,7 @@
     <Compile Include="TezcatFramework\Extension\TezListExtension.cs" />
     <Compile Include="TezcatFramework\Extension\TezStringExtension.cs" />
     <Compile Include="TezcatFramework\Extension\TezValueWrapperExtension.cs" />
-    <Compile Include="TezcatFramework\Game\Command\TezTriggerListSystem.cs" />
+    <Compile Include="TezcatFramework\Game\TezTriggerSystem.cs" />
     <Compile Include="TezcatFramework\Game\PathFind\TezAStarSystem.cs" />
     <Compile Include="TezcatFramework\Thirdparty\LitJson\IJsonWrapper.cs" />
     <Compile Include="TezcatFramework\Thirdparty\LitJson\JsonData.cs" />
@@ -204,7 +205,7 @@
     <Compile Include="TezcatFramework\Utility\Container\TezCountArrayEnumerator.cs" />
     <Compile Include="TezcatFramework\Utility\TezIDCreator.cs" />
     <Compile Include="TezcatFramework\Core\ValueWrapper\TezString.cs" />
-    <Compile Include="TezcatFramework\Utility\TezPageController.cs" />
+    <Compile Include="TezcatFramework\Game\TezPageController.cs" />
     <Compile Include="TezcatFramework\Utility\Quadtree\TezQtEntry.cs" />
     <Compile Include="TezcatFramework\Utility\Quadtree\TezQtPoint.cs" />
     <Compile Include="TezcatFramework\Utility\Quadtree\TezQtRectangle.cs" />
@@ -213,16 +214,16 @@
     <Compile Include="TezcatFramework\Utility\Container\TezBinaryHeap.cs" />
     <Compile Include="TezcatFramework\Utility\TezBitMask.cs" />
     <Compile Include="TezcatFramework\Utility\TezCodeWriter.cs" />
-    <Compile Include="TezcatFramework\Utility\TezGameState.cs" />
+    <Compile Include="TezcatFramework\Game\TezGameState.cs" />
     <Compile Include="TezcatFramework\Utility\Container\TezList.cs" />
     <Compile Include="TezcatFramework\Core\FileIO\TezFilePath.cs" />
     <Compile Include="TezcatFramework\Utility\TezObjectPool.cs" />
     <Compile Include="TezcatFramework\Utility\TezSingleton.cs" />
     <Compile Include="TezcatFramework\Utility\TezSmartObject.cs" />
     <Compile Include="TezcatFramework\Utility\Container\TezTuple.cs" />
-    <Compile Include="TezcatFramework\Utility\Monitor\TezLifeMonitor.cs" />
-    <Compile Include="TezcatFramework\Utility\Monitor\TezStateMonitor.cs" />
-    <Compile Include="TezcatFramework\Utility\TezTask.cs" />
+    <Compile Include="TezcatFramework\Game\Monitor\TezLifeMonitor.cs" />
+    <Compile Include="TezcatFramework\Game\Monitor\TezStateMonitor.cs" />
+    <Compile Include="TezcatFramework\Game\TezTask.cs" />
     <Compile Include="TezcatFramework\Utility\Container\TezLinkedList.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -1,6 +1,6 @@
 ﻿using tezcat.Framework.Core;
 
-namespace tezcat.Framework.Utility
+namespace tezcat.Framework.Game
 {
     public class TezLifeData
     {

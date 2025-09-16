@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using tezcat.Framework.Core;
 using tezcat.Framework.Utility;
 
 namespace tezcat.Framework.Game
@@ -47,7 +46,7 @@ namespace tezcat.Framework.Game
     }
 
 
-    public static class TezTriggerListSystem
+    public static class TezTriggerSystem
     {
         static List<ITezTrigger> mTriggerList = new List<ITezTrigger>();
 
@@ -85,11 +84,6 @@ namespace tezcat.Framework.Game
         }
     }
 
-    public interface ITezTriggerPhase
-    {
-        TezTriggerState execute();
-    }
-
     public interface ITezTriggerPhaseID
     {
         ulong ID { get; }
@@ -99,11 +93,9 @@ namespace tezcat.Framework.Game
     {
         TezTriggerState state { get; }
         ITezTriggerPhaseID phaseID { get; set; }
-        void execute();
+        //void wait(ITezTrigger trigger);
         void onFail();
-        void wait(ITezTrigger trigger);
-        void resume();
-        void pause();
+        void execute();
     }
 
     public interface ITezTrigger<T> : ITezTrigger
@@ -123,19 +115,11 @@ namespace tezcat.Framework.Game
     /// </summary>
     /// 
 
-    public abstract class TezBasicTrigger : ITezTrigger, ITezCloseable
+    public abstract class TezBasicTrigger : ITezTrigger
     {
-        protected interface IPhase
-        {
-            void execute(ITezTrigger trigger);
-        }
-
-        Action<TezTriggerState> mOnComplete;
-        protected TezLinkedList<IPhase> mPhaseList = new TezLinkedList<IPhase>();
-        TezLinkedList<ITezTrigger> mBeTriggeredList = new TezLinkedList<ITezTrigger>();
-
-        ITezTrigger mMasterTrigger = null;
-
+        Action<TezTriggerState> mOnComplete = null;
+        TezLinkedList<TezBasicTrigger> mBeTriggeredList = new TezLinkedList<TezBasicTrigger>();
+        TezBasicTrigger mMasterTrigger = null;
         TezTriggerState mState = TezTriggerState.Error;
         public TezTriggerState state => mState;
         public ITezTriggerPhaseID phaseID { get; set; }
@@ -147,7 +131,7 @@ namespace tezcat.Framework.Game
             return this;
         }
 
-        public void wait(ITezTrigger trigger)
+        private void wait(TezBasicTrigger trigger)
         {
             mBeTriggeredList.addBack(trigger);
         }
@@ -163,6 +147,10 @@ namespace tezcat.Framework.Game
             mState = TezTriggerState.Waiting;
         }
 
+        protected abstract bool isPhaseEmpty();
+
+        protected abstract void executePhase();
+
         void ITezTrigger.execute()
         {
             switch (mState)
@@ -171,12 +159,12 @@ namespace tezcat.Framework.Game
                     if (mBeTriggeredList.count > 0)
                     {
                         var trigger = mBeTriggeredList.popFront().value;
-                        TezTriggerListSystem.addTrigger(trigger);
+                        TezTriggerSystem.addTrigger(trigger);
                         mState = TezTriggerState.Waiting;
                     }
                     else
                     {
-                        if (mPhaseList.count == 0)
+                        if (this.isPhaseEmpty())
                         {
                             mState = TezTriggerState.Success;
                             mOnComplete?.Invoke(mState);
@@ -184,10 +172,12 @@ namespace tezcat.Framework.Game
                             {
                                 mMasterTrigger.resume();
                             }
+                            this.close();
                         }
                         else
                         {
-                            mPhaseList.popFront().value.execute(this);
+                            //mPhaseList.popFront().value.execute(this);
+                            this.executePhase();
                         }
                     }
                     break;
@@ -197,6 +187,7 @@ namespace tezcat.Framework.Game
                     {
                         mMasterTrigger.resume();
                     }
+                    this.close();
                     break;
                 case TezTriggerState.Waiting:
                     break;
@@ -205,7 +196,7 @@ namespace tezcat.Framework.Game
             }
         }
 
-        public void run(ITezTrigger masterTrigger)
+        public void run(TezBasicTrigger masterTrigger)
         {
             if (masterTrigger == this)
             {
@@ -220,7 +211,7 @@ namespace tezcat.Framework.Game
             }
             else
             {
-                TezTriggerListSystem.addTrigger(this);
+                TezTriggerSystem.addTrigger(this);
             }
         }
 
@@ -238,14 +229,12 @@ namespace tezcat.Framework.Game
             }
         }
 
-        public void close()
+        private void close()
         {
             mBeTriggeredList.close();
-            mPhaseList.close();
             this.onCloseThis();
 
             mBeTriggeredList = null;
-            mPhaseList = null;
             mOnComplete = null;
             mMasterTrigger = null;
         }
@@ -255,59 +244,58 @@ namespace tezcat.Framework.Game
 
     public class TezTrigger : TezBasicTrigger
     {
-        public class Phase : IPhase
-        {
-            public Action<ITezTrigger> onExecute;
+        protected TezLinkedList<Action<TezTrigger>> mPhaseList = new TezLinkedList<Action<TezTrigger>>();
 
-            void IPhase.execute(ITezTrigger trigger)
-            {
-                this.onExecute(trigger);
-            }
+        public TezTrigger addPhase(Action<TezTrigger> func)
+        {
+            mPhaseList.addBack(func);
+            return this;
         }
 
-        public TezTrigger addPhase(Action<ITezTrigger> func)
+        protected override bool isPhaseEmpty()
         {
-            Phase phase = new Phase()
-            {
-                onExecute = func
-            };
-            mPhaseList.addBack(phase);
-            return this;
+            return mPhaseList.count == 0;
+        }
+
+        protected override void executePhase()
+        {
+            mPhaseList.popFront().value(this);
         }
 
         protected override void onCloseThis()
         {
+            mPhaseList.clear();
+            mPhaseList = null;
         }
     }
 
 
     public class TezTrigger<T> : TezBasicTrigger, ITezTrigger<T>
     {
-        public class Phase : IPhase
-        {
-            public Action<ITezTrigger<T>> onExecute;
-
-            void IPhase.execute(ITezTrigger trigger)
-            {
-                this.onExecute((ITezTrigger<T>)trigger);
-            }
-        }
-
         T mUserData;
         public T userData { get => mUserData; set => mUserData = value; }
+        protected TezLinkedList<Action<TezTrigger<T>>> mPhaseList = new TezLinkedList<Action<TezTrigger<T>>>();
 
-        public TezTrigger<T> addPhase(Action<ITezTrigger<T>> func)
+        public TezTrigger<T> addPhase(Action<TezTrigger<T>> func)
         {
-            Phase phase = new Phase()
-            {
-                onExecute = func
-            };
-            mPhaseList.addBack(phase);
+            mPhaseList.addBack(func);
             return this;
+        }
+
+        protected override bool isPhaseEmpty()
+        {
+            return mPhaseList.count == 0;
+        }
+
+        protected override void executePhase()
+        {
+            mPhaseList.popFront().value(this);
         }
 
         protected override void onCloseThis()
         {
+            mPhaseList.clear();
+            mPhaseList = null;
             mUserData = default;
         }
     }

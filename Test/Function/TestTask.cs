@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
-using tezcat.Framework.Utility;
+using tezcat.Framework.Game;
 
 namespace tezcat.Framework.Test
 {

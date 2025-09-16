@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using tezcat.Framework.Core;
 
-namespace tezcat.Framework.Utility
+namespace tezcat.Framework.Game
 {
     /// <summary>
     /// 
