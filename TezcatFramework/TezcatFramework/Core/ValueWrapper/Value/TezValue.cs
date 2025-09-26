@@ -4,12 +4,12 @@ namespace tezcat.Framework.Core
 {
     public interface ITezValue : ITezValueWrapper
     {
-        event TezEventExtension.Action<ITezValue> onValueChanged;
         void manualUpdate();
     }
 
     public interface ITezValue<T> : ITezValue
     {
+        event TezEventExtension.Action<T> onValueChanged;
         T value { get; set; }
         T innerValue { set; }
     }
@@ -23,7 +23,7 @@ namespace tezcat.Framework.Core
         : TezValueWrapper<T>
         , ITezValue<T>
     {
-        public event TezEventExtension.Action<ITezValue> onValueChanged;
+        public event TezEventExtension.Action<T> onValueChanged;
         public override TezWrapperType wrapperType => TezWrapperType.LitProperty;
 
         T mValue;
@@ -39,7 +39,7 @@ namespace tezcat.Framework.Core
             set
             {
                 mValue = value;
-                this.onValueChanged?.Invoke(this);
+                this.onValueChanged?.Invoke(mValue);
             }
         }
 
@@ -53,6 +53,10 @@ namespace tezcat.Framework.Core
             set { mValue = value; }
         }
 
+        public string valueToString()
+        {
+            return mValue.ToString();
+        }
 
         public TezValue(ITezValueDescriptor descriptor) : base(descriptor)
         {
@@ -72,7 +76,7 @@ namespace tezcat.Framework.Core
         /// </summary>
         public void manualUpdate()
         {
-            this.onValueChanged?.Invoke(this);
+            this.onValueChanged?.Invoke(mValue);
         }
     }
 
