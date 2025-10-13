@@ -4,6 +4,7 @@
 .vs
 bin
 obj
+packages
 
 UGUI
 UGUIEditor

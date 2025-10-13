@@ -20,4 +20,14 @@
             }
         }
     }
+
+
+    public class TezLocator<T> where T : class
+    {
+        static T mValue;
+
+        static public void provide(T value) { mValue = value; }
+
+        static public T get() { return mValue; }
+    }
 }

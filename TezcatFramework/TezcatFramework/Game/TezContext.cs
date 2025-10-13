@@ -21,6 +21,24 @@ namespace tezcat.Framework.Game
             mInstances.Add(new T());
         }
 
+        public static void register<Basic, Current>() where Current : Basic, new()
+        {
+            TypeInstance<Basic>.index = mInstances.Count;
+            mInstances.Add(new Current());
+        }
+
+        public static void change<T>() where T : new()
+        {
+            TypeInstance<T>.index = mInstances.Count;
+            mInstances[TypeInstance<T>.index] = new T();
+        }
+
+        public static void change<Basic, Current>() where Current : Basic, new()
+        {
+            TypeInstance<Basic>.index = mInstances.Count;
+            mInstances[TypeInstance<Basic>.index] = new Current();
+        }
+
         public static T resolve<T>()
         {
             return (T)mInstances[TypeInstance<T>.index];

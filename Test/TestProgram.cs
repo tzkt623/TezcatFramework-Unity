@@ -39,6 +39,7 @@ namespace tezcat.Framework.Test
             mTestList.Add(new TestCategoryGenerator());
             //D
             //E
+            mTestList.Add(new TestNewECS());
             //F
             mTestList.Add(new TestFieldOffset());
             //G

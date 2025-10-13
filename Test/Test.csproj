@@ -53,6 +53,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Function\TestBonusSystem2.cs" />
+    <Compile Include="Function\TestNewECS.cs" />
     <Compile Include="Function\TestSaveController.cs" />
     <Compile Include="Function\TestGameState.cs" />
     <Compile Include="Function\TestObjectPool.cs" />
