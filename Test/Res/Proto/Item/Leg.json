@@ -4,8 +4,8 @@
         "TID": "Leg",
         "IID": 0,
         "Name": "Ring",
-        "StackCount": -1,
-        "CopyType": true
+        "StackCount": 1,
+        "SharedType": false
     },
     "ObjectData": {
         "ArmorAdd": 1

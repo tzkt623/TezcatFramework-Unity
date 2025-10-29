@@ -28,6 +28,6 @@ namespace tezcat.Framework.ECS
 
     public interface ITezObjectWithItem
     {
-        void initWithData(ITezSerializable item);
+        void initWithData(ITezProtoLoader item);
     }
 }

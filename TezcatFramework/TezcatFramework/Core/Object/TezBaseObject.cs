@@ -5,7 +5,7 @@
     /// </summary>
     public abstract class TezBaseObject
         : ITezCloseable
-        , ITezSerializable
+        , ITezProtoLoader
         //, IEquatable<TezBaseObject>
     {
         /// <summary>
@@ -34,7 +34,7 @@
         /// <summary>
         /// 反序列化对象
         /// </summary>
-        public abstract void deserialize(TezSaveController.Reader reader);
+        public abstract void loadProtoData(TezSaveController.Reader reader);
 
         /*
         #region Override

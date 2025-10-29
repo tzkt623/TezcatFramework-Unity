@@ -4,8 +4,8 @@
         "TID": "Helmet",
         "IID": 1,
         "Name": "Monster",
-        "StackCount": -1,
-        "CopyType": true
+        "StackCount": 1,
+        "SharedType": false
     },
     "ObjectData": {
         "ArmorAdd": 20

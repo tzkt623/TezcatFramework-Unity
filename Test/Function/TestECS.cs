@@ -13,7 +13,7 @@ namespace tezcat.Framework.Test
         /// <summary>
         /// 使用物品模板初始化对象
         /// </summary>
-        public void initWithData(ITezSerializable item)
+        public void initWithData(ITezProtoLoader item)
         {
 //             var data_item = (ITezDBItemObject)item;
 //             this.NID = data_item.NID;
@@ -25,7 +25,7 @@ namespace tezcat.Framework.Test
             this.postInit();
         }
 
-        protected virtual void onInitWithData(ITezSerializable item)
+        protected virtual void onInitWithData(ITezProtoLoader item)
         {
 
         }
@@ -35,7 +35,7 @@ namespace tezcat.Framework.Test
             throw new System.NotImplementedException();
         }
 
-        public override void deserialize(TezSaveController.Reader reader)
+        public override void loadProtoData(TezSaveController.Reader reader)
         {
             throw new System.NotImplementedException();
         }

@@ -23,7 +23,6 @@ namespace tezcat.Unity.UI
 
     public interface ITezUIWidget
         : ITezBaseWidget
-        , ITezUpdateHandler
         //, ITezDelayInitHandler
     {
 

@@ -7,7 +7,7 @@ namespace tezcat.Framework.Core
         /// <summary>
         /// 更新事件
         /// </summary>
-        event TezEventExtension.Action<ITezProperty> onValueChanged;
+        event TezEventExtension.Action<ITezProperty> evtValueChanged;
 
         void addModifier(ITezValueModifier modifier);
         bool removeModifier(ITezValueModifier modifier);

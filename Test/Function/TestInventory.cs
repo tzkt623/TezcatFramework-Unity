@@ -17,12 +17,12 @@ namespace tezcat.Framework.Test
         {
             TezInventoryFilter.createFilter("NameFilter", (ITezInventoryViewSlotData data) =>
             {
-                return data.item.itemInfo.NID == "H355";
+                return data.item.protoInfo.NID == "H355";
             });
 
             TezInventoryFilter.createFilter("TypeFilter", (ITezInventoryViewSlotData data) =>
             {
-                return data.item.itemInfo.itemID.TID == TezcatFramework.protoDB.getTypeID("HealthPotion");
+                return data.item.protoInfo.itemID.TID == TezcatFramework.protoDB.getTypeID("HealthPotion");
             });
 
 //             TezInventoryFilter.createFilter("CategoryFilter", (ITezInventoryViewSlotData data) =>
@@ -74,7 +74,7 @@ namespace tezcat.Framework.Test
             }
             else
             {
-                Console.WriteLine($"{slot.index}:{slot.data.item.itemInfo.NID}({slot.count})");
+                Console.WriteLine($"{slot.index}:{slot.data.item.protoInfo.NID}({slot.count})");
             }
         }
 

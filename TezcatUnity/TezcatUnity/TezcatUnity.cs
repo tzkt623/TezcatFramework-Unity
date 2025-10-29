@@ -44,23 +44,13 @@ namespace tezcat.Unity
             TezLayer.sortLayers();
         }
 
-        protected override void onDelayInit()
+        protected override void onDelayInit(float dt)
         {
             if (!mResourceInited)
             {
                 mResourceInited = true;
                 StartCoroutine(startGame());
             }
-        }
-
-        protected override void onUpdateOnMainLoopLoop(float dt)
-        {
-
-        }
-
-        protected override void onUpdateOnMainLoopOnce(float dt)
-        {
-
         }
 
         protected override void onHide()
@@ -75,21 +65,7 @@ namespace tezcat.Unity
 
         protected virtual void Update()
         {
-//             while (sInitQueue.Count > 0)
-//             {
-//                 sInitQueue.Dequeue().delayInit();
-//             }
-// 
-//             while (sUIRefreshQueue.Count > 0)
-//             {
-//                 sUIRefreshQueue.Dequeue().refresh();
-//             }
-// 
-//             while (sRendererRefreshQueue.Count > 0)
-//             {
-//                 sRendererRefreshQueue.Dequeue().refresh();
-//             }
-            TezUpdateHandlerManager.update();
+
         }
 
         protected virtual void LateUpdate()
@@ -134,7 +110,6 @@ namespace tezcat.Unity
         /// </summary>
         protected virtual void registerFramework()
         {
-            TezUpdateHandlerManager.monoBehaviour = this;
             //TezcatFramework.set(new TezProtoDatabase());
             //TezcatFramework.set(new TezRunTimeDatabase());
         }

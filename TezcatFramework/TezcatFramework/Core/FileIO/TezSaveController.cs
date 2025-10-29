@@ -67,7 +67,7 @@ namespace tezcat.Framework.Core
 
                 IData IData.get(int index)
                 {
-                    throw new NotImplementedException();
+                    throw new NotImplementedException($"DataObject error get index {index}");
                 }
             }
 
@@ -98,7 +98,7 @@ namespace tezcat.Framework.Core
 
                 IData IData.get(string name)
                 {
-                    throw new NotImplementedException();
+                    throw new NotImplementedException($"DataArray error get string {name}");
                 }
 
                 IData IData.get(int index)
@@ -228,8 +228,8 @@ namespace tezcat.Framework.Core
 
             private void resetCurrent(int index)
             {
-                mCurrentIndex = index;
-                mCurrent = mCurrent.get(index);
+                mCurrent = (IData)mCurrent.parent;
+                mCurrentName = mCurrent.name;
             }
 
             public void enterObject(string name)

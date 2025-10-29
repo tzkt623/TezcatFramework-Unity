@@ -4,8 +4,8 @@
         "TID": "Gun",
         "IID": 1,
         "Name": "1911",
-        "StackCount": -1,
-        "CopyType": true
+        "StackCount": 1,
+        "SharedType": false
     },
     "ObjectData": {
         "Attack": 500

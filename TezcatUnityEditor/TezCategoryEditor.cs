@@ -1,4 +1,3 @@
-using System;
 using tezcat.Unity.Tool;
 using UnityEditor;
 using UnityEngine;

@@ -1,7 +1,6 @@
 using System;
 using tezcat.Framework.Core;
 using tezcat.Framework.Game;
-using tezcat.Framework.Utility;
 
 namespace tezcat.Framework.Test
 {
@@ -12,9 +11,9 @@ namespace tezcat.Framework.Test
 
     class Wall : TezGameObject
     {
-        public override void deserialize(TezSaveController.Reader reader)
+        public override void loadProtoData(TezSaveController.Reader reader)
         {
-            base.deserialize(reader);
+            base.loadProtoData(reader);
         }
     }
 
@@ -33,7 +32,7 @@ namespace tezcat.Framework.Test
             return new MagicPotion();
         }
 
-        protected override TezProtoObjectData copySelfWithOutItemInfo()
+        protected override TezProtoObjectData copySelfDataWithoutProtoInfo()
         {
             return new MagicPotionData
             {
@@ -41,15 +40,12 @@ namespace tezcat.Framework.Test
             };
         }
 
-        protected override void onDeserializeObjectData(TezSaveController.Reader reader)
+        protected override void onLoadProtoData(TezSaveController.Reader reader)
         {
             this.magicAdd = reader.readInt("MagicAdd");
         }
 
-        protected override void onSerializeObjectData(TezSaveController.Writer writer)
-        {
-            throw new NotImplementedException();
-        }
+
     }
 
     class HealthPotionData : TezProtoObjectData
@@ -66,22 +62,19 @@ namespace tezcat.Framework.Test
             return new HealthPotion();
         }
 
-        protected override TezProtoObjectData copySelfWithOutItemInfo()
+        protected override TezProtoObjectData copySelfDataWithoutProtoInfo()
         {
             var data = new HealthPotionData();
             data.healthAdd.value = this.healthAdd.value;
             return data;
         }
 
-        protected override void onDeserializeObjectData(TezSaveController.Reader reader)
+        protected override void onLoadProtoData(TezSaveController.Reader reader)
         {
             this.healthAdd.value = reader.readInt("HealthAdd");
         }
 
-        protected override void onSerializeObjectData(TezSaveController.Writer writer)
-        {
-            throw new NotImplementedException();
-        }
+
     }
 
     abstract class Useable : TezProtoObject
@@ -94,7 +87,7 @@ namespace tezcat.Framework.Test
 
     }
 
-    class MagicPotion : Potion, ITezProtoObject<MagicPotionData>/*指明protodata类*/
+    class MagicPotion : Potion, ITezProtoObjectDataGetter<MagicPotionData>/*指明protodata类*/
     {
         public MagicPotionData protoData => (MagicPotionData)mProtoData;
 
@@ -109,7 +102,7 @@ namespace tezcat.Framework.Test
         }
     }
 
-    class HealthPotion : Potion, ITezProtoObject<HealthPotionData>
+    class HealthPotion : Potion, ITezProtoObjectDataGetter<HealthPotionData>
     {
         //public TezBonusableInt healthAdd { get; private set; } = new TezBonusableInt(MyDescriptorConfig.Modifier.HealthAdd);
 
@@ -133,15 +126,12 @@ namespace tezcat.Framework.Test
 
         }
 
-        protected override void onDeserializeObjectData(TezSaveController.Reader reader)
+        protected override void onLoadProtoData(TezSaveController.Reader reader)
         {
             this.attack = reader.readInt("Attack");
         }
 
-        protected override void onSerializeObjectData(TezSaveController.Writer writer)
-        {
-            throw new NotImplementedException();
-        }
+
     }
 
     class GunData : WeaponData
@@ -151,7 +141,7 @@ namespace tezcat.Framework.Test
             return new Gun();
         }
 
-        protected override TezProtoObjectData copySelfWithOutItemInfo()
+        protected override TezProtoObjectData copySelfDataWithoutProtoInfo()
         {
             return new GunData
             {
@@ -167,7 +157,7 @@ namespace tezcat.Framework.Test
             return new Axe();
         }
 
-        protected override TezProtoObjectData copySelfWithOutItemInfo()
+        protected override TezProtoObjectData copySelfDataWithoutProtoInfo()
         {
             return new AxeData
             {
@@ -185,7 +175,7 @@ namespace tezcat.Framework.Test
             return new Missle();
         }
 
-        protected override TezProtoObjectData copySelfWithOutItemInfo()
+        protected override TezProtoObjectData copySelfDataWithoutProtoInfo()
         {
             return new MissleData
             {
@@ -206,7 +196,7 @@ namespace tezcat.Framework.Test
 
     }
 
-    class Gun : Weapon, ITezProtoObject<GunData>
+    class Gun : Weapon, ITezProtoObjectDataGetter<GunData>
     {
         public GunData protoData => (GunData)mProtoData;
 
@@ -216,7 +206,7 @@ namespace tezcat.Framework.Test
         }
     }
 
-    class Axe : Weapon, ITezProtoObject<AxeData>
+    class Axe : Weapon, ITezProtoObjectDataGetter<AxeData>
     {
         public AxeData protoData => (AxeData)mProtoData;
 
@@ -226,7 +216,7 @@ namespace tezcat.Framework.Test
         }
     }
 
-    class Missle : Weapon, ITezProtoObject<MissleData>
+    class Missle : Weapon, ITezProtoObjectDataGetter<MissleData>
     {
         public string name = null;
         public int step = 0;
@@ -306,15 +296,12 @@ namespace tezcat.Framework.Test
 
         }
 
-        protected override void onDeserializeObjectData(TezSaveController.Reader reader)
+        protected override void onLoadProtoData(TezSaveController.Reader reader)
         {
             this.armorAdd.value = reader.readInt("ArmorAdd");
         }
 
-        protected override void onSerializeObjectData(TezSaveController.Writer writer)
-        {
-            throw new NotImplementedException();
-        }
+
     }
 
     class ArmorPlateData : ArmorData
@@ -324,7 +311,7 @@ namespace tezcat.Framework.Test
             return new ArmorPlate();
         }
 
-        protected override TezProtoObjectData copySelfWithOutItemInfo()
+        protected override TezProtoObjectData copySelfDataWithoutProtoInfo()
         {
             var data = new ArmorPlateData();
             data.armorAdd.value = this.armorAdd.value;
@@ -337,7 +324,7 @@ namespace tezcat.Framework.Test
 
     }
 
-    class ArmorPlate : Armor, ITezProtoObject<ArmorPlateData>
+    class ArmorPlate : Armor, ITezProtoObjectDataGetter<ArmorPlateData>
     {
         public ArmorPlateData protoData => (ArmorPlateData)mProtoData;
 
@@ -354,7 +341,7 @@ namespace tezcat.Framework.Test
             return new Helmet();
         }
 
-        protected override TezProtoObjectData copySelfWithOutItemInfo()
+        protected override TezProtoObjectData copySelfDataWithoutProtoInfo()
         {
             var data = new HelmetData();
             data.armorAdd.value = this.armorAdd.value;
@@ -369,7 +356,7 @@ namespace tezcat.Framework.Test
             return new Breastplate();
         }
 
-        protected override TezProtoObjectData copySelfWithOutItemInfo()
+        protected override TezProtoObjectData copySelfDataWithoutProtoInfo()
         {
             var data = new BreastplateData();
             data.armorAdd.value = this.armorAdd.value;
@@ -384,7 +371,7 @@ namespace tezcat.Framework.Test
             return new Leg();
         }
 
-        protected override TezProtoObjectData copySelfWithOutItemInfo()
+        protected override TezProtoObjectData copySelfDataWithoutProtoInfo()
         {
             var data = new LegData();
             data.armorAdd.value = this.armorAdd.value;
@@ -393,7 +380,7 @@ namespace tezcat.Framework.Test
     }
 
     [TezPrototypeRegister("Helmet", 3)]
-    class Helmet : Armor, ITezProtoObject<HelmetData>
+    class Helmet : Armor, ITezProtoObjectDataGetter<HelmetData>
     {
         public HelmetData protoData => (HelmetData)mProtoData;
 
@@ -404,7 +391,7 @@ namespace tezcat.Framework.Test
     }
 
     [TezPrototypeRegister("Breastplate", 2)]
-    class Breastplate : Armor, ITezProtoObject<BreastplateData>
+    class Breastplate : Armor, ITezProtoObjectDataGetter<BreastplateData>
     {
         public BreastplateData protoData =>(BreastplateData)mProtoData;
 
@@ -415,7 +402,7 @@ namespace tezcat.Framework.Test
     }
 
     [TezPrototypeRegister("Leg", 1)]
-    class Leg : Armor, ITezProtoObject<LegData>
+    class Leg : Armor, ITezProtoObjectDataGetter<LegData>
     {
         public LegData protoData =>(LegData)mProtoData;
 
@@ -442,20 +429,17 @@ namespace tezcat.Framework.Test
             return new Character();
         }
 
-        protected override TezProtoObjectData copySelfWithOutItemInfo()
+        protected override TezProtoObjectData copySelfDataWithoutProtoInfo()
         {
             return new CharacterData();
         }
 
-        protected override void onDeserializeObjectData(TezSaveController.Reader reader)
+        protected override void onLoadProtoData(TezSaveController.Reader reader)
         {
 
         }
 
-        protected override void onSerializeObjectData(TezSaveController.Writer writer)
-        {
-            throw new NotImplementedException();
-        }
+
     }
 
     class ShipData : UnitData
@@ -500,7 +484,7 @@ namespace tezcat.Framework.Test
             base.onClose();
         }
 
-        protected override TezProtoObjectData copySelfWithOutItemInfo()
+        protected override TezProtoObjectData copySelfDataWithoutProtoInfo()
         {
             var data = new ShipData();
             data.hull.value = this.hull.value;
@@ -514,7 +498,7 @@ namespace tezcat.Framework.Test
             return data;
         }
 
-        protected override void onDeserializeObjectData(TezSaveController.Reader reader)
+        protected override void onLoadProtoData(TezSaveController.Reader reader)
         {
             this.hullCapacity.baseValue = reader.readInt(MyDescriptorConfig.ShipPorperty.HullCapacity.name);
             this.armorCapacity.baseValue = reader.readInt(MyDescriptorConfig.ShipPorperty.ArmorCapacity.name);
@@ -522,10 +506,7 @@ namespace tezcat.Framework.Test
             this.powerCapacity.baseValue = reader.readInt(MyDescriptorConfig.ShipPorperty.PowerCapacity.name);
         }
 
-        protected override void onSerializeObjectData(TezSaveController.Writer writer)
-        {
-            throw new NotImplementedException();
-        }
+
     }
 
     abstract class Unit : TezProtoObject
@@ -533,7 +514,7 @@ namespace tezcat.Framework.Test
 
     }
 
-    class Character : Unit, ITezProtoObject<CharacterData>
+    class Character : Unit, ITezProtoObjectDataGetter<CharacterData>
     {
         public CharacterData protoData =>(CharacterData)mProtoData;
 
@@ -546,7 +527,7 @@ namespace tezcat.Framework.Test
     [TezPrototypeRegister("Ship", ItemClassIndexConfig.Ship)]
     class Ship
         : Unit
-        , ITezProtoObject<ShipData>
+        , ITezProtoObjectDataGetter<ShipData>
         , ITezBonusSystemHolder
     {
         //Life
@@ -674,13 +655,13 @@ namespace tezcat.Framework.Test
             var potion1 = TezcatFramework.protoDB.createObject<HealthPotion>(0);
             potion1.init();
 
-            Console.WriteLine($"Potion1: {potion1.itemInfo.NID}, HealthAdd: {potion1.protoData.healthAdd.value}");
+            Console.WriteLine($"Potion1: {potion1.protoInfo.NID}, HealthAdd: {potion1.protoData.healthAdd.value}");
 
             Console.WriteLine("Create HealthPotion From Potion1");
             var potion2 = potion1.protoData.createObject<HealthPotion>();
             potion2.init();
 
-            Console.WriteLine($"Potion2: {potion2.itemInfo.NID}, HealthAdd: {potion2.healthAdd.value}");
+            Console.WriteLine($"Potion2: {potion2.protoInfo.NID}, HealthAdd: {potion2.healthAdd.value}");
             Console.WriteLine();
 
             Console.WriteLine($"Potion1==Potion2 : {potion1 == potion2}");
@@ -704,7 +685,7 @@ namespace tezcat.Framework.Test
             armor1.init();
 
             Console.WriteLine();
-            Console.WriteLine($"Armor: {armor1.itemInfo.NID}, Armor: {armor1.protoData.armorAdd}");
+            Console.WriteLine($"Armor: {armor1.protoInfo.NID}, Armor: {armor1.protoData.armorAdd}");
 
             armor1.close();
 

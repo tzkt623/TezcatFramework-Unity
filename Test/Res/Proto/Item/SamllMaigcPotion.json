@@ -5,7 +5,7 @@
         "IID": 0,
         "Name": "SmallMagicPotion",
         "StackCount": 10,
-        "CopyType": false
+        "SharedType": false
     },
     "ObjectData": {
         "MagicAdd": 5

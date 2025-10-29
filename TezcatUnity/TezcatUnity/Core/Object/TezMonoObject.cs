@@ -1,4 +1,5 @@
-﻿using tezcat.Framework.Core;
+﻿using tezcat.Framework;
+using tezcat.Framework.Core;
 using UnityEngine;
 
 namespace tezcat.Unity.Core
@@ -8,31 +9,22 @@ namespace tezcat.Unity.Core
     /// </summary>
     public abstract class TezMonoObject
         : MonoBehaviour
-        , ITezUpdateHandler
         , ITezCloseable
     {
         bool mInitComplete = false;
         bool mClosed = false;
-        bool mAllowAdd = false;
 
-        bool ITezUpdateHandler.allowAdd
-        {
-            get { return this.gameObject.activeInHierarchy && mAllowAdd; }
-            set { mAllowAdd = value; }
-        }
-
-        bool ITezUpdateHandler.isComplete { get; set; }
+        protected bool isInitComplete => mInitComplete;
 
         private void Awake()
         {
-            mAllowAdd = true;
             this.preInit();
         }
 
         private void Start()
         {
             this.initObject();
-            this.addDelayInitHandler();
+            TezcatFramework.updaterManager.addDelayInitUpdater(this.onDelayInit);
             mInitComplete = true;
         }
 
@@ -60,32 +52,7 @@ namespace tezcat.Unity.Core
             }
         }
 
-        void ITezUpdateHandler.updateOnDelayInit()
-        {
-            this.onDelayInit();
-        }
-
-        protected virtual void onDelayInit() { }
-
-        void ITezUpdateHandler.updateOnMainLoopLoop(float dt)
-        {
-            this.onUpdateOnMainLoop(dt);
-        }
-
-        /// <summary>
-        /// 初始化刷新阶段
-        /// </summary>
-        protected virtual void onUpdateOnMainLoop(float dt) { }
-
-        void ITezUpdateHandler.updateOnMainLoopOnce(float dt)
-        {
-            this.onUpdateOnMainLoopOnce(dt);
-        }
-
-        protected virtual void onUpdateOnMainLoopOnce(float dt)
-        {
-
-        }
+        protected virtual void onDelayInit(float dt) { }
 
         /// <summary>
         /// 在MB初始化之前调用

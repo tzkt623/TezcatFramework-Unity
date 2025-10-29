@@ -5,7 +5,7 @@
         "IID": 2,
         "Name": "LargeHealthPotion",
         "StackCount": 10,
-        "CopyType": false
+        "SharedType": false
     },
     "ObjectData": {
         "HealthAdd": 20

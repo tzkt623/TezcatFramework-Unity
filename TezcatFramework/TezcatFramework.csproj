@@ -9,7 +9,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>TezcatFramework</RootNamespace>
     <AssemblyName>TezcatFramework</AssemblyName>
-    <TargetFrameworkVersion>v4.7.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
     <TargetFrameworkProfile />
@@ -69,7 +69,7 @@
     <Compile Include="TezcatFramework\Game\BonusSystem2\TezBonusModifierContainer.cs" />
     <Compile Include="TezcatFramework\Game\BonusSystem2\TezBonusModifier.cs" />
     <Compile Include="TezcatFramework\Game\Affix\TezAffix.cs" />
-    <Compile Include="TezcatFramework\Core\DataBase\TezProtoItemInfo.cs" />
+    <Compile Include="TezcatFramework\Core\DataBase\TezProtoInfoWrapper.cs" />
     <Compile Include="TezcatFramework\Core\Object\TezGameObject.cs" />
     <Compile Include="TezcatFramework\Core\DataBase\TezItemID.cs" />
     <Compile Include="TezcatFramework\Core\Object\TezProtoObject.cs" />
@@ -102,6 +102,7 @@
     <Compile Include="TezcatFramework\Game\BonusSystem2\TezBonusToken.cs" />
     <Compile Include="TezcatFramework\Game\BonusSystem\Tree\ITezBonusTree.cs" />
     <Compile Include="TezcatFramework\Core\FileIO\TezSaveController.cs" />
+    <Compile Include="TezcatFramework\Game\TezUpdaterManager.cs" />
     <Compile Include="TezcatFramework\TezcatFramework.cs" />
     <Compile Include="TezcatFramework\Game\GameMachine\ITezGameMachine.cs" />
     <Compile Include="TezcatFramework\Game\GameMachine\TezGameMachine.cs" />
@@ -171,7 +172,7 @@
     <Compile Include="TezcatFramework\Core\ValueWrapper\Property\TezPropertyContainer.cs" />
     <Compile Include="TezcatFramework\Core\ValueWrapper\TezValueDescriptor.cs" />
     <Compile Include="TezcatFramework\Core\ValueWrapper\TezValueWrapper.cs" />
-    <Compile Include="TezcatFramework\Core\DataBase\ITezSerializable.cs" />
+    <Compile Include="TezcatFramework\Core\DataBase\ITezProtoLoader.cs" />
     <Compile Include="TezcatFramework\Core\FileIO\TezJsonReader.cs" />
     <Compile Include="TezcatFramework\Core\FileIO\TezJsonWriter.cs" />
     <Compile Include="TezcatFramework\Core\FileIO\TezReader.cs" />

@@ -64,5 +64,9 @@ namespace tezcat.Framework
         static TezSignalSystem mSignal = new TezSignalSystem();
         public static TezSignalSystem signalSystem => mSignal;
 
+
+        static TezUpdaterManager mUpdaterManager = new TezUpdaterManager();
+        public static TezUpdaterManager updaterManager => mUpdaterManager;
+
     }
 }

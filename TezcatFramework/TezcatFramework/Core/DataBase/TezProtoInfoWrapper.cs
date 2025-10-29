@@ -5,16 +5,17 @@ namespace tezcat.Framework.Core
 {
     /// <summary>
     /// 
-    /// 原型对象信息
+    /// 原型对象信息包装器
     /// 
     /// 用于记录物品原型的摘要数据信息
     /// 用于对象的生成,比较,分类等
+    /// 并在各个原型对象之间共享数据
     /// 
     /// </summary>
-    public class TezProtoItemInfo
+    public class TezProtoInfoWrapper
         : ITezObjectPoolItem
-        , ITezSerializable
-        , IEquatable<TezProtoItemInfo>
+        , ITezProtoLoader
+        , IEquatable<TezProtoInfoWrapper>
     {
         /// <summary>
         /// ID元数据
@@ -26,8 +27,13 @@ namespace tezcat.Framework.Core
         /// 
         /// 在产生新物品时,此数据才会被复制作为新物品的元数据
         /// 
+        /// 此数据的生命周期归持有它的对象管理
+        /// 当最后一个使用此数据的对象销毁时,此数据销毁
+        /// 因为ProtoDB中始终有一个原型数据
+        /// 所以原型数据在运行时永远不会被销毁
+        /// 
         /// </summary>
-        class MetaData
+        class ProtoInfo
         {
             public Action onClear = null;
 
@@ -67,7 +73,7 @@ namespace tezcat.Framework.Core
             /// 从另一个元数据中复制数据
             /// 并且设置引用计数为1
             /// </summary>
-            public void copyDataFrom(MetaData other)
+            public void copyDataFrom(ProtoInfo other)
             {
                 this.NID = other.NID;
                 this.stackCount = other.stackCount;
@@ -90,7 +96,7 @@ namespace tezcat.Framework.Core
 
             public bool release()
             {
-                if ((--this.refCount) <= 0)
+                if ((--this.refCount) == 0)
                 {
                     this.refCount = -1;
                     this.clear();
@@ -101,7 +107,7 @@ namespace tezcat.Framework.Core
             }
         }
 
-        private MetaData mMetaData = null;
+        private ProtoInfo mMetaData = null;
 
         /// <summary>
         /// 物品ID
@@ -146,7 +152,7 @@ namespace tezcat.Framework.Core
         /// 可自定义对象保存时必须保存全部数据
         /// 不可自定义对象保存时只需要保存ItemID和数量
         /// </summary>
-        public bool isCopyType => mMetaData.copyType;
+        public bool isSharedType => mMetaData.copyType;
 
         /// <summary>
         /// 此对象是否有效
@@ -161,7 +167,7 @@ namespace tezcat.Framework.Core
         /// </summary>
         public void init(string NID, int stackCount, bool customizable, ushort TID, ushort UID)
         {
-            mMetaData = new MetaData()
+            mMetaData = new ProtoInfo()
             {
                 refCount = 1,
                 NID = NID,
@@ -177,7 +183,7 @@ namespace tezcat.Framework.Core
         /// </summary>
         public void init(string NID, int stackCount, bool customizable, ushort TID, ushort UID, int RTID)
         {
-            mMetaData = new MetaData()
+            mMetaData = new ProtoInfo()
             {
                 refCount = 1,
                 NID = NID,
@@ -192,7 +198,7 @@ namespace tezcat.Framework.Core
         /// <summary>
         /// 从另一个元数据中共享数据
         /// </summary>
-        public void sharedFrom(TezProtoItemInfo itemInfo)
+        public void sharedFrom(TezProtoInfoWrapper itemInfo)
         {
             mMetaData?.release();
 
@@ -203,7 +209,7 @@ namespace tezcat.Framework.Core
         public void changeToRuntimeInfo()
         {
             var old_info = mMetaData;
-            mMetaData = new MetaData();
+            mMetaData = new ProtoInfo();
             //复制旧的元数据
             mMetaData.copyDataFrom(old_info);
             //清除旧的元数据
@@ -213,9 +219,9 @@ namespace tezcat.Framework.Core
         /// <summary>
         /// 根据模版重定义数据
         /// </summary>
-        public void remodifyFrom(TezProtoItemInfo protoInfo)
+        public void remodifyFrom(TezProtoInfoWrapper protoInfo)
         {
-            this.init(protoInfo.NID, protoInfo.stackCount, protoInfo.isCopyType, protoInfo.itemID.TID, protoInfo.itemID.IID);
+            this.init(protoInfo.NID, protoInfo.stackCount, protoInfo.isSharedType, protoInfo.itemID.TID, protoInfo.itemID.IID);
         }
 
         public override int GetHashCode()
@@ -249,13 +255,13 @@ namespace tezcat.Framework.Core
             mMetaData.refCount++;
         }
 
-        public TezProtoItemInfo share()
+        public TezProtoInfoWrapper share()
         {
             mMetaData.refCount++;
             return this;
         }
 
-        public static bool isError(TezProtoItemInfo info)
+        public static bool isError(TezProtoInfoWrapper info)
         {
             return info.itemID.DBID == 0;
         }
@@ -281,7 +287,7 @@ namespace tezcat.Framework.Core
             //需要保存所有数据
             if (this.itemID.RTID > -1)
             {
-                writer.write(TezBuildInName.ProtoInfo.CopyType, this.isCopyType);
+                writer.write(TezBuildInName.ProtoInfo.SharedType, this.isSharedType);
                 writer.write(TezBuildInName.ProtoInfo.RTID, this.itemID.RTID);
                 writer.write(TezBuildInName.ProtoInfo.Name, this.NID);
                 writer.write(TezBuildInName.ProtoInfo.StackCount, this.stackCount);
@@ -290,7 +296,7 @@ namespace tezcat.Framework.Core
             writer.exitObject(TezBuildInName.SaveChunkName.ProtoInfo);
         }
 
-        public void deserialize(TezSaveController.Reader reader)
+        public void loadProtoData(TezSaveController.Reader reader)
         {
             var CID = reader.readString(TezBuildInName.CID);
 
@@ -301,9 +307,19 @@ namespace tezcat.Framework.Core
                 runtime_id = -1;
             }
 
+            if (!reader.tryRead(TezBuildInName.ProtoInfo.StackCount, out int stack_count))
+            {
+                stack_count = 1;
+            }
+
+            if (!reader.tryRead(TezBuildInName.ProtoInfo.SharedType, out bool shared_type))
+            {
+                shared_type = false;
+            }
+
             this.init(reader.readString(TezBuildInName.ProtoInfo.Name)
-                , reader.readInt(TezBuildInName.ProtoInfo.StackCount)
-                , reader.readBool(TezBuildInName.ProtoInfo.CopyType)
+                , stack_count
+                , shared_type
                 , (ushort)TezcatFramework.protoDB.getTypeID(reader.readString(TezBuildInName.ProtoInfo.TID))
                 , (ushort)reader.readInt(TezBuildInName.ProtoInfo.IID)
                 , runtime_id);
@@ -327,31 +343,31 @@ namespace tezcat.Framework.Core
 
         }
 
-        public bool Equals(TezProtoItemInfo other)
+        public bool Equals(TezProtoInfoWrapper other)
         {
             return itemID == other.itemID;
         }
 
         public override bool Equals(object obj)
         {
-            return this.Equals((TezProtoItemInfo)obj);
+            return this.Equals((TezProtoInfoWrapper)obj);
         }
 
         /// <summary>
         /// 
         /// </summary>
         /// <param name="itemInfo"></param>
-        public void copyFrom(TezProtoItemInfo itemInfo)
+        public void copyFrom(TezProtoInfoWrapper itemInfo)
         {
             mMetaData?.release();
-            mMetaData = new MetaData();
+            mMetaData = new ProtoInfo();
             mMetaData.copyDataFrom(itemInfo.mMetaData);
         }
 
         /// <summary>
         /// 比较两个Item的DBID是否一样
         /// </summary>
-        public static bool operator ==(TezProtoItemInfo a, TezProtoItemInfo b)
+        public static bool operator ==(TezProtoInfoWrapper a, TezProtoInfoWrapper b)
         {
             return a.itemID == b.itemID;
         }
@@ -359,7 +375,7 @@ namespace tezcat.Framework.Core
         /// <summary>
         /// 比较两个Item的DBID是否一样
         /// </summary>
-        public static bool operator !=(TezProtoItemInfo a, TezProtoItemInfo b)
+        public static bool operator !=(TezProtoInfoWrapper a, TezProtoInfoWrapper b)
         {
             return a.itemID != b.itemID;
         }

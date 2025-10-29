@@ -55,7 +55,7 @@
         public TezAgentValueModifier(ITezProperty property) : base()
         {
             mProperty = property;
-            mProperty.onValueChanged += onMainValueChanged;
+            mProperty.evtValueChanged += onMainValueChanged;
             this.resetValue();
         }
 
@@ -82,7 +82,7 @@
         protected override void onClose()
         {
             base.onClose();
-            mProperty.onValueChanged -= onMainValueChanged;
+            mProperty.evtValueChanged -= onMainValueChanged;
             mProperty = null;
         }
     }

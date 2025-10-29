@@ -53,7 +53,7 @@
             public const string RTID = "RTID";
             public const string DBID = "DBID";
 
-            public const string CopyType = "CopyType";
+            public const string SharedType = "SharedType";
             public const string StackCount = "StackCount";
         }
     }

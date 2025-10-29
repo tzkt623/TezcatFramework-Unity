@@ -21,7 +21,7 @@ namespace tezcat.Framework.Game
 
     public interface ITezBonusableValue<T> : ITezBonusableValue
     {
-        event TezEventExtension.Action<T> onValueChanged;
+        event TezEventExtension.Action<T> evtValueChanged;
 
         /// <summary>
         /// 实际数值
@@ -38,7 +38,7 @@ namespace tezcat.Framework.Game
         : TezValueWrapper<T>
         , ITezBonusableValue<T>
     {
-        public event TezEventExtension.Action<T> onValueChanged;
+        public event TezEventExtension.Action<T> evtValueChanged;
         public sealed override TezWrapperType wrapperType => TezWrapperType.Bonusable;
 
 //         protected TezBonusToken mBonusToken = null;
@@ -73,7 +73,7 @@ namespace tezcat.Framework.Game
                 {
                     mDirty = false;
                     mValue = this.calculateValue();
-                    this.onValueChanged?.Invoke(mValue);
+                    this.evtValueChanged?.Invoke(mValue);
                 }
                 return mValue;
             }
@@ -129,7 +129,7 @@ namespace tezcat.Framework.Game
             mModifierContainer = null;
             mDescriptor = null;
 
-            this.onValueChanged = null;
+            this.evtValueChanged = null;
         }
 
         public void manualUpdate()
@@ -140,7 +140,7 @@ namespace tezcat.Framework.Game
                 mValue = this.calculateValue();
             }
 
-            this.onValueChanged?.Invoke(mValue);
+            this.evtValueChanged?.Invoke(mValue);
         }
 
         public abstract void serialize(TezSaveController.Writer writer);

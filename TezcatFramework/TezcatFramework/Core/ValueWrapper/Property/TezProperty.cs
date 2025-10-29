@@ -16,7 +16,7 @@ namespace tezcat.Framework.Core
     {
         public sealed override TezWrapperType wrapperType => TezWrapperType.Property;
 
-        public event TezEventExtension.Action<ITezProperty> onValueChanged;
+        public event TezEventExtension.Action<ITezProperty> evtValueChanged;
 
         private bool mDirty = false;
         protected T mBaseValue = default(T);
@@ -140,7 +140,7 @@ namespace tezcat.Framework.Core
         public void update()
         {
             this.calculateValue();
-            this.onValueChanged?.Invoke(this);
+            this.evtValueChanged?.Invoke(this);
         }
 
 
@@ -156,7 +156,7 @@ namespace tezcat.Framework.Core
 
             mModifierCache = null;
             this.descriptor = null;
-            this.onValueChanged = null;
+            this.evtValueChanged = null;
         }
 
         public virtual string baseValueToString()

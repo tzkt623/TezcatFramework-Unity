@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using tezcat.Framework;
 using tezcat.Framework.Extension;
 using UnityEngine;
 using UnityEngine.UI;
@@ -25,7 +26,7 @@ namespace tezcat.Unity.UI
         {
             foreach (var item in m_Actived)
             {
-                item.refreshData();
+                item.refreshData(0);
             }
         }
         #endregion
@@ -80,15 +81,10 @@ namespace tezcat.Unity.UI
         public void setGetter(TezEventExtension.Function<string> getter)
         {
             m_Getter = getter;
-            this.addMainLoopUpdateHandler(TezUpdateHandlerType.Once);
+            TezcatFramework.updaterManager.addOnceLoopUpdater(this.refreshData);
         }
 
-        protected override void onUpdateOnMainLoopOnce(float dt)
-        {
-            this.refreshData();
-        }
-
-        private void refreshData()
+        private void refreshData(float dt)
         {
             handler.text = m_Getter();
         }

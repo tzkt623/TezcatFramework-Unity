@@ -3,13 +3,13 @@
     /// <summary>
     /// 可成为原型的对象
     /// </summary>
-    public interface ITezProtoObject : ITezSerializable
+    public interface ITezProtoObject : ITezProtoLoader
     {
-        TezProtoItemInfo itemInfo { get; }
-        TezProtoObjectData basicProtoData { get; }
+        TezProtoInfoWrapper protoInfo { get; }
+        TezProtoObjectData baseProtoData { get; }
     }
 
-    public interface ITezProtoObject<T> where T : TezProtoObjectData
+    public interface ITezProtoObjectDataGetter<T> where T : TezProtoObjectData
     {
         T protoData { get; }
     }

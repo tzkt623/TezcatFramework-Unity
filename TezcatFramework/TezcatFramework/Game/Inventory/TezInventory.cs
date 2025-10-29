@@ -146,7 +146,7 @@ namespace tezcat.Framework.Game
 
         public void store(TezProtoObject item, int count = 1)
         {
-            TezProtoItemInfo item_info = item.itemInfo;
+            TezProtoInfoWrapper item_info = item.protoInfo;
             var stack_count = item_info.stackCount;
 
             //可堆叠物品
@@ -224,7 +224,7 @@ namespace tezcat.Framework.Game
                 info.count -= count;
                 if (info.count == 0)
                 {
-                    mStackedItemDict.Remove(info.item.itemInfo.itemID.ID);
+                    mStackedItemDict.Remove(info.item.protoInfo.itemID.ID);
                     info.close();
                 }
             }
@@ -238,9 +238,9 @@ namespace tezcat.Framework.Game
 
         public void take(TezProtoObject item, int count = -1)
         {
-            if (item.itemInfo.stackCount > 1)
+            if (item.protoInfo.stackCount > 1)
             {
-                if (mStackedItemDict.TryGetValue(item.itemInfo.itemID.ID, out var stack_info) && stack_info.item == item)
+                if (mStackedItemDict.TryGetValue(item.protoInfo.itemID.ID, out var stack_info) && stack_info.item == item)
                 {
                     stack_info.count -= count;
 
@@ -298,9 +298,9 @@ namespace tezcat.Framework.Game
         /// </summary>
         public TezInventoryBaseItemInfo find(TezProtoObject item)
         {
-            if (item.itemInfo.stackCount > 1)
+            if (item.protoInfo.stackCount > 1)
             {
-                if (mStackedItemDict.TryGetValue(item.itemInfo.itemID.ID, out var result))
+                if (mStackedItemDict.TryGetValue(item.protoInfo.itemID.ID, out var result))
                 {
                     return result;
                 }
@@ -323,7 +323,7 @@ namespace tezcat.Framework.Game
         {
             TezInventoryBaseItemInfo result = mUniqueItemList.Find((TezInventoryUniqueItemInfo info) =>
             {
-                return info.item.itemInfo.itemID.TID == TID;
+                return info.item.protoInfo.itemID.TID == TID;
             });
 
             if (result != null)
@@ -333,7 +333,7 @@ namespace tezcat.Framework.Game
 
             foreach (var pair in mStackedItemDict)
             {
-                if (pair.Value.item.itemInfo.itemID.TID == TID)
+                if (pair.Value.item.protoInfo.itemID.TID == TID)
                 {
                     return pair.Value;
                 }

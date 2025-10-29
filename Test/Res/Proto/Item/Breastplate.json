@@ -4,8 +4,8 @@
         "TID": "Breastplate",
         "IID": 0,
         "Name": "H355",
-        "StackCount": -1,
-        "CopyType": true
+        "StackCount": 1,
+        "SharedType": false
     },
     "ObjectData": {
         "ArmorAdd": 20

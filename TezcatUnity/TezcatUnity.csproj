@@ -9,9 +9,10 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>TezcatUnity</RootNamespace>
     <AssemblyName>TezcatUnity</AssemblyName>
-    <TargetFrameworkVersion>v4.7.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -97,7 +98,6 @@
     <Compile Include="TezcatUnity\Game\Planet\TezPlanetGenerator.cs" />
     <Compile Include="TezcatUnity\Game\Planet\TezPlanetGMO.cs" />
     <Compile Include="TezcatUnity\Game\Planet\TezPlanetTerrainFace.cs" />
-    <Compile Include="TezcatUnity\TezUpdateHandlerManager.cs" />
     <Compile Include="TezcatUnity\UI\TezTipController.cs" />
     <Compile Include="TezcatUnity\GraphicSystem\TezBasicMesh.cs" />
     <Compile Include="TezcatUnity\GraphicSystem\TezGraphicObject.cs" />

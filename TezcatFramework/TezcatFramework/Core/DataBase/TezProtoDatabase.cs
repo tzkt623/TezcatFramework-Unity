@@ -48,8 +48,10 @@ namespace tezcat.Framework.Core
         #region ID Manager
         List<string> mTypeList = new List<string>();
         Dictionary<string, ushort> mTypeDict = new Dictionary<string, ushort>();
+        public IReadOnlyDictionary<string, ushort> typeIDDict => mTypeDict;
+        public IReadOnlyList<string> typeIDList => mTypeList;
 
-        private void loadConfigFile(string configFilePath)
+        public void loadConfigFile(string configFilePath)
         {
             TezJsonReader reader = new TezJsonReader();
 
@@ -66,7 +68,7 @@ namespace tezcat.Framework.Core
 
         public int getTypeID(string name)
         {
-            if(mTypeDict.TryGetValue(name, out ushort typeID))
+            if (mTypeDict.TryGetValue(name, out ushort typeID))
             {
                 return typeID;
             }
@@ -115,13 +117,7 @@ namespace tezcat.Framework.Core
         private List<Cell> mCellList = new List<Cell>();
         protected Dictionary<string, TezProtoObjectData> mFixedDict = new Dictionary<string, TezProtoObjectData>();
 
-        public void load(string configFilePath, string protoFilePath)
-        {
-            this.loadConfigFile(configFilePath);
-            this.loadProtoFile(protoFilePath);
-        }
-
-        private void loadProtoFile(string protoFilePath)
+        public void loadProtoFile(string protoFilePath)
         {
             TezSaveController.Reader reader = new TezSaveController.Reader();
             //TezFileReader reader = new TezJsonReader();
@@ -131,7 +127,7 @@ namespace tezcat.Framework.Core
                 if (reader.load(files[j]))
                 {
                     var item = TezcatFramework.classFactory.create<TezProtoObjectData>(reader.readString(TezBuildInName.CID));
-                    item.deserialize(reader);
+                    item.loadProtoData(reader);
 
                     this.register(item);
 
@@ -143,7 +139,6 @@ namespace tezcat.Framework.Core
                 }
             }
 
-
             foreach (var item in mCellList)
             {
                 item.memoryCut();
@@ -152,8 +147,8 @@ namespace tezcat.Framework.Core
 
         private void register(TezProtoObjectData protoData)
         {
-            var typeID = protoData.itemInfo.itemID.TID;
-            var indexID = protoData.itemInfo.itemID.IID;
+            var typeID = protoData.protoInfo.itemID.TID;
+            var indexID = protoData.protoInfo.itemID.IID;
 
             while (typeID >= mCellList.Count)
             {
@@ -168,12 +163,12 @@ namespace tezcat.Framework.Core
 
             if (!(cell.list[indexID] is null))
             {
-                throw new Exception($"This item slot[{cell.list[indexID].itemInfo.NID}:{cell.list[indexID].itemInfo.itemID.TID}|{cell.list[indexID].itemInfo.itemID.IID}] has registered! You want[{protoData.itemInfo.NID}:{typeID}|{indexID}]");
+                throw new Exception($"This item slot[{cell.list[indexID].protoInfo.NID}:{cell.list[indexID].protoInfo.itemID.TID}|{cell.list[indexID].protoInfo.itemID.IID}] has registered! You want[{protoData.protoInfo.NID}:{typeID}|{indexID}]");
             }
 
             cell.list[indexID] = protoData;
-            cell.dict.Add(protoData.itemInfo.NID, protoData);
-            mFixedDict.Add(protoData.itemInfo.NID, protoData);
+            cell.dict.Add(protoData.protoInfo.NID, protoData);
+            mFixedDict.Add(protoData.protoInfo.NID, protoData);
         }
 
         public TezProtoObject createObject(string nid)
@@ -184,6 +179,16 @@ namespace tezcat.Framework.Core
         public TezProtoObject createObject(int typeID, int indexID)
         {
             return mCellList[typeID].list[indexID].createObject();
+        }
+
+        public TezProtoObject createObject(int typeID, string name)
+        {
+            return mCellList[typeID].dict[name].createObject();
+        }
+
+        public TezProtoObject createObject(string CID, string name)
+        {
+            return mCellList[getTypeID(CID)].dict[name].createObject();
         }
 
         public T createObject<T>(int indexID) where T : TezProtoObject

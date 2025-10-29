@@ -4,8 +4,8 @@
         "TID": "Axe",
         "IID": 0,
         "Name": "FireAxe",
-        "StackCount": -1,
-        "CopyType": true
+        "StackCount": 1,
+        "SharedType": false
     },
     "ObjectData": {
         "Attack": 5

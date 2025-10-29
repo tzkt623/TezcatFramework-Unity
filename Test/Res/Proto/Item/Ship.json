@@ -4,8 +4,8 @@
         "TID": "Ship",
         "IID": 0,
         "Name": "Battleship",
-        "StackCount": -1,
-        "CopyType": true
+        "StackCount": 1,
+        "SharedType": false
     },
     "ObjectData": {
         "HullCapacity": 300,

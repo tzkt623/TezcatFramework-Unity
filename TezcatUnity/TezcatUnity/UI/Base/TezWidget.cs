@@ -1,4 +1,4 @@
-﻿using tezcat.Framework.Core;
+﻿using tezcat.Framework;
 using tezcat.Unity.Database;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -101,14 +101,8 @@ namespace tezcat.Unity.UI
     {
         bool mInitComplete = false;
         bool mClosed = false;
-        bool mAllowAdd = true;
 
-        bool ITezUpdateHandler.allowAdd
-        {
-            get { return mAllowAdd && this.gameObject.activeInHierarchy; }
-            set { mAllowAdd = value; }
-        }
-        bool ITezUpdateHandler.isComplete { get; set; }
+        protected bool isInitComplete => mInitComplete;
 
         protected sealed override void onCloseThis()
         {
@@ -130,7 +124,6 @@ namespace tezcat.Unity.UI
         /// </param>
         protected virtual void onClose(bool self_close) { }
 
-        #region 规范流程
         /*
          * Awake(仅执行一次) -> OnEnable -> Start(仅执行一次)
          * 
@@ -150,43 +143,16 @@ namespace tezcat.Unity.UI
         protected sealed override void Awake()
         {
             base.Awake();
-            mAllowAdd = true;
         }
 
         protected sealed override void Start()
         {
             base.Start();
-            this.addDelayInitHandler();
+            TezcatFramework.updaterManager.addDelayInitUpdater(this.onDelayInit);
             mInitComplete = true;
         }
 
-        /// <summary>
-        /// 延迟初始化
-        /// 
-        /// 处于initWidget之后
-        /// 会在队列中集中处理这个过程
-        /// 避免了unity的随机性
-        /// </summary>
-        void ITezUpdateHandler.updateOnDelayInit()
-        {
-            this.onDelayInit();
-        }
-
-        protected virtual void onDelayInit() { }
-
-        void ITezUpdateHandler.updateOnMainLoopLoop(float dt)
-        {
-            this.onUpdateOnMainLoopLoop(dt);
-        }
-
-        protected virtual void onUpdateOnMainLoopLoop(float dt) { }
-
-        void ITezUpdateHandler.updateOnMainLoopOnce(float dt)
-        {
-            this.onUpdateOnMainLoopOnce(dt);
-        }
-
-        protected virtual void onUpdateOnMainLoopOnce(float dt) { }
+        protected virtual void onDelayInit(float dt) { }
 
         protected sealed override void OnDisable()
         {
@@ -212,38 +178,6 @@ namespace tezcat.Unity.UI
             }
         }
 
-        #endregion
-
-        #region 刷新流程
-        /// <summary>
-        /// 通知UI刷新自己
-        /// </summary>
-        //         public void needRefresh()
-        //         {
-        //             if (this.gameObject.activeInHierarchy
-        //                 //                && mInited
-        //                 && !mRefreshMask)
-        //             {
-        //                 mRefreshMask = true;
-        //                 TezcatUnity.pushRefreshHandler(this);
-        //             }
-        //         }
-
-        /// <summary>
-        /// 刷新
-        /// </summary>
-        //         void ITezRefreshHandler.refresh()
-        //         {
-        //             this.onRefresh();
-        //             mRefreshMask = false;
-        //         }
-
-        /// <summary>
-        /// 立即刷新阶段
-        /// </summary>
-        //protected virtual void onRefresh() { }
-
-
         /// <summary>
         /// 显示控件时调用
         /// 立即调用
@@ -257,11 +191,6 @@ namespace tezcat.Unity.UI
         /// 未初始化完成不会调用
         /// </summary>
         protected virtual void onHide() { }
-
-
-
-
-        #endregion
     }
 
     /// <summary>

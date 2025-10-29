@@ -4,14 +4,14 @@ namespace tezcat.Framework.Core
 {
     public interface ITezNotificationValue
     {
-        event TezEventExtension.Action<ITezNotificationValue> onValueChanged;
+        event TezEventExtension.Action<ITezNotificationValue> evtValueChanged;
     }
 
     public class TezNotificationValue<T>
         : TezValueWrapper<T>
         , ITezNotificationValue
     {
-        public event TezEventExtension.Action<ITezNotificationValue> onValueChanged;
+        public event TezEventExtension.Action<ITezNotificationValue> evtValueChanged;
 
         public override TezWrapperType wrapperType => TezWrapperType.Notification;
 
@@ -24,7 +24,7 @@ namespace tezcat.Framework.Core
             set
             {
                 base.value = value;
-                this.onValueChanged?.Invoke(this);
+                this.evtValueChanged?.Invoke(this);
             }
         }
 

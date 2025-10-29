@@ -36,11 +36,8 @@ namespace tezcat.Framework.Core
      *  class--角色
      *   health
      */
-    public abstract class TezBasicObjectData : ITezSerializable, ITezCloseable
+    public abstract class TezBasicObjectData : ITezCloseable
     {
-        public abstract void deserialize(TezSaveController.Reader reader);
-        public abstract void serialize(TezSaveController.Writer writer);
-
         public void close()
         {
             this.onClose();
@@ -51,9 +48,22 @@ namespace tezcat.Framework.Core
 
     public interface ITezProtoObjectData
     {
-        TezProtoItemInfo itemInfo { get; }
+        TezProtoInfoWrapper protoInfo { get; }
         TezProtoObject createObject();
         TezProtoObjectData copy();
+    }
+
+    public interface ITezProtoObjectTypeGetter<T> where T : TezProtoObject
+    {
+
+    }
+
+    public static class TezProtoObjectExtension
+    {
+        public static T createProtoObject<T>(this ITezProtoObjectTypeGetter<T> p) where T : TezProtoObject, new()
+        {
+            return new T();
+        }
     }
 
     /// <summary>
@@ -64,18 +74,15 @@ namespace tezcat.Framework.Core
     /// 2.被N个单位复制,改变此数据不会改变其他单位的数据
     /// 3.被变成运行时数据,创造出一个新的原型,此数据会被运行时数据库管理
     /// 
-    /// 只能暴露一个接口给外部使用spawnObject()
-    /// 
-    /// 当我从数据库里面生成一个对象时,需要明确知道此对象是不是可以共享的对象
+    /// 当从数据库里面生成一个对象时,需要明确知道此对象是不是可以共享的对象
     /// 1.如果是可共享对象,那么全部共享数据库的数据,新对象的数据全都是同一个
     /// 2.如果是不可共享对象,那么复制一份数据,新对象的数据是独立的
-    /// 
     /// 
     /// </summary>
     public abstract class TezProtoObjectData : TezBasicObjectData, ITezProtoObjectData
     {
-        protected TezProtoItemInfo mItemInfo = TezObjectPool.create<TezProtoItemInfo>();
-        public TezProtoItemInfo itemInfo => mItemInfo;
+        protected TezProtoInfoWrapper mProtoInfo = TezObjectPool.create<TezProtoInfoWrapper>();
+        public TezProtoInfoWrapper protoInfo => mProtoInfo;
 
         bool mInitialized = false;
 
@@ -92,9 +99,9 @@ namespace tezcat.Framework.Core
 
         public TezProtoObject createObject()
         {
-            if (mItemInfo.isCopyType)
+            if (!mProtoInfo.isSharedType)
             {
-                //如果是复制类型,那么需要先复制一份数据
+                //如果不是共享类型,那么需要先复制一份数据
                 //然后再将数据注入到新对象中
                 var data = this.copy();
                 var obj = this.createObjectInternal();
@@ -104,6 +111,7 @@ namespace tezcat.Framework.Core
             }
             else
             {
+                //如果是共享类型,那么直接将当前数据注入到新对象中
                 var obj = this.createObjectInternal();
                 obj.initProtoData(this);
                 obj.init();
@@ -120,51 +128,39 @@ namespace tezcat.Framework.Core
 
         public TezProtoObjectData copy()
         {
-            var data = this.copySelfWithOutItemInfo();
+            var data = this.copySelfDataWithoutProtoInfo();
             //copy一份数据不会修改info的元数据
             //只会修改引用计数
-            data.itemInfo.sharedFrom(mItemInfo);
+            data.protoInfo.sharedFrom(mProtoInfo);
             return data;
         }
 
-        protected abstract TezProtoObjectData copySelfWithOutItemInfo();
+        protected abstract TezProtoObjectData copySelfDataWithoutProtoInfo();
 
         public void changeToRuntimeData()
         {
             //将当前数据转换为运行时数据
-            mItemInfo.changeToRuntimeInfo();
+            mProtoInfo.changeToRuntimeInfo();
             //在运行时数据库中申请一个运行时ID,并保存模版对象
             TezcatFramework.runtimeDB.registerItem(this);
         }
 
-        public override void deserialize(TezSaveController.Reader reader)
+        public void loadProtoData(TezSaveController.Reader reader)
         {
-            mItemInfo.deserialize(reader);
+            mProtoInfo.loadProtoData(reader);
 
             reader.enterObject(TezBuildInName.SaveChunkName.ObjectData);
-            this.onDeserializeObjectData(reader);
+            this.onLoadProtoData(reader);
             reader.exitObject(TezBuildInName.SaveChunkName.ObjectData);
         }
 
-        protected abstract void onDeserializeObjectData(TezSaveController.Reader reader);
-
-        public override void serialize(TezSaveController.Writer writer)
-        {
-            mItemInfo.serialize(writer);
-
-            writer.enterObject(TezBuildInName.SaveChunkName.ObjectData);
-            this.onSerializeObjectData(writer);
-            writer.exitObject(TezBuildInName.SaveChunkName.ObjectData);
-        }
-
-        protected abstract void onSerializeObjectData(TezSaveController.Writer writer);
-
+        protected abstract void onLoadProtoData(TezSaveController.Reader reader);
 
         protected override void onClose()
         {
-            if(mItemInfo.recycleToPool())
+            if(mProtoInfo.recycleToPool())
             {
-                mItemInfo = null;
+                mProtoInfo = null;
             }
         }
     }
@@ -173,6 +169,8 @@ namespace tezcat.Framework.Core
     /// 游戏原型对象
     /// 
     /// 用于管理原型数据 以及利用原型生成游戏对象
+    /// 既然是原型对象,就说明此对象必然由某个原型生成
+    /// 而不会凭空生成
     /// </summary>
     public abstract class TezProtoObject
         : TezGameObject
@@ -180,13 +178,13 @@ namespace tezcat.Framework.Core
     {
         protected TezProtoObjectData mProtoData = null;
 
-        TezProtoObjectData ITezProtoObject.basicProtoData => mProtoData;
-        public TezProtoItemInfo itemInfo => mProtoData.itemInfo;
+        public TezProtoObjectData baseProtoData => mProtoData;
+        public TezProtoInfoWrapper protoInfo => mProtoData.protoInfo;
 
         public virtual void initProtoData(TezProtoObjectData data)
         {
             mProtoData = data;
-            mProtoData.itemInfo.retain();
+            mProtoData.protoInfo.retain();
             mProtoData.init();
         }
 
@@ -201,37 +199,20 @@ namespace tezcat.Framework.Core
 
         public bool isItemOf(TezProtoObject other)
         {
-            return mProtoData.itemInfo.itemID == other.mProtoData.itemInfo.itemID;
+            return mProtoData.protoInfo.itemID == other.mProtoData.protoInfo.itemID;
         }
 
-        /// <summary>
-        /// 向数据库保存数据
-        /// </summary>
-        public sealed override void serialize(TezSaveController.Writer writer)
+        public sealed override void loadProtoData(TezSaveController.Reader reader)
         {
-            base.serialize(writer);
-
-            mProtoData.serialize(writer);
-
-            this.onSerialize(writer);
-        }
-
-        protected virtual void onSerialize(TezSaveController.Writer reader)
-        {
-
-        }
-
-        public sealed override void deserialize(TezSaveController.Reader reader)
-        {
-            base.deserialize(reader);
+            base.loadProtoData(reader);
 
             mProtoData = this.createProtoData();
-            mProtoData.deserialize(reader);
+            mProtoData.loadProtoData(reader);
 
-            this.onDeserialize(reader);
+            this.onLoadProtoData(reader);
         }
 
-        protected virtual void onDeserialize(TezSaveController.Reader reader)
+        protected virtual void onLoadProtoData(TezSaveController.Reader reader)
         {
 
         }

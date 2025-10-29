@@ -5,7 +5,6 @@
     /// 
     /// 所有游戏对象都从此类派生
     /// 
-    /// 如果没有Category则为null
     /// </summary>
     public abstract class TezGameObject : TezBaseObject
     {
@@ -54,7 +53,7 @@
         /// 反序列化数据
         /// </summary>
         /// <param name="reader"></param>
-        public override void deserialize(TezSaveController.Reader reader)
+        public override void loadProtoData(TezSaveController.Reader reader)
         {
 
         }
