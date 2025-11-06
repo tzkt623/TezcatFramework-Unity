@@ -49,11 +49,11 @@ namespace tezcat.Framework.Test
         public override void run()
         {
             //var proto = TezcatFramework.protoDB.createObject<HealthPotion>("SmallHealthPotion");
-            var hpPotion = TezcatFramework.protoDB.createObject<HealthPotion>("SmallHealthPotion");
+            var hpPotion = TezcatFramework.protoDB.createObject<HealthPotionData, HealthPotion>("SmallHealthPotion");
             mInventory.store(hpPotion, 25);
 
             //proto = TezcatFramework.protoDB.createObject<Breastplate>("H355");
-            var armor = TezcatFramework.protoDB.createObject<Breastplate>("H355");
+            var armor = TezcatFramework.protoDB.createObject<BreastplateData, Breastplate>("H355");
             mInventory.store(armor);
             mPageView.debug();
 

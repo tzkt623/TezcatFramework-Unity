@@ -10,6 +10,8 @@ namespace tezcat.Framework.Core
     {
         public class Reader : ITezCloseable
         {
+            public event Action<string> evtDebug;
+
             public enum DataType : int
             {
                 Error,
@@ -487,7 +489,7 @@ namespace tezcat.Framework.Core
 
             public bool load(string filePath)
             {
-                if(mRoot != null)
+                if (mRoot != null)
                 {
                     throw new Exception("Root is already created, please close it first.");
                 }
@@ -537,10 +539,11 @@ namespace tezcat.Framework.Core
                                 });
                                 break;
                             case JsonToken.Double:
+                                //evtDebug?.Invoke($"{name}: {jsonReader.Token} {jsonReader.Value}");
                                 helper.setData(name, new DataT<float>()
                                 {
                                     type = DataType.Float,
-                                    value = (float)jsonReader.Value
+                                    value = (float)Convert.ToDouble(jsonReader.Value)
                                 });
                                 break;
                             case JsonToken.String:
@@ -578,6 +581,8 @@ namespace tezcat.Framework.Core
                 mRoot.close();
                 //mRoot.close();
                 mRoot = null;
+
+                evtDebug = null;
             }
         }
 

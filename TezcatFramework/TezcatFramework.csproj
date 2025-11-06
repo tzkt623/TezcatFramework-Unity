@@ -60,12 +60,13 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="TezcatFramework\Game\TezEnum.cs" />
     <Compile Include="TezcatFramework\Core\NewECS\TezECS.cs" />
     <Compile Include="TezcatFramework\Game\TezContext.cs" />
     <Compile Include="TezcatFramework\Core\DataBase\TezRuntimeDatabase.cs" />
     <Compile Include="TezcatFramework\Core\Object\ITezProtoObject.cs" />
     <Compile Include="TezcatFramework\Core\ValueWrapper\TezValueWrapperArray.cs" />
-    <Compile Include="TezcatFramework\Game\BonusSystem2\TezBonusableValue.cs" />
+    <Compile Include="TezcatFramework\Game\BonusSystem2\TezBonusValue.cs" />
     <Compile Include="TezcatFramework\Game\BonusSystem2\TezBonusModifierContainer.cs" />
     <Compile Include="TezcatFramework\Game\BonusSystem2\TezBonusModifier.cs" />
     <Compile Include="TezcatFramework\Game\Affix\TezAffix.cs" />
@@ -98,7 +99,7 @@
     <Compile Include="TezcatFramework\Game\AI\FSM\TezBaseFSM.cs" />
     <Compile Include="TezcatFramework\Game\AI\FSM\TezFSM.cs" />
     <Compile Include="TezcatFramework\Game\AI\TezPuppet.cs" />
-    <Compile Include="TezcatFramework\Game\BonusSystem2\TezBonusSystem.cs" />
+    <Compile Include="TezcatFramework\Game\BonusSystem2\TezBonusValueSystem.cs" />
     <Compile Include="TezcatFramework\Game\BonusSystem2\TezBonusToken.cs" />
     <Compile Include="TezcatFramework\Game\BonusSystem\Tree\ITezBonusTree.cs" />
     <Compile Include="TezcatFramework\Core\FileIO\TezSaveController.cs" />

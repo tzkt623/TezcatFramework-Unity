@@ -32,7 +32,7 @@ namespace tezcat.Framework.Test
         {
             //var proto = TezcatFramework.protoDB.getProto<Ship>("Battleship");
 
-            mShip = TezcatFramework.protoDB.createObject<Ship>("Battleship");
+            mShip = TezcatFramework.protoDB.createObject<ShipData, Ship>("Battleship");
             mShip.init();
             mMissle = new Missle()
             {

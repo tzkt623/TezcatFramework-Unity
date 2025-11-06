@@ -1,7 +1,7 @@
 {
     "CID": "HelmetData",
     "ProtoInfo": {
-        "TID": "Helmet",
+        "TID": "HelmetData",
         "IID": 1,
         "Name": "Monster",
         "StackCount": 1,

@@ -1,10 +1,10 @@
 ﻿{
-    "Axe": 0,
-    "Gun": 1,
-    "Helmet": 2,
-    "Breastplate": 3,
-    "Leg": 4,
-    "HealthPotion": 5,
-    "MagicPotion": 6,
-    "Ship": 7
+    "AxeData": 0,
+    "GunData": 1,
+    "HelmetData": 2,
+    "BreastplateData": 3,
+    "LegData": 4,
+    "HealthPotionData": 5,
+    "MagicPotionData": 6,
+    "ShipData": 7
 }

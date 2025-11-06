@@ -1,7 +1,7 @@
 {
     "CID": "ShipData",
     "ProtoInfo": {
-        "TID": "Ship",
+        "TID": "ShipData",
         "IID": 0,
         "Name": "Battleship",
         "StackCount": 1,

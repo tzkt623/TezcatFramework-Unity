@@ -50,6 +50,7 @@
 
             public const string TID = "TID";
             public const string IID = "IID";
+            public const string RDID = "RDID";
             public const string RTID = "RTID";
             public const string DBID = "DBID";
 

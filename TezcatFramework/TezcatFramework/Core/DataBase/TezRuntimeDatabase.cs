@@ -13,12 +13,12 @@ namespace tezcat.Framework.Core
             if(mFreeIDs.Count > 0)
             {
                 var id = mFreeIDs.Dequeue();
-                protoObjectData.protoInfo.setRTID(id);
+                //protoObjectData.protoInfo.setRTID(id);
                 mItemList[id] = protoObjectData;
             }
             else
             {
-                protoObjectData.protoInfo.setRTID(mItemList.Count);
+                //protoObjectData.protoInfo.setRTID(mItemList.Count);
                 mItemList.Add(protoObjectData);
             }
 
@@ -30,8 +30,8 @@ namespace tezcat.Framework.Core
 
         public void unregisterItem(TezProtoObjectData protoInfo)
         {
-            mItemList[protoInfo.protoInfo.itemID.RTID] = null;
-            mFreeIDs.Enqueue(protoInfo.protoInfo.itemID.RTID);
+            //mItemList[protoInfo.protoInfo.itemID.RedefineID] = null;
+            //mFreeIDs.Enqueue(protoInfo.protoInfo.itemID.RedefineID);
         }
     }
 }

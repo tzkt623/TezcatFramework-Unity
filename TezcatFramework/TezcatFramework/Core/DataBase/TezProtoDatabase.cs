@@ -33,7 +33,7 @@ namespace tezcat.Framework.Core
     class NewUnitData : TezProtoObjectData
 
     class NewUnit : TezProtoObject
-     */
+    */
 
 
 
@@ -88,7 +88,7 @@ namespace tezcat.Framework.Core
         }
         #endregion
 
-        static class TypeIDGetter<T> where T : ITezProtoObject
+        static class TypeIDGetter<T> where T : TezProtoObjectData
         {
             static TypeIDGetter()
             {
@@ -117,20 +117,30 @@ namespace tezcat.Framework.Core
         private List<Cell> mCellList = new List<Cell>();
         protected Dictionary<string, TezProtoObjectData> mFixedDict = new Dictionary<string, TezProtoObjectData>();
 
+        public event Action<string> evtDebugLoad;
+
         public void loadProtoFile(string protoFilePath)
         {
             TezSaveController.Reader reader = new TezSaveController.Reader();
-            //TezFileReader reader = new TezJsonReader();
+
             var files = TezFilePath.getFiles(protoFilePath, true);
             for (int j = 0; j < files.Length; j++)
             {
+//                 reader.evtDebug += (string info) =>
+//                 {
+//                     evtDebugLoad?.Invoke(info);
+//                 };
+
+                //evtDebugLoad?.Invoke($"Begin Load {files[j]}");
                 if (reader.load(files[j]))
                 {
+                    //System.Diagnostics.Debugger.Break();
+                    //evtDebugLoad?.Invoke($"Create class ProtoData {j}");
                     var item = TezcatFramework.classFactory.create<TezProtoObjectData>(reader.readString(TezBuildInName.CID));
+                    //evtDebugLoad?.Invoke($"Load ProtoData Info {j}");
                     item.loadProtoData(reader);
-
+                    //evtDebugLoad?.Invoke($"Register ProtoData {j}");
                     this.register(item);
-
                     reader.close();
                 }
                 else
@@ -171,37 +181,38 @@ namespace tezcat.Framework.Core
             mFixedDict.Add(protoData.protoInfo.NID, protoData);
         }
 
-        public TezProtoObject createObject(string nid)
+        #region Data
+        public TezProtoObjectData createObjectData(string nid)
         {
-            return mFixedDict[nid].createObject();
+            return mFixedDict[nid].copy();
         }
 
-        public TezProtoObject createObject(int typeID, int indexID)
+        public TezProtoObjectData createObjectData(int typeID, int indexID)
         {
-            return mCellList[typeID].list[indexID].createObject();
+            return mCellList[typeID].list[indexID].copy();
         }
 
-        public TezProtoObject createObject(int typeID, string name)
+        public TezProtoObjectData createObjectData(int typeID, string name)
         {
-            return mCellList[typeID].dict[name].createObject();
+            return mCellList[typeID].dict[name].copy();
         }
 
-        public TezProtoObject createObject(string CID, string name)
+        public TezProtoObjectData createObjectData(string CID, string name)
         {
-            return mCellList[getTypeID(CID)].dict[name].createObject();
+            return mCellList[getTypeID(CID)].dict[name].copy();
         }
 
-        public T createObject<T>(int indexID) where T : TezProtoObject
+        public ProtoData createObjectData<ProtoData>(int indexID) where ProtoData : TezProtoObjectData
         {
-            return (T)mCellList[TypeIDGetter<T>.ID].list[indexID].createObject();
+            return (ProtoData)mCellList[TypeIDGetter<ProtoData>.ID].list[indexID].copy();
         }
 
-        public T createObject<T>(string name) where T : TezProtoObject
+        public ProtoData createObjectData<ProtoData>(string name) where ProtoData : TezProtoObjectData
         {
-            return (T)mCellList[TypeIDGetter<T>.ID].dict[name].createObject();
+            return (ProtoData)mCellList[TypeIDGetter<ProtoData>.ID].dict[name].copy();
         }
 
-        public bool tryCreateObject(ushort TID, ushort UID, out TezProtoObject protoObject)
+        public bool tryCreateObjectData(ushort TID, ushort UID, out TezProtoObjectData protoObject)
         {
             var list = mCellList[TID].list;
             if (UID < 0 || UID > list.Count)
@@ -210,21 +221,84 @@ namespace tezcat.Framework.Core
                 return false;
             }
 
-            protoObject = list[UID].createObject();
+            protoObject = list[UID].copy();
             return true;
         }
 
-        public bool tryCreateObject(string NID, out TezProtoObject protoObject)
+        public bool tryCreateObjectData(string NID, out TezProtoObjectData protoObject)
         {
             if (mFixedDict.TryGetValue(NID, out var temp))
             {
-                protoObject = temp.createObject();
+                protoObject = temp.copy();
                 return true;
             }
 
             protoObject = null;
             return false;
         }
+        #endregion
+
+
+        #region Object
+        public TezProtoObject createObject(string nid, int whichClass = 0)
+        {
+            return mFixedDict[nid].createObjectByCopyMe(whichClass);
+        }
+
+        public TezProtoObject createObject(int typeID, int indexID, int whichClass = 0)
+        {
+            return mCellList[typeID].list[indexID].createObjectByCopyMe(whichClass);
+        }
+
+        public TezProtoObject createObject(int typeID, string name, int whichClass = 0)
+        {
+            return mCellList[typeID].dict[name].createObjectByCopyMe(whichClass);
+        }
+
+        public TezProtoObject createObject(string CID, string name, int whichClass = 0)
+        {
+            return mCellList[getTypeID(CID)].dict[name].createObjectByCopyMe(whichClass);
+        }
+
+        public ProtoObject createObject<ProtoData, ProtoObject>(int indexID, int whichClass = 0)
+            where ProtoData : TezProtoObjectData
+            where ProtoObject : TezProtoObject
+        {
+            return (ProtoObject)mCellList[TypeIDGetter<ProtoData>.ID].list[indexID].createObjectByCopyMe(whichClass);
+        }
+
+        public ProtoObject createObject<ProtoData, ProtoObject>(string name, int whichClass = 0)
+            where ProtoData : TezProtoObjectData
+            where ProtoObject : TezProtoObject
+        {
+            return (ProtoObject)mCellList[TypeIDGetter<ProtoData>.ID].dict[name].createObjectByCopyMe(whichClass);
+        }
+
+        public bool tryCreateObject(ushort TID, ushort UID, out TezProtoObject protoObject, int whichClass = 0)
+        {
+            var list = mCellList[TID].list;
+            if (UID < 0 || UID > list.Count)
+            {
+                protoObject = null;
+                return false;
+            }
+
+            protoObject = list[UID].createObjectByCopyMe(whichClass);
+            return true;
+        }
+
+        public bool tryCreateObject(string NID, out TezProtoObject protoObject, int whichClass = 0)
+        {
+            if (mFixedDict.TryGetValue(NID, out var temp))
+            {
+                protoObject = temp.createObjectByCopyMe(whichClass);
+                return true;
+            }
+
+            protoObject = null;
+            return false;
+        }
+        #endregion
 
         public void serialize(TezSaveController.Writer writer)
         {

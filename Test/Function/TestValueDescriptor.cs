@@ -7,10 +7,58 @@ namespace tezcat.Framework.Test
     {
         public static class TypeID
         {
-            public static readonly short ShipProperty = TezValueDescriptor.generateTypeID("ShipProperty");
-            public static readonly short ShipValue = TezValueDescriptor.generateTypeID("ShipValue");
-            public static readonly short Modifier = TezValueDescriptor.generateTypeID("Modifier");
-            public static readonly short HumanProperty = TezValueDescriptor.generateTypeID("HumanProperty");
+            public static short BaseProperty { get; private set; }
+            public static short Unit { get; private set; }
+            public static short Ability { get; private set; }
+            public static short Resist { get; private set; }
+
+            public static short ShipProperty { get; private set; }
+            public static short ShipValue { get; private set; }
+            public static short Modifier { get; private set; }
+            public static short HumanProperty { get; private set; }
+
+            public static void init()
+            {
+                BaseProperty = TezValueDescriptor.generateTypeID("BaseProperty");
+                Unit = TezValueDescriptor.generateTypeID("P_Unit");
+                Ability = TezValueDescriptor.generateTypeID("P_Ability");
+                Resist = TezValueDescriptor.generateTypeID("P_Resist");
+
+                ShipProperty = TezValueDescriptor.generateTypeID("ShipProperty");
+                ShipValue = TezValueDescriptor.generateTypeID("ShipValue");
+                Modifier = TezValueDescriptor.generateTypeID("Modifier");
+                HumanProperty = TezValueDescriptor.generateTypeID("HumanProperty");
+            }
+        }
+
+        public class Ability
+        {
+            public static readonly ITezValueDescriptor CD = TezValueDescriptor.register(TypeID.BaseProperty, "P_CD");
+            public static readonly ITezValueDescriptor Cost = TezValueDescriptor.register(TypeID.BaseProperty, "P_Cost");
+        }
+
+        public class Unit
+        {
+            public static readonly ITezValueDescriptor Health = TezValueDescriptor.register(TypeID.BaseProperty, "P_Health");
+            public static readonly ITezValueDescriptor Defense = TezValueDescriptor.register(TypeID.BaseProperty, "P_Defense");
+            public static readonly ITezValueDescriptor Attack = TezValueDescriptor.register(TypeID.BaseProperty, "P_Attack");
+            public static readonly ITezValueDescriptor Experience = TezValueDescriptor.register(TypeID.BaseProperty, "P_Experience");
+        }
+
+        public class BaseProperty
+        {
+            public static readonly ITezValueDescriptor Health = TezValueDescriptor.register(TypeID.BaseProperty, "Health");
+            public static readonly ITezValueDescriptor Defense = TezValueDescriptor.register(TypeID.BaseProperty, "Defense");
+            public static readonly ITezValueDescriptor Attack = TezValueDescriptor.register(TypeID.BaseProperty, "Attack");
+            public static readonly ITezValueDescriptor Experience = TezValueDescriptor.register(TypeID.BaseProperty, "Experience");
+        }
+
+        public class Resist
+        {
+            public static readonly ITezValueDescriptor ResistFire = TezValueDescriptor.register(TypeID.Resist, "P_ResistFire");
+            public static readonly ITezValueDescriptor ResistIce = TezValueDescriptor.register(TypeID.Resist, "P_ResistIce");
+            public static readonly ITezValueDescriptor ResistWind = TezValueDescriptor.register(TypeID.Resist, "P_ResistWind");
+            public static readonly ITezValueDescriptor ResistLight = TezValueDescriptor.register(TypeID.Resist, "P_ResistLight");
         }
 
         public static class ShipPorperty
@@ -53,7 +101,10 @@ namespace tezcat.Framework.Test
             public static readonly ITezValueDescriptor HealthCapacity = TezValueDescriptor.register(TypeID.HumanProperty, "HealthCapacity");
         }
 
-        public static void init() { }
+        public static void init()
+        {
+            TypeID.init();
+        }
     }
 
     class TestValueDescriptor : TezBaseTest

@@ -1,7 +1,7 @@
 {
     "CID": "HealthPotionData",
     "ProtoInfo": {
-        "TID": "HealthPotion",
+        "TID": "HealthPotionData",
         "IID": 2,
         "Name": "LargeHealthPotion",
         "StackCount": 10,

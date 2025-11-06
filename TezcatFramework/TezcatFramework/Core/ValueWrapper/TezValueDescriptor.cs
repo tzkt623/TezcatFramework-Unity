@@ -20,7 +20,6 @@ namespace tezcat.Framework.Core
     /// 用于描述这个值的特征信息
     /// 这种描述整个程序里面只应该生成一份用于共享
     /// 
-    /// <para></para>
     /// 
     /// 这里的模板参数用于产生多种不同归属的描述信息
     /// </summary>
@@ -44,13 +43,15 @@ namespace tezcat.Framework.Core
         public int ID => mData.ID;
         public int typeID => mData.typeID;
         public int indexID => mData.indexID;
+        public ushort listIndex { get; }
         public string name => mName;
 
-        TezValueDescriptor(short typeID, ushort indexID, string name)
+        TezValueDescriptor(short typeID, ushort indexID, string name, ushort parentCount)
         {
             mData.typeID = typeID;
-            mData.indexID = indexID;
+            mData.indexID = (ushort)(indexID + parentCount);
             mName = name;
+            this.listIndex = indexID;
         }
 
         public bool Equals(ITezValueDescriptor other)
@@ -71,22 +72,52 @@ namespace tezcat.Framework.Core
         #region 注册
         class TypeData
         {
-            public short ID = 0;
-            public string Name;
-            public Dictionary<string, ITezValueDescriptor> dict = new Dictionary<string, ITezValueDescriptor>();
-            public List<ITezValueDescriptor> list = new List<ITezValueDescriptor>();
+            internal ushort parentCount = 0;
+            internal short ID = 0;
+
+            internal string Name;
+            internal Dictionary<string, ITezValueDescriptor> dict = new Dictionary<string, ITezValueDescriptor>();
+            internal List<ITezValueDescriptor> list = new List<ITezValueDescriptor>();
         }
 
         static List<TypeData> mList = new List<TypeData>();
         static Dictionary<string, TypeData> mDict = new Dictionary<string, TypeData>();
 
+        /// <summary>
+        /// 
+        /// 生成大类ID
+        /// 
+        /// 例如：舰船属性, 炮台属性等等
+        /// 游戏中有几种不同的单位,就要生成几种不同的大类ID
+        /// 
+        /// 但是每一个单位都有血量这个属性,所以血量这个属性是共享的
+        /// 所以需要做出属性ID继承体系
+        ///
+        /// 
+        /// </summary>
         public static short generateTypeID(string name)
         {
             var cell = new TypeData()
             {
+                parentCount = 0,
                 ID = (short)mList.Count,
                 Name = name
             };
+
+            mList.Add(cell);
+            mDict.Add(name, cell);
+            return cell.ID;
+        }
+
+        public static short generateTypeID(short parentID, string name)
+        {
+            var cell = new TypeData()
+            {
+                parentCount = (ushort)mList[parentID].list.Count,
+                ID = (short)mList.Count,
+                Name = name
+            };
+
             mList.Add(cell);
             mDict.Add(name, cell);
             return cell.ID;
@@ -104,20 +135,14 @@ namespace tezcat.Framework.Core
 
         public static ITezValueDescriptor register(short typeID, string name)
         {
-            //             while (mList.Count <= typeID)
-            //             {
-            //                 mList.Add(new Cell());
-            //             }
-
             var cell = mList[typeID];
-            //cell.ID = typeID;
             if (cell.dict.TryGetValue(name, out var descriptor))
             {
                 throw new ArgumentException($"Name Registered {descriptor.name}, Type ID {typeID}");
             }
             else
             {
-                descriptor = new TezValueDescriptor(typeID, (ushort)cell.list.Count, name);
+                descriptor = new TezValueDescriptor(typeID, (ushort)cell.list.Count, name, mList[typeID].parentCount);
                 cell.dict.Add(name, descriptor);
                 cell.list.Add(descriptor);
             }
@@ -128,12 +153,11 @@ namespace tezcat.Framework.Core
         public static ITezValueDescriptor get(short typeID, string name)
         {
             var cell = mList[typeID];
-
-            ITezValueDescriptor descriptor;
-            if (!cell.dict.TryGetValue(name, out descriptor))
+            if (!cell.dict.TryGetValue(name, out ITezValueDescriptor descriptor))
             {
                 throw new Exception($"This Value[{name}] is not registered!!");
             }
+
             return descriptor;
         }
 

@@ -3,7 +3,7 @@
     /// <summary>
     /// 可成为原型的对象
     /// </summary>
-    public interface ITezProtoObject : ITezProtoLoader
+    public interface ITezProtoObject
     {
         TezProtoInfoWrapper protoInfo { get; }
         TezProtoObjectData baseProtoData { get; }

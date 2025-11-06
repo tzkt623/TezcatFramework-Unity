@@ -40,6 +40,7 @@ namespace tezcat.Framework.Test
             //D
             //E
             mTestList.Add(new TestNewECS());
+            mTestList.Add(new TestEnum());
             //F
             mTestList.Add(new TestFieldOffset());
             //G

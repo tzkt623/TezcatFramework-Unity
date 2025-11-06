@@ -45,44 +45,44 @@ namespace tezcat.Framework.Core
         : IEquatable<TezItemID>
     {
         #region Pool
-        static Queue<TezItemID> sPool = new Queue<TezItemID>();
-        static Queue<int> sRTIDPool = new Queue<int>();
+//        static Queue<TezItemID> sPool = new Queue<TezItemID>();
+        static Queue<uint> sPoolFreeRedefineID = new Queue<uint>();
 
-        static int sRTID = 0;
+        static uint sRedefineIDGenerator = 1;
 
-        public static TezItemID create(uint DBID, int RTID)
-        {
-            TezItemID result = sPool.Count > 0 ? sPool.Dequeue() : new TezItemID();
-            result.mDBID = DBID;
-            result.mRTID = RTID;
-            return result;
-        }
-
-        public static TezItemID create(uint DBID)
-        {
-            TezItemID result = sPool.Count > 0 ? sPool.Dequeue() : new TezItemID();
-            result.mDBID = DBID;
-            result.mRTID = sRTIDPool.Count > 0 ? sRTIDPool.Dequeue() : sRTID++;
-            return result;
-        }
-
-        public static TezItemID create(ushort TID, ushort UID)
-        {
-            TezItemID result = sPool.Count > 0 ? sPool.Dequeue() : new TezItemID();
-            result.mTypeID = TID;
-            result.mIndexID = UID;
-            result.mRTID = sRTIDPool.Count > 0 ? sRTIDPool.Dequeue() : sRTID++;
-            return result;
-        }
-
-        public static TezItemID create(ushort TID, ushort UID, int RTID)
-        {
-            TezItemID result = sPool.Count > 0 ? sPool.Dequeue() : new TezItemID();
-            result.mTypeID = TID;
-            result.mIndexID = UID;
-            result.mRTID = RTID;
-            return result;
-        }
+//         public static TezItemID create(uint DBID, int RTID)
+//         {
+//             TezItemID result = sPool.Count > 0 ? sPool.Dequeue() : new TezItemID();
+//             result.mDBID = DBID;
+//             result.mRedefineID = RTID;
+//             return result;
+//         }
+// 
+//         public static TezItemID create(uint DBID)
+//         {
+//             TezItemID result = sPool.Count > 0 ? sPool.Dequeue() : new TezItemID();
+//             result.mDBID = DBID;
+//             result.mRedefineID = sRTIDPool.Count > 0 ? sRTIDPool.Dequeue() : sRTID++;
+//             return result;
+//         }
+// 
+//         public static TezItemID create(ushort TID, ushort UID)
+//         {
+//             TezItemID result = sPool.Count > 0 ? sPool.Dequeue() : new TezItemID();
+//             result.mTypeID = TID;
+//             result.mIndexID = UID;
+//             result.mRedefineID = sRTIDPool.Count > 0 ? sRTIDPool.Dequeue() : sRTID++;
+//             return result;
+//         }
+// 
+//         public static TezItemID create(ushort TID, ushort UID, int RTID)
+//         {
+//             TezItemID result = sPool.Count > 0 ? sPool.Dequeue() : new TezItemID();
+//             result.mTypeID = TID;
+//             result.mIndexID = UID;
+//             result.mRedefineID = RTID;
+//             return result;
+//         }
         #endregion
 
         #region Tool
@@ -124,7 +124,7 @@ namespace tezcat.Framework.Core
         public ulong ID => mID;
 
         [FieldOffset(0)]
-        int mRTID;
+        uint mRedefineID;
         /// <summary>
         /// 
         /// Runtime ID
@@ -144,7 +144,10 @@ namespace tezcat.Framework.Core
         /// 第二个DBID = 2, RTID = 2
         /// 
         /// </remarks>
-        public int RTID => mRTID;
+        /// 
+        
+        ///重定义ID,用于生成新物品
+        public uint RedefineID => mRedefineID;
 
         [FieldOffset(4)]
         uint mDBID;
@@ -211,18 +214,30 @@ namespace tezcat.Framework.Core
             return mID == other.mID;
         }
 
-        public void setRTID(int v)
+//         internal void setRedefineID(int v)
+//         {
+//             mRedefineID = v;
+//         }
+
+        internal void close()
         {
-            mRTID = v;
+            if (mRedefineID > 0)
+            {
+                sPoolFreeRedefineID.Enqueue(mRedefineID);
+            }
         }
 
-        //public void close()
-        //{
-        //    //if(mRTID > -1)
-        //    //{
-        //    //    TezcatFramework.runtimeDB.recycle(mRTID);
-        //    //}
-        //}
+        internal void generateRedefineID()
+        {
+            if(sPoolFreeRedefineID.Count > 0)
+            {
+                mRedefineID = sPoolFreeRedefineID.Dequeue();
+            }
+            else
+            {
+                mRedefineID = sRedefineIDGenerator++;
+            }
+        }
 
         /// <summary>
         /// 比较两个Item的DBID是否一样

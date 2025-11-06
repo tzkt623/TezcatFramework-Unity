@@ -63,6 +63,7 @@
     <Compile Include="Function\TestObject.cs" />
     <Compile Include="Function\TestProtoDB.cs" />
     <Compile Include="Function\TestLinkedList.cs" />
+    <Compile Include="Function\TestEnum.cs" />
     <Compile Include="Function\TestTriggerSystem.cs" />
     <Compile Include="TestProgram.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

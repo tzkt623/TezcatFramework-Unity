@@ -3,6 +3,7 @@ using tezcat.Framework.ECS;
 
 namespace tezcat.Framework.Test
 {
+#if false
     class MyData1
         : TezDataComponent
         , ITezCategoryObject
@@ -35,7 +36,7 @@ namespace tezcat.Framework.Test
             throw new System.NotImplementedException();
         }
 
-        public override void loadProtoData(TezSaveController.Reader reader)
+        public override void deserialize(TezSaveController.Reader reader)
         {
             throw new System.NotImplementedException();
         }
@@ -123,4 +124,5 @@ namespace tezcat.Framework.Test
 
         }
     }
+#endif
 }

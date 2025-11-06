@@ -11,10 +11,7 @@ namespace tezcat.Framework.Test
 
     class Wall : TezGameObject
     {
-        public override void loadProtoData(TezSaveController.Reader reader)
-        {
-            base.loadProtoData(reader);
-        }
+
     }
 
     #region Useable
@@ -27,17 +24,20 @@ namespace tezcat.Framework.Test
 
         }
 
-        protected override TezProtoObject createObjectInternal()
+        protected override TezProtoObject createObjectInternal(int index)
         {
             return new MagicPotion();
         }
 
-        protected override TezProtoObjectData copySelfDataWithoutProtoInfo()
+        protected override TezProtoObjectData justNewProtoData()
         {
-            return new MagicPotionData
-            {
-                magicAdd = this.magicAdd
-            };
+            return new MagicPotionData();
+        }
+
+        protected override void copyDataFrom(TezProtoObjectData other)
+        {
+            MagicPotionData data = (MagicPotionData)other;
+            this.magicAdd = data.magicAdd;
         }
 
         protected override void onLoadProtoData(TezSaveController.Reader reader)
@@ -57,16 +57,14 @@ namespace tezcat.Framework.Test
 
         }
 
-        protected override TezProtoObject createObjectInternal()
+        protected override TezProtoObject createObjectInternal(int index)
         {
             return new HealthPotion();
         }
 
-        protected override TezProtoObjectData copySelfDataWithoutProtoInfo()
+        protected override TezProtoObjectData justNewProtoData()
         {
-            var data = new HealthPotionData();
-            data.healthAdd.value = this.healthAdd.value;
-            return data;
+            return new HealthPotionData();
         }
 
         protected override void onLoadProtoData(TezSaveController.Reader reader)
@@ -74,6 +72,11 @@ namespace tezcat.Framework.Test
             this.healthAdd.value = reader.readInt("HealthAdd");
         }
 
+        protected override void copyDataFrom(TezProtoObjectData other)
+        {
+            HealthPotionData data = (HealthPotionData)other;
+            this.healthAdd.value = data.healthAdd.value;
+        }
 
     }
 
@@ -90,29 +93,12 @@ namespace tezcat.Framework.Test
     class MagicPotion : Potion, ITezProtoObjectDataGetter<MagicPotionData>/*指明protodata类*/
     {
         public MagicPotionData protoData => (MagicPotionData)mProtoData;
-
-        public override void initProtoData(TezProtoObjectData data)
-        {
-            base.initProtoData(data);
-        }
-
-        protected override TezProtoObjectData createProtoData()
-        {
-            return new MagicPotionData();
-        }
     }
 
     class HealthPotion : Potion, ITezProtoObjectDataGetter<HealthPotionData>
     {
-        //public TezBonusableInt healthAdd { get; private set; } = new TezBonusableInt(MyDescriptorConfig.Modifier.HealthAdd);
-
         public HealthPotionData protoData => (HealthPotionData)mProtoData;
         public TezBonusModifier healthAdd => this.protoData.healthAdd;
-
-        protected override TezProtoObjectData createProtoData()
-        {
-            return new HealthPotionData();
-        }
     }
     #endregion
 
@@ -136,33 +122,42 @@ namespace tezcat.Framework.Test
 
     class GunData : WeaponData
     {
-        protected override TezProtoObject createObjectInternal()
+        protected override TezProtoObject createObjectInternal(int index)
         {
             return new Gun();
         }
 
-        protected override TezProtoObjectData copySelfDataWithoutProtoInfo()
+        protected override TezProtoObjectData justNewProtoData()
         {
             return new GunData
             {
                 attack = this.attack
             };
         }
+
+        protected override void copyDataFrom(TezProtoObjectData other)
+        {
+            GunData otherData = (GunData)other;
+            this.attack = otherData.attack;
+        }
     }
 
     class AxeData : WeaponData
     {
-        protected override TezProtoObject createObjectInternal()
+        protected override TezProtoObject createObjectInternal(int index)
         {
             return new Axe();
         }
 
-        protected override TezProtoObjectData copySelfDataWithoutProtoInfo()
+        protected override TezProtoObjectData justNewProtoData()
         {
-            return new AxeData
-            {
-                attack = this.attack
-            };
+            return new AxeData();
+        }
+
+        protected override void copyDataFrom(TezProtoObjectData other)
+        {
+            AxeData data = (AxeData)other;
+            data.attack = this.attack;
         }
     }
 
@@ -170,19 +165,22 @@ namespace tezcat.Framework.Test
     {
         public string name = null;
         public int step = 0;
-        protected override TezProtoObject createObjectInternal()
+        protected override TezProtoObject createObjectInternal(int index)
         {
             return new Missle();
         }
 
-        protected override TezProtoObjectData copySelfDataWithoutProtoInfo()
+        protected override TezProtoObjectData justNewProtoData()
         {
-            return new MissleData
-            {
-                attack = this.attack,
-                name = this.name,
-                step = 0
-            };
+            return new MissleData();
+        }
+
+        protected override void copyDataFrom(TezProtoObjectData other)
+        {
+            MissleData data = (MissleData)other;
+            this.step = 0;
+            this.name = data.name;
+            this.attack = data.attack;
         }
     }
 
@@ -199,21 +197,11 @@ namespace tezcat.Framework.Test
     class Gun : Weapon, ITezProtoObjectDataGetter<GunData>
     {
         public GunData protoData => (GunData)mProtoData;
-
-        protected override TezProtoObjectData createProtoData()
-        {
-            return new GunData();
-        }
     }
 
     class Axe : Weapon, ITezProtoObjectDataGetter<AxeData>
     {
         public AxeData protoData => (AxeData)mProtoData;
-
-        protected override TezProtoObjectData createProtoData()
-        {
-            return new AxeData();
-        }
     }
 
     class Missle : Weapon, ITezProtoObjectDataGetter<MissleData>
@@ -279,11 +267,6 @@ namespace tezcat.Framework.Test
         {
             this.target?.close();
         }
-
-        protected override TezProtoObjectData createProtoData()
-        {
-            return new MissleData();
-        }
     }
 
 
@@ -306,16 +289,20 @@ namespace tezcat.Framework.Test
 
     class ArmorPlateData : ArmorData
     {
-        protected override TezProtoObject createObjectInternal()
+        protected override TezProtoObjectData justNewProtoData()
         {
-            return new ArmorPlate();
+            return new ArmorPlateData();
         }
 
-        protected override TezProtoObjectData copySelfDataWithoutProtoInfo()
+        protected override void copyDataFrom(TezProtoObjectData other)
         {
-            var data = new ArmorPlateData();
-            data.armorAdd.value = this.armorAdd.value;
-            return data;
+            ArmorPlateData data = (ArmorPlateData)other;
+            this.armorAdd.value = data.armorAdd.value;
+        }
+
+        protected override TezProtoObject createObjectInternal(int index)
+        {
+            return new ArmorPlate();
         }
     }
 
@@ -327,55 +314,62 @@ namespace tezcat.Framework.Test
     class ArmorPlate : Armor, ITezProtoObjectDataGetter<ArmorPlateData>
     {
         public ArmorPlateData protoData => (ArmorPlateData)mProtoData;
-
-        protected override TezProtoObjectData createProtoData()
-        {
-            return new ArmorPlateData();
-        }
     }
 
     class HelmetData : ArmorData
     {
-        protected override TezProtoObject createObjectInternal()
+        protected override TezProtoObject createObjectInternal(int index)
         {
             return new Helmet();
         }
 
-        protected override TezProtoObjectData copySelfDataWithoutProtoInfo()
+        protected override TezProtoObjectData justNewProtoData()
         {
-            var data = new HelmetData();
-            data.armorAdd.value = this.armorAdd.value;
-            return data;
+            return new HelmetData();
+        }
+
+        protected override void copyDataFrom(TezProtoObjectData other)
+        {
+            HelmetData data = (HelmetData)other;
+            this.armorAdd.value = data.armorAdd.value;
         }
     }
 
     class BreastplateData : ArmorData
     {
-        protected override TezProtoObject createObjectInternal()
+        protected override TezProtoObject createObjectInternal(int index)
         {
             return new Breastplate();
         }
 
-        protected override TezProtoObjectData copySelfDataWithoutProtoInfo()
+        protected override TezProtoObjectData justNewProtoData()
         {
-            var data = new BreastplateData();
-            data.armorAdd.value = this.armorAdd.value;
-            return data;
+            return new BreastplateData();
+        }
+
+        protected override void copyDataFrom(TezProtoObjectData other)
+        {
+            BreastplateData data = (BreastplateData)other;
+            this.armorAdd.value = data.armorAdd.value;
         }
     }
 
     class LegData : ArmorData
     {
-        protected override TezProtoObject createObjectInternal()
+        protected override TezProtoObject createObjectInternal(int index)
         {
             return new Leg();
         }
 
-        protected override TezProtoObjectData copySelfDataWithoutProtoInfo()
+        protected override TezProtoObjectData justNewProtoData()
         {
-            var data = new LegData();
-            data.armorAdd.value = this.armorAdd.value;
-            return data;
+            return new LegData();
+        }
+
+        protected override void copyDataFrom(TezProtoObjectData other)
+        {
+            LegData data = (LegData)other;
+            this.armorAdd.value = data.armorAdd.value;
         }
     }
 
@@ -383,33 +377,18 @@ namespace tezcat.Framework.Test
     class Helmet : Armor, ITezProtoObjectDataGetter<HelmetData>
     {
         public HelmetData protoData => (HelmetData)mProtoData;
-
-        protected override TezProtoObjectData createProtoData()
-        {
-            return new HelmetData();
-        }
     }
 
     [TezPrototypeRegister("Breastplate", 2)]
     class Breastplate : Armor, ITezProtoObjectDataGetter<BreastplateData>
     {
-        public BreastplateData protoData =>(BreastplateData)mProtoData;
-
-        protected override TezProtoObjectData createProtoData()
-        {
-            return new BreastplateData();
-        }
+        public BreastplateData protoData => (BreastplateData)mProtoData;
     }
 
     [TezPrototypeRegister("Leg", 1)]
     class Leg : Armor, ITezProtoObjectDataGetter<LegData>
     {
-        public LegData protoData =>(LegData)mProtoData;
-
-        protected override TezProtoObjectData createProtoData()
-        {
-            return new LegData();
-        }
+        public LegData protoData => (LegData)mProtoData;
     }
     #endregion
 
@@ -424,14 +403,19 @@ namespace tezcat.Framework.Test
 
     class CharacterData : UnitData
     {
-        protected override TezProtoObject createObjectInternal()
+        protected override TezProtoObject createObjectInternal(int index)
         {
             return new Character();
         }
 
-        protected override TezProtoObjectData copySelfDataWithoutProtoInfo()
+        protected override TezProtoObjectData justNewProtoData()
         {
             return new CharacterData();
+        }
+
+        protected override void copyDataFrom(TezProtoObjectData other)
+        {
+
         }
 
         protected override void onLoadProtoData(TezSaveController.Reader reader)
@@ -449,12 +433,12 @@ namespace tezcat.Framework.Test
         public TezValueInt shield { get; private set; } = new TezValueInt(MyDescriptorConfig.ShipValue.Shield);
         public TezValueInt power { get; private set; } = new TezValueInt(MyDescriptorConfig.ShipValue.Power);
 
-        public TezBonusableInt hullCapacity { get; private set; } = new TezBonusableInt(MyDescriptorConfig.ShipPorperty.HullCapacity);
-        public TezBonusableInt armorCapacity { get; private set; } = new TezBonusableInt(MyDescriptorConfig.ShipPorperty.ArmorCapacity);
-        public TezBonusableInt shieldCapacity { get; private set; } = new TezBonusableInt(MyDescriptorConfig.ShipPorperty.ShieldCapacity);
-        public TezBonusableInt powerCapacity { get; private set; } = new TezBonusableInt(MyDescriptorConfig.ShipPorperty.PowerCapacity);
+        public TezBonusInt hullCapacity { get; private set; } = new TezBonusInt(new TezBonusModifierCache(), MyDescriptorConfig.ShipPorperty.HullCapacity);
+        public TezBonusInt armorCapacity { get; private set; } = new TezBonusInt(new TezBonusModifierCache(), MyDescriptorConfig.ShipPorperty.ArmorCapacity);
+        public TezBonusInt shieldCapacity { get; private set; } = new TezBonusInt(new TezBonusModifierCache(), MyDescriptorConfig.ShipPorperty.ShieldCapacity);
+        public TezBonusInt powerCapacity { get; private set; } = new TezBonusInt(new TezBonusModifierCache(), MyDescriptorConfig.ShipPorperty.PowerCapacity);
 
-        protected override TezProtoObject createObjectInternal()
+        protected override TezProtoObject createObjectInternal(int index)
         {
             return new Ship();
         }
@@ -484,18 +468,22 @@ namespace tezcat.Framework.Test
             base.onClose();
         }
 
-        protected override TezProtoObjectData copySelfDataWithoutProtoInfo()
+        protected override TezProtoObjectData justNewProtoData()
         {
-            var data = new ShipData();
-            data.hull.value = this.hull.value;
-            data.armor.value = this.armor.value;
-            data.shield.value = this.shield.value;
-            data.power.value = this.power.value;
-            data.hullCapacity.baseValue = this.hullCapacity.baseValue;
-            data.armorCapacity.baseValue = this.armorCapacity.baseValue;
-            data.shieldCapacity.baseValue = this.shieldCapacity.baseValue;
-            data.powerCapacity.baseValue = this.powerCapacity.baseValue;
-            return data;
+            return new ShipData();
+        }
+
+        protected override void copyDataFrom(TezProtoObjectData other)
+        {
+            ShipData data = (ShipData)other;
+            this.hull.value = data.hull.value;
+            this.armor.value = data.armor.value;
+            this.shield.value = data.shield.value;
+            this.power.value = data.power.value;
+            this.hullCapacity.baseValue = data.hullCapacity.baseValue;
+            this.armorCapacity.baseValue = data.armorCapacity.baseValue;
+            this.shieldCapacity.baseValue = data.shieldCapacity.baseValue;
+            this.powerCapacity.baseValue = data.powerCapacity.baseValue;
         }
 
         protected override void onLoadProtoData(TezSaveController.Reader reader)
@@ -516,12 +504,7 @@ namespace tezcat.Framework.Test
 
     class Character : Unit, ITezProtoObjectDataGetter<CharacterData>
     {
-        public CharacterData protoData =>(CharacterData)mProtoData;
-
-        protected override TezProtoObjectData createProtoData()
-        {
-            return new CharacterData();
-        }
+        public CharacterData protoData => (CharacterData)mProtoData;
     }
 
     [TezPrototypeRegister("Ship", ItemClassIndexConfig.Ship)]
@@ -538,8 +521,8 @@ namespace tezcat.Framework.Test
         public TezValueArray valueArray => mValueArray;
 
         //Bonusable
-        TezBonusSystem mBonusSystem = new TezBonusSystem();
-        public TezBonusSystem bonusSystem => mBonusSystem;
+        TezBonusValueSystem mBonusSystem = new TezBonusValueSystem();
+        public TezBonusValueSystem bonusSystem => mBonusSystem;
 
         public ShipData protoData => (ShipData)mProtoData;
 
@@ -583,16 +566,11 @@ namespace tezcat.Framework.Test
 
         public void initBonusSystem()
         {
-            this.protoData.hullCapacity.createContainer<TezBonusModifierCache>();
-            this.protoData.armorCapacity.createContainer<TezBonusModifierCache>();
-            this.protoData.shieldCapacity.createContainer<TezBonusModifierList>();
-            this.protoData.powerCapacity.createContainer<TezBonusModifierList>();
-
             mBonusSystem.init();
-            mBonusSystem.set(this.protoData.hullCapacity);
-            mBonusSystem.set(this.protoData.armorCapacity);
-            mBonusSystem.set(this.protoData.shieldCapacity);
-            mBonusSystem.set(this.protoData.powerCapacity);
+            mBonusSystem.register(this.protoData.hullCapacity);
+            mBonusSystem.register(this.protoData.armorCapacity);
+            mBonusSystem.register(this.protoData.shieldCapacity);
+            mBonusSystem.register(this.protoData.powerCapacity);
         }
 
         private void setValue()
@@ -627,10 +605,10 @@ namespace tezcat.Framework.Test
             mValueArray = null;
         }
 
-        protected override TezProtoObjectData createProtoData()
-        {
-            return new ShipData();
-        }
+        //         protected override TezProtoObjectData createProtoData()
+        //         {
+        //             return new ShipData();
+        //         }
     }
     #endregion
 
@@ -648,40 +626,47 @@ namespace tezcat.Framework.Test
 
         public override void run()
         {
-            //var item_info = TezcatFramework.mainDB.getItem(0, 0);
-            //var proto = TezcatFramework.protoDB.createObject<HealthPotion>(0);
-
             Console.WriteLine("Create HealthPotion From ProtoDB");
-            var potion1 = TezcatFramework.protoDB.createObject<HealthPotion>(0);
+            var potion1 = TezcatFramework.protoDB.createObject<HealthPotionData, HealthPotion>(0);
             potion1.init();
 
             Console.WriteLine($"Potion1: {potion1.protoInfo.NID}, HealthAdd: {potion1.protoData.healthAdd.value}");
 
             Console.WriteLine("Create HealthPotion From Potion1");
-            var potion2 = potion1.protoData.createObject<HealthPotion>();
+            var potion2 = potion1.protoData.createObjectByCopyMe<HealthPotion>();
             potion2.init();
 
             Console.WriteLine($"Potion2: {potion2.protoInfo.NID}, HealthAdd: {potion2.healthAdd.value}");
             Console.WriteLine();
 
             Console.WriteLine($"Potion1==Potion2 : {potion1 == potion2}");
-            Console.WriteLine($"Potion1.isItemOf(Potion2) : {potion1.isItemOf(potion2)}");
+            Console.WriteLine($"Potion1.isTheSameProtoDataOf(Potion2) : {potion1.isTheSameProtoDataOf(potion2)}");
+            Console.WriteLine($"Potion1.isTheSameProtoObjectOf(Potion2) : {potion1.isTheSameProtoObjectOf(potion2)}");
             Console.WriteLine();
 
-            Console.WriteLine("Potion1 MakeAnRuntimeProtoByThis");
-            potion1.makeAnRuntimeProtoByThis();
-            Console.WriteLine($"Potion1.isItemOf(Potion2) : {potion1.isItemOf(potion2)}");
-            var potion3 = potion1.protoData.createObject<HealthPotion>();
+            Console.WriteLine("Potion1 CreateRedefineObject");
+            var potion1_1 = potion1.protoData.createRedefineData().createObjectWithMe<HealthPotion>();
+            potion1_1.init();
+            Console.WriteLine($"Potion1.isTheSameProtoDataOf(potion1_1) : {potion1.isTheSameProtoDataOf(potion1_1)}");
+            Console.WriteLine($"Potion1.isTheSameProtoObjectOf(potion1_1) : {potion1.isTheSameProtoObjectOf(potion1_1)}");
+            Console.WriteLine($"Potion1.isTheSameProtoDataOf(Potion2) : {potion1.isTheSameProtoDataOf(potion2)}");
+            Console.WriteLine($"Potion1.isTheSameProtoObjectOf(Potion2) : {potion1.isTheSameProtoObjectOf(potion2)}");
+            Console.WriteLine($"Potion1_1.isTheSameProtoDataOf(Potion2) : {potion1_1.isTheSameProtoDataOf(potion2)}");
+            Console.WriteLine($"Potion1_1.isTheSameProtoObjectOf(Potion2) : {potion1_1.isTheSameProtoObjectOf(potion2)}");
+
+            Console.WriteLine();
+            var potion3 = potion1.protoData.createObjectByCopyMe<HealthPotion>();
             potion3.init();
             Console.WriteLine($"Potion1==Potion3 : {potion1 == potion3}");
-            Console.WriteLine($"Potion1.isItemOf(Potion3) : {potion1.isItemOf(potion3)}");
+            Console.WriteLine($"Potion1.isTheSameProtoDataOf(Potion3) : {potion1.isTheSameProtoDataOf(potion3)}");
+            Console.WriteLine($"Potion1.isTheSameProtoObjectOf(Potion3) : {potion1.isTheSameProtoObjectOf(potion3)}");
 
             potion1.close();
+            potion1_1.close();
             potion2.close();
             potion3.close();
 
-
-            var armor1 = TezcatFramework.protoDB.createObject<Breastplate>(0);
+            var armor1 = TezcatFramework.protoDB.createObject<BreastplateData, Breastplate>(0);
             armor1.init();
 
             Console.WriteLine();

@@ -4,28 +4,6 @@ using tezcat.Framework.Game;
 
 namespace tezcat.Framework.Test
 {
-    public static class MyBonusConfig
-    {
-        public static class TypeID
-        {
-            public static readonly int Ship = 0;
-            public static readonly int Human = 1;
-        }
-
-        public static class Ship
-        {
-            public static TezBonusToken Hull = TezBonusToken.createToken("Hull", TypeID.Ship, 0);
-            public static TezBonusToken Armor = TezBonusToken.createToken("Armor", TypeID.Ship, 1);
-            public static TezBonusToken Shield = TezBonusToken.createToken("Shield", TypeID.Ship, 2);
-            public static TezBonusToken Power = TezBonusToken.createToken("Power", TypeID.Ship, 3);
-        }
-
-        public static class Human
-        {
-            public static TezBonusToken Health = TezBonusToken.createToken("Health", TypeID.Human, 0);
-        }
-    }
-
     public class TestBonusSystem2 : TezBaseTest
     {
         /// <summary>
@@ -40,17 +18,16 @@ namespace tezcat.Framework.Test
 
         public override void init()
         {
-            //var prto = TezcatFramework.protoDB.createObject<Ship>("Battleship");
-            mShip = TezcatFramework.protoDB.createObject<Ship>("Battleship");
+            mShip = TezcatFramework.protoDB.createObject<ShipData, Ship>("Battleship");
             mShip.init();
         }
 
         private void showData()
         {
             Console.WriteLine($"Hull: {mShip.protoData.hull.value}/{mShip.protoData.hullCapacity.value}");
-            Console.WriteLine($"Armor: {mShip.protoData.armor.value} / {mShip.protoData.armorCapacity.value}");
-            Console.WriteLine($"Shield: {mShip.protoData.shield.value} / {mShip.protoData.shieldCapacity.value}");
-            Console.WriteLine($"Power: {mShip.protoData.power.value}  /  {mShip.protoData.powerCapacity.value}");
+            Console.WriteLine($"Armor: {mShip.protoData.armor.value} /{mShip.protoData.armorCapacity.value}");
+            Console.WriteLine($"Shield: {mShip.protoData.shield.value} /{mShip.protoData.shieldCapacity.value}");
+            Console.WriteLine($"Power: {mShip.protoData.power.value}  /{mShip.protoData.powerCapacity.value}");
             Console.WriteLine("");
         }
 
@@ -63,8 +40,7 @@ namespace tezcat.Framework.Test
             TezBonusModifier modifier1 = new TezBonusModifier()
             {
                 owner = this,
-                modifyType = (byte)TezBonusModifierType.Base_SumAdd,
-                //bonusToken = MyBonusConfig.Ship.Hull,
+                calculateRule = (byte)TezBonusModifierCalculateRule.Base_SumAdd,
                 valueDescriptor = MyDescriptorConfig.ShipPorperty.HullCapacity,
                 value = 10
             };
@@ -72,8 +48,7 @@ namespace tezcat.Framework.Test
             TezBonusModifier modifier2 = new TezBonusModifier()
             {
                 owner = this,
-                modifyType = (byte)TezBonusModifierType.Base_SumAdd,
-                //bonusToken = MyBonusConfig.Ship.Armor,
+                calculateRule = (byte)TezBonusModifierCalculateRule.Base_SumAdd,
                 valueDescriptor = MyDescriptorConfig.ShipPorperty.ArmorCapacity,
                 value = 20
             };
@@ -81,8 +56,7 @@ namespace tezcat.Framework.Test
             TezBonusModifier modifier3 = new TezBonusModifier()
             {
                 owner = this,
-                modifyType = (byte)TezBonusModifierType.Base_SumAdd,
-                //bonusToken = MyBonusConfig.Ship.Shield,
+                calculateRule = (byte)TezBonusModifierCalculateRule.Base_SumAdd,
                 valueDescriptor = MyDescriptorConfig.ShipPorperty.ShieldCapacity,
                 value = 30
             };
@@ -90,8 +64,7 @@ namespace tezcat.Framework.Test
             TezBonusModifier modifier4 = new TezBonusModifier()
             {
                 owner = this,
-                modifyType = (byte)TezBonusModifierType.Base_SumAdd,
-                //bonusToken = MyBonusConfig.Ship.Power,
+                calculateRule = (byte)TezBonusModifierCalculateRule.Base_SumAdd,
                 valueDescriptor = MyDescriptorConfig.ShipPorperty.PowerCapacity,
                 value = 40
             };
@@ -111,8 +84,7 @@ namespace tezcat.Framework.Test
             TezBonusModifier modifier5 = new TezBonusModifier()
             {
                 owner = this,
-                modifyType = (byte)TezBonusModifierType.Base_PercentAdd,
-                //bonusToken = MyBonusConfig.Ship.Hull,
+                calculateRule = (byte)TezBonusModifierCalculateRule.Base_PercentAdd,
                 valueDescriptor = MyDescriptorConfig.ShipPorperty.HullCapacity,
                 value = 2
             };
@@ -120,8 +92,7 @@ namespace tezcat.Framework.Test
             TezBonusModifier modifier6 = new TezBonusModifier()
             {
                 owner = this,
-                modifyType = (byte)TezBonusModifierType.Base_PercentAdd,
-                //bonusToken = MyBonusConfig.Ship.Power,
+                calculateRule = (byte)TezBonusModifierCalculateRule.Base_PercentAdd,
                 valueDescriptor = MyDescriptorConfig.ShipPorperty.PowerCapacity,
                 value = 3
             };
@@ -162,14 +133,13 @@ namespace tezcat.Framework.Test
 
         public override void init()
         {
-            //var proto = TezcatFramework.protoDB.createObject<Ship>("Battleship");
-            mShip = TezcatFramework.protoDB.createObject<Ship>("Battleship");
+            mShip = TezcatFramework.protoDB.createObject<ShipData, Ship>("Battleship");
             mShip.init();
         }
 
         public override void run()
         {
-            var hull_capacity = mShip.bonusSystem.get<TezBonusableInt>(MyDescriptorConfig.ShipPorperty.HullCapacity);
+            var hull_capacity = mShip.bonusSystem.get<TezBonusInt>(MyDescriptorConfig.ShipPorperty.HullCapacity);
             Console.WriteLine($"{hull_capacity.name}: {hull_capacity.value}");
 
             var hull = mShip.valueArray.get<TezValueInt>(MyDescriptorConfig.ShipValue.Hull);

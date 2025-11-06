@@ -53,7 +53,7 @@
         /// 反序列化数据
         /// </summary>
         /// <param name="reader"></param>
-        public override void loadProtoData(TezSaveController.Reader reader)
+        public override void deserialize(TezSaveController.Reader reader)
         {
 
         }

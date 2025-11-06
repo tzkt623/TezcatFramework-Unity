@@ -38,14 +38,16 @@ namespace tezcat.Framework.Core
             public Action onClear = null;
 
             /// <summary>
+            /// 物品ID
+            /// </summary>
+            public TezItemID itemID = new TezItemID();
+
+            /// <summary>
             /// 引用数量
             /// 用于记录产生了多少个共享对象
             /// </summary>
             public int refCount = -1;
-            /// <summary>
-            /// 物品ID
-            /// </summary>
-            public TezItemID itemID = new TezItemID();
+
             /// <summary>
             /// 物品的名称ID
             /// 并不是真实名称,因为有本地化的原因
@@ -63,35 +65,33 @@ namespace tezcat.Framework.Core
             /// 可自定义的对象在保存时需要保存完整数据
             /// 不可自定义对象在保存时只需要保存数据库ID
             /// </summary>
-            public bool copyType = false;
+            public bool sharedType = false;
             /// <summary>
             /// 原型对象
             /// </summary>
-            public TezProtoObject proto = null;
+            //public TezProtoObject proto = null;
 
             /// <summary>
             /// 从另一个元数据中复制数据
             /// 并且设置引用计数为1
             /// </summary>
-            public void copyDataFrom(ProtoInfo other)
+            public void redefineInfo(ProtoInfo other)
             {
                 this.NID = other.NID;
                 this.stackCount = other.stackCount;
-                this.copyType = other.copyType;
+                this.sharedType = other.sharedType;
                 this.itemID = other.itemID;
                 this.refCount = 1; // 复制时引用计数重置为1
+                itemID.generateRedefineID();
             }
 
             private void clear()
             {
+                this.itemID.close();
                 this.onClear?.Invoke();
-
-                //this.itemID.close();
-
                 this.refCount = -1;
                 this.NID = null;
                 this.stackCount = -1;
-                this.proto = null;
             }
 
             public bool release()
@@ -114,12 +114,12 @@ namespace tezcat.Framework.Core
         /// </summary>
         public TezItemID itemID => mMetaData.itemID;
 
-        public void setRTID(int id)
-        {
-            mMetaData.itemID.setRTID(id);
-        }
+//         internal void setRTID(int id)
+//         {
+//             mMetaData.itemID.setRedefineID(id);
+//         }
 
-        public void setDBID(ushort type, ushort index)
+        internal void setDBID(ushort type, ushort index)
         {
             mMetaData.itemID.setDBID(type, index);
         }
@@ -152,7 +152,7 @@ namespace tezcat.Framework.Core
         /// 可自定义对象保存时必须保存全部数据
         /// 不可自定义对象保存时只需要保存ItemID和数量
         /// </summary>
-        public bool isSharedType => mMetaData.copyType;
+        public bool isSharedType => mMetaData.sharedType;
 
         /// <summary>
         /// 此对象是否有效
@@ -172,7 +172,7 @@ namespace tezcat.Framework.Core
                 refCount = 1,
                 NID = NID,
                 stackCount = stackCount,
-                copyType = customizable
+                sharedType = customizable
             };
 
             mMetaData.itemID.setDBID(TID, UID);
@@ -188,17 +188,17 @@ namespace tezcat.Framework.Core
                 refCount = 1,
                 NID = NID,
                 stackCount = stackCount,
-                copyType = customizable
+                sharedType = customizable
             };
 
             mMetaData.itemID.setDBID(TID, UID);
-            mMetaData.itemID.setRTID(RTID);
+            //mMetaData.itemID.setRedefineID(RTID);
         }
 
         /// <summary>
         /// 从另一个元数据中共享数据
         /// </summary>
-        public void sharedFrom(TezProtoInfoWrapper itemInfo)
+        internal void sharedFrom(TezProtoInfoWrapper itemInfo)
         {
             mMetaData?.release();
 
@@ -206,12 +206,19 @@ namespace tezcat.Framework.Core
             mMetaData.refCount++;
         }
 
-        public void changeToRuntimeInfo()
+        internal void setInfo(TezProtoInfoWrapper itemInfo)
+        {
+            mMetaData?.release();
+            mMetaData = itemInfo.mMetaData;
+        }
+
+        public void redefineProtoInfo()
         {
             var old_info = mMetaData;
             mMetaData = new ProtoInfo();
             //复制旧的元数据
-            mMetaData.copyDataFrom(old_info);
+            mMetaData.redefineInfo(old_info);
+
             //清除旧的元数据
             old_info.release();
         }
@@ -234,23 +241,23 @@ namespace tezcat.Framework.Core
             mMetaData.onClear = action;
         }
 
-        public void setProto(TezProtoObject proto)
-        {
-            mMetaData.proto = proto;
-        }
+//         public void setProto(TezProtoObject proto)
+//         {
+//             mMetaData.proto = proto;
+//         }
+// 
+//         public TezProtoObject getProto()
+//         {
+//             return mMetaData.proto;
+//         }
 
-        public TezProtoObject getProto()
-        {
-            return mMetaData.proto;
-        }
+//         public TezProtoObject shardeProto()
+//         {
+//             mMetaData.refCount++;
+//             return mMetaData.proto;
+//         }
 
-        public TezProtoObject shardeProto()
-        {
-            mMetaData.refCount++;
-            return mMetaData.proto;
-        }
-
-        public void retain()
+        internal void retain()
         {
             mMetaData.refCount++;
         }
@@ -285,10 +292,10 @@ namespace tezcat.Framework.Core
 
             //如果是实时生成的新物品
             //需要保存所有数据
-            if (this.itemID.RTID > -1)
+            if (this.itemID.RedefineID > 0)
             {
                 writer.write(TezBuildInName.ProtoInfo.SharedType, this.isSharedType);
-                writer.write(TezBuildInName.ProtoInfo.RTID, this.itemID.RTID);
+                //writer.write(TezBuildInName.ProtoInfo.RDID, this.itemID.RedefineID);
                 writer.write(TezBuildInName.ProtoInfo.Name, this.NID);
                 writer.write(TezBuildInName.ProtoInfo.StackCount, this.stackCount);
             }
@@ -357,12 +364,12 @@ namespace tezcat.Framework.Core
         /// 
         /// </summary>
         /// <param name="itemInfo"></param>
-        public void copyFrom(TezProtoInfoWrapper itemInfo)
-        {
-            mMetaData?.release();
-            mMetaData = new ProtoInfo();
-            mMetaData.copyDataFrom(itemInfo.mMetaData);
-        }
+//         public void copyFrom(TezProtoInfoWrapper itemInfo)
+//         {
+//             mMetaData?.release();
+//             mMetaData = new ProtoInfo();
+//             mMetaData.copyDataFrom(itemInfo.mMetaData);
+//         }
 
         /// <summary>
         /// 比较两个Item的DBID是否一样

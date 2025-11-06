@@ -1,10 +1,11 @@
+using System;
 using tezcat.Framework.Core;
 
 namespace tezcat.Framework.Game
 {
     public interface ITezBonusSystemHolder
     {
-        TezBonusSystem bonusSystem { get; }
+        TezBonusValueSystem bonusSystem { get; }
     }
 
     /// <summary>
@@ -14,34 +15,28 @@ namespace tezcat.Framework.Game
     /// 飞船有飞船的整套属性
     /// 炮台有炮台的整套属性
     /// </summary>
-    public class TezBonusSystem : ITezCloseable
+    public class TezBonusValueSystem : ITezCloseable
     {
-        //ITezBonusableValue[] mArray = null;
-        ITezBonusableValue[][] mArrays = null;
+        ITezBonusValue[][] mArrays = null;
 
         public void init()
         {
-            //var capacity = TezValueDescriptor.getTypeCapacity(bonusTokenTypeID);
-            //mArray = new ITezBonusableValue[capacity];
-
             if (mArrays == null)
             {
-                mArrays = new ITezBonusableValue[TezValueDescriptor.getTypeCount()][];
+                mArrays = new ITezBonusValue[TezValueDescriptor.getTypeCount()][];
             }
         }
 
-        public void set(ITezBonusableValue bonusableValue)
+        public void register(ITezBonusValue bonusValue)
         {
-            var token = bonusableValue.descriptor;
+            var descriptor = bonusValue.descriptor;
 
-            if (mArrays[token.typeID] == null)
+            if (mArrays[descriptor.typeID] == null)
             {
-                mArrays[token.typeID] = new ITezBonusableValue[TezValueDescriptor.getTypeCapacity((short)token.typeID)];
+                mArrays[descriptor.typeID] = new ITezBonusValue[TezValueDescriptor.getTypeCapacity((short)descriptor.typeID)];
             }
 
-            mArrays[token.typeID][token.indexID] = bonusableValue;
-
-            //mArray[token.indexID] = bonusableValue;
+            mArrays[descriptor.typeID][descriptor.indexID] = bonusValue;
         }
 
         public void addModifier(ITezBonusModifier modifier)
@@ -58,16 +53,22 @@ namespace tezcat.Framework.Game
 
         public void close()
         {
+            foreach (ITezBonusValue[] item in mArrays)
+            {
+                Array.Clear(item, 0, item.Length);
+            }
+
+            Array.Clear(mArrays, 0, mArrays.Length);
             mArrays = null;
         }
 
-        public T get<T>(ITezValueDescriptor valueDescriptor) where T : ITezBonusableValue
+        public T get<T>(ITezValueDescriptor valueDescriptor) where T : ITezBonusValue
         {
             return (T)mArrays[valueDescriptor.typeID][valueDescriptor.indexID];
         }
     }
 
-    public class TezBonusableValueArray : TezValueWrapperArray<ITezBonusableValue>
+    public class TezBonusValueArray : TezValueWrapperArray<ITezBonusValue>
     {
 
     }

@@ -1,6 +1,5 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
-using tezcat.Framework;
 using tezcat.Framework.Core;
 using tezcat.Unity.Core;
 using tezcat.Unity.Database;
@@ -27,6 +26,9 @@ namespace tezcat.Unity
             }
 
             mInstance = this;
+
+
+
             this.register();
         }
 

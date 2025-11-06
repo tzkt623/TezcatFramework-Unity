@@ -1,7 +1,7 @@
 {
     "CID": "LegData",
     "ProtoInfo": {
-        "TID": "Leg",
+        "TID": "LegData",
         "IID": 0,
         "Name": "Ring",
         "StackCount": 1,

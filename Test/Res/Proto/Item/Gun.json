@@ -1,7 +1,7 @@
 {
     "CID": "GunData",
     "ProtoInfo": {
-        "TID": "Gun",
+        "TID": "GunData",
         "IID": 1,
         "Name": "1911",
         "StackCount": 1,

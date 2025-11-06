@@ -5,11 +5,16 @@ namespace tezcat.Framework.Game
 {
     public interface ITezBonusModifierContainer : ITezCloseable
     {
+        bool isDirty { get; }
+        void setDirty();
+
         void add(ITezBonusModifier modifier);
         bool remove(ITezBonusModifier modifier);
 
         int calculate(ref int baseValue);
         float calculate(ref float baseValue);
+
+        void clear();
     }
 
     /// <summary>
@@ -31,18 +36,37 @@ namespace tezcat.Framework.Game
     public class TezBonusModifierList : ITezBonusModifierContainer
     {
         List<ITezBonusModifier> mList = new List<ITezBonusModifier>();
+        bool mIsDirty = false;
+        bool ITezBonusModifierContainer.isDirty => mIsDirty;
 
-        public void add(ITezBonusModifier modifier)
+        void ITezBonusModifierContainer.setDirty()
         {
-            mList.Add(modifier);
+            mIsDirty = true;
         }
 
-        public bool remove(ITezBonusModifier modifier)
+        void ITezBonusModifierContainer.add(ITezBonusModifier modifier)
         {
-            return mList.Remove(modifier);
+            if (modifier.addMaster(this))
+            {
+                mIsDirty = true;
+                mList.Add(modifier);
+            }
         }
 
-        public int calculate(ref int baseValue)
+        bool ITezBonusModifierContainer.remove(ITezBonusModifier modifier)
+        {
+            if(modifier.removeMaster(this))
+            {
+                mIsDirty = true;
+                modifier.isNeedRemove = true;
+                //return mList.Remove(modifier);
+                return true;
+            }
+
+            return false;
+        }
+
+        int ITezBonusModifierContainer.calculate(ref int baseValue)
         {
             float sum_add = 0;
             float percent_add = 0;
@@ -51,30 +75,38 @@ namespace tezcat.Framework.Game
             for (int i = mList.Count - 1; i >= 0; i--)
             {
                 var modifier = mList[i];
-
-                switch ((TezBonusModifierType)modifier.modifyType)
+                if(modifier.isNeedRemove)
                 {
-                    case TezBonusModifierType.Base_SumAdd:
-                        sum_add += modifier.value;
-                        break;
-                    case TezBonusModifierType.Base_PercentAdd:
-                        percent_add += modifier.value;
-                        break;
-                    case TezBonusModifierType.Base_PercentMulti:
-                        percent_multi += modifier.value;
-                        break;
-                    default:
-                        break;
+                    mList.RemoveAt(i);
+                }
+                else
+                {
+                    switch ((TezBonusModifierCalculateRule)modifier.calculateRule)
+                    {
+                        case TezBonusModifierCalculateRule.Base_SumAdd:
+                            sum_add += modifier.value;
+                            break;
+                        case TezBonusModifierCalculateRule.Base_PercentAdd:
+                            percent_add += modifier.value;
+                            break;
+                        case TezBonusModifierCalculateRule.Base_PercentMulti:
+                            percent_multi += modifier.value;
+                            break;
+                        default:
+                            break;
+                    }
                 }
             }
 
             int final = (int)(baseValue + sum_add
                 + baseValue * (percent_add * (1.0f + percent_multi)));
 
+            mIsDirty = false;
+
             return final;
         }
 
-        public float calculate(ref float baseValue)
+        float ITezBonusModifierContainer.calculate(ref float baseValue)
         {
             float sum_add = 0;
             float percent_add = 0;
@@ -83,35 +115,57 @@ namespace tezcat.Framework.Game
             for (int i = mList.Count - 1; i >= 0; i--)
             {
                 var modifier = mList[i];
-
-                switch ((TezBonusModifierType)modifier.modifyType)
+                if (modifier.isNeedRemove)
                 {
-                    case TezBonusModifierType.Base_SumAdd:
-                        sum_add += modifier.value;
-                        break;
-                    case TezBonusModifierType.Base_PercentAdd:
-                        percent_add += modifier.value;
-                        break;
-                    case TezBonusModifierType.Base_PercentMulti:
-                        percent_multi += modifier.value;
-                        break;
-                    default:
-                        break;
+                    mList.RemoveAt(i);
+                }
+                else
+                {
+                    switch ((TezBonusModifierCalculateRule)modifier.calculateRule)
+                    {
+                        case TezBonusModifierCalculateRule.Base_SumAdd:
+                            sum_add += modifier.value;
+                            break;
+                        case TezBonusModifierCalculateRule.Base_PercentAdd:
+                            percent_add += modifier.value;
+                            break;
+                        case TezBonusModifierCalculateRule.Base_PercentMulti:
+                            percent_multi += modifier.value;
+                            break;
+                        default:
+                            break;
+                    }
                 }
             }
 
             float final = baseValue + sum_add
                 + baseValue * (percent_add * (1.0f + percent_multi));
+            mIsDirty = false;
 
             return final;
         }
 
-        public void close()
+        void ITezBonusModifierContainer.clear()
         {
+            foreach (var item in mList)
+            {
+                item.removeMaster(this);
+            }
+
+            mList.Clear();
+            mIsDirty = true;
+        }
+
+        void ITezCloseable.close()
+        {
+            foreach (var item in mList)
+            {
+                item.removeMaster(this);
+            }
+
             mList.Clear();
             mList = null;
         }
-
     }
 
     /// <summary>
@@ -132,63 +186,90 @@ namespace tezcat.Framework.Game
     /// </summary>
     public class TezBonusModifierCache : ITezBonusModifierContainer
     {
+        bool mIsDirty = false;
+        bool ITezBonusModifierContainer.isDirty => mIsDirty;
+
         float mBase_SumAdd = 0;
         float mBase_PercentAdd = 0;
         float mBase_PercentMulti = 0;
 
-        public void add(ITezBonusModifier modifier)
+        void ITezBonusModifierContainer.setDirty()
         {
-            switch ((TezBonusModifierType)modifier.modifyType)
+            mIsDirty = true;
+        }
+
+        void ITezBonusModifierContainer.add(ITezBonusModifier modifier)
+        {
+            if(!modifier.addMaster(this))
             {
-                case TezBonusModifierType.Base_SumAdd:
+                return;
+            }
+
+            switch ((TezBonusModifierCalculateRule)modifier.calculateRule)
+            {
+                case TezBonusModifierCalculateRule.Base_SumAdd:
                     mBase_SumAdd += modifier.value;
                     break;
-                case TezBonusModifierType.Base_PercentAdd:
+                case TezBonusModifierCalculateRule.Base_PercentAdd:
                     mBase_PercentAdd += modifier.value;
                     break;
-                case TezBonusModifierType.Base_PercentMulti:
+                case TezBonusModifierCalculateRule.Base_PercentMulti:
                     mBase_PercentMulti += modifier.value;
                     break;
                 default:
                     break;
             }
+
+            mIsDirty = true;
         }
 
-        public bool remove(ITezBonusModifier modifier)
+        bool ITezBonusModifierContainer.remove(ITezBonusModifier modifier)
         {
-            switch ((TezBonusModifierType)modifier.modifyType)
+            if (!modifier.removeMaster(this))
             {
-                case TezBonusModifierType.Base_SumAdd:
+                return false;
+            }
+
+            switch ((TezBonusModifierCalculateRule)modifier.calculateRule)
+            {
+                case TezBonusModifierCalculateRule.Base_SumAdd:
                     mBase_SumAdd -= modifier.value;
                     break;
-                case TezBonusModifierType.Base_PercentAdd:
+                case TezBonusModifierCalculateRule.Base_PercentAdd:
                     mBase_PercentAdd -= modifier.value;
                     break;
-                case TezBonusModifierType.Base_PercentMulti:
+                case TezBonusModifierCalculateRule.Base_PercentMulti:
                     mBase_PercentMulti -= modifier.value;
                     break;
-                default:
-                    return false;
             }
+
+            mIsDirty = true;
 
             return true;
         }
 
-        public int calculate(ref int baseValue)
+        int ITezBonusModifierContainer.calculate(ref int baseValue)
         {
             int final = (int)(baseValue + mBase_SumAdd + baseValue * (mBase_PercentAdd * (1.0f + mBase_PercentMulti)));
 
+            mIsDirty = false;
             return final;
         }
 
-        public float calculate(ref float baseValue)
+        float ITezBonusModifierContainer.calculate(ref float baseValue)
         {
             float final = baseValue + mBase_SumAdd + baseValue * (mBase_PercentAdd * (1.0f + mBase_PercentMulti));
 
+            mIsDirty = false;
             return final;
         }
 
-        public void close()
+        void ITezCloseable.close()
+        {
+
+        }
+
+        void ITezBonusModifierContainer.clear()
         {
 
         }
