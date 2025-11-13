@@ -126,12 +126,13 @@ namespace tezcat.Framework.Core
             var files = TezFilePath.getFiles(protoFilePath, true);
             for (int j = 0; j < files.Length; j++)
             {
-//                 reader.evtDebug += (string info) =>
-//                 {
-//                     evtDebugLoad?.Invoke(info);
-//                 };
+                //                 reader.evtDebug += (string info) =>
+                //                 {
+                //                     evtDebugLoad?.Invoke(info);
+                //                 };
 
                 //evtDebugLoad?.Invoke($"Begin Load {files[j]}");
+                reader.beginRead();
                 if (reader.load(files[j]))
                 {
                     //System.Diagnostics.Debugger.Break();
@@ -141,6 +142,7 @@ namespace tezcat.Framework.Core
                     item.loadProtoData(reader);
                     //evtDebugLoad?.Invoke($"Register ProtoData {j}");
                     this.register(item);
+                    reader.endRead();
                     reader.close();
                 }
                 else

@@ -189,6 +189,10 @@ namespace tezcat.Framework.Core
                     throw new Exception();
                 }
                 mCurrent = null;
+                mCurrentIndex = -1;
+
+                mRoot.close();
+                mRoot = null;
             }
 
             private void setCurrent(string name)
@@ -552,7 +556,6 @@ namespace tezcat.Framework.Core
 
                     helper.close();
 
-                    this.checkType(mRoot.dataType);
                     mCurrent = mRoot;
                     return true;
                 }
@@ -562,10 +565,7 @@ namespace tezcat.Framework.Core
 
             public void close()
             {
-                mRoot.close();
-                //mRoot.close();
                 mRoot = null;
-
                 evtDebug = null;
             }
         }
