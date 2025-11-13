@@ -241,12 +241,16 @@ namespace tezcat.Framework.Test
             ///如果没有工具,取得工具
             ///先蒸饭,再炒菜,最后吃饭
             ///
-            TezJsonReader reader = new TezJsonReader();
+            TezSaveController.Reader reader = new TezSaveController.Reader();
             reader.load($"{Path.root}Res/BehaviorTree/Config.json");
+            reader.beginRead();
 
             mTree = new TezBehaviorTree();
             mTree.evtBehaviorComplete += onBehaviorComplete;
             mTree.loadConfig(reader);
+
+
+            reader.endRead();
             reader.close();
 
 

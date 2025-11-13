@@ -29,21 +29,21 @@ namespace tezcat.Framework.Game
             return node;
         }
 
-        public override void loadConfig(TezReader reader)
+        public override void loadConfig(TezSaveController.Reader reader)
         {
-            reader.beginArray("Children");
+            reader.enterArray(TokenChildren);
 
             var count = reader.count;
             for (int i = 0; i < count; i++)
             {
-                reader.beginObject(i);
-                var node = TezBehaviorTree.create(reader.readString("Node"));
+                reader.enterObject(i);
+                var node = TezBehaviorTree.create(reader.readString(TokenNode));
                 this.onAddChild(node);
                 node.loadConfig(reader);
-                reader.endObject(i);
+                reader.exitObject(i);
             }
 
-            reader.endArray("Children");
+            reader.exitArray(TokenChildren);
         }
 
         void ITezBTParentNode.childReport(Result result)

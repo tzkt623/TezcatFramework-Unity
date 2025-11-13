@@ -15,6 +15,10 @@ namespace tezcat.Framework.Game
 
     public abstract class TezBTNode : ITezBTNode
     {
+        protected static string TokenCID = "CID";
+        internal static string TokenNode = "Node";
+        protected static string TokenChildren = "Children";
+
         public enum Result : byte
         {
             Success,
@@ -52,7 +56,7 @@ namespace tezcat.Framework.Game
 
         public abstract void init();
         public virtual void reset() { }
-        public virtual void loadConfig(TezReader reader) { }
+        public virtual void loadConfig(TezSaveController.Reader reader) { }
 
         public T getContext<T>() where T : ITezBTContext
         {

@@ -88,32 +88,32 @@ namespace tezcat.Framework.Test
 
         void register()
         {
-            TezcatFramework.classFactory.register<Axe>();
-            TezcatFramework.classFactory.register<Gun>();
+            TezcatFramework.classFactory.register<Axe>("Axe");
+            TezcatFramework.classFactory.register<Gun>("Gun");
 
-            TezcatFramework.classFactory.register<Helmet>();
-            TezcatFramework.classFactory.register<Breastplate>();
-            TezcatFramework.classFactory.register<Leg>();
+            TezcatFramework.classFactory.register<Helmet>("Helmet");
+            TezcatFramework.classFactory.register<Breastplate>("Breastplate");
+            TezcatFramework.classFactory.register<Leg>("Leg");
 
-            TezcatFramework.classFactory.register<MagicPotion>();
-            TezcatFramework.classFactory.register<HealthPotion>();
+            TezcatFramework.classFactory.register<MagicPotion>("MagicPotion");
+            TezcatFramework.classFactory.register<HealthPotion>("HealthPotion");
 
-            TezcatFramework.classFactory.register<Character>();
-            TezcatFramework.classFactory.register<Ship>();
+            TezcatFramework.classFactory.register<Character>("Character");
+            TezcatFramework.classFactory.register<Ship>("Ship");
 
 
-            TezcatFramework.classFactory.register<AxeData>();
-            TezcatFramework.classFactory.register<GunData>();
+            TezcatFramework.classFactory.register<AxeData>("AxeData");
+            TezcatFramework.classFactory.register<GunData>("GunData");
 
-            TezcatFramework.classFactory.register<HelmetData>();
-            TezcatFramework.classFactory.register<BreastplateData>();
-            TezcatFramework.classFactory.register<LegData>();
+            TezcatFramework.classFactory.register<HelmetData>("HelmetData");
+            TezcatFramework.classFactory.register<BreastplateData>("BreastplateData");
+            TezcatFramework.classFactory.register<LegData>("LegData");
 
-            TezcatFramework.classFactory.register<MagicPotionData>();
-            TezcatFramework.classFactory.register<HealthPotionData>();
+            TezcatFramework.classFactory.register<MagicPotionData>("MagicPotionData");
+            TezcatFramework.classFactory.register<HealthPotionData>("HealthPotionData");
 
-            TezcatFramework.classFactory.register<CharacterData>();
-            TezcatFramework.classFactory.register<ShipData>();
+            TezcatFramework.classFactory.register<CharacterData>("CharacterData");
+            TezcatFramework.classFactory.register<ShipData>("ShipData");
         }
 
         public void run()

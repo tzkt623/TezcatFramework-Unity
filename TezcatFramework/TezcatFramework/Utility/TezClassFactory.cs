@@ -4,6 +4,20 @@ using tezcat.Framework.Core;
 
 namespace tezcat.Framework.Utility
 {
+//     [AttributeUsage(AttributeTargets.Class, AllowMultiple = false, Inherited = true)]
+//     public class TezClassFactoryRegisterAttribute : Attribute
+//     {
+//         public string name;
+//         public Func<object> creator;
+//     }
+// 
+// 
+//     [TezClassFactoryRegister(name = "Test32", creator = ()=> { return new Test32(); }]
+//     public class Test32
+//     {
+// 
+//     }
+
     /// <summary>
     /// 类型生成器
     /// 
@@ -19,9 +33,8 @@ namespace tezcat.Framework.Utility
 
         Dictionary<string, Creator<object>> mDictWithName = new Dictionary<string, Creator<object>>();
 
-        public void register<T>(Creator<T> function) where T : class
+        public void register<T>(string name, Creator<T> function) where T : class
         {
-            var name = typeof(T).Name;
             if (mDictWithName.ContainsKey(name))
             {
                 throw new Exception($"{name} : this type is registered");
@@ -32,9 +45,8 @@ namespace tezcat.Framework.Utility
             }
         }
 
-        public void register<T>() where T : class, new()
+        public void register<T>(string name) where T : class, new()
         {
-            var name = typeof(T).Name;
             if (mDictWithName.ContainsKey(name))
             {
                 throw new Exception($"{name} : this type is registered");

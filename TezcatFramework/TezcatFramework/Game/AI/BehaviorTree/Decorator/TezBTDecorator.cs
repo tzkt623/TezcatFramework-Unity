@@ -29,12 +29,12 @@ namespace tezcat.Framework.Game
             mChild = null;
         }
 
-        public override void loadConfig(TezReader reader)
+        public override void loadConfig(TezSaveController.Reader reader)
         {
-            reader.beginObject("Node");
-            mChild = TezBehaviorTree.create(reader.readString("CID"));
+            reader.enterObject(TokenNode);
+            mChild = TezBehaviorTree.create(reader.readString(TokenCID));
             mChild.loadConfig(reader);
-            reader.endObject("Node");
+            reader.exitObject(TokenNode);
         }
 
         public virtual void addChild(TezBTNode node)

@@ -102,9 +102,9 @@ namespace tezcat.Framework.Game
 
         LinkedList<TezBTAction> mActionList = new LinkedList<TezBTAction>();
 
-        public void loadConfig(TezReader reader)
+        public void loadConfig(TezSaveController.Reader reader)
         {
-            mRoot = (TezBTComposite)create(reader.readString("Node"));
+            mRoot = (TezBTComposite)create(reader.readString(TezBTNode.TokenNode));
             mRoot.tree = this;
             mRoot.parent = this;
             mRoot.loadConfig(reader);

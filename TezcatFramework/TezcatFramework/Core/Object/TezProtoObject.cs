@@ -276,7 +276,10 @@ namespace tezcat.Framework.Core
             mProtoData = data;
             mProtoData.protoInfo.retain();
             mProtoData.init();
+            this.onInitProtoData();
         }
+
+        protected virtual void onInitProtoData() { }
 
         protected override void onClose()
         {

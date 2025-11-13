@@ -176,32 +176,13 @@ namespace tezcat.Framework.Core
             public IReadOnlyDictionary<string, IData> dict => (IReadOnlyDictionary<string, IData>)mCurrent;
             public IReadOnlyList<IData> array => (IReadOnlyList<IData>)mCurrent;
 
-            public void beginReadObject()
+            public void beginRead()
             {
-                mCurrent = mRoot;
-                this.checkType(DataType.Object);
                 mCurrentIndex = -1;
                 mCurrentName = null;
             }
 
-            public void beginReadArray()
-            {
-                mCurrent = mRoot;
-                this.checkType(DataType.Array);
-                mCurrentIndex = -1;
-                mCurrentName = null;
-            }
-
-            public void endReadArray()
-            {
-                if (mCurrent.parent != null)
-                {
-                    throw new Exception();
-                }
-                mCurrent = null;
-            }
-
-            public void endReadObject()
+            public void endRead()
             {
                 if (mCurrent.parent != null)
                 {
@@ -226,12 +207,14 @@ namespace tezcat.Framework.Core
             {
                 mCurrent = (IData)mCurrent.parent;
                 mCurrentName = mCurrent.name;
+                mCurrentIndex = mCurrent.index;
             }
 
             private void resetCurrent(int index)
             {
                 mCurrent = (IData)mCurrent.parent;
                 mCurrentName = mCurrent.name;
+                mCurrentIndex = mCurrent.index;
             }
 
             public void enterObject(string name)
@@ -569,6 +552,7 @@ namespace tezcat.Framework.Core
 
                     helper.close();
 
+                    this.checkType(mRoot.dataType);
                     mCurrent = mRoot;
                     return true;
                 }
