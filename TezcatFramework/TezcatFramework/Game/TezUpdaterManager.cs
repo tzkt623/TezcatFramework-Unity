@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using tezcat.Framework.Core;
-using static tezcat.Framework.Game.TezUpdaterManager;
 
 namespace tezcat.Framework.Game
 {
@@ -35,6 +34,7 @@ namespace tezcat.Framework.Game
 
         ITezUpdater mUpdater = null;
         TezUpdaterManager mManager = TezcatFramework.updaterManager;
+        internal bool mDirty = false;
 
         public bool isValid()
         {
@@ -50,6 +50,7 @@ namespace tezcat.Framework.Game
         {
             if (mUpdater != null)
             {
+                mDirty = false;
                 mUpdater.isComplete = true;
             }
         }
@@ -73,8 +74,9 @@ namespace tezcat.Framework.Game
 
         public bool addDelayInitUpdater(Action<float> function)
         {
-            if (mUpdater == null)
+            if (!mDirty && mUpdater == null)
             {
+                mDirty = true;
                 mUpdater = mManager.addDelayInitUpdater(function);
                 mUpdater.setRegister(this);
                 return true;
@@ -85,8 +87,9 @@ namespace tezcat.Framework.Game
 
         public bool addMainLoopUpdater(Action<float> function)
         {
-            if (mUpdater == null)
+            if (!mDirty && mUpdater == null)
             {
+                mDirty = true;
                 mUpdater = mManager.addMainLoopUpdater(function);
                 mUpdater.setRegister(this);
                 return true;
@@ -97,8 +100,9 @@ namespace tezcat.Framework.Game
 
         public bool addCountLoopUpdater(Action<float> function, int count)
         {
-            if (mUpdater == null)
+            if (!mDirty && mUpdater == null)
             {
+                mDirty = true;
                 mUpdater = mManager.addCountLoopUpdater(function, count);
                 mUpdater.setRegister(this);
                 return true;
@@ -109,8 +113,9 @@ namespace tezcat.Framework.Game
 
         public bool addOnceLoopUpdater(Action<float> function)
         {
-            if (mUpdater == null)
+            if (!mDirty && mUpdater == null)
             {
+                mDirty = true;
                 mUpdater = mManager.addOnceLoopUpdater(function);
                 mUpdater.setRegister(this);
                 return true;
@@ -159,7 +164,7 @@ namespace tezcat.Framework.Game
                 mUpdate = null;
             }
 
-            public void reduceCount()
+            internal void reduceCount()
             {
                 if (mLoopCount > 0)
                 {
@@ -167,19 +172,20 @@ namespace tezcat.Framework.Game
                 }
                 else
                 {
-                    this.isComplete = true;
+                    this.setComplete();
                 }
             }
 
             internal void setComplete()
             {
+                mRegister.mDirty = false;
                 this.isComplete = true;
             }
         }
 
-        List<Updater> mDelayInitList = new List<Updater>();
+        Queue<Updater> mDelayInitList = new Queue<Updater>();
         List<Updater> mMainLoopList = new List<Updater>();
-        List<Updater> mOnceLoopList = new List<Updater>();
+        Queue<Updater> mOnceLoopList = new Queue<Updater>();
         List<Updater> mCountLoopList = new List<Updater>();
         Queue<Updater> mPool = new Queue<Updater>();
 
@@ -217,7 +223,7 @@ namespace tezcat.Framework.Game
         public ITezUpdater addDelayInitUpdater(Action<float> function)
         {
             var updater = this.create(function, -1);
-            mDelayInitList.Add(updater);
+            mDelayInitList.Enqueue(updater);
             return updater;
         }
 
@@ -238,20 +244,20 @@ namespace tezcat.Framework.Game
         public ITezUpdater addOnceLoopUpdater(Action<float> function)
         {
             var updater = this.create(function, -1);
-            mOnceLoopList.Add(updater);
+            mOnceLoopList.Enqueue(updater);
             return updater;
         }
 
         private void updateDelayInit(float dt)
         {
             this.evtDelayCount?.Invoke(mDelayInitList.Count);
-            foreach (var item in mDelayInitList)
+            while (mDelayInitList.Count > 0)
             {
+                var item = mDelayInitList.Dequeue();
                 item.update(dt);
-                item.close();
+                item.setComplete();
                 this.recycle(item);
             }
-            mDelayInitList.Clear();
         }
 
         private void updateMainLoop(float dt)
@@ -263,7 +269,6 @@ namespace tezcat.Framework.Game
                 if (item.isComplete)
                 {
                     mMainLoopList.RemoveAt(i);
-                    item.close();
                     this.recycle(item);
                     continue;
                 }
@@ -277,13 +282,13 @@ namespace tezcat.Framework.Game
         private void updateOnceLoop(float dt)
         {
             this.evtOnceCount?.Invoke(mOnceLoopList.Count);
-            foreach (var item in mOnceLoopList)
+            while(mOnceLoopList.Count > 0)
             {
+                var item = mOnceLoopList.Dequeue();
                 item.update(dt);
-                item.close();
+                item.setComplete();
                 this.recycle(item);
             }
-            mOnceLoopList.Clear();
         }
 
         private void updateCountLoop(float dt)
@@ -296,7 +301,6 @@ namespace tezcat.Framework.Game
                 if (item.isComplete)
                 {
                     mCountLoopList.RemoveAt(i);
-                    item.close();
                     this.recycle(item);
                     continue;
                 }
@@ -310,7 +314,6 @@ namespace tezcat.Framework.Game
         public void update(float dt)
         {
             this.updateDelayInit(dt);
-
             this.updateOnceLoop(dt);
             this.updateCountLoop(dt);
             this.updateMainLoop(dt);

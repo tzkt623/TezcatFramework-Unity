@@ -12,7 +12,7 @@
             //             }
             //             reader.close();
 
-            TezcatFramework.protoDB.loadConfigFile($"{Path.root}Res/Config/ProtoConfig.json");
+            TezcatFramework.protoDB.loadConfigFile($"{Path.root}Res/Proto/ProtoConfig.json");
             TezcatFramework.protoDB.loadProtoFile($"{Path.root}Res/Proto/Item/");
         }
     }

@@ -9,7 +9,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>TezcatFramework</RootNamespace>
     <AssemblyName>TezcatFramework</AssemblyName>
-    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.8.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
     <TargetFrameworkProfile />
@@ -60,6 +60,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="TezcatFramework\Core\ArchetypeECS\TezArchetypeECS.cs" />
     <Compile Include="TezcatFramework\Game\TezEnum.cs" />
     <Compile Include="TezcatFramework\Core\NewECS\TezECS.cs" />
     <Compile Include="TezcatFramework\Game\TezContext.cs" />
@@ -103,6 +104,8 @@
     <Compile Include="TezcatFramework\Game\BonusSystem2\TezBonusToken.cs" />
     <Compile Include="TezcatFramework\Game\BonusSystem\Tree\ITezBonusTree.cs" />
     <Compile Include="TezcatFramework\Core\FileIO\TezSaveController.cs" />
+    <Compile Include="TezcatFramework\Game\TezInteractionLocker.cs" />
+    <Compile Include="TezcatFramework\Game\TezStepSystem.cs" />
     <Compile Include="TezcatFramework\Game\TezUpdaterManager.cs" />
     <Compile Include="TezcatFramework\TezcatFramework.cs" />
     <Compile Include="TezcatFramework\Game\GameMachine\ITezGameMachine.cs" />

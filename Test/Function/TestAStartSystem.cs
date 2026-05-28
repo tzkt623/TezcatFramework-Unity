@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using tezcat.Framework.Core;
 using tezcat.Framework.Game;
 using tezcat.Framework.Utility;
 
 namespace tezcat.Framework.Test
 {
+
     public class Map
     {
         Block[,] mAllBlock;

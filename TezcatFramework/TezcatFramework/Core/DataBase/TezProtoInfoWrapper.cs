@@ -82,7 +82,7 @@ namespace tezcat.Framework.Core
                 this.sharedType = other.sharedType;
                 this.itemID = other.itemID;
                 this.refCount = 1; // 复制时引用计数重置为1
-                itemID.generateRedefineID();
+                itemID.generateID();
             }
 
             private void clear()
@@ -90,8 +90,8 @@ namespace tezcat.Framework.Core
                 this.itemID.close();
                 this.onClear?.Invoke();
                 this.refCount = -1;
-                this.NID = null;
                 this.stackCount = -1;
+                this.NID = null;
             }
 
             public bool release()
@@ -160,12 +160,17 @@ namespace tezcat.Framework.Core
         /// </summary>
         public bool invalid => mMetaData == null;
 
+        /// <summary>
+        /// 引用计数
+        /// </summary>
+        public int refCount => mMetaData.refCount;
+
         ITezObjectPool ITezObjectPoolItem.objectPool { get; set; }
 
         /// <summary>
         /// 从数据库中加载物品元信息
         /// </summary>
-        public void init(string NID, int stackCount, bool customizable, ushort TID, ushort UID)
+        public void init(string NID, int stackCount, bool customizable, ushort TID, ushort UID, bool generateRuntimeID = false)
         {
             mMetaData = new ProtoInfo()
             {
@@ -176,86 +181,52 @@ namespace tezcat.Framework.Core
             };
 
             mMetaData.itemID.setDBID(TID, UID);
-        }
-
-        /// <summary>
-        /// 从保存的数据中加载物品元信息
-        /// </summary>
-        public void init(string NID, int stackCount, bool customizable, ushort TID, ushort UID, int RTID)
-        {
-            mMetaData = new ProtoInfo()
+            if (generateRuntimeID)
             {
-                refCount = 1,
-                NID = NID,
-                stackCount = stackCount,
-                sharedType = customizable
-            };
-
-            mMetaData.itemID.setDBID(TID, UID);
-            //mMetaData.itemID.setRedefineID(RTID);
+                mMetaData.itemID.generateID();
+            }
         }
 
         /// <summary>
         /// 从另一个元数据中共享数据
+        /// 会增加引用计数
         /// </summary>
         internal void sharedFrom(TezProtoInfoWrapper itemInfo)
         {
             mMetaData?.release();
-
             mMetaData = itemInfo.mMetaData;
             mMetaData.refCount++;
         }
 
-        internal void setInfo(TezProtoInfoWrapper itemInfo)
+        /// <summary>
+        /// 复制元数据
+        /// 不会增加引用计数
+        /// </summary>
+        internal void copyFrom(TezProtoInfoWrapper itemInfo)
         {
             mMetaData?.release();
             mMetaData = itemInfo.mMetaData;
+            mMetaData.refCount++;
         }
 
+        /// <summary>
+        /// 重定义原型数据
+        /// </summary>
         public void redefineProtoInfo()
         {
             var old_info = mMetaData;
             mMetaData = new ProtoInfo();
             //复制旧的元数据
             mMetaData.redefineInfo(old_info);
-
             //清除旧的元数据
             old_info.release();
         }
 
-        /// <summary>
-        /// 根据模版重定义数据
-        /// </summary>
-        public void remodifyFrom(TezProtoInfoWrapper protoInfo)
-        {
-            this.init(protoInfo.NID, protoInfo.stackCount, protoInfo.isSharedType, protoInfo.itemID.TID, protoInfo.itemID.IID);
-        }
-
-        public override int GetHashCode()
-        {
-            return mMetaData.itemID.GetHashCode();
-        }
 
         public void setOnClear(Action action)
         {
             mMetaData.onClear = action;
         }
-
-//         public void setProto(TezProtoObject proto)
-//         {
-//             mMetaData.proto = proto;
-//         }
-// 
-//         public TezProtoObject getProto()
-//         {
-//             return mMetaData.proto;
-//         }
-
-//         public TezProtoObject shardeProto()
-//         {
-//             mMetaData.refCount++;
-//             return mMetaData.proto;
-//         }
 
         internal void retain()
         {
@@ -294,8 +265,8 @@ namespace tezcat.Framework.Core
             //需要保存所有数据
             if (this.itemID.RedefineID > 0)
             {
+                writer.write(TezBuildInName.ProtoInfo.RDID, this.itemID.RedefineID);
                 writer.write(TezBuildInName.ProtoInfo.SharedType, this.isSharedType);
-                //writer.write(TezBuildInName.ProtoInfo.RDID, this.itemID.RedefineID);
                 writer.write(TezBuildInName.ProtoInfo.Name, this.NID);
                 writer.write(TezBuildInName.ProtoInfo.StackCount, this.stackCount);
             }
@@ -305,13 +276,14 @@ namespace tezcat.Framework.Core
 
         public void loadProtoData(TezSaveController.Reader reader)
         {
-            var CID = reader.readString(TezBuildInName.CID);
+            //var CID = reader.readString(TezBuildInName.CID);
 
             reader.enterObject(TezBuildInName.SaveChunkName.ProtoInfo);
 
-            if (!reader.tryRead(TezBuildInName.ProtoInfo.RTID, out int runtime_id))
+            bool isRealTimeGenerate = false;
+            if (!reader.tryRead(TezBuildInName.ProtoInfo.RTID, out int runtime_id) && runtime_id > 0)
             {
-                runtime_id = -1;
+                isRealTimeGenerate = true;
             }
 
             if (!reader.tryRead(TezBuildInName.ProtoInfo.StackCount, out int stack_count))
@@ -329,7 +301,7 @@ namespace tezcat.Framework.Core
                 , shared_type
                 , (ushort)TezcatFramework.protoDB.getTypeID(reader.readString(TezBuildInName.ProtoInfo.TID))
                 , (ushort)reader.readInt(TezBuildInName.ProtoInfo.IID)
-                , runtime_id);
+                , isRealTimeGenerate);
 
             reader.exitObject(TezBuildInName.SaveChunkName.ProtoInfo);
         }
@@ -360,16 +332,10 @@ namespace tezcat.Framework.Core
             return this.Equals((TezProtoInfoWrapper)obj);
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="itemInfo"></param>
-//         public void copyFrom(TezProtoInfoWrapper itemInfo)
-//         {
-//             mMetaData?.release();
-//             mMetaData = new ProtoInfo();
-//             mMetaData.copyDataFrom(itemInfo.mMetaData);
-//         }
+        public override int GetHashCode()
+        {
+            return mMetaData.itemID.GetHashCode();
+        }
 
         /// <summary>
         /// 比较两个Item的DBID是否一样

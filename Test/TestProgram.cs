@@ -27,8 +27,11 @@ namespace tezcat.Framework.Test
             Path.init();
             MyCategory.init();
             MyDescriptorConfig.init();
+            EntityRegistry.init();
             //TezcatFramework.set(new TezProtoDatabase());
             //TezcatFramework.set(new TezRunTimeDatabase());
+
+            mTestList.Add(new TestDB());
 
             //A
             mTestList.Add(new TestAStarSystem());
@@ -88,7 +91,7 @@ namespace tezcat.Framework.Test
 
         void register()
         {
-            TezcatFramework.classFactory.register<Axe>("Axe");
+            TezcatFramework.classFactory.registerByAttribute<Axe>();
             TezcatFramework.classFactory.register<Gun>("Gun");
 
             TezcatFramework.classFactory.register<Helmet>("Helmet");
@@ -100,7 +103,6 @@ namespace tezcat.Framework.Test
 
             TezcatFramework.classFactory.register<Character>("Character");
             TezcatFramework.classFactory.register<Ship>("Ship");
-
 
             TezcatFramework.classFactory.register<AxeData>("AxeData");
             TezcatFramework.classFactory.register<GunData>("GunData");
@@ -116,12 +118,17 @@ namespace tezcat.Framework.Test
             TezcatFramework.classFactory.register<ShipData>("ShipData");
         }
 
+        private void initProtoDB()
+        {
+            TezcatFramework.protoDB.loadConfigFile($"{Path.root}Res/Proto/ProtoConfig.json");
+            TezcatFramework.protoDB.loadProtoFile($"{Path.root}Res/Proto/Item/");
+        }
+
         public void run()
         {
             this.init();
             this.register();
-
-            new TestProtoDB().run();
+            this.initProtoDB();
 
             while (true)
             {

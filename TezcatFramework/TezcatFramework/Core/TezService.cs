@@ -20,7 +20,7 @@ namespace tezcat.Framework.Core
             public static T service;
         }
 
-        static List<ITezService> m_List = new List<ITezService>();
+        static List<ITezService> mList = new List<ITezService>();
 
         /// <summary>
         /// 注册一个服务
@@ -32,14 +32,14 @@ namespace tezcat.Framework.Core
             switch (ServiceID<IService>.ID)
             {
                 case TezTypeInfo.ErrorID:
-                    ServiceID<IService>.setID(m_List.Count);
+                    ServiceID<IService>.setID(mList.Count);
                     ServiceID<IService>.service = service;
-                    m_List.Add(service);
+                    mList.Add(service);
                     Console.WriteLine(string.Format("Service : [{0}] is registered!", service.GetType().Name));
                     break;
                 default:
                     ServiceID<IService>.service = service;
-                    m_List[ServiceID<IService>.ID] = service;
+                    mList[ServiceID<IService>.ID] = service;
                     break;
             }
         }
@@ -65,13 +65,13 @@ namespace tezcat.Framework.Core
 
         public static void close()
         {
-            foreach (var service in m_List)
+            foreach (var service in mList)
             {
                 service.close();
             }
 
-            m_List.Clear();
-            m_List = null;
+            mList.Clear();
+            mList = null;
         }
     }
 }

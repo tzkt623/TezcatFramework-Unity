@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.Remoting.Contexts;
 using tezcat.Framework.Core;
 using tezcat.Framework.Game;
 
@@ -212,6 +213,7 @@ namespace tezcat.Framework.Test
     public class TestBehaviorTree : TezBaseTest
     {
         TezBehaviorTree mTree = null;
+        Context mContext = new Context();
         bool mBreak = false;
 
         static TestBehaviorTree()
@@ -242,13 +244,11 @@ namespace tezcat.Framework.Test
             ///先蒸饭,再炒菜,最后吃饭
             ///
             TezSaveController.Reader reader = new TezSaveController.Reader();
-            reader.load($"{Path.root}Res/BehaviorTree/Config.json");
-            reader.beginRead();
+            reader.beginRead($"{Path.root}Res/BehaviorTree/Config.json");
 
             mTree = new TezBehaviorTree();
             mTree.evtBehaviorComplete += onBehaviorComplete;
             mTree.loadConfig(reader);
-
 
             reader.endRead();
             reader.close();
@@ -274,7 +274,7 @@ namespace tezcat.Framework.Test
             */
 
             mTree.build();
-            mTree.setContext(new Context());
+            mTree.setContext(mContext);
         }
 
         private void onBehaviorComplete(TezBTNode.Result result)
@@ -287,6 +287,8 @@ namespace tezcat.Framework.Test
 
         protected override void onClose()
         {
+            mContext.close();
+            mContext = null;
             mTree.close();
             mTree = null;
             mBreak = false;

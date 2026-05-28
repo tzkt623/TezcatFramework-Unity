@@ -1,4 +1,5 @@
 using System;
+using tezcat.Framework.ArchetypeECS;
 using tezcat.Framework.Core;
 using tezcat.Framework.Game;
 
@@ -9,7 +10,7 @@ namespace tezcat.Framework.Test
         /// <summary>
         /// <see cref="Ship">See Ship Class Memeber </see>
         /// </summary>
-        Ship mShip = null;
+        TezWorld.Entity mShip;
 
         public TestBonusSystem2() : base("New BonusSystem")
         {
@@ -18,16 +19,16 @@ namespace tezcat.Framework.Test
 
         public override void init()
         {
-            mShip = TezcatFramework.protoDB.createObject<ShipData, Ship>("Battleship");
-            mShip.init();
+            mShip = TezcatFramework.protoDB.createEntity<ShipData>("Battleship");
         }
 
         private void showData()
         {
-            Console.WriteLine($"Hull: {mShip.protoData.hull.value}/{mShip.protoData.hullCapacity.value}");
-            Console.WriteLine($"Armor: {mShip.protoData.armor.value} /{mShip.protoData.armorCapacity.value}");
-            Console.WriteLine($"Shield: {mShip.protoData.shield.value} /{mShip.protoData.shieldCapacity.value}");
-            Console.WriteLine($"Power: {mShip.protoData.power.value}  /{mShip.protoData.powerCapacity.value}");
+            var data = TezWorld.getComponent<ComUnitData, ShipData>(mShip);
+            Console.WriteLine($"Hull: {data.hull.value}/{data.hullCapacity.value}");
+            Console.WriteLine($"Armor: {data.armor.value} /{data.armorCapacity.value}");
+            Console.WriteLine($"Shield: {data.shield.value} /{data.shieldCapacity.value}");
+            Console.WriteLine($"Power: {data.power.value}  /{data.powerCapacity.value}");
             Console.WriteLine("");
         }
 
@@ -73,10 +74,12 @@ namespace tezcat.Framework.Test
             Console.WriteLine(modifier2);
             Console.WriteLine(modifier3);
             Console.WriteLine(modifier4);
-            mShip.bonusSystem.addModifier(modifier1);
-            mShip.bonusSystem.addModifier(modifier2);
-            mShip.bonusSystem.addModifier(modifier3);
-            mShip.bonusSystem.addModifier(modifier4);
+
+            var ship = TezWorld.getComponent<ComUnit, Ship>(mShip);
+            ship.bonusSystem.addModifier(modifier1);
+            ship.bonusSystem.addModifier(modifier2);
+            ship.bonusSystem.addModifier(modifier3);
+            ship.bonusSystem.addModifier(modifier4);
 
             this.showData();
 
@@ -99,32 +102,31 @@ namespace tezcat.Framework.Test
 
             Console.WriteLine(modifier5);
             Console.WriteLine(modifier6);
-            mShip.bonusSystem.addModifier(modifier5);
-            mShip.bonusSystem.addModifier(modifier6);
+            ship.bonusSystem.addModifier(modifier5);
+            ship.bonusSystem.addModifier(modifier6);
             this.showData();
 
 
             Console.WriteLine("====Remove Modifier====");
-            mShip.bonusSystem.removeModifier(modifier1);
-            mShip.bonusSystem.removeModifier(modifier2);
-            mShip.bonusSystem.removeModifier(modifier3);
-            mShip.bonusSystem.removeModifier(modifier4);
-            mShip.bonusSystem.removeModifier(modifier5);
-            mShip.bonusSystem.removeModifier(modifier6);
+            ship.bonusSystem.removeModifier(modifier1);
+            ship.bonusSystem.removeModifier(modifier2);
+            ship.bonusSystem.removeModifier(modifier3);
+            ship.bonusSystem.removeModifier(modifier4);
+            ship.bonusSystem.removeModifier(modifier5);
+            ship.bonusSystem.removeModifier(modifier6);
 
             this.showData();
         }
 
         protected override void onClose()
         {
-            mShip.close();
-            mShip = null;
+            TezWorld.removeEntity(mShip);
         }
     }
 
     public class TestValueArrayManager : TezBaseTest
     {
-        Ship mShip = null;
+        TezWorld.Entity mShip;
 
         public TestValueArrayManager() : base("ValueArray")
         {
@@ -133,23 +135,23 @@ namespace tezcat.Framework.Test
 
         public override void init()
         {
-            mShip = TezcatFramework.protoDB.createObject<ShipData, Ship>("Battleship");
-            mShip.init();
+            mShip = TezcatFramework.protoDB.createEntity<ShipData>("Battleship");
         }
 
         public override void run()
         {
-            var hull_capacity = mShip.bonusSystem.get<TezBonusInt>(MyDescriptorConfig.ShipPorperty.HullCapacity);
+            var ship = TezWorld.getComponent<ComUnit, Ship>(mShip);
+
+            var hull_capacity = ship.bonusSystem.get<TezBonusInt>(MyDescriptorConfig.ShipPorperty.HullCapacity);
             Console.WriteLine($"{hull_capacity.name}: {hull_capacity.value}");
 
-            var hull = mShip.valueArray.get<TezValueInt>(MyDescriptorConfig.ShipValue.Hull);
+            var hull = ship.valueArray.get<TezValueInt>(MyDescriptorConfig.ShipValue.Hull);
             Console.WriteLine($"{hull.name}: {hull.value}");
         }
 
         protected override void onClose()
         {
-            mShip.close();
-            mShip = null;
+            TezWorld.removeEntity(mShip);
         }
     }
 }

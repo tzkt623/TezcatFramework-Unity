@@ -1,74 +1,9 @@
-using System;
 using System.Collections.Generic;
+using tezcat.Framework.ArchetypeECS;
 using tezcat.Framework.Utility;
 
 namespace tezcat.Framework.Core
 {
-    /*
-     * 新理论
-     * 
-     * class结构
-     * 成员变量:只包含所有直接数据变量
-     * 系统变量:包含一个单独的系统对象,系统对象里面包含所有系统
-     * 初始化时将系统所需要的变量数据注入到各个系统中
-     * 
-     * 
-     * class--1
-     *  value1
-     *  value2
-     *  value3
-     *  
-     *  value_system1
-     *  value_system2
-     *  value_system3
-     * 
-     *  system
-     *    system1
-     *    system2
-     *    system3
-     *    
-     *  class--2
-     *   data_unit
-     *   data_unit_skill
-     *  
-     *   system_skill
-     *   system_skill
-     *   
-     *   
-     *  class--角色
-     *   health
-     */
-    public abstract class TezBasicObjectData : ITezCloseable
-    {
-        public void close()
-        {
-            this.onClose();
-        }
-
-        protected abstract void onClose();
-    }
-
-    public interface ITezProtoObjectData
-    {
-        TezProtoInfoWrapper protoInfo { get; }
-        TezProtoObject createObject(int index);
-        TezProtoObjectData copy();
-    }
-
-    public interface ITezProtoObjectTypeGetter<T> where T : TezProtoObject
-    {
-
-    }
-
-    public static class TezProtoObjectExtension
-    {
-        public static T createProtoObject<T>(this ITezProtoObjectTypeGetter<T> p) where T : TezProtoObject, new()
-        {
-            return new T();
-        }
-    }
-
-
     /// <summary>
     /// 元数据信息里面必须包含整个对象的所有数据
     /// 
@@ -82,33 +17,23 @@ namespace tezcat.Framework.Core
     /// 2.如果是不可共享对象,那么复制一份数据,新对象的数据是独立的
     /// 
     /// </summary>
-    public abstract class TezProtoObjectData : TezBasicObjectData
+    public abstract class TezProtoObjectData 
+        : ITezCloseable
+        , ITezProtoLoader
     {
-//         protected class ProtoObjectCreator
-//         {
-//             List<Func<TezProtoObject>> mCreators = new List<Func<TezProtoObject>>();
-// 
-//             public ProtoObjectCreator(IEnumerable<Func<TezProtoObject>> collection)
-//             {
-//                 mCreators.AddRange(collection);
-//                 mCreators.TrimExcess();
-//             }
-// 
-//             public TezProtoObject create(int index)
-//             {
-//                 return mCreators[index]();
-//             }
-//         }
-
         protected TezProtoInfoWrapper mProtoInfo = TezObjectPool.create<TezProtoInfoWrapper>();
         public TezProtoInfoWrapper protoInfo => mProtoInfo;
 
-
         bool mInitialized = false;
+
+        public void close()
+        {
+            this.onClose();
+        }
 
         internal void init()
         {
-            if (mInitialized)
+            if (!mInitialized)
             {
                 mInitialized = true;
                 this.onInit();
@@ -117,30 +42,29 @@ namespace tezcat.Framework.Core
 
         protected abstract void onInit();
 
+        /// <summary>
+        /// 创建Entity
+        /// </summary>
+        public TezWorld.Entity createEntity()
+        {
+            var entity = TezWorld.createEntity();
+            this.onCreateEntity(ref entity, this.copyOrShare());
+            return entity;
+        }
+
+        public TezWorld.Entity detachEntity()
+        {
+            var entity = TezWorld.createEntity();
+            this.onCreateEntity(ref entity, this.detachNewPortoObjectFromThis());
+            return entity;
+        }
+
+        protected abstract void onCreateEntity(ref TezWorld.Entity entity, TezProtoObjectData protoData);
+        /*
         public TezProtoObject createObjectByCopyMe(int index = 0)
         {
-            //if (!mProtoInfo.isSharedType)
-            //{
-            //    //如果不是共享类型,那么需要先复制一份数据
-            //    //然后再将数据注入到新对象中
-            //    var data = this.copy();
-            //    var obj = this.createObjectInternal();
-            //    obj.initProtoData(data);
-            //    obj.init();
-            //    return obj;
-            //}
-            //else
-            //{
-            //    //如果是共享类型,那么直接将当前数据注入到新对象中
-            //    var obj = this.createObjectInternal();
-            //    obj.initProtoData(this);
-            //    obj.init();
-            //    return obj;
-            //}
-
-            //var data = this.copy();
             var obj = this.createObjectInternal(index);
-            obj.initProtoData(this.copy());
+            obj.initProtoData(this.copyOrShare());
             return obj;
         }
 
@@ -161,7 +85,8 @@ namespace tezcat.Framework.Core
             return (ProtoObject)this.createObjectWithMe(index);
         }
 
-        protected abstract TezProtoObject createObjectInternal(int index);
+        protected virtual TezProtoObject createObjectInternal(int index) { throw new System.NotImplementedException(); }
+        */
 
         public void retain()
         {
@@ -171,11 +96,8 @@ namespace tezcat.Framework.Core
         /// <summary>
         /// 如果是共享对象 会共享自身
         /// 不是共享对象 会复制自身
-        /// 
-        /// 
         /// </summary>
-        /// <returns></returns>
-        public TezProtoObjectData copy()
+        public TezProtoObjectData copyOrShare()
         {
             //如果是共享类型,那么直接将当前数据注入到新对象中
             if (mProtoInfo.isSharedType)
@@ -185,38 +107,34 @@ namespace tezcat.Framework.Core
 
             //如果不是共享类型,那么需要先复制一份数据
             //然后再将数据注入到新对象中
-            var data = this.justNewProtoData();
+            var data = this.beginNewObject_JustNewProtoData();
             //copy一份数据不会修改info的元数据
-            data.mProtoInfo.setInfo(mProtoInfo);
-            //this.copySelfDataWithoutProtoInfo(data);
-            data.copyDataFrom(this);
+            data.mProtoInfo.copyFrom(mProtoInfo);
+            data.endNewObject_CopyDataFrom(this);
+            data.init();
             return data;
         }
 
-        public TezProtoObjectData createRedefineData()
+        /// <summary>
+        /// 从当前protoobject对象中分离出一个新的protoobject对象
+        /// </summary>
+        public TezProtoObjectData detachNewPortoObjectFromThis()
         {
-            var data = this.justNewProtoData();
+            var data = this.beginNewObject_JustNewProtoData();
             //copy一份数据不会修改info的元数据
             //只会修改引用计数
             data.mProtoInfo.sharedFrom(mProtoInfo);
             data.mProtoInfo.redefineProtoInfo();
-            data.copyDataFrom(data);
+            data.endNewObject_CopyDataFrom(data);
+            data.init();
             return data;
         }
 
-        protected abstract TezProtoObjectData justNewProtoData();
-        //protected abstract void copySelfDataWithoutProtoInfo(TezProtoObjectData data);
-        protected abstract void copyDataFrom(TezProtoObjectData other);
+        protected abstract TezProtoObjectData beginNewObject_JustNewProtoData();
+        protected abstract void endNewObject_CopyDataFrom(TezProtoObjectData other);
 
-//         public void changeToRuntimeData()
-//         {
-//             //将当前数据转换为运行时数据
-//             mProtoInfo.redefineProtoInfo();
-//             //在运行时数据库中申请一个运行时ID,并保存模版对象
-//             TezcatFramework.runtimeDB.registerItem(this);
-//         }
-
-        public void loadProtoData(TezSaveController.Reader reader)
+        //把存档数据加载到类中
+        void ITezProtoLoader.loadProtoData(TezSaveController.Reader reader)
         {
             mProtoInfo.loadProtoData(reader);
 
@@ -227,12 +145,17 @@ namespace tezcat.Framework.Core
 
         protected abstract void onLoadProtoData(TezSaveController.Reader reader);
 
-        protected override void onClose()
+        protected virtual void onClose()
         {
             if (mProtoInfo.recycleToPool())
             {
                 mProtoInfo = null;
             }
+        }
+
+        public bool isTheSameProtoDataOf(TezProtoObjectData other)
+        {
+            return this.protoInfo.itemID == other.protoInfo.itemID;
         }
     }
 
@@ -250,14 +173,12 @@ namespace tezcat.Framework.Core
         static Queue<uint> sFreeIDs = new Queue<uint>();
         static uint sUIDGenerator = 1;
 
-        private uint mProtoObjectUID = 0;
+        private readonly uint mProtoObjectUID = 0;
         public uint protoObjectUID => mProtoObjectUID;
         public bool isProtoObjectValid => mProtoObjectUID > 0;
 
-        protected TezProtoObjectData mProtoData = null;
-
-        public TezProtoObjectData baseProtoData => mProtoData;
-        public TezProtoInfoWrapper protoInfo => mProtoData.protoInfo;
+        public abstract TezProtoObjectData baseProtoData { get; }
+        public TezProtoInfoWrapper protoInfo => this.baseProtoData.protoInfo;
 
         public TezProtoObject()
         {
@@ -271,32 +192,34 @@ namespace tezcat.Framework.Core
             }
         }
 
+        //读取原型数据到对象中
         internal void initProtoData(TezProtoObjectData data)
         {
-            mProtoData = data;
-            mProtoData.protoInfo.retain();
-            mProtoData.init();
+            //mProtoData = data;
+            this.onSetProtoData(data);
+            this.baseProtoData.protoInfo.retain();
+            this.baseProtoData.init();
             this.onInitProtoData();
         }
 
+        protected abstract void onSetProtoData(TezProtoObjectData data);
         protected virtual void onInitProtoData() { }
 
         protected override void onClose()
         {
             base.onClose();
             sFreeIDs.Enqueue(mProtoObjectUID);
-            mProtoData.close();
-            mProtoData = null;
+            this.baseProtoData.close();
         }
 
-        public bool isTheSameProtoObjectOf(TezProtoObject other)
+        public bool isTheSameProtoObjectOf(ITezProtoObject other)
         {
-            return mProtoObjectUID == other.mProtoObjectUID;
+            return mProtoObjectUID == other.protoObjectUID;
         }
 
-        public bool isTheSameProtoDataOf(TezProtoObject other)
+        public bool isTheSameProtoDataOf(ITezProtoObject other)
         {
-            return mProtoData.protoInfo.itemID == other.mProtoData.protoInfo.itemID;
+            return this.baseProtoData.protoInfo.itemID == other.baseProtoData.protoInfo.itemID;
         }
     }
 }

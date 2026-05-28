@@ -42,7 +42,7 @@ namespace tezcat.Framework.Core
 
             internal void registerComponent(Component component)
             {
-                if (mComponents.Add(component))
+                if (!mComponents.Contains(component))
                 {
                     foreach (var item in mComponents)
                     {

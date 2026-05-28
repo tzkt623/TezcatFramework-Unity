@@ -4,19 +4,18 @@ using tezcat.Framework.Core;
 
 namespace tezcat.Framework.Utility
 {
-//     [AttributeUsage(AttributeTargets.Class, AllowMultiple = false, Inherited = true)]
-//     public class TezClassFactoryRegisterAttribute : Attribute
-//     {
-//         public string name;
-//         public Func<object> creator;
-//     }
-// 
-// 
-//     [TezClassFactoryRegister(name = "Test32", creator = ()=> { return new Test32(); }]
-//     public class Test32
-//     {
-// 
-//     }
+    [AttributeUsage(AttributeTargets.Class, AllowMultiple = false, Inherited = false)]
+    public class TezClassFactoryRegisterAttribute : Attribute
+    {
+        public string name;
+    }
+    // 
+    // 
+    //     [TezClassFactoryRegister(name = "Test32", creator = ()=> { return new Test32(); }]
+    //     public class Test32
+    //     {
+    // 
+    //     }
 
     /// <summary>
     /// 类型生成器
@@ -33,6 +32,37 @@ namespace tezcat.Framework.Utility
 
         Dictionary<string, Creator<object>> mDictWithName = new Dictionary<string, Creator<object>>();
 
+        public void registerByAttribute<T>() where T : class, new()
+        {
+            registerByAttribute(() => new T());
+        }
+
+        public void registerByAttribute<T>(Creator<T> function) where T : class
+        {
+            var attributes = typeof(T).GetCustomAttributes(false);
+            if (attributes.Length == 0)
+            {
+                throw new Exception("TezClassFactory>> This Function Must has Class Attribute");
+            }
+
+            var re_t = typeof(TezClassFactoryRegisterAttribute);
+            foreach (var item in attributes)
+            {
+                if (item.GetType() == re_t)
+                {
+                    var temp = item as TezClassFactoryRegisterAttribute;
+                    if (mDictWithName.ContainsKey(temp.name))
+                    {
+                        throw new Exception($"TezClassFactory>> {temp.name} : this type is registered");
+                    }
+                    else
+                    {
+                        mDictWithName.Add(temp.name, function);
+                    }
+                }
+            }
+        }
+
         public void register<T>(string name, Creator<T> function) where T : class
         {
             if (mDictWithName.ContainsKey(name))
@@ -47,14 +77,7 @@ namespace tezcat.Framework.Utility
 
         public void register<T>(string name) where T : class, new()
         {
-            if (mDictWithName.ContainsKey(name))
-            {
-                throw new Exception($"{name} : this type is registered");
-            }
-            else
-            {
-                mDictWithName.Add(name, () => new T());
-            }
+            register(name, () => new T());
         }
 
         public T create<T>(string name) where T : class

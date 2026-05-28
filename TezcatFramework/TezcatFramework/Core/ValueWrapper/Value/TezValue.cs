@@ -53,7 +53,7 @@ namespace tezcat.Framework.Core
             set { mValue = value; }
         }
 
-        public string valueToString()
+        public override string valueToString()
         {
             return mValue.ToString();
         }

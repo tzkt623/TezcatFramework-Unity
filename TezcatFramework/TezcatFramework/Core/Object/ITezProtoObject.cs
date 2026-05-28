@@ -7,6 +7,9 @@
     {
         TezProtoInfoWrapper protoInfo { get; }
         TezProtoObjectData baseProtoData { get; }
+        uint protoObjectUID { get; }
+        bool isTheSameProtoObjectOf(ITezProtoObject other);
+        bool isTheSameProtoDataOf(ITezProtoObject other);
     }
 
     public interface ITezProtoObjectDataGetter<T> where T : TezProtoObjectData

@@ -1,6 +1,8 @@
 using System;
+using tezcat.Framework.ArchetypeECS;
 using tezcat.Framework.Core;
 using tezcat.Framework.Game;
+using tezcat.Framework.Utility;
 
 namespace tezcat.Framework.Test
 {
@@ -13,9 +15,66 @@ namespace tezcat.Framework.Test
     {
 
     }
+    #region Register
+
+
+    abstract class ComOrgData : TezProtoObjectData, TezWorld.IComponent
+    {
+        public int componentID => TezWorld.ComponentID<ComOrgData>.ID;
+        public int entityID { get; set; }
+    }
+
+    abstract class ComPotionData : TezProtoObjectData, TezWorld.IComponent
+    {
+        public int componentID => TezWorld.ComponentID<ComPotionData>.ID;
+        public int entityID { get; set; }
+    }
+
+
+    abstract class ComPotion : TezWorld.IComponent
+    {
+        public enum PotionType
+        {
+            Health,
+            Magic,
+        }
+
+        public int componentID => TezWorld.ComponentID<ComPotion>.ID;
+        public int entityID { get; set; }
+
+
+        public PotionType potionType;
+        public int value;
+
+        public abstract void close();
+    }
+
+    #endregion
+
+    #region ArchetypeMask
+    class EntityMaskID_Potion : TezWorld.ArchetypeMaskID<ComPotionData, ComPotion> { }
+    class EntityMaskID_Weapon : TezWorld.ArchetypeMaskID<ComWeaponData, ComWeapon> { }
+    class EntityMaskID_Armor : TezWorld.ArchetypeMaskID<ComArmorData, ComArmor> { }
+    class EntityMaskID_Unit : TezWorld.ArchetypeMaskID<ComUnitData, ComUnit> { }
+
+    class EntityRegistry
+    {
+        public static void init()
+        {
+            TezWorld.registerArchetype<EntityMaskID_Potion>();
+            TezWorld.registerArchetype<EntityMaskID_Weapon>();
+            TezWorld.registerArchetype<EntityMaskID_Armor>();
+            TezWorld.registerArchetype<EntityMaskID_Unit>();
+
+            TezWorld.buildingWorld();
+        }
+    }
+
+    #endregion
+
 
     #region Useable
-    class MagicPotionData : TezProtoObjectData/*继承ProtoData*/
+    class MagicPotionData : ComPotionData
     {
         public int magicAdd;
 
@@ -24,17 +83,12 @@ namespace tezcat.Framework.Test
 
         }
 
-        protected override TezProtoObject createObjectInternal(int index)
-        {
-            return new MagicPotion();
-        }
-
-        protected override TezProtoObjectData justNewProtoData()
+        protected override TezProtoObjectData beginNewObject_JustNewProtoData()
         {
             return new MagicPotionData();
         }
 
-        protected override void copyDataFrom(TezProtoObjectData other)
+        protected override void endNewObject_CopyDataFrom(TezProtoObjectData other)
         {
             MagicPotionData data = (MagicPotionData)other;
             this.magicAdd = data.magicAdd;
@@ -45,10 +99,15 @@ namespace tezcat.Framework.Test
             this.magicAdd = reader.readInt("MagicAdd");
         }
 
-
+        protected override void onCreateEntity(ref TezWorld.Entity entity, TezProtoObjectData protoData)
+        {
+            TezWorld.registerEntity<EntityMaskID_Potion>(entity);
+            TezWorld.initComponent<ComPotionData, MagicPotionData>(entity, (MagicPotionData)protoData);
+            TezWorld.initComponent<ComPotion, MagicPotion>(entity);
+        }
     }
 
-    class HealthPotionData : TezProtoObjectData
+    class HealthPotionData : ComPotionData
     {
         public TezBonusModifier healthAdd { get; private set; } = new TezBonusModifier(MyDescriptorConfig.HumanProperty.HealthCapacity);
 
@@ -57,12 +116,7 @@ namespace tezcat.Framework.Test
 
         }
 
-        protected override TezProtoObject createObjectInternal(int index)
-        {
-            return new HealthPotion();
-        }
-
-        protected override TezProtoObjectData justNewProtoData()
+        protected override TezProtoObjectData beginNewObject_JustNewProtoData()
         {
             return new HealthPotionData();
         }
@@ -72,12 +126,18 @@ namespace tezcat.Framework.Test
             this.healthAdd.value = reader.readInt("HealthAdd");
         }
 
-        protected override void copyDataFrom(TezProtoObjectData other)
+        protected override void endNewObject_CopyDataFrom(TezProtoObjectData other)
         {
             HealthPotionData data = (HealthPotionData)other;
             this.healthAdd.value = data.healthAdd.value;
         }
 
+        protected override void onCreateEntity(ref TezWorld.Entity entity, TezProtoObjectData protoData)
+        {
+            TezWorld.registerEntity<EntityMaskID_Potion>(entity);
+            TezWorld.initComponent<ComPotionData, HealthPotionData>(entity, (HealthPotionData)protoData);
+            TezWorld.initComponent<ComPotion, HealthPotion>(entity);
+        }
     }
 
     abstract class Useable : TezProtoObject
@@ -90,21 +150,29 @@ namespace tezcat.Framework.Test
 
     }
 
-    class MagicPotion : Potion, ITezProtoObjectDataGetter<MagicPotionData>/*指明protodata类*/
+    class MagicPotion : ComPotion
     {
-        public MagicPotionData protoData => (MagicPotionData)mProtoData;
+        public override void close()
+        {
+            throw new NotImplementedException();
+        }
     }
 
-    class HealthPotion : Potion, ITezProtoObjectDataGetter<HealthPotionData>
+    class HealthPotion : ComPotion
     {
-        public HealthPotionData protoData => (HealthPotionData)mProtoData;
-        public TezBonusModifier healthAdd => this.protoData.healthAdd;
+        public override void close()
+        {
+
+        }
     }
     #endregion
 
     #region Equipment
-    abstract class WeaponData : TezProtoObjectData
+    abstract class ComWeaponData : TezProtoObjectData, TezWorld.IComponent
     {
+        public int componentID => TezWorld.ComponentID<ComWeaponData>.ID;
+        public int entityID { get; set; }
+
         public int attack;
 
         protected override void onInit()
@@ -120,14 +188,9 @@ namespace tezcat.Framework.Test
 
     }
 
-    class GunData : WeaponData
+    class GunData : ComWeaponData
     {
-        protected override TezProtoObject createObjectInternal(int index)
-        {
-            return new Gun();
-        }
-
-        protected override TezProtoObjectData justNewProtoData()
+        protected override TezProtoObjectData beginNewObject_JustNewProtoData()
         {
             return new GunData
             {
@@ -135,52 +198,64 @@ namespace tezcat.Framework.Test
             };
         }
 
-        protected override void copyDataFrom(TezProtoObjectData other)
+        protected override void endNewObject_CopyDataFrom(TezProtoObjectData other)
         {
             GunData otherData = (GunData)other;
             this.attack = otherData.attack;
         }
+
+        protected override void onCreateEntity(ref TezWorld.Entity entity, TezProtoObjectData protoData)
+        {
+            TezWorld.registerEntity<EntityMaskID_Weapon>(entity);
+            TezWorld.initComponent<ComWeaponData, GunData>(entity, (GunData)protoData);
+            TezWorld.initComponent<ComWeapon, Gun>(entity);
+        }
     }
 
-    class AxeData : WeaponData
+    class AxeData : ComWeaponData
     {
-        protected override TezProtoObject createObjectInternal(int index)
-        {
-            return new Axe();
-        }
-
-        protected override TezProtoObjectData justNewProtoData()
+        protected override TezProtoObjectData beginNewObject_JustNewProtoData()
         {
             return new AxeData();
         }
 
-        protected override void copyDataFrom(TezProtoObjectData other)
+        protected override void endNewObject_CopyDataFrom(TezProtoObjectData other)
         {
             AxeData data = (AxeData)other;
             data.attack = this.attack;
         }
+
+        protected override void onCreateEntity(ref TezWorld.Entity entity, TezProtoObjectData protoData)
+        {
+            TezWorld.registerEntity<EntityMaskID_Weapon>(entity);
+            TezWorld.initComponent<ComWeaponData, AxeData>(entity, (AxeData)protoData);
+            TezWorld.initComponent<ComWeapon, Axe>(entity);
+        }
     }
 
-    class MissleData : WeaponData
+    class MissleData : ComWeaponData
     {
         public string name = null;
         public int step = 0;
-        protected override TezProtoObject createObjectInternal(int index)
-        {
-            return new Missle();
-        }
 
-        protected override TezProtoObjectData justNewProtoData()
+        protected override TezProtoObjectData beginNewObject_JustNewProtoData()
         {
             return new MissleData();
         }
 
-        protected override void copyDataFrom(TezProtoObjectData other)
+        protected override void endNewObject_CopyDataFrom(TezProtoObjectData other)
         {
             MissleData data = (MissleData)other;
             this.step = 0;
             this.name = data.name;
             this.attack = data.attack;
+        }
+
+        protected override void onCreateEntity(ref TezWorld.Entity entity, TezProtoObjectData protoData)
+        {
+            TezWorld.registerEntity<EntityMaskID_Weapon>(entity);
+            TezWorld.initComponent<ComWeaponData, MissleData>(entity, (MissleData)protoData);
+            TezWorld.initComponent<ComWeapon, Missle>(entity);
         }
     }
 
@@ -189,31 +264,40 @@ namespace tezcat.Framework.Test
 
     }
 
-    abstract class Weapon : Equipment
+    abstract class ComWeapon : TezWorld.IComponent
+    {
+        public int componentID => TezWorld.ComponentID<ComWeapon>.ID;
+        public int entityID { get; set; }
+
+        public virtual void close()
+        {
+        }
+
+        public virtual void update()
+        {
+
+        }
+    }
+
+    class Gun : ComWeapon
     {
 
     }
 
-    class Gun : Weapon, ITezProtoObjectDataGetter<GunData>
+    [TezClassFactoryRegister(name = "Axe")]
+    class Axe : ComWeapon
     {
-        public GunData protoData => (GunData)mProtoData;
+
     }
 
-    class Axe : Weapon, ITezProtoObjectDataGetter<AxeData>
-    {
-        public AxeData protoData => (AxeData)mProtoData;
-    }
-
-    class Missle : Weapon, ITezProtoObjectDataGetter<MissleData>
+    class Missle : ComWeapon
     {
         public string name = null;
         public int step = 0;
         public TezLifeMonitor target = null;
         bool stop = false;
 
-        public MissleData protoData => (MissleData)mProtoData;
-
-        public void update()
+        public override void update()
         {
             if (stop)
             {
@@ -250,7 +334,8 @@ namespace tezcat.Framework.Test
             if (step == 0)
             {
                 var ship = this.target.getObject<Ship>();
-                ship.protoData.hull.value = 0;
+                TezWorld.getComponent<ComUnitData, ShipData>(ship.entityID).hull.value = 0;
+
                 Console.WriteLine($"{name} hit target!!");
                 this.target.close();
                 this.target = null;
@@ -263,16 +348,19 @@ namespace tezcat.Framework.Test
             Console.WriteLine($"{name}: Find Other Target......");
         }
 
-        protected override void onClose()
+        public override void close()
         {
             this.target?.close();
         }
     }
 
 
-    abstract class ArmorData : TezProtoObjectData
+    abstract class ComArmorData : TezProtoObjectData, TezWorld.IComponent
     {
         public TezValueInt armorAdd { get; private set; } = new TezValueInt(MyDescriptorConfig.Modifier.ArmorAdd);
+
+        public int componentID => TezWorld.ComponentID<ComArmorData>.ID;
+        public int entityID { get; set; }
 
         protected override void onInit()
         {
@@ -283,90 +371,100 @@ namespace tezcat.Framework.Test
         {
             this.armorAdd.value = reader.readInt("ArmorAdd");
         }
-
-
     }
 
-    class ArmorPlateData : ArmorData
+    abstract class ComArmor : TezWorld.IComponent
     {
-        protected override TezProtoObjectData justNewProtoData()
+        public int componentID => TezWorld.ComponentID<ComArmor>.ID;
+        public int entityID { get; set; }
+
+        public virtual void close() { }
+    }
+
+    class ArmorPlateData : ComArmorData
+    {
+        protected override TezProtoObjectData beginNewObject_JustNewProtoData()
         {
             return new ArmorPlateData();
         }
 
-        protected override void copyDataFrom(TezProtoObjectData other)
+        protected override void endNewObject_CopyDataFrom(TezProtoObjectData other)
         {
             ArmorPlateData data = (ArmorPlateData)other;
             this.armorAdd.value = data.armorAdd.value;
         }
 
-        protected override TezProtoObject createObjectInternal(int index)
+        
+        protected override void onCreateEntity(ref TezWorld.Entity entity, TezProtoObjectData protoData)
         {
-            return new ArmorPlate();
+            TezWorld.registerEntity<EntityMaskID_Armor>(entity);
+            TezWorld.initComponent<ComArmorData, ArmorPlateData>(entity, (ArmorPlateData)protoData);
+            TezWorld.initComponent<ComArmor, ArmorPlate>(entity);
         }
     }
 
-    abstract class Armor : Equipment
+    class ArmorPlate : ComArmor
     {
 
     }
 
-    class ArmorPlate : Armor, ITezProtoObjectDataGetter<ArmorPlateData>
+    class HelmetData : ComArmorData
     {
-        public ArmorPlateData protoData => (ArmorPlateData)mProtoData;
-    }
-
-    class HelmetData : ArmorData
-    {
-        protected override TezProtoObject createObjectInternal(int index)
+        protected override void onCreateEntity(ref TezWorld.Entity entity, TezProtoObjectData protoData)
         {
-            return new Helmet();
+            TezWorld.registerEntity<EntityMaskID_Armor>(entity);
+            TezWorld.initComponent<ComArmorData, HelmetData>(entity, (HelmetData)protoData);
+            TezWorld.initComponent<ComArmor, Helmet>(entity);
         }
 
-        protected override TezProtoObjectData justNewProtoData()
+        protected override TezProtoObjectData beginNewObject_JustNewProtoData()
         {
             return new HelmetData();
         }
 
-        protected override void copyDataFrom(TezProtoObjectData other)
+        protected override void endNewObject_CopyDataFrom(TezProtoObjectData other)
         {
             HelmetData data = (HelmetData)other;
             this.armorAdd.value = data.armorAdd.value;
         }
     }
 
-    class BreastplateData : ArmorData
+    class BreastplateData : ComArmorData
     {
-        protected override TezProtoObject createObjectInternal(int index)
+        protected override void onCreateEntity(ref TezWorld.Entity entity, TezProtoObjectData protoData)
         {
-            return new Breastplate();
+            TezWorld.registerEntity<EntityMaskID_Armor>(entity);
+            TezWorld.initComponent<ComArmorData, BreastplateData>(entity, (BreastplateData)protoData);
+            TezWorld.initComponent<ComArmor, Breastplate>(entity);
         }
 
-        protected override TezProtoObjectData justNewProtoData()
+        protected override TezProtoObjectData beginNewObject_JustNewProtoData()
         {
             return new BreastplateData();
         }
 
-        protected override void copyDataFrom(TezProtoObjectData other)
+        protected override void endNewObject_CopyDataFrom(TezProtoObjectData other)
         {
             BreastplateData data = (BreastplateData)other;
             this.armorAdd.value = data.armorAdd.value;
         }
     }
 
-    class LegData : ArmorData
+    class LegData : ComArmorData
     {
-        protected override TezProtoObject createObjectInternal(int index)
+        protected override void onCreateEntity(ref TezWorld.Entity entity, TezProtoObjectData protoData)
         {
-            return new Leg();
+            TezWorld.registerEntity<EntityMaskID_Armor>(entity);
+            TezWorld.initComponent<ComArmorData, LegData>(entity, (LegData)protoData);
+            TezWorld.initComponent<ComArmor, Leg>(entity);
         }
 
-        protected override TezProtoObjectData justNewProtoData()
+        protected override TezProtoObjectData beginNewObject_JustNewProtoData()
         {
             return new LegData();
         }
 
-        protected override void copyDataFrom(TezProtoObjectData other)
+        protected override void endNewObject_CopyDataFrom(TezProtoObjectData other)
         {
             LegData data = (LegData)other;
             this.armorAdd.value = data.armorAdd.value;
@@ -374,46 +472,44 @@ namespace tezcat.Framework.Test
     }
 
     [TezPrototypeRegister("Helmet", 3)]
-    class Helmet : Armor, ITezProtoObjectDataGetter<HelmetData>
+    class Helmet : ComArmor
     {
-        public HelmetData protoData => (HelmetData)mProtoData;
+
     }
 
     [TezPrototypeRegister("Breastplate", 2)]
-    class Breastplate : Armor, ITezProtoObjectDataGetter<BreastplateData>
+    class Breastplate : ComArmor
     {
-        public BreastplateData protoData => (BreastplateData)mProtoData;
+
     }
 
     [TezPrototypeRegister("Leg", 1)]
-    class Leg : Armor, ITezProtoObjectDataGetter<LegData>
+    class Leg : ComArmor
     {
-        public LegData protoData => (LegData)mProtoData;
+
     }
     #endregion
 
     #region Unit
-    abstract class UnitData : TezProtoObjectData
+    abstract class ComUnitData : TezProtoObjectData, TezWorld.IComponent
     {
+        public int componentID => TezWorld.ComponentID<ComUnitData>.ID;
+        public int entityID { get; set; }
+   
         protected override void onInit()
         {
 
         }
     }
 
-    class CharacterData : UnitData
+    class CharacterData : ComUnitData
     {
-        protected override TezProtoObject createObjectInternal(int index)
-        {
-            return new Character();
-        }
-
-        protected override TezProtoObjectData justNewProtoData()
+        protected override TezProtoObjectData beginNewObject_JustNewProtoData()
         {
             return new CharacterData();
         }
 
-        protected override void copyDataFrom(TezProtoObjectData other)
+        protected override void endNewObject_CopyDataFrom(TezProtoObjectData other)
         {
 
         }
@@ -423,10 +519,15 @@ namespace tezcat.Framework.Test
 
         }
 
-
+        protected override void onCreateEntity(ref TezWorld.Entity entity, TezProtoObjectData protoData)
+        {
+            TezWorld.registerEntity<EntityMaskID_Unit>(entity);
+            TezWorld.initComponent<ComUnitData, CharacterData>(entity, (CharacterData)protoData);
+            TezWorld.initComponent<ComUnit, Character>(entity);
+        }
     }
 
-    class ShipData : UnitData
+    class ShipData : ComUnitData
     {
         public TezValueInt hull { get; private set; } = new TezValueInt(MyDescriptorConfig.ShipValue.Hull);
         public TezValueInt armor { get; private set; } = new TezValueInt(MyDescriptorConfig.ShipValue.Armor);
@@ -437,11 +538,6 @@ namespace tezcat.Framework.Test
         public TezBonusInt armorCapacity { get; private set; } = new TezBonusInt(new TezBonusModifierCache(), MyDescriptorConfig.ShipPorperty.ArmorCapacity);
         public TezBonusInt shieldCapacity { get; private set; } = new TezBonusInt(new TezBonusModifierCache(), MyDescriptorConfig.ShipPorperty.ShieldCapacity);
         public TezBonusInt powerCapacity { get; private set; } = new TezBonusInt(new TezBonusModifierCache(), MyDescriptorConfig.ShipPorperty.PowerCapacity);
-
-        protected override TezProtoObject createObjectInternal(int index)
-        {
-            return new Ship();
-        }
 
         protected override void onClose()
         {
@@ -468,12 +564,12 @@ namespace tezcat.Framework.Test
             base.onClose();
         }
 
-        protected override TezProtoObjectData justNewProtoData()
+        protected override TezProtoObjectData beginNewObject_JustNewProtoData()
         {
             return new ShipData();
         }
 
-        protected override void copyDataFrom(TezProtoObjectData other)
+        protected override void endNewObject_CopyDataFrom(TezProtoObjectData other)
         {
             ShipData data = (ShipData)other;
             this.hull.value = data.hull.value;
@@ -494,23 +590,33 @@ namespace tezcat.Framework.Test
             this.powerCapacity.baseValue = reader.readInt(MyDescriptorConfig.ShipPorperty.PowerCapacity.name);
         }
 
+        protected override void onCreateEntity(ref TezWorld.Entity entity, TezProtoObjectData protoData)
+        {
+            TezWorld.registerEntity<EntityMaskID_Unit>(entity);
+            var data = TezWorld.initComponent<ComUnitData, ShipData>(entity, (ShipData)protoData);
+            var ship = TezWorld.initComponent<ComUnit, Ship>(entity);
+            ship.setShipData(data);
+        }
 
     }
 
-    abstract class Unit : TezProtoObject
+    abstract class ComUnit : TezWorld.IComponent
     {
+        public int componentID => TezWorld.ComponentID<ComUnit>.ID;
+        public int entityID { get; set; }
+        public virtual void close() { }
 
+        public virtual void update() { }
     }
 
-    class Character : Unit, ITezProtoObjectDataGetter<CharacterData>
+    class Character : ComUnit
     {
-        public CharacterData protoData => (CharacterData)mProtoData;
+
     }
 
     [TezPrototypeRegister("Ship", ItemClassIndexConfig.Ship)]
     class Ship
-        : Unit
-        , ITezProtoObjectDataGetter<ShipData>
+        : ComUnit
         , ITezBonusSystemHolder
     {
         //Life
@@ -524,7 +630,7 @@ namespace tezcat.Framework.Test
         TezBonusValueSystem mBonusSystem = new TezBonusValueSystem();
         public TezBonusValueSystem bonusSystem => mBonusSystem;
 
-        public ShipData protoData => (ShipData)mProtoData;
+        ShipData protoData = null;
 
         public Ship()
         {
@@ -536,24 +642,13 @@ namespace tezcat.Framework.Test
             this.protoData.powerCapacity.baseValue = 50;
         }
 
-        protected override void preInit()
+        public void setShipData(ShipData data)
         {
-            base.preInit();
+            protoData = data;
             this.initBonusSystem();
-        }
-
-        protected override void onInit()
-        {
-            base.onInit();
             this.initValue();
-        }
-
-        protected override void postInit()
-        {
-            base.postInit();
             this.setValue();
         }
-
 
         private void initValue()
         {
@@ -581,7 +676,7 @@ namespace tezcat.Framework.Test
             this.protoData.power.innerValue = this.protoData.powerCapacity.value;
         }
 
-        public void update()
+        public override void update()
         {
             if (this.lifeHolder.isValied)
             {
@@ -593,10 +688,8 @@ namespace tezcat.Framework.Test
             }
         }
 
-        protected override void onClose()
+        public override void close()
         {
-            base.onClose();
-
             mBonusSystem.close();
             mValueArray.close();
             this.lifeHolder.close();
@@ -627,52 +720,57 @@ namespace tezcat.Framework.Test
         public override void run()
         {
             Console.WriteLine("Create HealthPotion From ProtoDB");
-            var potion1 = TezcatFramework.protoDB.createObject<HealthPotionData, HealthPotion>(0);
-            potion1.init();
+            var e_potion1 = TezcatFramework.protoDB.createEntity<HealthPotionData>(0);
+            var potion1 = TezWorld.getComponent<ComPotionData, HealthPotionData>(e_potion1);
 
-            Console.WriteLine($"Potion1: {potion1.protoInfo.NID}, HealthAdd: {potion1.protoData.healthAdd.value}");
+            Console.WriteLine($"Potion1: {potion1.protoInfo.NID}, HealthAdd: {potion1.healthAdd.value}");
 
             Console.WriteLine("Create HealthPotion From Potion1");
-            var potion2 = potion1.protoData.createObjectByCopyMe<HealthPotion>();
-            potion2.init();
+            var e_potion2 = potion1.createEntity();
+            var potion2 = TezWorld.getComponent<ComPotionData, HealthPotionData>(e_potion2);
 
             Console.WriteLine($"Potion2: {potion2.protoInfo.NID}, HealthAdd: {potion2.healthAdd.value}");
             Console.WriteLine();
 
             Console.WriteLine($"Potion1==Potion2 : {potion1 == potion2}");
             Console.WriteLine($"Potion1.isTheSameProtoDataOf(Potion2) : {potion1.isTheSameProtoDataOf(potion2)}");
-            Console.WriteLine($"Potion1.isTheSameProtoObjectOf(Potion2) : {potion1.isTheSameProtoObjectOf(potion2)}");
+            Console.WriteLine($"Potion1.isTheSameProtoObjectOf(Potion2) : {e_potion1 == e_potion2}");
             Console.WriteLine();
 
             Console.WriteLine("Potion1 CreateRedefineObject");
-            var potion1_1 = potion1.protoData.createRedefineData().createObjectWithMe<HealthPotion>();
-            potion1_1.init();
-            Console.WriteLine($"Potion1.isTheSameProtoDataOf(potion1_1) : {potion1.isTheSameProtoDataOf(potion1_1)}");
-            Console.WriteLine($"Potion1.isTheSameProtoObjectOf(potion1_1) : {potion1.isTheSameProtoObjectOf(potion1_1)}");
-            Console.WriteLine($"Potion1.isTheSameProtoDataOf(Potion2) : {potion1.isTheSameProtoDataOf(potion2)}");
-            Console.WriteLine($"Potion1.isTheSameProtoObjectOf(Potion2) : {potion1.isTheSameProtoObjectOf(potion2)}");
-            Console.WriteLine($"Potion1_1.isTheSameProtoDataOf(Potion2) : {potion1_1.isTheSameProtoDataOf(potion2)}");
-            Console.WriteLine($"Potion1_1.isTheSameProtoObjectOf(Potion2) : {potion1_1.isTheSameProtoObjectOf(potion2)}");
+            var e_potion1_1 = potion1.detachEntity();
+            var potion1_1 = TezWorld.getComponent<ComPotionData, HealthPotionData>(e_potion1_1);
 
+            Console.WriteLine($"Potion1.isTheSameProtoDataOf(potion1_1) : {potion1.isTheSameProtoDataOf(potion1_1)}");
+            Console.WriteLine($"Potion1.isTheSameProtoObjectOf(potion1_1) : {e_potion1 == e_potion1_1}");
+            Console.WriteLine($"Potion1.isTheSameProtoDataOf(Potion2) : {potion1.isTheSameProtoDataOf(potion2)}");
+            Console.WriteLine($"Potion1.isTheSameProtoObjectOf(Potion2) : {e_potion1 == e_potion2}");
+            Console.WriteLine($"Potion1_1.isTheSameProtoDataOf(Potion2) : {potion1_1.isTheSameProtoDataOf(potion2)}");
+            Console.WriteLine($"Potion1_1.isTheSameProtoObjectOf(Potion2) : {e_potion1_1 == e_potion2}");
             Console.WriteLine();
-            var potion3 = potion1.protoData.createObjectByCopyMe<HealthPotion>();
-            potion3.init();
+
+            var e_potion3 = potion1.createEntity();
+            var potion3 = TezWorld.getComponent<ComPotionData, HealthPotionData>(e_potion3);
+
             Console.WriteLine($"Potion1==Potion3 : {potion1 == potion3}");
             Console.WriteLine($"Potion1.isTheSameProtoDataOf(Potion3) : {potion1.isTheSameProtoDataOf(potion3)}");
-            Console.WriteLine($"Potion1.isTheSameProtoObjectOf(Potion3) : {potion1.isTheSameProtoObjectOf(potion3)}");
+            Console.WriteLine($"Potion1.isTheSameProtoObjectOf(Potion3) : {e_potion1 == e_potion3}");
 
-            potion1.close();
-            potion1_1.close();
-            potion2.close();
-            potion3.close();
+            TezWorld.removeEntity(e_potion1);
+            TezWorld.removeEntity(e_potion1_1);
+            TezWorld.removeEntity(e_potion2);
+            TezWorld.removeEntity(e_potion3);
+    
+            Console.WriteLine();
+            Console.WriteLine("Create Breastplate From ProtoDB");
 
-            var armor1 = TezcatFramework.protoDB.createObject<BreastplateData, Breastplate>(0);
-            armor1.init();
+            var e_armor1 = TezcatFramework.protoDB.createEntity<BreastplateData>(0);
+            var armor1 = TezWorld.getComponent<ComArmorData, BreastplateData>(e_armor1);
 
             Console.WriteLine();
-            Console.WriteLine($"Armor: {armor1.protoInfo.NID}, Armor: {armor1.protoData.armorAdd}");
+            Console.WriteLine($"Armor: {armor1.protoInfo.NID}, Armor: {armor1.armorAdd}");
 
-            armor1.close();
+            TezWorld.removeEntity(e_armor1);
 
             var wall = new Wall();
             wall.close();

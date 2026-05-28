@@ -384,4 +384,96 @@ namespace tezcat.Framework.Utility
             mBackMark = null;
         }
     }
+
+
+    public class TezSampleListNode<T> : ITezCloseable where T : class
+    {
+        public T value => mValue;
+        public TezSampleListNode<T> prev => mPrev;
+        public TezSampleListNode<T> next => mNext;
+
+        private T mValue = null;
+        private TezSampleListNode<T> mPrev = null;
+        private TezSampleListNode<T> mNext = null;
+
+        public TezSampleListNode(T value)
+        {
+            mValue = value;
+        }
+
+        public void setNext(TezSampleListNode<T> nextNode)
+        {
+            mNext = nextNode;
+            if (nextNode != null)
+            {
+                nextNode.mPrev = this;
+            }
+        }
+
+        public void setPrev(TezSampleListNode<T> prevNode)
+        {
+            mPrev = prevNode;
+            if (prevNode != null)
+            {
+                prevNode.mNext = this;
+            }
+        }
+
+        public void close()
+        {
+            mValue = null;
+            mPrev = null;
+            mNext = null;
+        }
+
+        public static void forEach(TezSampleListNode<T> head, System.Action<T> action)
+        {
+            var node = head;
+            TezSampleListNode<T> next = null;
+            while (node != null)
+            {
+                next = node.next;
+                action(node.value);
+                node = next;
+            }
+        }
+
+        public static TezSampleListNode<T> find(TezSampleListNode<T> head, System.Func<T, bool> predicate)
+        {
+            var node = head;
+            while (node != null)
+            {
+                if (predicate(node.value))
+                {
+                    return node;
+                }
+                node = node.next;
+            }
+            return null;
+        }
+
+        public static bool remove(TezSampleListNode<T> head, TezSampleListNode<T> node)
+        {
+            if (node == null)
+            {
+                return false;
+            }
+
+            var prev = node.prev;
+            var next = node.next;
+
+            if (prev != null)
+            {
+                prev.setNext(next);
+            }
+
+            if (next != null)
+            {
+                next.setPrev(prev);
+            }
+
+            node.close();
+            return true;
+        }
+    }
 }

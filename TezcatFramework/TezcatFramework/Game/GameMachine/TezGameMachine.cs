@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using tezcat.Framework.Core;
 using tezcat.Framework.Extension;
 
 namespace tezcat.Framework.Game
@@ -89,7 +88,9 @@ namespace tezcat.Framework.Game
         public void change<State>() where State : TState, new()
         {
             evtChange?.Invoke(mCurrentState, Singleton<State>.instance);
+            Singleton<State>.instance.gameMachine = this;
             this.change(Singleton<State>.instance);
+            evtRefresh?.Invoke();
         }
 
         public bool isThis<State>() where State : TState, new()

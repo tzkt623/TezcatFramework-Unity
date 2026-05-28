@@ -100,7 +100,7 @@ namespace tezcat.Framework.Test
         /// 
         /// </summary>
         [StructLayout(LayoutKind.Explicit)]
-        struct TriggerPhaseID : ITezTriggerPhaseID
+        struct TriggerPhaseID
         {
             [FieldOffset(0)]
             ulong mID;
@@ -174,7 +174,7 @@ namespace tezcat.Framework.Test
             public class TriggerFunction
             {
                 public TriggerPhaseID phaseID;
-                public Action<TezTrigger<UserData>> funcCreate = null;
+                public Action<TezTrigger.ITrigger<UserData>> funcCreate = null;
             }
 
             public Player owner;
@@ -185,7 +185,7 @@ namespace tezcat.Framework.Test
             List<TriggerFunction> mTriggerListener = null;
             public IReadOnlyCollection<TriggerFunction> triggerListener => mTriggerListener;
 
-            public void registerTrigger(TriggerPhaseID phaseID, Action<TezTrigger<UserData>> funcCreate)
+            public void registerTrigger(TriggerPhaseID phaseID, Action<TezTrigger.ITrigger<UserData>> funcCreate)
             {
                 if (mTriggerListener == null)
                 {
@@ -209,7 +209,7 @@ namespace tezcat.Framework.Test
                 return Camp.Error;
             }
 
-            protected void trigger(TezTrigger<UserData> masterTrigger, Action<TezTrigger<UserData>> funcExecute)
+            protected void trigger(TezTrigger.ITrigger<UserData> masterTrigger, Action<TezTrigger.ITrigger<UserData>> funcExecute)
             {
                 if (this.actived)
                 {
@@ -219,10 +219,7 @@ namespace tezcat.Framework.Test
                 this.actived = true;
                 Helper.writeLine(this.owner.camp, $"{this.name} Prepare to Active");
 
-                new TezTrigger<UserData>()
-                {
-                    userData = this.owner.userData
-                }
+                TezTrigger.createTrigger<UserData>()
                 .addPhase((me) =>
                 {
                     Helper.writeLine(this.owner.camp, $"{this.name}: Active");
@@ -234,7 +231,7 @@ namespace tezcat.Framework.Test
                         triggerPhase = TriggerPhase.PhaseBefore,
                         notifier = Notifier.Self
                     };
-                    me.phaseID = phase_id;
+                    me.userData.phaseID = phase_id;
 
                     this.owner.notify(phase_id, me);
                 })
@@ -248,11 +245,12 @@ namespace tezcat.Framework.Test
                         triggerPhase = TriggerPhase.PhaseBefore,
                         notifier = Notifier.NotSelf
                     };
-                    me.phaseID = phase_id;
+                    me.userData.phaseID = phase_id;
                     this.owner.gameManager.notify(this.getRival(this.owner.camp), phase_id, me);
                 })
                 .addPhase((me) =>
                 {
+                    me.wait();
                     Helper.writeLine(this.owner.camp, $"{this.name}: Playing Animation......");
                     this.owner.playAnimation(() => { me.resume(); });
                 })
@@ -267,7 +265,7 @@ namespace tezcat.Framework.Test
                         triggerPhase = TriggerPhase.PhaseAfter,
                         notifier = Notifier.NotSelf
                     };
-                    me.phaseID = phase_id;
+                    me.userData.phaseID = phase_id;
                     this.owner.gameManager.notify(this.getRival(this.owner.camp), phase_id, me);
                 })
                 .addPhase((me) =>
@@ -280,7 +278,7 @@ namespace tezcat.Framework.Test
                         triggerPhase = TriggerPhase.PhaseAfter,
                         notifier = Notifier.Self
                     };
-                    me.phaseID = phase_id;
+                    me.userData.phaseID = phase_id;
                     this.owner.notify(phase_id, me);
                 })
                 .setOnComplete((state) =>
@@ -291,7 +289,7 @@ namespace tezcat.Framework.Test
                 .run(masterTrigger);
             }
 
-            public virtual void trigger(TezTrigger<UserData> masterTrigger)
+            public virtual void trigger(TezTrigger.ITrigger<UserData> masterTrigger)
             {
                 throw new NotImplementedException();
             }
@@ -304,7 +302,7 @@ namespace tezcat.Framework.Test
 
         class SkillAttack : Skill
         {
-            public Player target {  get; set; }
+            public Player target { get; set; }
 
             public SkillAttack()
             {
@@ -345,7 +343,7 @@ namespace tezcat.Framework.Test
                 , this.trigger);
             }
 
-            public override void trigger(TezTrigger<UserData> masterTrigger)
+            public override void trigger(TezTrigger.ITrigger<UserData> masterTrigger)
             {
                 this.trigger(masterTrigger, (trigger) =>
                 {
@@ -412,7 +410,7 @@ namespace tezcat.Framework.Test
                 , this.trigger);
             }
 
-            public override void trigger(TezTrigger<UserData> masterTrigger)
+            public override void trigger(TezTrigger.ITrigger<UserData> masterTrigger)
             {
                 this.trigger(masterTrigger, (trigger) =>
                 {
@@ -464,7 +462,7 @@ namespace tezcat.Framework.Test
                 }
             }
 
-            public void notify(TriggerPhaseID phaseID, TezTrigger<UserData> masterTrigger)
+            public void notify(TriggerPhaseID phaseID, TezTrigger.ITrigger<UserData> masterTrigger)
             {
                 if (mTriggerSkills.TryGetValue(phaseID.ID, out var list))
                 {
@@ -512,7 +510,7 @@ namespace tezcat.Framework.Test
                 mSkillManager.addSkill(skill);
             }
 
-            public void notify(TriggerPhaseID phaseID, TezTrigger<UserData> masterTrigger)
+            public void notify(TriggerPhaseID phaseID, TezTrigger.ITrigger<UserData> masterTrigger)
             {
                 Helper.writeLine(this.camp, $"{this.name}: Notify Skill");
                 mSkillManager.notify(phaseID, masterTrigger);
@@ -535,7 +533,7 @@ namespace tezcat.Framework.Test
                 skill.execute();
             }
 
-            public void takeDamage(TezTrigger<UserData> masterTrigger, int damage)
+            public void takeDamage(TezTrigger.ITrigger<UserData> masterTrigger, int damage)
             {
                 this.health -= damage;
                 if (this.health < 0)
@@ -567,6 +565,7 @@ namespace tezcat.Framework.Test
         {
             public Player target;
             public Player self;
+            public TriggerPhaseID phaseID;
         }
 
         class GameManager
@@ -574,7 +573,7 @@ namespace tezcat.Framework.Test
             List<Player> mPlayerList = new List<Player>();
             List<Player> mEnemyList = new List<Player>();
 
-            private void notifyPlayer(TriggerPhaseID phaseID, TezTrigger<UserData> masterTrigger)
+            private void notifyPlayer(TriggerPhaseID phaseID, TezTrigger.ITrigger<UserData> masterTrigger)
             {
                 for (int i = 0; i < mPlayerList.Count; i++)
                 {
@@ -582,7 +581,7 @@ namespace tezcat.Framework.Test
                 }
             }
 
-            private void notifyEnemy(TriggerPhaseID phaseID, TezTrigger<UserData> masterTrigger)
+            private void notifyEnemy(TriggerPhaseID phaseID, TezTrigger.ITrigger<UserData> masterTrigger)
             {
                 for (int i = 0; i < mEnemyList.Count; i++)
                 {
@@ -590,7 +589,7 @@ namespace tezcat.Framework.Test
                 }
             }
 
-            public void notify(Camp camp, TriggerPhaseID phaseID, TezTrigger<UserData> masterTrigger)
+            public void notify(Camp camp, TriggerPhaseID phaseID, TezTrigger.ITrigger<UserData> masterTrigger)
             {
                 switch (camp)
                 {
@@ -630,6 +629,12 @@ namespace tezcat.Framework.Test
             {
                 player.gameManager = this;
                 mEnemyList.Add(player);
+            }
+
+            public void close()
+            {
+                mPlayerList.Clear();
+                mEnemyList.Clear();
             }
         }
 
@@ -683,13 +688,13 @@ namespace tezcat.Framework.Test
                     action = null;
                 }
 
-                TezTriggerSystem.update();
+                TezTrigger.update();
             }
         }
 
         protected override void onClose()
         {
-
+            mGameManager.close();
         }
     }
 }

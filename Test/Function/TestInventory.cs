@@ -1,4 +1,5 @@
 ﻿using System;
+using tezcat.Framework.ArchetypeECS;
 using tezcat.Framework.Game;
 
 namespace tezcat.Framework.Test
@@ -49,21 +50,21 @@ namespace tezcat.Framework.Test
         public override void run()
         {
             //var proto = TezcatFramework.protoDB.createObject<HealthPotion>("SmallHealthPotion");
-            var hpPotion = TezcatFramework.protoDB.createObject<HealthPotionData, HealthPotion>("SmallHealthPotion");
-            mInventory.store(hpPotion, 25);
+            //var e_hpPotion = TezcatFramework.protoDB.createEntity<HealthPotionData>("SmallHealthPotion");
+            //mInventory.store(TezWorld.getComponent<ComPotion>(e_hpPotion), 25);
 
             //proto = TezcatFramework.protoDB.createObject<Breastplate>("H355");
-            var armor = TezcatFramework.protoDB.createObject<BreastplateData, Breastplate>("H355");
-            mInventory.store(armor);
-            mPageView.debug();
+            //var armor = TezcatFramework.protoDB.createObject<BreastplateData, Breastplate>("H355");
+            //mInventory.store(armor);
+//             mPageView.debug();
+// 
+//             mPageView.filterManager.setFilter("TypeFilter");
+//             mPageView.filterManager.setFilter("NameFilter");
 
-            mPageView.filterManager.setFilter("TypeFilter");
-            mPageView.filterManager.setFilter("NameFilter");
+            //mInventory.take(armor);
+            //mInventory.take(hpPotion, 10);
 
-            mInventory.take(armor);
-            mInventory.take(hpPotion, 10);
-
-            mPageView.filterManager.setFilter("Default");
+            //mPageView.filterManager.setFilter("Default");
         }
 
         private void onSlotRefresh(TezInventoryViewSlot slot, int index)

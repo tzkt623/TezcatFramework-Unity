@@ -142,7 +142,7 @@ namespace tezcat.Framework.Game
         protected void onClose()
         {
             mRoot.close();
-            mContext.close();
+            //mContext.close();
             //TezCloseableHelper.close(mContext);
 
             mRoot = null;

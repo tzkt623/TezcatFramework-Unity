@@ -53,8 +53,7 @@ namespace tezcat.Framework.Test
 
         private void read()
         {
-            mReader.load($"{Path.root}Res/Config/CategoryConfig.json");
-            mReader.beginRead();
+            mReader.beginRead($"{Path.root}Res/Config/CategoryConfig.json");
             {
                 this.show<string>(0, "Namespace");
                 this.show<string>(0, "WrapperClass");

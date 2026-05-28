@@ -23,9 +23,9 @@ namespace tezcat.Framework.Core
     /// </para>
     /// 
     /// <para>
-    /// Runtime ID
+    /// Redefine ID
     /// 用于在游戏运行时赋予动态生成的物品
-    /// ID范围值为[int32.Max+1, int64.Max]
+    /// ID范围值为[0, int32.Max]
     /// </para>
     /// 
     /// <para>
@@ -45,47 +45,14 @@ namespace tezcat.Framework.Core
         : IEquatable<TezItemID>
     {
         #region Pool
-//        static Queue<TezItemID> sPool = new Queue<TezItemID>();
-        static Queue<uint> sPoolFreeRedefineID = new Queue<uint>();
-
-        static uint sRedefineIDGenerator = 1;
-
-//         public static TezItemID create(uint DBID, int RTID)
-//         {
-//             TezItemID result = sPool.Count > 0 ? sPool.Dequeue() : new TezItemID();
-//             result.mDBID = DBID;
-//             result.mRedefineID = RTID;
-//             return result;
-//         }
-// 
-//         public static TezItemID create(uint DBID)
-//         {
-//             TezItemID result = sPool.Count > 0 ? sPool.Dequeue() : new TezItemID();
-//             result.mDBID = DBID;
-//             result.mRedefineID = sRTIDPool.Count > 0 ? sRTIDPool.Dequeue() : sRTID++;
-//             return result;
-//         }
-// 
-//         public static TezItemID create(ushort TID, ushort UID)
-//         {
-//             TezItemID result = sPool.Count > 0 ? sPool.Dequeue() : new TezItemID();
-//             result.mTypeID = TID;
-//             result.mIndexID = UID;
-//             result.mRedefineID = sRTIDPool.Count > 0 ? sRTIDPool.Dequeue() : sRTID++;
-//             return result;
-//         }
-// 
-//         public static TezItemID create(ushort TID, ushort UID, int RTID)
-//         {
-//             TezItemID result = sPool.Count > 0 ? sPool.Dequeue() : new TezItemID();
-//             result.mTypeID = TID;
-//             result.mIndexID = UID;
-//             result.mRedefineID = RTID;
-//             return result;
-//         }
+        static Queue<uint> sPoolFreeID = new Queue<uint>();
+        static uint sIDGenerator = 1;
         #endregion
 
         #region Tool
+        static List<Queue<uint>> sFreeIDPool = new List<Queue<uint>>();
+        static List<uint> sIDPool = new List<uint>();
+
         static List<string> sTypeList = new List<string>();
         static Dictionary<string, ushort> sTypeDic = new Dictionary<string, ushort>();
 
@@ -96,15 +63,32 @@ namespace tezcat.Framework.Core
 
         public static ushort getTypeID(string name)
         {
-            return sTypeDic[name];
+            if (sTypeDic.TryGetValue(name, out ushort typeID))
+            {
+                return typeID;
+            }
+
+            throw new Exception($"Type {name} not found in type dictionary.");
         }
 
-        public static void loadConfigFile(TezReader reader)
+        public static void loadConfigFile(string path)
         {
-            foreach (var key in reader.getKeys())
+            TezSaveController.Reader reader = new TezSaveController.Reader();
+            if (reader.beginRead(path))
             {
-                registerTypeID(key, reader.readInt(key));
+                if (reader.isObject)
+                {
+                    foreach (var key in reader.keys)
+                    {
+                        registerTypeID(key, reader.readInt(key));
+                    }
+                }
+                else
+                {
+                    throw new Exception($"TezItemID config file {path} is not a valid object.");
+                }
             }
+            reader.endRead();
         }
 
         public static void registerTypeID(string typeName, int typeID)
@@ -112,10 +96,13 @@ namespace tezcat.Framework.Core
             while (sTypeList.Count <= typeID)
             {
                 sTypeList.Add(null);
+                sFreeIDPool.Add(null);
+                sIDPool.Add(1);
             }
 
             sTypeList[typeID] = typeName;
             sTypeDic.Add(typeName, (ushort)typeID);
+            sFreeIDPool[(ushort)typeID] = new Queue<uint>();
         }
         #endregion
 
@@ -125,27 +112,7 @@ namespace tezcat.Framework.Core
 
         [FieldOffset(0)]
         uint mRedefineID;
-        /// <summary>
-        /// 
-        /// Runtime ID
-        /// 用于在游戏运行时赋予动态生成的物品
-        /// 也就是并没有记录在内建数据库中的物品ID
-        /// 
-        /// 此ID用于标记在运行时数据库存在的物品数据
-        /// </summary>
-        /// 
-        /// <remarks>
-        /// 例如
-        /// RPG游戏里面的一个模版装备
-        /// 坚固盔甲的TID = 2, IID = 1, RTID = -1
-        /// 
-        /// 爆了两个圣神之强化的坚固盔甲
-        /// 第一个DBID = 2, RTID = 1
-        /// 第二个DBID = 2, RTID = 2
-        /// 
-        /// </remarks>
-        /// 
-        
+
         ///重定义ID,用于生成新物品
         public uint RedefineID => mRedefineID;
 
@@ -188,17 +155,6 @@ namespace tezcat.Framework.Core
             mIndexID = index;
         }
 
-        //void ITezCloseable.closeThis()
-        //{
-        //    if (mRTID > -1)
-        //    {
-        //        sRTIDPool.Enqueue(mRTID);
-        //    }
-        //
-        //    mID = 0;
-        //    sPool.Enqueue(this);
-        //}
-
         public override int GetHashCode()
         {
             return mID.GetHashCode();
@@ -214,29 +170,39 @@ namespace tezcat.Framework.Core
             return mID == other.mID;
         }
 
-//         internal void setRedefineID(int v)
-//         {
-//             mRedefineID = v;
-//         }
-
         internal void close()
         {
             if (mRedefineID > 0)
             {
-                sPoolFreeRedefineID.Enqueue(mRedefineID);
+                sFreeIDPool[mTypeID].Enqueue(mRedefineID);
+                mRedefineID = 0;
             }
+
+            //             if (mRedefineID > 0)
+            //             {
+            //                 sPoolFreeID.Enqueue(mRedefineID);
+            //             }
         }
 
-        internal void generateRedefineID()
+        internal void generateID()
         {
-            if(sPoolFreeRedefineID.Count > 0)
+            if (sFreeIDPool[mTypeID].Count > 0)
             {
-                mRedefineID = sPoolFreeRedefineID.Dequeue();
+                mRedefineID = sFreeIDPool[mTypeID].Dequeue();
             }
             else
             {
-                mRedefineID = sRedefineIDGenerator++;
+                mRedefineID = sIDPool[mTypeID]++;
             }
+
+            //             if(sPoolFreeID.Count > 0)
+            //             {
+            //                 mRedefineID = sPoolFreeID.Dequeue();
+            //             }
+            //             else
+            //             {
+            //                 mRedefineID = sIDGenerator++;
+            //             }
         }
 
         /// <summary>

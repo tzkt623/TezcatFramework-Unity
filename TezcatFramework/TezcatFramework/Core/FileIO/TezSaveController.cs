@@ -31,7 +31,9 @@ namespace tezcat.Framework.Core
                 void add(string name, IData data);
                 IData get(string name);
                 IData get(int index);
+
                 int count { get; }
+                IEnumerable<string> keys { get; }
 
                 string name { get; set; }
                 int index { get; set; }
@@ -44,6 +46,7 @@ namespace tezcat.Framework.Core
                 string IData.name { get; set; } = null;
                 int IData.index { get; set; } = -1;
                 int IData.count => this.Count;
+                IEnumerable<string> IData.keys => this.Keys;
 
                 void IData.add(string name, IData data)
                 {
@@ -80,6 +83,7 @@ namespace tezcat.Framework.Core
                 string IData.name { get; set; } = null;
                 int IData.index { get; set; } = -1;
                 int IData.count => this.Count;
+                IEnumerable<string> IData.keys => throw new NotImplementedException("DataArray does not support keys.");
 
                 void IData.add(string name, IData data)
                 {
@@ -119,6 +123,7 @@ namespace tezcat.Framework.Core
                 string IData.name { get; set; } = null;
                 int IData.index { get; set; } = -1;
                 int IData.count => 0;
+                IEnumerable<string> IData.keys => throw new NotImplementedException("DataT does not support keys.");
 
                 void IData.add(string name, IData data)
                 {
@@ -173,27 +178,11 @@ namespace tezcat.Framework.Core
             int mCurrentIndex = -1;
 
             public int count => mCurrent.count;
+            public IEnumerable<string> keys => mCurrent.keys;
             public IReadOnlyDictionary<string, IData> dict => (IReadOnlyDictionary<string, IData>)mCurrent;
             public IReadOnlyList<IData> array => (IReadOnlyList<IData>)mCurrent;
-
-            public void beginRead()
-            {
-                mCurrentIndex = -1;
-                mCurrentName = null;
-            }
-
-            public void endRead()
-            {
-                if (mCurrent.parent != null)
-                {
-                    throw new Exception();
-                }
-                mCurrent = null;
-                mCurrentIndex = -1;
-
-                mRoot.close();
-                mRoot = null;
-            }
+            public bool isObject => mRoot.dataType == DataType.Object;
+            public bool isArray => mRoot.dataType == DataType.Array;
 
             private void setCurrent(string name)
             {
@@ -209,14 +198,14 @@ namespace tezcat.Framework.Core
 
             private void resetCurrent(string name)
             {
-                mCurrent = (IData)mCurrent.parent;
+                mCurrent = mCurrent.parent;
                 mCurrentName = mCurrent.name;
                 mCurrentIndex = mCurrent.index;
             }
 
             private void resetCurrent(int index)
             {
-                mCurrent = (IData)mCurrent.parent;
+                mCurrent = mCurrent.parent;
                 mCurrentName = mCurrent.name;
                 mCurrentIndex = mCurrent.index;
             }
@@ -307,9 +296,9 @@ namespace tezcat.Framework.Core
             {
                 if (((DataObject)mCurrent).TryGetValue(name, out var data))
                 {
-                    this.checkType(DataType.Object);
                     mCurrentName = name;
                     mCurrent = data;
+                    this.checkType(DataType.Object);
                     return true;
                 }
 
@@ -320,9 +309,9 @@ namespace tezcat.Framework.Core
             {
                 if (((DataObject)mCurrent).TryGetValue(name, out var data))
                 {
-                    this.checkType(DataType.Array);
                     mCurrentName = name;
                     mCurrent = data;
+                    this.checkType(DataType.Array);
                     return true;
                 }
 
@@ -474,12 +463,15 @@ namespace tezcat.Framework.Core
                 }
             }
 
-            public bool load(string filePath)
+            public bool beginRead(string filePath)
             {
                 if (mRoot != null)
                 {
                     throw new Exception("Root is already created, please close it first.");
                 }
+
+                mCurrentIndex = -1;
+                mCurrentName = null;
 
                 var content = File.ReadAllText(filePath, Encoding.UTF8);
                 if (content != null)
@@ -543,7 +535,7 @@ namespace tezcat.Framework.Core
                             case JsonToken.Boolean:
                                 helper.setData(name, new DataT<bool>()
                                 {
-                                    type = DataType.String,
+                                    type = DataType.Bool,
                                     value = (bool)jsonReader.Value
                                 });
                                 break;
@@ -561,6 +553,19 @@ namespace tezcat.Framework.Core
                 }
 
                 return false;
+            }
+
+            public void endRead()
+            {
+                if (mCurrent.parent != null)
+                {
+                    throw new Exception();
+                }
+                mCurrent = null;
+                mCurrentIndex = -1;
+
+                mRoot.close();
+                mRoot = null;
             }
 
             public void close()

@@ -120,9 +120,9 @@ namespace tezcat.Framework.Game
         public abstract void serialize(TezSaveController.Writer writer);
         public abstract void deserialize(TezSaveController.Reader reader);
 
-        public string valueToString()
+        public override string valueToString()
         {
-            return mValue.ToString();
+            return this.value.ToString();
         }
     }
 
@@ -151,7 +151,7 @@ namespace tezcat.Framework.Game
 
         public override void deserialize(TezSaveController.Reader reader)
         {
-            mBaseValue = reader.readInt(this.name);
+            this.baseValue = reader.readInt(this.name);
         }
     }
 
@@ -180,7 +180,7 @@ namespace tezcat.Framework.Game
 
         public override void deserialize(TezSaveController.Reader reader)
         {
-            mBaseValue = reader.readFloat(this.name);
+            this.baseValue = reader.readFloat(this.name);
         }
     }
 }
