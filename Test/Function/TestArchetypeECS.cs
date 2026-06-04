@@ -705,9 +705,9 @@ namespace tezcat.Framework.Test
     }
     #endregion
 
-    class TestObject : TezBaseTest
+    class TestArchetypeECS : TezBaseTest
     {
-        public TestObject() : base("Objects")
+        public TestArchetypeECS() : base("ArchetypeECS")
         {
 
         }

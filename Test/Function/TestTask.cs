@@ -204,7 +204,7 @@ namespace tezcat.Framework.Test
                     executor.reportComplete();
                 }
             })
-            .onComplete(me=>
+            .onComplete(me =>
             {
                 Console.WriteLine($"Moving Completes ...... {index}");
                 preTask.reportComplete();
@@ -227,7 +227,7 @@ namespace tezcat.Framework.Test
                     executor.reportComplete();
                 }
             })
-            .onComplete(me=>
+            .onComplete(me =>
             {
                 preTask.reportComplete();
             })

@@ -5,357 +5,150 @@ namespace tezcat.Framework.Game
 {
     /// <summary>
     /// 
+    /// 子节点完成时把父节点又加入进循环导致bug
+    /// 
+    /// 
+    /// 如果子节点挂起,那就挂起他的父节点
+    /// 
+    /// 改成childreport
+    /// 
     /// </summary>
     public class TezStepSystem
     {
         public enum StepState
         {
             Run,
-            Resume,
             Wait,
+            Pause,
             Complete,
             Abort,
             Jump,
-            Next,
-            Suspend
         }
 
-        public interface IStepController
+        public interface IStepData
         {
-            void wait(IStepController stepController);
-            void suspend();
-            void complete();
+            void close();
+        }
+
+        public interface IStep
+        {
+            IStep parent { get; }
+            IStepData userData { get; set; }
+
+            /// <summary>
+            /// 等待另一个Step执行完成
+            /// </summary>
+            /// <param name="step"></param>
+            void wait(IStep step);
+
+            /// <summary>
+            /// 暂停当前Group
+            /// </summary>
+            void pause();
+
+            /// <summary>
+            /// 从暂停中恢复
+            /// </summary>
             void resume();
+
+            /// <summary>
+            /// 中断当前Group
+            /// </summary>
             void abort();
+
+            /// <summary>
+            /// 跳过当前Group中的下一个步骤
+            /// </summary>
             void jump();
         }
 
-        public interface IStepExecutor : IStepController
+        public interface IStepExecutor : IStep
         {
+            IStepExecutor parent { get; set; }
             StepState stepState { get; }
-            int waitIndex { get; set; }
-            void execute();
+            void childReportComplete(IStepExecutor child);
             void recycle();
+
+            void onJump();
+            void onRun();
+            void onAbort();
+            void onComplete();
+            void onWait();
         }
 
-        public class Group : IStepExecutor
+
+        /// <summary>
+        /// Grop是一个单元
+        /// 通过内部的Step执行逻辑
+        /// 每一个step只执行一帧,每一帧结束后,根据step的状态决定下一步的执行逻辑
+        /// 
+        /// 在step内部调用wait pause resume abort jump来达到不同的功能效果
+        /// 
+        /// </summary>
+        public class StepGroup : IStepExecutor
         {
-            Queue<Action<IStepExecutor>> mSteps = new Queue<Action<IStepExecutor>>();
+            public string name { get; set; }
+            string oldName = null;
+
+            Queue<Action<IStep>> mSteps = new Queue<Action<IStep>>();
             StepState mStepState = StepState.Run;
-            public StepState stepState => mStepState;
+            Sequence mTriggerGroup = null;
 
-            int IStepExecutor.waitIndex { get; set; }
+            public StepState stepState
+            {
+                get
+                {
+                    //Console.WriteLine($"Group[{name}|{oldName}]: StepState {mStepState}");
+                    return mStepState;
+                }
+            }
 
-            public void createStep(Action<IStepExecutor> action)
+            IStepExecutor mParent = null;
+            IStepExecutor IStepExecutor.parent
+            {
+                get { return mParent; }
+                set { mParent = value; }
+            }
+
+            IStep IStep.parent
+            {
+                get { return mParent; }
+            }
+
+            IStepData mUserData = null;
+            IStepData IStep.userData
+            {
+                get { return mUserData; }
+                set { mUserData  = value; }
+            }
+
+            /// <summary>
+            /// 添加步骤
+            /// </summary>
+            public void addStep(Action<IStep> action)
             {
                 mSteps.Enqueue(action);
             }
 
-            void IStepExecutor.execute()
+            private void reset()
             {
-                if (mSteps.Count > 0)
-                {
-                    switch (mStepState)
-                    {
-                        //执行当前步骤,只执行一帧
-                        case StepState.Run:
-                            mSteps.Dequeue().Invoke(this);
-                            break;
-                        //中断,清除所有步骤
-                        case StepState.Abort:
-                            mSteps.Clear();
-                            break;
-                        //跳过,跳过下一个步骤
-                        case StepState.Jump:
-                            mSteps.Dequeue();
-                            break;
-                    }
-                }
-                else
-                {
-                    mStepState = StepState.Complete;
-                }
-            }
-
-            void IStepController.suspend()
-            {
-                mStepState = StepState.Suspend;
-            }
-
-            void IStepController.complete()
-            {
-                mStepState = StepState.Complete;
-            }
-
-            void IStepController.resume()
-            {
-                mStepState = StepState.Run;
-                TezStepSystem.manager.resume(this);
-            }
-
-            void IStepController.abort()
-            {
-                //mStepState = StepState.Abort;
-                mSteps.Clear();
-                mStepState = StepState.Complete;
-            }
-
-            void IStepController.jump()
-            {
-                //mStepState = StepState.Jump;
-                if (mSteps.Count > 0)
-                {
-                    mSteps.Dequeue();
-                }
-                else
-                {
-                    mStepState = StepState.Complete;
-                }
-            }
-
-            void IStepExecutor.recycle()
-            {
+                //Console.WriteLine($"Reset Group: {this.name}|{oldName}");
+                oldName = this.name;
+                mUserData?.close();
                 mSteps.Clear();
                 mStepState = StepState.Run;
-                ((IStepExecutor)this).waitIndex = -1;
-            }
 
-            void IStepController.wait(IStepController stepController)
-            {
-                mStepState = StepState.Wait;
-                manager.wait(this).push((IStepExecutor)stepController);
-            }
-        }
+                mParent = null;
+                this.name = null;
+                mUserData = null;
 
-        /*
-        public class Step : IStepExecutor
-        {
-            static Queue<Step> mPool = new Queue<Step>();
-            public static Step create(Action<IStepController> action)
-            {
-                if (mPool.Count > 0)
+                if (mTriggerGroup != null)
                 {
-                    var step = mPool.Dequeue();
-                    step.mActon = action;
-                    return step;
+                    mPoolLinkSequence.recycle(mTriggerGroup);
+                    mTriggerGroup = null;
                 }
 
-                return new Step(action);
-            }
-
-
-            StepState mStepState = StepState.Run;
-            public StepState stepState => mStepState;
-            Action<Step> mActon = null;
-
-            int IStepExecutor.waitIndex { get; set; } = 0;
-
-            public Step(Action<IStepController> action)
-            {
-                mActon = action;
-                mStepState = StepState.Run;
-            }
-
-            void IStepExecutor.execute()
-            {
-                mActon(this);
-            }
-
-            void IStepController.suspend()
-            {
-                mStepState = StepState.Suspend;
-            }
-
-            void IStepController.resume()
-            {
-                switch (mStepState)
-                {
-                    case StepState.Wait:
-                        manager.resume(this);
-                        break;
-                    case StepState.Suspend:
-                        manager.run(this);
-                        break;
-                    default:
-                        break;
-                }
-            }
-
-            void IStepController.complete()
-            {
-                mStepState = StepState.Complete;
-            }
-
-            void IStepController.abort()
-            {
-                mStepState = StepState.Abort;
-            }
-
-            void IStepController.jump()
-            {
-                mStepState = StepState.Jump;
-            }
-
-            void IStepExecutor.recycle()
-            {
-                mActon = null;
-                mStepState = StepState.Run;
-                ((IStepExecutor)this).waitIndex = -1;
-            }
-
-            void IStepController.wait(IStepController stepController)
-            {
-
-            }
-        }
-        */
-
-        public class Sequence : IStepExecutor
-        {
-            StepState mStepState = StepState.Run;
-            StepState IStepExecutor.stepState => mStepState;
-            int IStepExecutor.waitIndex { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-
-            Queue<IStepExecutor> mQueue = new Queue<IStepExecutor>();
-
-            void IStepController.abort()
-            {
-                throw new NotImplementedException();
-            }
-
-            void IStepController.complete()
-            {
-                throw new NotImplementedException();
-            }
-
-            void IStepExecutor.execute()
-            {
-                if (mQueue.Count > 0)
-                {
-                    var step = mQueue.Peek();
-                    switch (step.stepState)
-                    {
-                        case StepState.Run:
-                            step.execute();
-                            break;
-                        case StepState.Wait:
-                            break;
-                        case StepState.Complete:
-                            mQueue.Dequeue();
-                            step.recycle();
-                            break;
-                        case StepState.Jump:
-                            mQueue.Dequeue();
-                            step.recycle();
-                            break;
-                        case StepState.Abort:
-                            mQueue.Dequeue();
-                            step.recycle();
-                            break;
-                    }
-                }
-                else
-                {
-                    mStepState = StepState.Complete;
-                }
-            }
-
-            void IStepController.jump()
-            {
-                throw new NotImplementedException();
-            }
-
-            void IStepExecutor.recycle()
-            {
-                throw new NotImplementedException();
-            }
-
-            void IStepController.resume()
-            {
-                switch (mStepState)
-                {
-                    case StepState.Wait:
-                        manager.resume(this);
-                        break;
-                    case StepState.Suspend:
-                        manager.run(this);
-                        break;
-                    default:
-                        break;
-                }
-            }
-
-            void IStepController.suspend()
-            {
-                throw new NotImplementedException();
-            }
-
-            void IStepController.wait(IStepController stepController)
-            {
-                mQueue.Enqueue((IStepExecutor)stepController);
-            }
-        }
-
-
-        public class LinkSequence : IStepExecutor
-        {
-            IStepExecutor mMaster = null;
-            Queue<IStepExecutor> mSteps = new Queue<IStepExecutor>();
-
-            StepState mStepState = StepState.Run;
-            StepState IStepExecutor.stepState => mStepState;
-            int IStepExecutor.waitIndex { get; set; } = -1;
-
-            public void setParent(IStepExecutor master)
-            {
-                mMaster = master;
-            }
-
-            public void push(IStepExecutor step)
-            {
-                mSteps.Enqueue(step);
-            }
-
-            void IStepExecutor.execute()
-            {
-                if (mSteps.Count > 0)
-                {
-                    var step = mSteps.Peek();
-                    switch (step.stepState)
-                    {
-                        case StepState.Run:
-                            step.execute();
-                            break;
-                        case StepState.Wait:
-                            break;
-                        case StepState.Complete:
-                            mSteps.Dequeue();
-                            step.recycle();
-                            break;
-                        case StepState.Jump:
-                            mSteps.Dequeue();
-                            step.recycle();
-                            break;
-                        case StepState.Abort:
-                            mSteps.Dequeue();
-                            step.recycle();
-                            break;
-                    }
-                }
-                else
-                {
-                    mStepState = StepState.Complete;
-                    mMaster?.resume();
-                }
-            }
-
-            internal void reset()
-            {
-                mMaster = null;
-                mSteps.Clear();
-
-                mStepState = StepState.Run;
-                ((IStepExecutor)this).waitIndex = -1;
+                mPoolGroup.recycle(this);
             }
 
             void IStepExecutor.recycle()
@@ -363,246 +156,450 @@ namespace tezcat.Framework.Game
                 this.reset();
             }
 
-            void IStepController.wait(IStepController stepController)
+            void IStepExecutor.onRun()
             {
-                mStepState = StepState.Wait;
-                manager.wait(this).push((IStepExecutor)stepController);
-            }
+                //Console.WriteLine($"Group[{name}|{oldName}]: Exe {mStepState}");
+                //                 if (mTriggerGroup != null)
+                //                 {
+                //                     if (mTriggerGroup.runImmediately())
+                //                     {
+                //                         mStepState = StepState.Wait;
+                //                         return;
+                //                     }
+                // 
+                //                     mPoolLinkSequence.recycle(mTriggerGroup);
+                //                     mTriggerGroup = null;
+                //                 }
 
-            void IStepController.suspend()
-            {
-                mStepState = StepState.Suspend;
-            }
-
-            void IStepController.complete()
-            {
-                mStepState = StepState.Complete;
-            }
-
-            void IStepController.resume()
-            {
-                switch (mStepState)
+                if (mSteps.Count == 0)
                 {
-                    case StepState.Wait:
-                        manager.resume(this);
-                        break;
-                    case StepState.Suspend:
-                        manager.run(this);
-                        break;
-                    default:
-                        break;
+                    mStepState = StepState.Complete;
+                    return;
+                }
+
+                mSteps.Dequeue().Invoke(this);
+            }
+
+            void IStepExecutor.onWait()
+            {
+                if (mTriggerGroup == null)
+                {
+                    throw new InvalidOperationException();
+                }
+
+                if (!mTriggerGroup.runImmediately())
+                {
+                    if(mSteps.Count == 0)
+                    {
+                        mStepState = StepState.Complete;
+                    }
+                    else
+                    {
+                        mStepState = StepState.Run;
+                    }
+                    manager.runNextFrame(this);
+                }
+
+//                 mPoolLinkSequence.recycle(mTriggerGroup);
+//                 mTriggerGroup = null;
+            }
+
+            void IStepExecutor.onJump()
+            {
+                mSteps.Dequeue();
+                if (mSteps.Count == 0)
+                {
+                    mStepState = StepState.Complete;
+                }
+                else
+                {
+                    mStepState = StepState.Run;
+                }
+            }
+
+            void IStepExecutor.onAbort()
+            {
+                if (mParent != null)
+                {
+                    mParent.childReportComplete(this);
+                }
+
+                this.reset();
+            }
+
+            void IStepExecutor.onComplete()
+            {
+                if (mParent != null)
+                {
+                    mParent.childReportComplete(this);
+                }
+
+                this.reset();
+            }
+
+            void IStep.pause()
+            {
+                mStepState = StepState.Pause;
+            }
+
+            void IStep.resume()
+            {
+                if(mStepState != StepState.Pause)
+                {
+                    throw new Exception();
                 }
 
                 mStepState = StepState.Run;
+                manager.runNextFrame(this);
             }
 
-            void IStepController.abort()
+            void IStep.abort()
             {
-                throw new NotImplementedException();
+                mStepState = StepState.Abort;
             }
 
-            void IStepController.jump()
+            void IStep.jump()
             {
-                throw new NotImplementedException();
+                if (mSteps.Count == 0)
+                {
+                    mStepState = StepState.Complete;
+                }
+                else
+                {
+                    mStepState = StepState.Jump;
+                }
+            }
+
+            void IStep.wait(IStep stepController)
+            {
+                mStepState = StepState.Wait;
+                if (mTriggerGroup == null)
+                {
+                    mTriggerGroup = mPoolLinkSequence.create();
+                }
+
+                ((IStepExecutor)stepController).parent = this;
+                mTriggerGroup.add((IStepExecutor)stepController);
+            }
+
+            void IStepExecutor.childReportComplete(IStepExecutor child)
+            {
+                if (mStepState == StepState.Abort || mStepState == StepState.Jump)
+                {
+                    manager.runNextFrame(this);
+                    return;
+                }
+
+                if (mTriggerGroup == null)
+                {
+                    mStepState = StepState.Run;
+                    manager.runNextFrame(this);
+                    return;
+                }
+
+                if (!mTriggerGroup.runNextFrame(child))
+                {
+                    mPoolLinkSequence.recycle(mTriggerGroup);
+                    mTriggerGroup = null;
+
+                    mStepState = StepState.Run;
+                    manager.runNextFrame(this);
+                }
+            }
+        }
+
+        internal class Sequence
+        {
+            Queue<IStepExecutor> mSteps = new Queue<IStepExecutor>();
+
+            internal void add(IStepExecutor step)
+            {
+                mSteps.Enqueue(step);
+            }
+
+            internal bool runImmediately()
+            {
+                if (mSteps.Count > 0)
+                {
+                    manager.runImmediately(mSteps.Dequeue());
+                    return true;
+                }
+
+                return false;
+            }
+
+            internal bool runNextFrame(IStepExecutor step)
+            {
+                if (mSteps.Count > 0)
+                {
+                    manager.runNextFrame(mSteps.Dequeue());
+                    return true;
+                }
+
+                return false;
+            }
+
+            internal void reset()
+            {
+                foreach (var item in mSteps)
+                {
+                    item.recycle();
+                }
+                mSteps.Clear();
             }
         }
 
         class PoolLinkSequence
         {
-            List<LinkSequence> mLinkSequenceRegistry = new List<LinkSequence>();
-            Queue<int> mFreeRegistry = new Queue<int>();
+            Queue<Sequence> mFreeLinkSequence = new Queue<Sequence>();
 
-            public (LinkSequence, int) create(IStepExecutor master)
+            internal void clear()
             {
-                if (mFreeRegistry.Count > 0)
+                foreach (var item in mFreeLinkSequence)
                 {
-                    var index = mFreeRegistry.Dequeue();
-                    var temp = mLinkSequenceRegistry[index];
-                    temp.reset();
-                    temp.setParent(master);
-                    return (temp, index);
+                    item.reset();
+                }
+            }
+
+            internal Sequence create()
+            {
+                if (mFreeLinkSequence.Count > 0)
+                {
+                    var temp = mFreeLinkSequence.Dequeue();
+                    return temp;
                 }
                 else
                 {
-                    var temp = new LinkSequence();
-                    temp.setParent(master);
-                    mLinkSequenceRegistry.Add(temp);
-                    return (temp, mLinkSequenceRegistry.Count - 1);
+                    var temp = new Sequence();
+                    return temp;
                 }
             }
 
-            public LinkSequence get(int index)
+            internal void recycle(Sequence linkSequence)
             {
-                return mLinkSequenceRegistry[index];
-            }
-
-            public void recycle(int index)
-            {
-                mLinkSequenceRegistry[index].reset();
-                mFreeRegistry.Enqueue(index);
+                linkSequence.reset();
+                mFreeLinkSequence.Enqueue(linkSequence);
             }
         }
 
-        class PoolSuspend
+        class PoolGroup
         {
-            List<IStepExecutor> mLinkSequenceRegistry = new List<IStepExecutor>();
-            Queue<int> mFreeRegistry = new Queue<int>();
+            Queue<StepGroup> mFreeRegistry = new Queue<StepGroup>();
 
-            public void push(IStepExecutor master)
+            internal StepGroup create()
             {
                 if (mFreeRegistry.Count > 0)
                 {
-                    var index = mFreeRegistry.Dequeue();
-                    mLinkSequenceRegistry[index] = master;
+                    return mFreeRegistry.Dequeue();
                 }
                 else
                 {
-                    mLinkSequenceRegistry.Add(master);
+                    return new StepGroup();
                 }
+            }
+
+            internal StepGroup create(IStepData userData)
+            {
+                if (mFreeRegistry.Count > 0)
+                {
+                    var g = mFreeRegistry.Dequeue();
+                    ((IStep)g).userData = userData;
+                    return g;
+                }
+                else
+                {
+                    var g = new StepGroup();
+                    ((IStep)g).userData = userData;
+                    return g;
+                }
+            }
+
+            internal StepGroup create(string name)
+            {
+                if (mFreeRegistry.Count > 0)
+                {
+                    var temp = mFreeRegistry.Dequeue();
+                    temp.name = name;
+                    return temp;
+                }
+                else
+                {
+                    return new StepGroup()
+                    {
+                        name = name
+                    };
+                }
+            }
+
+            internal void recycle(StepGroup group)
+            {
+                mFreeRegistry.Enqueue(group);
             }
         }
 
         public class Manager
         {
-            PoolLinkSequence mPoolLinkSequence = new PoolLinkSequence();
-            List<IStepExecutor> mExecutors = new List<IStepExecutor>();
-            int mExecutorSize = 0;
+            enum SwapBuffer
+            {
+                Init, A, B
+            }
 
-            Queue<IStepExecutor> mNewAddCache = new Queue<IStepExecutor>();
+            List<IStepExecutor> mExeBufferA = new List<IStepExecutor>();
+            List<IStepExecutor> mExeBufferB = new List<IStepExecutor>();
+
+            List<IStepExecutor> mCurrentExecutors = null;
+            List<IStepExecutor> mNextExecutors = null;
+            List<IStepExecutor> mNewAddCache = new List<IStepExecutor>();
+
+            SwapBuffer mSwitchExecutor = SwapBuffer.Init;
+
+
+            internal Manager()
+            {
+                mCurrentExecutors = mExeBufferA;
+                mNextExecutors = mExeBufferB;
+                mSwitchExecutor = SwapBuffer.Init;
+            }
 
             public void run(IStepExecutor executor)
             {
-                mNewAddCache.Enqueue(executor);
+                mNewAddCache.Add(executor);
             }
 
-            private void markForRemove(int removingIndex)
+            internal void runNextFrame(IStepExecutor executor)
             {
-                if (removingIndex != mExecutorSize - 1)
-                {
-                    var removing = mExecutors[removingIndex];
-                    var last = mExecutors[mExecutorSize - 1];
+                mNewAddCache.Add(executor);
+            }
 
-                    mExecutors[removingIndex] = last;
-                    mExecutors[mExecutorSize - 1] = removing;
+            internal void runImmediately(IStepExecutor executor)
+            {
+                mCurrentExecutors.Add(executor);
+            }
+
+            public void clear()
+            {
+                foreach (var item in mExeBufferA)
+                {
+                    item.recycle();
                 }
-                mExecutorSize--;
+
+                foreach (var item in mExeBufferB)
+                {
+                    item.recycle();
+                }
+
+                foreach (var item in mNewAddCache)
+                {
+                    item.recycle();
+                }
+
+                mNewAddCache.Clear();
+                mExeBufferA.Clear();
+                mExeBufferB.Clear();
             }
 
             public void update()
             {
-                while(mNewAddCache.Count > 0)
+                switch (mSwitchExecutor)
                 {
-                    this.run(mNewAddCache.Dequeue());
-                    mExecutorSize++;
+                    case SwapBuffer.Init:
+                        mSwitchExecutor = SwapBuffer.B;
+                        break;
+                    case SwapBuffer.A:
+                        mCurrentExecutors = mExeBufferA;
+                        mNextExecutors = mExeBufferB;
+                        mSwitchExecutor = SwapBuffer.B;
+                        break;
+                    case SwapBuffer.B:
+                        mCurrentExecutors = mExeBufferB;
+                        mNextExecutors = mExeBufferA;
+                        mSwitchExecutor = SwapBuffer.A;
+                        break;
+                    default:
+                        break;
                 }
 
-                for (int i = 0; i < mExecutors.Count; i++)
+                if (mNewAddCache.Count > 0)
                 {
-                    var exe = mExecutors[i];
+                    mCurrentExecutors.AddRange(mNewAddCache);
+                    mNewAddCache.Clear();
+                }
+
+                for (int i = 0; i < mCurrentExecutors.Count; i++)
+                {
+                    //先验证一下运行状态
+                    var exe = mCurrentExecutors[i];
                     switch (exe.stepState)
                     {
+                        //如果是运行状态,添加到下一轮继续执行
                         case StepState.Run:
-                            exe.execute();
+                            exe.onRun();
+                            switch (exe.stepState)
+                            {
+                                case StepState.Run:
+                                case StepState.Wait:
+                                case StepState.Jump:
+                                case StepState.Abort:
+                                    mNextExecutors.Add(exe);
+                                    break;
+                                case StepState.Complete:
+                                    exe.onComplete();
+                                    break;
+                                default:
+                                    break;
+                            }
                             break;
                         case StepState.Wait:
-                            this.markForRemove(i);
+                            exe.onWait();
                             break;
-                        case StepState.Suspend:
-                            this.markForRemove(i);
+                        case StepState.Jump:
+                            exe.onJump();
+                            switch (exe.stepState)
+                            {
+                                case StepState.Run:
+                                    mNextExecutors.Add(exe);
+                                    break;
+                                case StepState.Complete:
+                                    exe.onComplete();
+                                    break;
+                                default:
+                                    break;
+                            }
                             break;
+                        case StepState.Abort:
+                            exe.onAbort();
+                            break;
+                        //如果已经完成,就执行清理
                         case StepState.Complete:
-                            this.markForRemove(i);
-                            exe.recycle();
+                            exe.onComplete();
+                            break;
+                        case StepState.Pause:
                             break;
                         default:
                             break;
                     }
                 }
-
-                if (mExecutors.Count > mExecutorSize)
-                {
-                    mExecutors.RemoveRange(mExecutorSize, mExecutors.Count - mExecutorSize);
-                    mExecutorSize = mExecutors.Count;
-                }
+                mCurrentExecutors.Clear();
             }
 
-            public Group createGroup()
+            public StepGroup createStepGroup(string name)
             {
-                var group = new Group();
-                return group;
+                return mPoolGroup.create(name);
             }
 
-            internal LinkSequence wait(IStepExecutor master)
+            public StepGroup createStepGroup()
             {
-                if (master.waitIndex < 0)
-                {
-                    (var temp, var index) = mPoolLinkSequence.create(master);
-                    master.waitIndex = index;
-                    mNewAddCache.Enqueue(temp);
-                    return temp;
-                }
-
-                return mPoolLinkSequence.get(master.waitIndex);
+                return mPoolGroup.create();
             }
 
-            internal void resume(IStepExecutor master)
+            public StepGroup createStepGroup(IStepData userData)
             {
-                if (master.waitIndex < 0)
-                {
-                    throw new Exception("step is not in wait state");
-                }
-
-                mPoolLinkSequence.recycle(master.waitIndex);
-                master.waitIndex = -1;
-                mNewAddCache.Enqueue(master);
+                return mPoolGroup.create(userData);
             }
         }
 
+        private static PoolLinkSequence mPoolLinkSequence = new PoolLinkSequence();
+        private static PoolGroup mPoolGroup = new PoolGroup();
         public static readonly Manager manager = new Manager();
-
-        public void test()
-        {
-            var group = TezStepSystem.manager.createGroup();
-
-            group.createStep((controller) =>
-            {
-                controller.suspend();
-            });
-
-            group.createStep((controller) =>
-            {
-                controller.suspend();
-            });
-
-            group.createStep((controller) =>
-            {
-                controller.wait(this.test2());
-            });
-
-
-            TezStepSystem.manager.run(group);
-        }
-
-        public IStepController test2()
-        {
-            var group = TezStepSystem.manager.createGroup();
-
-            group.createStep((controller) =>
-            {
-                controller.suspend();
-            });
-
-            group.createStep((controller) =>
-            {
-                controller.suspend();
-            });
-
-            group.createStep((controller) =>
-            {
-                controller.suspend();
-            });
-
-            return group;
-        }
     }
 }

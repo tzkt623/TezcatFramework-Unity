@@ -35,6 +35,7 @@ namespace tezcat.Framework.Test
 
             //A
             mTestList.Add(new TestAStarSystem());
+            mTestList.Add(new TestArchetypeECS());
             //B
             mTestList.Add(new TestBehaviorTree());
             mTestList.Add(new TestBonusSystem2());
@@ -61,7 +62,6 @@ namespace tezcat.Framework.Test
             //M
             //N
             //O
-            mTestList.Add(new TestObject());
             mTestList.Add(new TestObjectPool());
             //P
             //Q
@@ -71,10 +71,11 @@ namespace tezcat.Framework.Test
             mTestList.Add(new TestSystemAttribute());
             mTestList.Add(new TestSaveController());
             mTestList.Add(new TestSignalSystem());
+            mTestList.Add(new TestStepSystem());
             //T
             mTestList.Add(new TestTag());
             mTestList.Add(new TestTranslator());
-            mTestList.Add(new TestTriggerSystem());
+            //mTestList.Add(new TestTriggerSystem());
             mTestList.Add(new TestTask());
             mTestList.Add(new TestTaskAsync());
             //U
@@ -151,7 +152,7 @@ namespace tezcat.Framework.Test
 
         int choose()
         {
-            Console.Clear();
+            //Console.Clear();
             Console.ForegroundColor = ConsoleColor.DarkGreen;
             Console.WriteLine("<======== Choose Test ========>");
             for (int i = 0; i < mTestList.Count; i++)
