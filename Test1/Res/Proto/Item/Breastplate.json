@@ -1,0 +1,13 @@
+{
+    "CID": "BreastplateData",
+    "ProtoInfo": {
+        "TID": "BreastplateData",
+        "IID": 0,
+        "Name": "H355",
+        "StackCount": 1,
+        "SharedType": false
+    },
+    "ObjectData": {
+        "ArmorAdd": 20
+    }
+}

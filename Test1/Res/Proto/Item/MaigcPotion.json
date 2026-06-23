@@ -1,0 +1,13 @@
+{
+    "CID": "MagicPotionData",
+    "ProtoInfo": {
+        "TID": "MagicPotionData",
+        "IID": 0,
+        "Name": "SmallMagicPotion",
+        "StackCount": 10,
+        "SharedType": false
+    },
+    "ObjectData": {
+        "MagicAdd": 5
+    }
+}

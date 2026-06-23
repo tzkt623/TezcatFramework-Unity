@@ -51,7 +51,7 @@ namespace tezcat.Framework.Test
         {
             //var proto = TezcatFramework.protoDB.createObject<HealthPotion>("SmallHealthPotion");
             //var e_hpPotion = TezcatFramework.protoDB.createEntity<HealthPotionData>("SmallHealthPotion");
-            //mInventory.store(TezWorld.instance.getComponent<ComPotion>(e_hpPotion), 25);
+            //mInventory.store(TezWorld.getComponent<ComPotion>(e_hpPotion), 25);
 
             //proto = TezcatFramework.protoDB.createObject<Breastplate>("H355");
             //var armor = TezcatFramework.protoDB.createObject<BreastplateData, Breastplate>("H355");

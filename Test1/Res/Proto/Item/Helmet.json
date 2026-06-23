@@ -1,0 +1,13 @@
+{
+    "CID": "HelmetData",
+    "ProtoInfo": {
+        "TID": "HelmetData",
+        "IID": 0,
+        "Name": "Monster",
+        "StackCount": 1,
+        "SharedType": false
+    },
+    "ObjectData": {
+        "ArmorAdd": 20
+    }
+}

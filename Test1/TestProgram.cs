@@ -1,0 +1,189 @@
+﻿using System;
+using System.Collections.Generic;
+using tezcat.Framework.Core;
+
+namespace tezcat.Framework.Test
+{
+    class Path
+    {
+        public static string root { get; private set; }
+
+        public static void init()
+        {
+            var path = TezFilePath.getProjectPath();
+            path = TezFilePath.cleanPath(path);
+
+            var pos = path.IndexOf("bin");
+            root = path.Remove(pos);
+        }
+    }
+
+    class FunctionTest
+    {
+        List<TezBaseTest> mTestList = new List<TezBaseTest>();
+
+        void init()
+        {
+            Path.init();
+            MyCategory.init();
+            MyDescriptorConfig.init();
+            EntityRegistry.init();
+            //TezcatFramework.set(new TezProtoDatabase());
+            //TezcatFramework.set(new TezRunTimeDatabase());
+
+            mTestList.Add(new TestDB());
+
+            //A
+            mTestList.Add(new TestAStarSystem());
+            mTestList.Add(new TestArchetypeECS());
+            //B
+            mTestList.Add(new TestBehaviorTree());
+            mTestList.Add(new TestBonusSystem2());
+            //C
+            mTestList.Add(new TestCategoryGenerator());
+            //D
+            //E
+            mTestList.Add(new TestNewECS());
+            mTestList.Add(new TestEnum());
+            //F
+            mTestList.Add(new TestFieldOffset());
+            //G
+            mTestList.Add(new TestGameMachine());
+            mTestList.Add(new TestGameState());
+            //H
+            mTestList.Add(new TestHexSystem());
+            //I
+            mTestList.Add(new TestInventory());
+            //J
+            //K
+            //L
+            mTestList.Add(new TestLifeMonitor());
+            mTestList.Add(new TestLinkedList());
+            //M
+            //N
+            //O
+            mTestList.Add(new TestObjectPool());
+            //P
+            //Q
+            //R
+            mTestList.Add(new TestRandomIndex());
+            //S
+            mTestList.Add(new TestSystemAttribute());
+            mTestList.Add(new TestSaveController());
+            mTestList.Add(new TestSignalSystem());
+            mTestList.Add(new TestStepSystem());
+            //T
+            mTestList.Add(new TestTag());
+            mTestList.Add(new TestTranslator());
+            //mTestList.Add(new TestTriggerSystem());
+            mTestList.Add(new TestTask());
+            mTestList.Add(new TestTaskAsync());
+            //U
+            //V
+            mTestList.Add(new TestValueDescriptor());
+            mTestList.Add(new TestValueArrayManager());
+            //W
+            //X
+            //Y
+            //Z
+
+            //mTestList.Add(new TestBonusSystem());
+        }
+
+        void register()
+        {
+            TezcatFramework.classFactory.registerByAttribute<Axe>();
+            TezcatFramework.classFactory.register<Gun>("Gun");
+
+            TezcatFramework.classFactory.register<Helmet>("Helmet");
+            TezcatFramework.classFactory.register<Breastplate>("Breastplate");
+            TezcatFramework.classFactory.register<Leg>("Leg");
+
+            TezcatFramework.classFactory.register<MagicPotion>("MagicPotion");
+            TezcatFramework.classFactory.register<HealthPotion>("HealthPotion");
+
+            TezcatFramework.classFactory.register<Character>("Character");
+            TezcatFramework.classFactory.register<Ship>("Ship");
+
+            TezcatFramework.classFactory.register<AxeData>("AxeData");
+            TezcatFramework.classFactory.register<GunData>("GunData");
+
+            TezcatFramework.classFactory.register<HelmetData>("HelmetData");
+            TezcatFramework.classFactory.register<BreastplateData>("BreastplateData");
+            TezcatFramework.classFactory.register<LegData>("LegData");
+
+            TezcatFramework.classFactory.register<MagicPotionData>("MagicPotionData");
+            TezcatFramework.classFactory.register<HealthPotionData>("HealthPotionData");
+
+            TezcatFramework.classFactory.register<CharacterData>("CharacterData");
+            TezcatFramework.classFactory.register<ShipData>("ShipData");
+        }
+
+        private void initProtoDB()
+        {
+            TezcatFramework.protoDB.loadConfigFile($"{Path.root}Res/Proto/ProtoConfig.json");
+            TezcatFramework.protoDB.loadProtoFile($"{Path.root}Res/Proto/Item/");
+        }
+
+        public void run()
+        {
+            this.init();
+            this.register();
+            this.initProtoDB();
+
+            while (true)
+            {
+                var index = this.choose();
+                if (index >= 0 && index < mTestList.Count)
+                {
+                    Console.ForegroundColor = ConsoleColor.Cyan;
+                    Console.WriteLine($"<=== Enter {index}.{mTestList[index].name} Test ===>");
+                    mTestList[index].init();
+                    mTestList[index].run();
+                    mTestList[index].close();
+                }
+
+                Console.ResetColor();
+                Console.WriteLine("");
+                Console.WriteLine("Press Any Key to Continue");
+                Console.ReadKey();
+            }
+        }
+
+        int choose()
+        {
+            //Console.Clear();
+            Console.ForegroundColor = ConsoleColor.DarkGreen;
+            Console.WriteLine("<======== Choose Test ========>");
+            for (int i = 0; i < mTestList.Count; i++)
+            {
+                Console.WriteLine($"{i}.{mTestList[i].name}");
+            }
+            Console.Write("Number:");
+            string index_str = Console.ReadLine();
+
+            int index;
+            try
+            {
+                index = int.Parse(index_str);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+                index = -1;
+            }
+
+            return index;
+        }
+
+    }
+
+    class TestProgram
+    {
+        static void Main()
+        {
+            FunctionTest mTest = new FunctionTest();
+            mTest.run();
+        }
+    }
+}

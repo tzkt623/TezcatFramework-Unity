@@ -24,7 +24,7 @@ namespace tezcat.Framework.Test
 
         private void showData()
         {
-            var data = TezWorld.instance.getComponent<ComUnitData, ShipData>(mShip);
+            var data = TezWorld.getComponent<ComUnitData, ShipData>(mShip);
             Console.WriteLine($"Hull: {data.hull.value}/{data.hullCapacity.value}");
             Console.WriteLine($"Armor: {data.armor.value} /{data.armorCapacity.value}");
             Console.WriteLine($"Shield: {data.shield.value} /{data.shieldCapacity.value}");
@@ -75,7 +75,7 @@ namespace tezcat.Framework.Test
             Console.WriteLine(modifier3);
             Console.WriteLine(modifier4);
 
-            var ship = TezWorld.instance.getComponent<ComUnit, Ship>(mShip);
+            var ship = TezWorld.getComponent<ComUnit, Ship>(mShip);
             ship.bonusSystem.addModifier(modifier1);
             ship.bonusSystem.addModifier(modifier2);
             ship.bonusSystem.addModifier(modifier3);
@@ -120,7 +120,7 @@ namespace tezcat.Framework.Test
 
         protected override void onClose()
         {
-            TezWorld.instance.removeEntity(mShip);
+            TezWorld.removeEntity(mShip);
         }
     }
 
@@ -140,7 +140,7 @@ namespace tezcat.Framework.Test
 
         public override void run()
         {
-            var ship = TezWorld.instance.getComponent<ComUnit, Ship>(mShip);
+            var ship = TezWorld.getComponent<ComUnit, Ship>(mShip);
 
             var hull_capacity = ship.bonusSystem.get<TezBonusInt>(MyDescriptorConfig.ShipPorperty.HullCapacity);
             Console.WriteLine($"{hull_capacity.name}: {hull_capacity.value}");
@@ -151,7 +151,7 @@ namespace tezcat.Framework.Test
 
         protected override void onClose()
         {
-            TezWorld.instance.removeEntity(mShip);
+            TezWorld.removeEntity(mShip);
         }
     }
 }

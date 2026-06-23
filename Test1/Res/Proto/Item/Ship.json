@@ -1,0 +1,16 @@
+{
+    "CID": "ShipData",
+    "ProtoInfo": {
+        "TID": "ShipData",
+        "IID": 0,
+        "Name": "Battleship",
+        "StackCount": 1,
+        "SharedType": false
+    },
+    "ObjectData": {
+        "HullCapacity": 300,
+        "ArmorCapacity": 1000,
+        "ShieldCapacity": 500,
+        "PowerCapacity": 2000
+    }
+}

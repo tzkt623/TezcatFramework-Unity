@@ -19,9 +19,9 @@ namespace tezcat.Framework.Test
 
         protected override void onClose()
         {
-            TezWorld.instance.removeEntity(mShipEntity);
-            TezWorld.instance.removeEntity(mMissle);
-            TezWorld.instance.removeEntity(mMissle2);
+            TezWorld.removeEntity(mShipEntity);
+            TezWorld.removeEntity(mMissle);
+            TezWorld.removeEntity(mMissle2);
         }
 
         public override void init()
@@ -29,18 +29,18 @@ namespace tezcat.Framework.Test
             //var proto = TezcatFramework.protoDB.getProto<Ship>("Battleship");
 
             mShipEntity = TezcatFramework.protoDB.createEntity<ShipData>("Battleship");
-            var ship = TezWorld.instance.getComponent<ComUnit, Ship>(mShipEntity);
+            var ship = TezWorld.getComponent<ComUnit, Ship>(mShipEntity);
 
-            mMissle = TezWorld.instance.createEntity<EntityMaskID_Weapon>();
-            TezWorld.instance.initComponent<ComWeaponData, MissleData>(mMissle);
-            var missle = TezWorld.instance.initComponent<ComWeapon, Missle>(mMissle);
+            mMissle = TezWorld.createEntity<EntityMaskID_Weapon>();
+            TezWorld.initComponent<ComWeaponData, MissleData>(mMissle);
+            var missle = TezWorld.initComponent<ComWeapon, Missle>(mMissle);
             missle.name = "M1";
             missle.step = 4;
             missle.setTarget(ship);
 
-            mMissle2 = TezWorld.instance.createEntity<EntityMaskID_Weapon>();
-            TezWorld.instance.initComponent<ComWeaponData, MissleData>(mMissle2);
-            var missle2 = TezWorld.instance.initComponent<ComWeapon, Missle>(mMissle2);
+            mMissle2 = TezWorld.createEntity<EntityMaskID_Weapon>();
+            TezWorld.initComponent<ComWeaponData, MissleData>(mMissle2);
+            var missle2 = TezWorld.initComponent<ComWeapon, Missle>(mMissle2);
             missle2.name = "M2";
             missle2.step = 2;
             missle2.setTarget(ship);
@@ -49,8 +49,8 @@ namespace tezcat.Framework.Test
         public override void run()
         {
             int count = 6;
-            var weapon_set = TezWorld.instance.query(new TezWorld.ArchetypeKey(TezWorld.ComponentID<ComWeapon>.ID));
-            var unit_set = TezWorld.instance.query(new TezWorld.ArchetypeKey(TezWorld.ComponentID<ComUnit>.ID));
+            var weapon_set = TezWorld.query(new TezWorld.ArchetypeKey(TezWorld.ComponentID<ComWeapon>.ID));
+            var unit_set = TezWorld.query(new TezWorld.ArchetypeKey(TezWorld.ComponentID<ComUnit>.ID));
 
             while (count-- > 0)
             {

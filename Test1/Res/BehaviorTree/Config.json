@@ -1,0 +1,44 @@
+{
+    "Node": "Sequence",
+    "Children": [
+        {
+            "Name": "Get Foods",
+            "Node": "Sequence",
+            "Children": [
+                {
+                    "Node": "NeedFoods"
+                },
+                {
+                    "Node": "GetFoods"
+                }
+            ]
+        },
+        {
+            "Name": "Get Tools",
+            "Node": "Sequence",
+            "Children": [
+                {
+                    "Node": "NeedTools"
+                },
+                {
+                    "Node": "GetTools"
+                }
+            ]
+        },
+        {
+            "Name": "Cooking",
+            "Node": "Parallel",
+            "Children": [
+                {
+                    "Node": "CookRice"
+                },
+                {
+                    "Node": "Cooking"
+                }
+            ]
+        },
+        {
+            "Node": "Eating"
+        }
+    ]
+}

@@ -1,3 +1,4 @@
+using System;
 using tezcat.Framework.ArchetypeECS;
 using tezcat.Framework.Core;
 using tezcat.Framework.Game;
@@ -60,12 +61,12 @@ namespace tezcat.Framework.Test
     {
         public static void init()
         {
-            TezWorld.instance.registerArchetype<EntityMaskID_Potion>();
-            TezWorld.instance.registerArchetype<EntityMaskID_Weapon>();
-            TezWorld.instance.registerArchetype<EntityMaskID_Armor>();
-            TezWorld.instance.registerArchetype<EntityMaskID_Unit>();
+            TezWorld.registerArchetype<EntityMaskID_Potion>();
+            TezWorld.registerArchetype<EntityMaskID_Weapon>();
+            TezWorld.registerArchetype<EntityMaskID_Armor>();
+            TezWorld.registerArchetype<EntityMaskID_Unit>();
 
-            TezWorld.instance.buildingWorld();
+            TezWorld.buildingWorld();
         }
     }
 
@@ -100,9 +101,9 @@ namespace tezcat.Framework.Test
 
         protected override void onCreateEntity(ref TezWorld.Entity entity, TezProtoObjectData protoData)
         {
-            TezWorld.instance.setEntityType<EntityMaskID_Potion>(entity);
-            TezWorld.instance.initComponent<ComPotionData, MagicPotionData>(entity, (MagicPotionData)protoData);
-            TezWorld.instance.initComponent<ComPotion, MagicPotion>(entity);
+            TezWorld.registerEntity<EntityMaskID_Potion>(entity);
+            TezWorld.initComponent<ComPotionData, MagicPotionData>(entity, (MagicPotionData)protoData);
+            TezWorld.initComponent<ComPotion, MagicPotion>(entity);
         }
     }
 
@@ -133,9 +134,9 @@ namespace tezcat.Framework.Test
 
         protected override void onCreateEntity(ref TezWorld.Entity entity, TezProtoObjectData protoData)
         {
-            TezWorld.instance.setEntityType<EntityMaskID_Potion>(entity);
-            TezWorld.instance.initComponent<ComPotionData, HealthPotionData>(entity, (HealthPotionData)protoData);
-            TezWorld.instance.initComponent<ComPotion, HealthPotion>(entity);
+            TezWorld.registerEntity<EntityMaskID_Potion>(entity);
+            TezWorld.initComponent<ComPotionData, HealthPotionData>(entity, (HealthPotionData)protoData);
+            TezWorld.initComponent<ComPotion, HealthPotion>(entity);
         }
     }
 
@@ -205,9 +206,9 @@ namespace tezcat.Framework.Test
 
         protected override void onCreateEntity(ref TezWorld.Entity entity, TezProtoObjectData protoData)
         {
-            TezWorld.instance.setEntityType<EntityMaskID_Weapon>(entity);
-            TezWorld.instance.initComponent<ComWeaponData, GunData>(entity, (GunData)protoData);
-            TezWorld.instance.initComponent<ComWeapon, Gun>(entity);
+            TezWorld.registerEntity<EntityMaskID_Weapon>(entity);
+            TezWorld.initComponent<ComWeaponData, GunData>(entity, (GunData)protoData);
+            TezWorld.initComponent<ComWeapon, Gun>(entity);
         }
     }
 
@@ -226,9 +227,9 @@ namespace tezcat.Framework.Test
 
         protected override void onCreateEntity(ref TezWorld.Entity entity, TezProtoObjectData protoData)
         {
-            TezWorld.instance.setEntityType<EntityMaskID_Weapon>(entity);
-            TezWorld.instance.initComponent<ComWeaponData, AxeData>(entity, (AxeData)protoData);
-            TezWorld.instance.initComponent<ComWeapon, Axe>(entity);
+            TezWorld.registerEntity<EntityMaskID_Weapon>(entity);
+            TezWorld.initComponent<ComWeaponData, AxeData>(entity, (AxeData)protoData);
+            TezWorld.initComponent<ComWeapon, Axe>(entity);
         }
     }
 
@@ -252,9 +253,9 @@ namespace tezcat.Framework.Test
 
         protected override void onCreateEntity(ref TezWorld.Entity entity, TezProtoObjectData protoData)
         {
-            TezWorld.instance.setEntityType<EntityMaskID_Weapon>(entity);
-            TezWorld.instance.initComponent<ComWeaponData, MissleData>(entity, (MissleData)protoData);
-            TezWorld.instance.initComponent<ComWeapon, Missle>(entity);
+            TezWorld.registerEntity<EntityMaskID_Weapon>(entity);
+            TezWorld.initComponent<ComWeaponData, MissleData>(entity, (MissleData)protoData);
+            TezWorld.initComponent<ComWeapon, Missle>(entity);
         }
     }
 
@@ -333,7 +334,7 @@ namespace tezcat.Framework.Test
             if (step == 0)
             {
                 var ship = this.target.getObject<Ship>();
-                TezWorld.instance.getComponent<ComUnitData, ShipData>(ship.entityID).hull.value = 0;
+                TezWorld.getComponent<ComUnitData, ShipData>(ship.entityID).hull.value = 0;
 
                 Console.WriteLine($"{name} hit target!!");
                 this.target.close();
@@ -396,9 +397,9 @@ namespace tezcat.Framework.Test
         
         protected override void onCreateEntity(ref TezWorld.Entity entity, TezProtoObjectData protoData)
         {
-            TezWorld.instance.setEntityType<EntityMaskID_Armor>(entity);
-            TezWorld.instance.initComponent<ComArmorData, ArmorPlateData>(entity, (ArmorPlateData)protoData);
-            TezWorld.instance.initComponent<ComArmor, ArmorPlate>(entity);
+            TezWorld.registerEntity<EntityMaskID_Armor>(entity);
+            TezWorld.initComponent<ComArmorData, ArmorPlateData>(entity, (ArmorPlateData)protoData);
+            TezWorld.initComponent<ComArmor, ArmorPlate>(entity);
         }
     }
 
@@ -411,9 +412,9 @@ namespace tezcat.Framework.Test
     {
         protected override void onCreateEntity(ref TezWorld.Entity entity, TezProtoObjectData protoData)
         {
-            TezWorld.instance.setEntityType<EntityMaskID_Armor>(entity);
-            TezWorld.instance.initComponent<ComArmorData, HelmetData>(entity, (HelmetData)protoData);
-            TezWorld.instance.initComponent<ComArmor, Helmet>(entity);
+            TezWorld.registerEntity<EntityMaskID_Armor>(entity);
+            TezWorld.initComponent<ComArmorData, HelmetData>(entity, (HelmetData)protoData);
+            TezWorld.initComponent<ComArmor, Helmet>(entity);
         }
 
         protected override TezProtoObjectData beginNewObject_JustNewProtoData()
@@ -432,9 +433,9 @@ namespace tezcat.Framework.Test
     {
         protected override void onCreateEntity(ref TezWorld.Entity entity, TezProtoObjectData protoData)
         {
-            TezWorld.instance.setEntityType<EntityMaskID_Armor>(entity);
-            TezWorld.instance.initComponent<ComArmorData, BreastplateData>(entity, (BreastplateData)protoData);
-            TezWorld.instance.initComponent<ComArmor, Breastplate>(entity);
+            TezWorld.registerEntity<EntityMaskID_Armor>(entity);
+            TezWorld.initComponent<ComArmorData, BreastplateData>(entity, (BreastplateData)protoData);
+            TezWorld.initComponent<ComArmor, Breastplate>(entity);
         }
 
         protected override TezProtoObjectData beginNewObject_JustNewProtoData()
@@ -453,9 +454,9 @@ namespace tezcat.Framework.Test
     {
         protected override void onCreateEntity(ref TezWorld.Entity entity, TezProtoObjectData protoData)
         {
-            TezWorld.instance.setEntityType<EntityMaskID_Armor>(entity);
-            TezWorld.instance.initComponent<ComArmorData, LegData>(entity, (LegData)protoData);
-            TezWorld.instance.initComponent<ComArmor, Leg>(entity);
+            TezWorld.registerEntity<EntityMaskID_Armor>(entity);
+            TezWorld.initComponent<ComArmorData, LegData>(entity, (LegData)protoData);
+            TezWorld.initComponent<ComArmor, Leg>(entity);
         }
 
         protected override TezProtoObjectData beginNewObject_JustNewProtoData()
@@ -520,9 +521,9 @@ namespace tezcat.Framework.Test
 
         protected override void onCreateEntity(ref TezWorld.Entity entity, TezProtoObjectData protoData)
         {
-            TezWorld.instance.setEntityType<EntityMaskID_Unit>(entity);
-            TezWorld.instance.initComponent<ComUnitData, CharacterData>(entity, (CharacterData)protoData);
-            TezWorld.instance.initComponent<ComUnit, Character>(entity);
+            TezWorld.registerEntity<EntityMaskID_Unit>(entity);
+            TezWorld.initComponent<ComUnitData, CharacterData>(entity, (CharacterData)protoData);
+            TezWorld.initComponent<ComUnit, Character>(entity);
         }
     }
 
@@ -591,9 +592,9 @@ namespace tezcat.Framework.Test
 
         protected override void onCreateEntity(ref TezWorld.Entity entity, TezProtoObjectData protoData)
         {
-            TezWorld.instance.setEntityType<EntityMaskID_Unit>(entity);
-            var data = TezWorld.instance.initComponent<ComUnitData, ShipData>(entity, (ShipData)protoData);
-            var ship = TezWorld.instance.initComponent<ComUnit, Ship>(entity);
+            TezWorld.registerEntity<EntityMaskID_Unit>(entity);
+            var data = TezWorld.initComponent<ComUnitData, ShipData>(entity, (ShipData)protoData);
+            var ship = TezWorld.initComponent<ComUnit, Ship>(entity);
             ship.setShipData(data);
         }
 
@@ -720,13 +721,13 @@ namespace tezcat.Framework.Test
         {
             Console.WriteLine("Create HealthPotion From ProtoDB");
             var e_potion1 = TezcatFramework.protoDB.createEntity<HealthPotionData>(0);
-            var potion1 = TezWorld.instance.getComponent<ComPotionData, HealthPotionData>(e_potion1);
+            var potion1 = TezWorld.getComponent<ComPotionData, HealthPotionData>(e_potion1);
 
             Console.WriteLine($"Potion1: {potion1.protoInfo.NID}, HealthAdd: {potion1.healthAdd.value}");
 
             Console.WriteLine("Create HealthPotion From Potion1");
             var e_potion2 = potion1.createEntity();
-            var potion2 = TezWorld.instance.getComponent<ComPotionData, HealthPotionData>(e_potion2);
+            var potion2 = TezWorld.getComponent<ComPotionData, HealthPotionData>(e_potion2);
 
             Console.WriteLine($"Potion2: {potion2.protoInfo.NID}, HealthAdd: {potion2.healthAdd.value}");
             Console.WriteLine();
@@ -738,7 +739,7 @@ namespace tezcat.Framework.Test
 
             Console.WriteLine("Potion1 CreateRedefineObject");
             var e_potion1_1 = potion1.detachEntity();
-            var potion1_1 = TezWorld.instance.getComponent<ComPotionData, HealthPotionData>(e_potion1_1);
+            var potion1_1 = TezWorld.getComponent<ComPotionData, HealthPotionData>(e_potion1_1);
 
             Console.WriteLine($"Potion1.isTheSameProtoDataOf(potion1_1) : {potion1.isTheSameProtoDataOf(potion1_1)}");
             Console.WriteLine($"Potion1.isTheSameProtoObjectOf(potion1_1) : {e_potion1 == e_potion1_1}");
@@ -749,27 +750,27 @@ namespace tezcat.Framework.Test
             Console.WriteLine();
 
             var e_potion3 = potion1.createEntity();
-            var potion3 = TezWorld.instance.getComponent<ComPotionData, HealthPotionData>(e_potion3);
+            var potion3 = TezWorld.getComponent<ComPotionData, HealthPotionData>(e_potion3);
 
             Console.WriteLine($"Potion1==Potion3 : {potion1 == potion3}");
             Console.WriteLine($"Potion1.isTheSameProtoDataOf(Potion3) : {potion1.isTheSameProtoDataOf(potion3)}");
             Console.WriteLine($"Potion1.isTheSameProtoObjectOf(Potion3) : {e_potion1 == e_potion3}");
 
-            TezWorld.instance.removeEntity(e_potion1);
-            TezWorld.instance.removeEntity(e_potion1_1);
-            TezWorld.instance.removeEntity(e_potion2);
-            TezWorld.instance.removeEntity(e_potion3);
+            TezWorld.removeEntity(e_potion1);
+            TezWorld.removeEntity(e_potion1_1);
+            TezWorld.removeEntity(e_potion2);
+            TezWorld.removeEntity(e_potion3);
     
             Console.WriteLine();
             Console.WriteLine("Create Breastplate From ProtoDB");
 
             var e_armor1 = TezcatFramework.protoDB.createEntity<BreastplateData>(0);
-            var armor1 = TezWorld.instance.getComponent<ComArmorData, BreastplateData>(e_armor1);
+            var armor1 = TezWorld.getComponent<ComArmorData, BreastplateData>(e_armor1);
 
             Console.WriteLine();
             Console.WriteLine($"Armor: {armor1.protoInfo.NID}, Armor: {armor1.armorAdd}");
 
-            TezWorld.instance.removeEntity(e_armor1);
+            TezWorld.removeEntity(e_armor1);
 
             var wall = new Wall();
             wall.close();

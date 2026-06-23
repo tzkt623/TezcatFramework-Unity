@@ -1,0 +1,167 @@
+﻿using System;
+using System.Collections.Generic;
+using tezcat.Framework.TypeTraits;
+
+namespace tezcat.Framework.Core
+{
+//     public sealed class TezUIEventDispatcher : ITezCloseable
+//     {
+//         public sealed class EventID<EventData>
+//             : TezTypeInfo<EventData, TezUIEventDispatcher>
+//             where EventData : ITezUIEventData
+//         {
+//             /// <summary>
+//             /// 萃取类
+//             /// 不需要实例化
+//             /// </summary>
+//             private EventID() { }
+//         }
+// 
+//         List<HashSet<Action<ITezUIEventData>>> mListeners = new List<HashSet<Action<ITezUIEventData>>>();
+// 
+//         public void register<EventData>() where EventData : ITezUIEventData
+//         {
+//             EventID<EventData>.setID(mListeners.Count);
+//             mListeners.Add(new HashSet<Action<ITezUIEventData>>());
+//         }
+// 
+//         public void subscribe<EventData>(object listener, Action<ITezUIEventData> function) where EventData : ITezUIEventData
+//         {
+//             mListeners[EventID<EventData>.ID].Add(function);
+//         }
+// 
+//         public void unsubscribe<EventData>(object listener, Action<ITezUIEventData> function) where EventData : ITezUIEventData
+//         {
+//             mListeners[EventID<EventData>.ID].Remove(function);
+//         }
+// 
+//         public void close()
+//         {
+//         }
+//     }
+
+    public sealed class TezEventDispatcher : ITezCloseable
+    {
+        public sealed class EventID<EventData>
+            : TezTypeInfo<EventData, TezEventDispatcher>
+            where EventData : ITezEventData
+        {
+            /// <summary>
+            /// 萃取类
+            /// 不需要实例化
+            /// </summary>
+            private EventID() { }
+        }
+
+        class QueuePair : ITezCloseable
+        {
+            public QueuePair(int id, ITezEventData data)
+            {
+                this.ID = id;
+                this.data = data;
+            }
+
+            public int ID;
+            public ITezEventData data;
+
+            public void close()
+            {
+                data = null;
+            }
+        }
+
+        List<Dictionary<object, Action<ITezEventData>>> mListeners = new List<Dictionary<object, Action<ITezEventData>>>();
+        Queue<QueuePair> mQueue = new Queue<QueuePair>();
+        Queue<KeyValuePair<int, object>> mDeleteQueue = new Queue<KeyValuePair<int, object>>();
+
+        private void register<EventData>() where EventData : ITezEventData
+        {
+            EventID<EventData>.setID(mListeners.Count);
+            mListeners.Add(new Dictionary<object, Action<ITezEventData>>());
+        }
+
+        public void subscribe<EventData>(object listener, Action<ITezEventData> function) where EventData : ITezEventData
+        {
+            if (EventID<EventData>.ID == TezTypeInfo.ErrorID)
+            {
+                this.register<EventData>();
+            }
+
+            mListeners[EventID<EventData>.ID].Add(listener, function);
+        }
+
+        public void unsubscribe<EventData>(object listener) where EventData : ITezEventData
+        {
+            mDeleteQueue.Enqueue(new KeyValuePair<int, object>(EventID<EventData>.ID, listener));
+
+            /*            m_Listeners[EventID<EventData>.ID].Remove(obj);*/
+        }
+
+        public void dispatchEvent<EventData>(EventData data) where EventData : ITezEventData
+        {
+            switch (EventID<EventData>.ID)
+            {
+                case TezTypeInfo.ErrorID:
+                    //TezCloseableHelper.close(data);
+                    data.close();
+                    break;
+                default:
+                    this.dispatchEvent(EventID<EventData>.ID, data);
+                    break;
+            }
+        }
+
+        private void dispatchEvent(int id, ITezEventData data)
+        {
+            var dic = mListeners[id];
+            foreach (var pair in dic)
+            {
+                pair.Value(data);
+            }
+            data.close();
+        }
+
+        public void pushEvent<EventData>(EventData data) where EventData : ITezEventData
+        {
+            switch (EventID<EventData>.ID)
+            {
+                case TezTypeInfo.ErrorID:
+                    data.close();
+                    //TezCloseableHelper.close(data);
+                    break;
+                default:
+                    mQueue.Enqueue(new QueuePair(EventID<EventData>.ID, data));
+                    break;
+            }
+        }
+
+        public void update()
+        {
+            while (mQueue.Count > 0)
+            {
+                var pair = mQueue.Dequeue();
+                this.dispatchEvent(pair.ID, pair.data);
+                pair.close();
+            }
+
+            while (mDeleteQueue.Count > 0)
+            {
+                var pair = mDeleteQueue.Dequeue();
+                mListeners[pair.Key].Remove(pair.Value);
+            }
+        }
+
+        public void close()
+        {
+            foreach (var listener in mListeners)
+            {
+                listener.Clear();
+            }
+            mListeners.Clear();
+            mQueue.Clear();
+
+            mListeners = null;
+            mQueue = null;
+        }
+    }
+}

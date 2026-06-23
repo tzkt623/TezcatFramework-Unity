@@ -1,0 +1,13 @@
+{
+    "CID": "AxeData",
+    "ProtoInfo": {
+        "TID": "AxeData",
+        "IID": 0,
+        "Name": "FireAxe",
+        "StackCount": 1,
+        "SharedType": false
+    },
+    "ObjectData": {
+        "Attack": 5
+    }
+}
