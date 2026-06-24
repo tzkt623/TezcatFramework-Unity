@@ -11,11 +11,14 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Reference Include="Unity.Addressables">
+      <HintPath>..\UnityDLL\Unity.Addressables.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.ResourceManager">
+      <HintPath>..\UnityDLL\Unity.ResourceManager.dll</HintPath>
+    </Reference>
     <Reference Include="UnityEngine.CoreModule">
       <HintPath>..\UnityDLL\UnityEngine.CoreModule.dll</HintPath>
-    </Reference>
-    <Reference Include="UnityEngine.IMGUIModule">
-      <HintPath>..\UnityDLL\UnityEngine.IMGUIModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.InputLegacyModule">
       <HintPath>..\UnityDLL\UnityEngine.InputLegacyModule.dll</HintPath>
