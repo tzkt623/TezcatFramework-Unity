@@ -17,87 +17,110 @@ namespace tezcat.Framework.Core
     /// 2.如果是不可共享对象,那么复制一份数据,新对象的数据是独立的
     /// 
     /// </summary>
-    public abstract class TezProtoObjectData 
+    /// 
+
+    public enum TezProtoObjectCreateMode
+    {
+        /// <summary>
+        /// 复制当前对象的数据
+        /// 
+        /// <para>
+        /// 如果当前对象是共享型
+        /// 那么复制之后的对象与原型对象为同一个
+        /// </para>
+        /// 
+        /// <para>
+        /// 如果当前对象不是共享型
+        /// 那么复制之后的对象与原型对象不是同一个,但是他们的ItemID相同
+        /// </para>
+        /// 
+        /// </summary>
+        Copy,
+
+        /// <summary>
+        /// 新建对象
+        /// 
+        /// <para>
+        /// 新建一个数据对象,与当前原型对象不是同一个,并且ItemID也不同
+        /// </para>
+        /// </summary>
+        New
+    }
+
+    public interface ITezEntityProtoData
+    {
+
+    }
+
+    public interface ITezProtoData
+    {
+
+    }
+
+    public class TezProtoObjectHelper
+    {
+        public TezWorld.Entity createEntity(TezProtoObjectData data)
+        {
+            var entity = TezWorld.instance.createEntity();
+            return entity;
+        }
+    }
+
+    public abstract class TezProtoObjectData
         : ITezCloseable
         , ITezProtoLoader
     {
         protected TezProtoInfoWrapper mProtoInfo = TezObjectPool.create<TezProtoInfoWrapper>();
         public TezProtoInfoWrapper protoInfo => mProtoInfo;
 
-        bool mInitialized = false;
-
         public void close()
         {
             this.onClose();
         }
 
-        internal void init()
-        {
-            if (!mInitialized)
-            {
-                mInitialized = true;
-                this.onInit();
-            }
-        }
-
         protected abstract void onInit();
-
-        /// <summary>
-        /// 创建Entity
-        /// </summary>
-        public TezWorld.Entity createEntity()
-        {
-            var entity = TezWorld.instance.createEntity();
-            this.onCreateEntity(ref entity, this.copyOrShare());
-            return entity;
-        }
-
-        public TezWorld.Entity detachEntity()
-        {
-            var entity = TezWorld.instance.createEntity();
-            this.onCreateEntity(ref entity, this.detachNewPortoObjectFromThis());
-            return entity;
-        }
-
-        protected abstract void onCreateEntity(ref TezWorld.Entity entity, TezProtoObjectData protoData);
-        /*
-        public TezProtoObject createObjectByCopyMe(int index = 0)
-        {
-            var obj = this.createObjectInternal(index);
-            obj.initProtoData(this.copyOrShare());
-            return obj;
-        }
-
-        public T createObjectByCopyMe<T>(int index = 0) where T : TezProtoObject
-        {
-            return (T)this.createObjectByCopyMe(index);
-        }
-
-        public TezProtoObject createObjectWithMe(int index = 0)
-        {
-            var obj = this.createObjectInternal(index);
-            obj.initProtoData(this);
-            return obj;
-        }
-
-        public ProtoObject createObjectWithMe<ProtoObject>(int index = 0) where ProtoObject : TezProtoObject
-        {
-            return (ProtoObject)this.createObjectWithMe(index);
-        }
-
-        protected virtual TezProtoObject createObjectInternal(int index) { throw new System.NotImplementedException(); }
-        */
-
+        
         public void retain()
         {
             mProtoInfo.retain();
         }
 
+        public TezProtoObjectData createDataWhitMe(TezProtoObjectCreateMode mode)
+        {
+            switch (mode)
+            {
+                case TezProtoObjectCreateMode.Copy:
+                    return this.copyOrShareFromThis();
+                case TezProtoObjectCreateMode.New:
+                    return this.newPortoObjectFromThis();
+                default:
+                    break;
+            }
+
+            throw new System.Exception();
+        }
+
+        public T createDataWhitMe<T>(TezProtoObjectCreateMode mode) where T : TezProtoObjectData
+        {
+            switch (mode)
+            {
+                case TezProtoObjectCreateMode.Copy:
+                    return (T)this.copyOrShareFromThis();
+                case TezProtoObjectCreateMode.New:
+                    return (T)this.newPortoObjectFromThis();
+                default:
+                    break;
+            }
+
+            throw new System.Exception();
+        }
+
         /// <summary>
-        /// 如果是共享对象 会共享自身
-        /// 不是共享对象 会复制自身
+        /// <para>如果是共享对象 会共享自身</para>
+        /// <para>不是共享对象 会复制自身</para>
+        /// <para>复制之后的对象与原型对象不是同一个,但是他们的ItemID相同</para>
         /// </summary>
-        public TezProtoObjectData copyOrShare()
+        private TezProtoObjectData copyOrShareFromThis()
         {
             //如果是共享类型,那么直接将当前数据注入到新对象中
             if (mProtoInfo.isSharedType)
@@ -111,22 +134,20 @@ namespace tezcat.Framework.Core
             //copy一份数据不会修改info的元数据
             data.mProtoInfo.copyFrom(mProtoInfo);
             data.endNewObject_CopyDataFrom(this);
-            data.init();
             return data;
         }
 
         /// <summary>
-        /// 从当前protoobject对象中分离出一个新的protoobject对象
+        /// 新建一个数据对象,复制原型的数据,但与当前原型对象不是同一个,并且ItemID也不同
         /// </summary>
-        public TezProtoObjectData detachNewPortoObjectFromThis()
+        private TezProtoObjectData newPortoObjectFromThis()
         {
             var data = this.beginNewObject_JustNewProtoData();
             //copy一份数据不会修改info的元数据
             //只会修改引用计数
             data.mProtoInfo.sharedFrom(mProtoInfo);
             data.mProtoInfo.redefineProtoInfo();
-            data.endNewObject_CopyDataFrom(data);
-            data.init();
+            data.endNewObject_CopyDataFrom(this);
             return data;
         }
 
@@ -157,6 +178,35 @@ namespace tezcat.Framework.Core
         {
             return this.protoInfo.itemID == other.protoInfo.itemID;
         }
+
+        public bool isTheSameDataBaseIDOf(TezProtoObjectData other)
+        {
+            return this.protoInfo.itemID.DBID == other.protoInfo.itemID.DBID;
+        }
+    }
+
+    public abstract class TezEntityProtoObjectData : TezProtoObjectData
+    {
+        protected TezWorld.Entity mEntity;
+        protected bool mInitialized = false;
+
+        /// <summary>
+        /// 创建Entity
+        /// </summary>
+        public TezWorld.Entity instantiateEntity()
+        {
+            if(!mInitialized)
+            {
+                mEntity = TezWorld.instance.createEntity();
+                this.onCreateEntity(ref mEntity);
+                this.onInit();
+                mInitialized = true;
+            }
+
+            return mEntity;
+        }
+
+        protected abstract void onCreateEntity(ref TezWorld.Entity entity);
     }
 
     /// <summary>
@@ -198,7 +248,7 @@ namespace tezcat.Framework.Core
             //mProtoData = data;
             this.onSetProtoData(data);
             this.baseProtoData.protoInfo.retain();
-            this.baseProtoData.init();
+            //this.baseProtoData.init();
             this.onInitProtoData();
         }
 

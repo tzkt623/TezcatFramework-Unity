@@ -19,7 +19,8 @@ namespace tezcat.Framework.Test
 
         public override void init()
         {
-            mShip = TezcatFramework.protoDB.createEntity<ShipData>("Battleship");
+            var data = TezcatFramework.protoDB.createObjectData<ShipData>("Battleship", TezProtoObjectCreateMode.New);
+            mShip = data.instantiateEntity();
         }
 
         private void showData()
@@ -135,7 +136,8 @@ namespace tezcat.Framework.Test
 
         public override void init()
         {
-            mShip = TezcatFramework.protoDB.createEntity<ShipData>("Battleship");
+            var data = TezcatFramework.protoDB.createObjectData<ShipData>("Battleship", TezProtoObjectCreateMode.New);
+            mShip = data.instantiateEntity();
         }
 
         public override void run()

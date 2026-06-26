@@ -47,49 +47,14 @@ namespace tezcat.Framework.Core
     public class TezProtoDatabase
     {
         #region ID Manager
-//         List<string> mTypeList = new List<string>();
-//         Dictionary<string, ushort> mTypeDict = new Dictionary<string, ushort>();
-//         public IReadOnlyDictionary<string, ushort> typeIDDict => mTypeDict;
-//         public IReadOnlyList<string> typeIDList => mTypeList;
-
         public void loadConfigFile(string configFilePath)
         {
             TezItemID.loadConfigFile(configFilePath);
-
-//             TezJsonReader reader = new TezJsonReader();
-// 
-//             if (reader.load(configFilePath))
-//             {
-//                 foreach (var key in reader.getKeys())
-//                 {
-//                     registerTypeID(key, reader.readInt(key));
-//                 }
-//             }
-// 
-//             reader.close();
         }
 
         public int getTypeID(string name)
         {
             return TezItemID.getTypeID(name);
-
-//             if (mTypeDict.TryGetValue(name, out ushort typeID))
-//             {
-//                 return typeID;
-//             }
-// 
-//             return -1;
-        }
-
-        private void registerTypeID(string typeName, int typeID)
-        {
-//             while (mTypeList.Count <= typeID)
-//             {
-//                 mTypeList.Add(null);
-//             }
-// 
-//             mTypeList[typeID] = typeName;
-//             mTypeDict.Add(typeName, (ushort)typeID);
         }
         #endregion
 
@@ -100,8 +65,6 @@ namespace tezcat.Framework.Core
                 if (ID < 0)
                 {
                     ID = TezcatFramework.protoDB.getTypeID(typeof(T).Name);
-
-                    //ID = TezItemID.getTypeID(typeof(T).Name);
                 }
             }
 
@@ -208,37 +171,37 @@ namespace tezcat.Framework.Core
         }
 
         #region Data
-        public TezProtoObjectData createObjectData(string nid)
+        public TezProtoObjectData createObjectData(string nid, TezProtoObjectCreateMode mode)
         {
-            return mFixedDict[nid].copyOrShare();
+            return mFixedDict[nid].createDataWhitMe(mode);
         }
 
-        public TezProtoObjectData createObjectData(int typeID, int indexID)
+        public TezProtoObjectData createObjectData(int typeID, int indexID, TezProtoObjectCreateMode mode)
         {
-            return mCellList[typeID].list[indexID].copyOrShare();
+            return mCellList[typeID].list[indexID].createDataWhitMe(mode);
         }
 
-        public TezProtoObjectData createObjectData(int typeID, string name)
+        public TezProtoObjectData createObjectData(int typeID, string name, TezProtoObjectCreateMode mode)
         {
-            return mCellList[typeID].dict[name].copyOrShare();
+            return mCellList[typeID].dict[name].createDataWhitMe(mode);
         }
 
-        public TezProtoObjectData createObjectData(string CID, string name)
+        public TezProtoObjectData createObjectData(string CID, string name, TezProtoObjectCreateMode mode)
         {
-            return mCellList[getTypeID(CID)].dict[name].copyOrShare();
+            return mCellList[getTypeID(CID)].dict[name].createDataWhitMe(mode);
         }
 
-        public ProtoData createObjectData<ProtoData>(int indexID) where ProtoData : TezProtoObjectData
+        public ProtoData createObjectData<ProtoData>(int indexID, TezProtoObjectCreateMode mode) where ProtoData : TezProtoObjectData
         {
-            return (ProtoData)mCellList[TypeIDGetter<ProtoData>.ID].list[indexID].copyOrShare();
+            return (ProtoData)mCellList[TypeIDGetter<ProtoData>.ID].list[indexID].createDataWhitMe(mode);
         }
 
-        public ProtoData createObjectData<ProtoData>(string name) where ProtoData : TezProtoObjectData
+        public ProtoData createObjectData<ProtoData>(string name, TezProtoObjectCreateMode mode) where ProtoData : TezProtoObjectData
         {
-            return (ProtoData)mCellList[TypeIDGetter<ProtoData>.ID].dict[name].copyOrShare();
+            return (ProtoData)mCellList[TypeIDGetter<ProtoData>.ID].dict[name].createDataWhitMe(mode);
         }
 
-        public bool tryCreateObjectData(ushort TID, ushort UID, out TezProtoObjectData protoObject)
+        public bool tryCreateObjectData(ushort TID, ushort UID, TezProtoObjectCreateMode mode, out TezProtoObjectData protoObject)
         {
             var list = mCellList[TID].list;
             if (UID < 0 || UID > list.Count)
@@ -247,15 +210,15 @@ namespace tezcat.Framework.Core
                 return false;
             }
 
-            protoObject = list[UID].copyOrShare();
+            protoObject = list[UID].createDataWhitMe(mode);
             return true;
         }
 
-        public bool tryCreateObjectData(string NID, out TezProtoObjectData protoObject)
+        public bool tryCreateObjectData(string NID, TezProtoObjectCreateMode mode, out TezProtoObjectData protoObject)
         {
             if (mFixedDict.TryGetValue(NID, out var temp))
             {
-                protoObject = temp.copyOrShare();
+                protoObject = temp.createDataWhitMe(mode);
                 return true;
             }
 
@@ -267,26 +230,26 @@ namespace tezcat.Framework.Core
 
         #region Entity
 
-        public TezWorld.Entity createEntity<ProtoData>(string name, int whichClass = 0)
-            where ProtoData : TezProtoObjectData
-        {
-            int id = TypeIDGetter<ProtoData>.ID;
-            return mCellList[id].dict[name].createEntity();
-        }
-
-        public TezWorld.Entity createEntity<ProtoData>(int index, int whichClass = 0)
-            where ProtoData : TezProtoObjectData
-        {
-            int id = TypeIDGetter<ProtoData>.ID;
-            return mCellList[id].list[index].createEntity();
-        }
-
-        public TezWorld.Entity createEntity<ProtoData>(string CID, string name, int whichClass = 0)
-            where ProtoData : TezProtoObjectData
-        {
-            var id = getTypeID(CID);
-            return mCellList[id].dict[name].createEntity();
-        }
+//         public TezWorld.Entity createEntity<ProtoData>(string name, TezProtoObjectCreateMode mode)
+//             where ProtoData : TezEntityProtoObjectData
+//         {
+//             int id = TypeIDGetter<ProtoData>.ID;
+//             return mCellList[id].dict[name].createEntity(mode);
+//         }
+// 
+//         public TezWorld.Entity createEntity<ProtoData>(int index, TezProtoObjectCreateMode mode)
+//             where ProtoData : TezEntityProtoObjectData
+//         {
+//             int id = TypeIDGetter<ProtoData>.ID;
+//             return mCellList[id].list[index].createEntity(mode);
+//         }
+// 
+//         public TezWorld.Entity createEntity<ProtoData>(string CID, string name, TezProtoObjectCreateMode mode)
+//             where ProtoData : TezEntityProtoObjectData
+//         {
+//             var id = getTypeID(CID);
+//             return mCellList[id].dict[name].createEntity(mode);
+//         }
 
         #endregion
 

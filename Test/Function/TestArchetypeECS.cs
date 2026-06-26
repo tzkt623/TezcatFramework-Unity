@@ -17,16 +17,16 @@ namespace tezcat.Framework.Test
     #region Register
 
 
-    abstract class ComOrgData : TezProtoObjectData, TezWorld.IComponent
+    abstract class ComOrgData : TezEntityProtoObjectData, TezWorld.IComponent
     {
         public int componentID => TezWorld.ComponentID<ComOrgData>.ID;
-        public int entityID { get; set; }
+        public int entityID { get => mEntity.ID; set { } }
     }
 
-    abstract class ComPotionData : TezProtoObjectData, TezWorld.IComponent
+    abstract class ComPotionData : TezEntityProtoObjectData, TezWorld.IComponent
     {
         public int componentID => TezWorld.ComponentID<ComPotionData>.ID;
-        public int entityID { get; set; }
+        public int entityID { get => mEntity.ID; set { } }
     }
 
 
@@ -98,10 +98,10 @@ namespace tezcat.Framework.Test
             this.magicAdd = reader.readInt("MagicAdd");
         }
 
-        protected override void onCreateEntity(ref TezWorld.Entity entity, TezProtoObjectData protoData)
+        protected override void onCreateEntity(ref TezWorld.Entity entity)
         {
             TezWorld.instance.setEntityType<EntityMaskID_Potion>(entity);
-            TezWorld.instance.initComponent<ComPotionData, MagicPotionData>(entity, (MagicPotionData)protoData);
+            TezWorld.instance.initComponent<ComPotionData, MagicPotionData>(entity, this);
             TezWorld.instance.initComponent<ComPotion, MagicPotion>(entity);
         }
     }
@@ -131,10 +131,10 @@ namespace tezcat.Framework.Test
             this.healthAdd.value = data.healthAdd.value;
         }
 
-        protected override void onCreateEntity(ref TezWorld.Entity entity, TezProtoObjectData protoData)
+        protected override void onCreateEntity(ref TezWorld.Entity entity)
         {
             TezWorld.instance.setEntityType<EntityMaskID_Potion>(entity);
-            TezWorld.instance.initComponent<ComPotionData, HealthPotionData>(entity, (HealthPotionData)protoData);
+            TezWorld.instance.initComponent<ComPotionData, HealthPotionData>(entity, this);
             TezWorld.instance.initComponent<ComPotion, HealthPotion>(entity);
         }
     }
@@ -167,10 +167,10 @@ namespace tezcat.Framework.Test
     #endregion
 
     #region Equipment
-    abstract class ComWeaponData : TezProtoObjectData, TezWorld.IComponent
+    abstract class ComWeaponData : TezEntityProtoObjectData, TezWorld.IComponent
     {
         public int componentID => TezWorld.ComponentID<ComWeaponData>.ID;
-        public int entityID { get; set; }
+        public int entityID { get => mEntity.ID; set { } }
 
         public int attack;
 
@@ -203,10 +203,10 @@ namespace tezcat.Framework.Test
             this.attack = otherData.attack;
         }
 
-        protected override void onCreateEntity(ref TezWorld.Entity entity, TezProtoObjectData protoData)
+        protected override void onCreateEntity(ref TezWorld.Entity entity)
         {
             TezWorld.instance.setEntityType<EntityMaskID_Weapon>(entity);
-            TezWorld.instance.initComponent<ComWeaponData, GunData>(entity, (GunData)protoData);
+            TezWorld.instance.initComponent<ComWeaponData, GunData>(entity, this);
             TezWorld.instance.initComponent<ComWeapon, Gun>(entity);
         }
     }
@@ -224,10 +224,10 @@ namespace tezcat.Framework.Test
             data.attack = this.attack;
         }
 
-        protected override void onCreateEntity(ref TezWorld.Entity entity, TezProtoObjectData protoData)
+        protected override void onCreateEntity(ref TezWorld.Entity entity)
         {
             TezWorld.instance.setEntityType<EntityMaskID_Weapon>(entity);
-            TezWorld.instance.initComponent<ComWeaponData, AxeData>(entity, (AxeData)protoData);
+            TezWorld.instance.initComponent<ComWeaponData, AxeData>(entity, this);
             TezWorld.instance.initComponent<ComWeapon, Axe>(entity);
         }
     }
@@ -250,10 +250,10 @@ namespace tezcat.Framework.Test
             this.attack = data.attack;
         }
 
-        protected override void onCreateEntity(ref TezWorld.Entity entity, TezProtoObjectData protoData)
+        protected override void onCreateEntity(ref TezWorld.Entity entity)
         {
             TezWorld.instance.setEntityType<EntityMaskID_Weapon>(entity);
-            TezWorld.instance.initComponent<ComWeaponData, MissleData>(entity, (MissleData)protoData);
+            TezWorld.instance.initComponent<ComWeaponData, MissleData>(entity, this);
             TezWorld.instance.initComponent<ComWeapon, Missle>(entity);
         }
     }
@@ -354,7 +354,7 @@ namespace tezcat.Framework.Test
     }
 
 
-    abstract class ComArmorData : TezProtoObjectData, TezWorld.IComponent
+    abstract class ComArmorData : TezEntityProtoObjectData, TezWorld.IComponent
     {
         public TezValueInt armorAdd { get; private set; } = new TezValueInt(MyDescriptorConfig.Modifier.ArmorAdd);
 
@@ -394,10 +394,10 @@ namespace tezcat.Framework.Test
         }
 
         
-        protected override void onCreateEntity(ref TezWorld.Entity entity, TezProtoObjectData protoData)
+        protected override void onCreateEntity(ref TezWorld.Entity entity)
         {
             TezWorld.instance.setEntityType<EntityMaskID_Armor>(entity);
-            TezWorld.instance.initComponent<ComArmorData, ArmorPlateData>(entity, (ArmorPlateData)protoData);
+            TezWorld.instance.initComponent<ComArmorData, ArmorPlateData>(entity, this);
             TezWorld.instance.initComponent<ComArmor, ArmorPlate>(entity);
         }
     }
@@ -409,10 +409,10 @@ namespace tezcat.Framework.Test
 
     class HelmetData : ComArmorData
     {
-        protected override void onCreateEntity(ref TezWorld.Entity entity, TezProtoObjectData protoData)
+        protected override void onCreateEntity(ref TezWorld.Entity entity)
         {
             TezWorld.instance.setEntityType<EntityMaskID_Armor>(entity);
-            TezWorld.instance.initComponent<ComArmorData, HelmetData>(entity, (HelmetData)protoData);
+            TezWorld.instance.initComponent<ComArmorData, HelmetData>(entity, this);
             TezWorld.instance.initComponent<ComArmor, Helmet>(entity);
         }
 
@@ -430,10 +430,10 @@ namespace tezcat.Framework.Test
 
     class BreastplateData : ComArmorData
     {
-        protected override void onCreateEntity(ref TezWorld.Entity entity, TezProtoObjectData protoData)
+        protected override void onCreateEntity(ref TezWorld.Entity entity)
         {
             TezWorld.instance.setEntityType<EntityMaskID_Armor>(entity);
-            TezWorld.instance.initComponent<ComArmorData, BreastplateData>(entity, (BreastplateData)protoData);
+            TezWorld.instance.initComponent<ComArmorData, BreastplateData>(entity, this);
             TezWorld.instance.initComponent<ComArmor, Breastplate>(entity);
         }
 
@@ -451,10 +451,10 @@ namespace tezcat.Framework.Test
 
     class LegData : ComArmorData
     {
-        protected override void onCreateEntity(ref TezWorld.Entity entity, TezProtoObjectData protoData)
+        protected override void onCreateEntity(ref TezWorld.Entity entity)
         {
             TezWorld.instance.setEntityType<EntityMaskID_Armor>(entity);
-            TezWorld.instance.initComponent<ComArmorData, LegData>(entity, (LegData)protoData);
+            TezWorld.instance.initComponent<ComArmorData, LegData>(entity, this);
             TezWorld.instance.initComponent<ComArmor, Leg>(entity);
         }
 
@@ -490,10 +490,10 @@ namespace tezcat.Framework.Test
     #endregion
 
     #region Unit
-    abstract class ComUnitData : TezProtoObjectData, TezWorld.IComponent
+    abstract class ComUnitData : TezEntityProtoObjectData, TezWorld.IComponent
     {
         public int componentID => TezWorld.ComponentID<ComUnitData>.ID;
-        public int entityID { get; set; }
+        public int entityID { get => mEntity.ID; set { } }
    
         protected override void onInit()
         {
@@ -518,10 +518,10 @@ namespace tezcat.Framework.Test
 
         }
 
-        protected override void onCreateEntity(ref TezWorld.Entity entity, TezProtoObjectData protoData)
+        protected override void onCreateEntity(ref TezWorld.Entity entity)
         {
             TezWorld.instance.setEntityType<EntityMaskID_Unit>(entity);
-            TezWorld.instance.initComponent<ComUnitData, CharacterData>(entity, (CharacterData)protoData);
+            TezWorld.instance.initComponent<ComUnitData, CharacterData>(entity, this);
             TezWorld.instance.initComponent<ComUnit, Character>(entity);
         }
     }
@@ -589,10 +589,10 @@ namespace tezcat.Framework.Test
             this.powerCapacity.baseValue = reader.readInt(MyDescriptorConfig.ShipPorperty.PowerCapacity.name);
         }
 
-        protected override void onCreateEntity(ref TezWorld.Entity entity, TezProtoObjectData protoData)
+        protected override void onCreateEntity(ref TezWorld.Entity entity)
         {
             TezWorld.instance.setEntityType<EntityMaskID_Unit>(entity);
-            var data = TezWorld.instance.initComponent<ComUnitData, ShipData>(entity, (ShipData)protoData);
+            var data = TezWorld.instance.initComponent<ComUnitData, ShipData>(entity, this);
             var ship = TezWorld.instance.initComponent<ComUnit, Ship>(entity);
             ship.setShipData(data);
         }
@@ -718,56 +718,44 @@ namespace tezcat.Framework.Test
 
         public override void run()
         {
-            Console.WriteLine("Create HealthPotion From ProtoDB");
-            var e_potion1 = TezcatFramework.protoDB.createEntity<HealthPotionData>(0);
-            var potion1 = TezWorld.instance.getComponent<ComPotionData, HealthPotionData>(e_potion1);
-
-            Console.WriteLine($"Potion1: {potion1.protoInfo.NID}, HealthAdd: {potion1.healthAdd.value}");
-
-            Console.WriteLine("Create HealthPotion From Potion1");
-            var e_potion2 = potion1.createEntity();
-            var potion2 = TezWorld.instance.getComponent<ComPotionData, HealthPotionData>(e_potion2);
-
-            Console.WriteLine($"Potion2: {potion2.protoInfo.NID}, HealthAdd: {potion2.healthAdd.value}");
+            Console.WriteLine("Create HealthPotion Potion1 From ProtoDB");
+            var d_potion1 = TezcatFramework.protoDB.createObjectData<HealthPotionData>(0, TezProtoObjectCreateMode.New);
+            var e_potion1 = d_potion1.instantiateEntity();
+            Console.WriteLine($"Potion1: {d_potion1.protoInfo.NID}, HealthAdd: {d_potion1.healthAdd.value}");
+            Console.WriteLine("CopyCreate HealthPotion Potion1_1 From Potion1");
+            var d_potion1_1 = d_potion1.createDataWhitMe<HealthPotionData>(TezProtoObjectCreateMode.Copy);
+            var e_potion1_1 = d_potion1_1.instantiateEntity();
+            Console.WriteLine($"Potion1_1: {d_potion1_1.protoInfo.NID}, HealthAdd: {d_potion1_1.healthAdd.value}");
             Console.WriteLine();
 
-            Console.WriteLine($"Potion1==Potion2 : {potion1 == potion2}");
-            Console.WriteLine($"Potion1.isTheSameProtoDataOf(Potion2) : {potion1.isTheSameProtoDataOf(potion2)}");
-            Console.WriteLine($"Potion1.isTheSameProtoObjectOf(Potion2) : {e_potion1 == e_potion2}");
+            Console.WriteLine($"d_potion1 == d_potion1_1 : {d_potion1 == d_potion1_1}");
+            Console.WriteLine($"d_potion1.isTheSameProtoDataOf(d_potion1_1) : {d_potion1.isTheSameProtoDataOf(d_potion1_1)}");
+            Console.WriteLine($"d_potion1.isTheSameDataBaseIDOf(d_potion1_1) : {d_potion1.isTheSameDataBaseIDOf(d_potion1_1)}");
+            Console.WriteLine($"e_potion1 == e_potion1_1 : {e_potion1 == e_potion1_1}");
             Console.WriteLine();
 
-            Console.WriteLine("Potion1 CreateRedefineObject");
-            var e_potion1_1 = potion1.detachEntity();
-            var potion1_1 = TezWorld.instance.getComponent<ComPotionData, HealthPotionData>(e_potion1_1);
+            Console.WriteLine("NewCreate HealthPotion Potion2 From Potion1");
+            var d_potion2 = d_potion1.createDataWhitMe<HealthPotionData>(TezProtoObjectCreateMode.New);
+            var e_potion2 = d_potion2.instantiateEntity();
 
-            Console.WriteLine($"Potion1.isTheSameProtoDataOf(potion1_1) : {potion1.isTheSameProtoDataOf(potion1_1)}");
-            Console.WriteLine($"Potion1.isTheSameProtoObjectOf(potion1_1) : {e_potion1 == e_potion1_1}");
-            Console.WriteLine($"Potion1.isTheSameProtoDataOf(Potion2) : {potion1.isTheSameProtoDataOf(potion2)}");
-            Console.WriteLine($"Potion1.isTheSameProtoObjectOf(Potion2) : {e_potion1 == e_potion2}");
-            Console.WriteLine($"Potion1_1.isTheSameProtoDataOf(Potion2) : {potion1_1.isTheSameProtoDataOf(potion2)}");
-            Console.WriteLine($"Potion1_1.isTheSameProtoObjectOf(Potion2) : {e_potion1_1 == e_potion2}");
+            Console.WriteLine($"d_potion2.isTheSameProtoDataOf(d_potion1) : {d_potion2.isTheSameProtoDataOf(d_potion1)}");
+            Console.WriteLine($"d_potion2.isTheSameDataBaseIDOf(d_potion1) : {d_potion2.isTheSameDataBaseIDOf(d_potion1)}");
+            Console.WriteLine($"d_potion2.isTheSameProtoDataOf(d_potion2) : {d_potion2.isTheSameProtoDataOf(d_potion1_1)}");
+            Console.WriteLine($"d_potion2.isTheSameDataBaseIDOf(d_potion2) : {d_potion2.isTheSameDataBaseIDOf(d_potion1_1)}");
             Console.WriteLine();
-
-            var e_potion3 = potion1.createEntity();
-            var potion3 = TezWorld.instance.getComponent<ComPotionData, HealthPotionData>(e_potion3);
-
-            Console.WriteLine($"Potion1==Potion3 : {potion1 == potion3}");
-            Console.WriteLine($"Potion1.isTheSameProtoDataOf(Potion3) : {potion1.isTheSameProtoDataOf(potion3)}");
-            Console.WriteLine($"Potion1.isTheSameProtoObjectOf(Potion3) : {e_potion1 == e_potion3}");
 
             TezWorld.instance.removeEntity(e_potion1);
             TezWorld.instance.removeEntity(e_potion1_1);
             TezWorld.instance.removeEntity(e_potion2);
-            TezWorld.instance.removeEntity(e_potion3);
-    
+
             Console.WriteLine();
             Console.WriteLine("Create Breastplate From ProtoDB");
 
-            var e_armor1 = TezcatFramework.protoDB.createEntity<BreastplateData>(0);
-            var armor1 = TezWorld.instance.getComponent<ComArmorData, BreastplateData>(e_armor1);
+            var d_armor1 = TezcatFramework.protoDB.createObjectData<BreastplateData>(0, TezProtoObjectCreateMode.New);
+            var e_armor1 = d_armor1.instantiateEntity();
 
             Console.WriteLine();
-            Console.WriteLine($"Armor: {armor1.protoInfo.NID}, Armor: {armor1.armorAdd}");
+            Console.WriteLine($"Armor: {d_armor1.protoInfo.NID}, Armor: {d_armor1.armorAdd}");
 
             TezWorld.instance.removeEntity(e_armor1);
 

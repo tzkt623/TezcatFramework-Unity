@@ -28,7 +28,8 @@ namespace tezcat.Framework.Test
         {
             //var proto = TezcatFramework.protoDB.getProto<Ship>("Battleship");
 
-            mShipEntity = TezcatFramework.protoDB.createEntity<ShipData>("Battleship");
+            var data = TezcatFramework.protoDB.createObjectData<ShipData>("Battleship", Core.TezProtoObjectCreateMode.New);
+            mShipEntity = data.instantiateEntity();
             var ship = TezWorld.instance.getComponent<ComUnit, Ship>(mShipEntity);
 
             mMissle = TezWorld.instance.createEntity<EntityMaskID_Weapon>();
