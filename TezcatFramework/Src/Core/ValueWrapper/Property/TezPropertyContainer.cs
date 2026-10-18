@@ -164,7 +164,7 @@ namespace tezcat.Framework.Core
         {
             if (mList.binaryFind(id, out int index))
             {
-                property = mList[id];
+                property = mList[index];
                 return true;
             }
 

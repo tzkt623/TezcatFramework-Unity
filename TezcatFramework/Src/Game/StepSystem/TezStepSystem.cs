@@ -32,8 +32,7 @@ namespace tezcat.Framework.Game
 
         public interface IStep
         {
-            IStep parent { get; }
-            IStepData userData { get; set; }
+            IStep parentStep { get; }
 
             /// <summary>
             /// 等待另一个Step执行完成
@@ -62,10 +61,21 @@ namespace tezcat.Framework.Game
             void jump();
         }
 
-        public interface IStepExecutor : IStep
+        public interface IStepWithData : IStep
         {
-            IStepExecutor parent { get; set; }
+            IStepData userData { get; set; }
+        }
+
+        public interface IStepWithData<T> : IStep where T : IStepData
+        {
+            T userData { get; set; }
+        }
+
+        public interface IStepExecutor : IStepWithData
+        {
+            IStepExecutor parentExecutor { get; set; }
             StepState stepState { get; }
+            int stepIndex { get; }
             void childReportComplete(IStepExecutor child);
             void recycle();
 
@@ -90,7 +100,11 @@ namespace tezcat.Framework.Game
             public string name { get; set; }
             string oldName = null;
 
-            Queue<Action<IStep>> mSteps = new Queue<Action<IStep>>();
+            //Queue<Action<IStep>> mSteps = new Queue<Action<IStep>>();
+            List<Action<IStep>> mSteps = new List<Action<IStep>>();
+            int mStepIndex = 0;
+            public int stepIndex => mStepIndex;
+
             StepState mStepState = StepState.Run;
             Sequence mTriggerGroup = null;
 
@@ -104,22 +118,31 @@ namespace tezcat.Framework.Game
             }
 
             IStepExecutor mParent = null;
-            IStepExecutor IStepExecutor.parent
+            IStepExecutor IStepExecutor.parentExecutor
             {
                 get { return mParent; }
                 set { mParent = value; }
             }
 
-            IStep IStep.parent
+            IStep IStep.parentStep
             {
                 get { return mParent; }
             }
 
             IStepData mUserData = null;
-            IStepData IStep.userData
+            IStepData IStepWithData.userData
             {
                 get { return mUserData; }
-                set { mUserData  = value; }
+                set { mUserData = value; }
+            }
+
+            public void setStepCount(int count)
+            {
+                mSteps.Capacity = count;
+                while (mSteps.Count < count)
+                {
+                    mSteps.Add(null);
+                }
             }
 
             /// <summary>
@@ -127,7 +150,13 @@ namespace tezcat.Framework.Game
             /// </summary>
             public void addStep(Action<IStep> action)
             {
-                mSteps.Enqueue(action);
+                //mSteps.Enqueue(action);
+                mSteps.Add(action);
+            }
+
+            public void setStep(int index, Action<IStep> action)
+            {
+                mSteps[index] = action;
             }
 
             private void reset()
@@ -137,6 +166,7 @@ namespace tezcat.Framework.Game
                 mUserData?.close();
                 mSteps.Clear();
                 mStepState = StepState.Run;
+                mStepIndex = 0;
 
                 mParent = null;
                 this.name = null;
@@ -158,26 +188,14 @@ namespace tezcat.Framework.Game
 
             void IStepExecutor.onRun()
             {
-                //Console.WriteLine($"Group[{name}|{oldName}]: Exe {mStepState}");
-                //                 if (mTriggerGroup != null)
-                //                 {
-                //                     if (mTriggerGroup.runImmediately())
-                //                     {
-                //                         mStepState = StepState.Wait;
-                //                         return;
-                //                     }
-                // 
-                //                     mPoolLinkSequence.recycle(mTriggerGroup);
-                //                     mTriggerGroup = null;
-                //                 }
-
-                if (mSteps.Count == 0)
+                if (mSteps.Count == mStepIndex)
                 {
                     mStepState = StepState.Complete;
                     return;
                 }
 
-                mSteps.Dequeue().Invoke(this);
+                //mSteps.Dequeue().Invoke(this);
+                mSteps[mStepIndex++].Invoke(this);
             }
 
             void IStepExecutor.onWait()
@@ -189,7 +207,7 @@ namespace tezcat.Framework.Game
 
                 if (!mTriggerGroup.runImmediately())
                 {
-                    if(mSteps.Count == 0)
+                    if (mSteps.Count == mStepIndex)
                     {
                         mStepState = StepState.Complete;
                     }
@@ -200,14 +218,15 @@ namespace tezcat.Framework.Game
                     manager.runNextFrame(this);
                 }
 
-//                 mPoolLinkSequence.recycle(mTriggerGroup);
-//                 mTriggerGroup = null;
+                //                 mPoolLinkSequence.recycle(mTriggerGroup);
+                //                 mTriggerGroup = null;
             }
 
             void IStepExecutor.onJump()
             {
-                mSteps.Dequeue();
-                if (mSteps.Count == 0)
+                //mSteps.Dequeue();
+                mStepIndex++;
+                if (mSteps.Count == mStepIndex)
                 {
                     mStepState = StepState.Complete;
                 }
@@ -244,7 +263,7 @@ namespace tezcat.Framework.Game
 
             void IStep.resume()
             {
-                if(mStepState != StepState.Pause)
+                if (mStepState != StepState.Pause)
                 {
                     throw new Exception();
                 }
@@ -260,7 +279,7 @@ namespace tezcat.Framework.Game
 
             void IStep.jump()
             {
-                if (mSteps.Count == 0)
+                if (mSteps.Count == mStepIndex)
                 {
                     mStepState = StepState.Complete;
                 }
@@ -270,6 +289,18 @@ namespace tezcat.Framework.Game
                 }
             }
 
+            //             public void wait(StepGroup stepGroup)
+            //             {
+            //                 mStepState = StepState.Wait;
+            //                 if (mTriggerGroup == null)
+            //                 {
+            //                     mTriggerGroup = mPoolLinkSequence.create();
+            //                 }
+            // 
+            //                 stepGroup.mParent = this;
+            //                 mTriggerGroup.add(stepGroup);
+            //             }
+
             void IStep.wait(IStep stepController)
             {
                 mStepState = StepState.Wait;
@@ -278,7 +309,7 @@ namespace tezcat.Framework.Game
                     mTriggerGroup = mPoolLinkSequence.create();
                 }
 
-                ((IStepExecutor)stepController).parent = this;
+                ((IStepExecutor)stepController).parentExecutor = this;
                 mTriggerGroup.add((IStepExecutor)stepController);
             }
 
@@ -403,13 +434,13 @@ namespace tezcat.Framework.Game
                 if (mFreeRegistry.Count > 0)
                 {
                     var g = mFreeRegistry.Dequeue();
-                    ((IStep)g).userData = userData;
+                    ((IStepWithData)g).userData = userData;
                     return g;
                 }
                 else
                 {
                     var g = new StepGroup();
-                    ((IStep)g).userData = userData;
+                    ((IStepWithData)g).userData = userData;
                     return g;
                 }
             }
@@ -557,6 +588,9 @@ namespace tezcat.Framework.Game
                             switch (exe.stepState)
                             {
                                 case StepState.Run:
+                                case StepState.Wait:
+                                case StepState.Jump:
+                                case StepState.Abort:
                                     mNextExecutors.Add(exe);
                                     break;
                                 case StepState.Complete:
@@ -602,4 +636,7 @@ namespace tezcat.Framework.Game
         private static PoolGroup mPoolGroup = new PoolGroup();
         public static readonly Manager manager = new Manager();
     }
+
+
+
 }

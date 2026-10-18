@@ -189,7 +189,6 @@ namespace tezcat.Framework.Core
 
         /// <summary>
         /// 从另一个元数据中共享数据
-        /// 会增加引用计数
         /// </summary>
         internal void sharedFrom(TezProtoInfoWrapper itemInfo)
         {
@@ -200,7 +199,6 @@ namespace tezcat.Framework.Core
 
         /// <summary>
         /// 复制元数据
-        /// 不会增加引用计数
         /// </summary>
         internal void copyFrom(TezProtoInfoWrapper itemInfo)
         {

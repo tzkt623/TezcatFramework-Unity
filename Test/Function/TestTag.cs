@@ -3,6 +3,7 @@ using tezcat.Framework.Core;
 
 namespace tezcat.Framework.Test
 {
+
     class TestTag : TezBaseTest
     {
         public static readonly int Tag1 = TezTagManager.register("Tag1");

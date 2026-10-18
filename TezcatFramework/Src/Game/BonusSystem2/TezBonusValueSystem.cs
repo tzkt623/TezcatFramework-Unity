@@ -36,12 +36,21 @@ namespace tezcat.Framework.Game
                 mArrays[descriptor.typeID] = new ITezBonusValue[TezValueDescriptor.getTypeCapacity((short)descriptor.typeID)];
             }
 
+            if(mArrays[descriptor.typeID][descriptor.indexID] != null)
+            {
+                throw new Exception($"BonusValue {descriptor.name} has already been registered");
+            }
+
             mArrays[descriptor.typeID][descriptor.indexID] = bonusValue;
         }
 
         public void addModifier(ITezBonusModifier modifier)
         {
             var descriptor = modifier.valueDescriptor;
+            if(mArrays[descriptor.typeID][descriptor.indexID] == null)
+            {
+                throw new Exception($"BonusValue {descriptor.name} is not registered");
+            }
             mArrays[descriptor.typeID][descriptor.indexID].addModifier(modifier);
         }
 
@@ -55,7 +64,10 @@ namespace tezcat.Framework.Game
         {
             foreach (ITezBonusValue[] item in mArrays)
             {
-                Array.Clear(item, 0, item.Length);
+                if(item != null)
+                {
+                    Array.Clear(item, 0, item.Length);
+                }
             }
 
             Array.Clear(mArrays, 0, mArrays.Length);

@@ -72,6 +72,8 @@ namespace tezcat.Framework.Test
             mTestList.Add(new TestSaveController());
             mTestList.Add(new TestSignalSystem());
             mTestList.Add(new TestStepSystem());
+            mTestList.Add(new TestStepSystem2());
+            mTestList.Add(new TestStackStepSystem());
             //T
             mTestList.Add(new TestTag());
             mTestList.Add(new TestTranslator());

@@ -109,14 +109,14 @@ namespace tezcat.Framework.Core
                 mParent = this
             };
 
-            if (sCheckIDDict.ContainsKey(e.UID))
+            if (sTempCheckIDDict.ContainsKey(e.UID))
             {
                 throw new System.Exception($"TezEnum::registerRoot Duplicate Enum {name} UID:{e.UID} RID:{e.rootID} TID:{e.subtypeID}");
             }
 
             sGlobalEnum.Add(e);
             mChildren.Add(e);
-            sCheckIDDict.Add(e.UID, e);
+            sTempCheckIDDict.Add(e.UID, e);
             sCheckNameDict.Add(e.Name, e);
             return e;
         }
@@ -142,14 +142,14 @@ namespace tezcat.Framework.Core
                 mParent = this
             };
 
-            if (sCheckIDDict.ContainsKey(e.UID))
+            if (sTempCheckIDDict.ContainsKey(e.UID))
             {
                 throw new System.Exception($"TezEnum::registerRoot Duplicate Enum ID:{sRootEnum.Count}");
             }
 
             sGlobalEnum.Add(e);
             mChildren.Add(e);
-            sCheckIDDict.Add(e.UID, e);
+            sTempCheckIDDict.Add(e.UID, e);
             sCheckNameDict.Add(e.Name, e);
             return e;
         }
@@ -171,7 +171,7 @@ namespace tezcat.Framework.Core
 
         static List<TezEnum> sGlobalEnum = new List<TezEnum>();
         static List<TezEnum> sRootEnum = new List<TezEnum>();
-        static Dictionary<int, TezEnum> sCheckIDDict = new Dictionary<int, TezEnum>();
+        static Dictionary<int, TezEnum> sTempCheckIDDict = new Dictionary<int, TezEnum>();
         static Dictionary<string, TezEnum> sCheckNameDict = new Dictionary<string, TezEnum>();
         static TezEnum sDefault = new TezEnum();
 
@@ -202,14 +202,14 @@ namespace tezcat.Framework.Core
                 mParent = sDefault
             };
 
-            if (sCheckIDDict.ContainsKey(e.UID))
+            if (sTempCheckIDDict.ContainsKey(e.UID))
             {
                 throw new System.Exception($"TezEnum::registerRoot Duplicate Enum ID:{sRootEnum.Count}");
             }
 
             sGlobalEnum.Add(e);
             sRootEnum.Add(e);
-            sCheckIDDict.Add(e.UID, e);
+            sTempCheckIDDict.Add(e.UID, e);
             sCheckNameDict.Add(e.Name, e);
             return e;
         }
@@ -226,8 +226,10 @@ namespace tezcat.Framework.Core
 
         public static void clearTempCache()
         {
-            sCheckIDDict.Clear();
-            sCheckIDDict = null;
+            sTempCheckIDDict.Clear();
+            //因为是一次性生成的所有Enum
+            //所以清理掉此缓存不会影响后续的使用
+            sTempCheckIDDict = null;
         }
 
         public static void clear()

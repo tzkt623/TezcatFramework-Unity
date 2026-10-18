@@ -89,12 +89,12 @@ namespace tezcat.Framework.Game
 
         public void addModifier(ITezBonusModifier bonusModifier)
         {
-            mModifierContainer.add(bonusModifier);
+            mModifierContainer.addModifier(bonusModifier);
         }
 
         public void removeModifier(ITezBonusModifier bonusModifier)
         {
-            mModifierContainer.remove(bonusModifier);
+            mModifierContainer.removeModifier(bonusModifier);
         }
 
         protected override void onClose()

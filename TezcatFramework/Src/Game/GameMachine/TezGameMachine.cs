@@ -27,6 +27,9 @@ namespace tezcat.Framework.Game
         public IReadOnlyCollection<TState> stack => mStack;
         Stack<TState> mStack = new Stack<TState>();
 
+        TState mPreparePopState = null;
+        bool mNeedPop = false;
+
         public State push<State>() where State : TState, new()
         {
             evtPush?.Invoke(Singleton<State>.instance);
@@ -59,7 +62,7 @@ namespace tezcat.Framework.Game
             //如果与当前状态不同,说明是标记弹出
             if (mCurrentState != Singleton<State>.instance)
             {
-                //                throw new Exception(string.Format("TezGameMachine : Pop [Current:{0}] [YourWant:{1}]", mCurrentState.GetType().Name, typeof(State).Name));
+                throw new Exception(string.Format("TezGameMachine : Pop [Current:{0}] [YourWant:{1}]", mCurrentState.GetType().Name, typeof(State).Name));
 
                 //先弹出了再说
                 Singleton<State>.instance.markPop();
@@ -68,18 +71,21 @@ namespace tezcat.Framework.Game
             }
             else
             {
-                evtPop?.Invoke(mCurrentState);
-                mCurrentState.exit(mBlackboard);
-                mCurrentState = mStack.Pop();
+                //mPreparePopState = mCurrentState;
+                mNeedPop = true;
 
-                //延迟处理所有标记弹出
-                while (mCurrentState.needMarkPop())
-                {
-                    evtPop?.Invoke(mCurrentState);
-                    mCurrentState = mStack.Pop();
-                }
-
-                mCurrentState.resume(mBlackboard);
+//                 evtPop?.Invoke(mCurrentState);
+//                 mCurrentState.exit(mBlackboard);
+//                 mCurrentState = mStack.Pop();
+// 
+//                 //延迟处理所有标记弹出
+//                 while (mCurrentState.needMarkPop())
+//                 {
+//                     evtPop?.Invoke(mCurrentState);
+//                     mCurrentState = mStack.Pop();
+//                 }
+// 
+//                 mCurrentState.resume(mBlackboard);
             }
 
             evtRefresh?.Invoke();
@@ -112,6 +118,27 @@ namespace tezcat.Framework.Game
             }
 
             return dump;
+        }
+
+        public override void execute()
+        {
+            if(mNeedPop)
+            {
+                mNeedPop = false;
+
+                evtPop?.Invoke(mCurrentState);
+                mCurrentState.exit(mBlackboard);
+                mCurrentState = mStack.Pop();
+                //延迟处理所有标记弹出
+                while (mCurrentState.needMarkPop())
+                {
+                    evtPop?.Invoke(mCurrentState);
+                    mCurrentState = mStack.Pop();
+                }
+                mCurrentState.resume(mBlackboard);
+            }
+
+            base.execute();
         }
 
         protected override void onClose()

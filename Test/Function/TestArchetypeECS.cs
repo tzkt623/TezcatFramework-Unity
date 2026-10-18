@@ -533,10 +533,10 @@ namespace tezcat.Framework.Test
         public TezValueInt shield { get; private set; } = new TezValueInt(MyDescriptorConfig.ShipValue.Shield);
         public TezValueInt power { get; private set; } = new TezValueInt(MyDescriptorConfig.ShipValue.Power);
 
-        public TezBonusInt hullCapacity { get; private set; } = new TezBonusInt(new TezBonusModifierCache(), MyDescriptorConfig.ShipPorperty.HullCapacity);
-        public TezBonusInt armorCapacity { get; private set; } = new TezBonusInt(new TezBonusModifierCache(), MyDescriptorConfig.ShipPorperty.ArmorCapacity);
-        public TezBonusInt shieldCapacity { get; private set; } = new TezBonusInt(new TezBonusModifierCache(), MyDescriptorConfig.ShipPorperty.ShieldCapacity);
-        public TezBonusInt powerCapacity { get; private set; } = new TezBonusInt(new TezBonusModifierCache(), MyDescriptorConfig.ShipPorperty.PowerCapacity);
+        public TezBonusInt hullCapacity { get; private set; } = new TezBonusInt(new TezBonusModifierContainer(), MyDescriptorConfig.ShipPorperty.HullCapacity);
+        public TezBonusInt armorCapacity { get; private set; } = new TezBonusInt(new TezBonusModifierContainer(), MyDescriptorConfig.ShipPorperty.ArmorCapacity);
+        public TezBonusInt shieldCapacity { get; private set; } = new TezBonusInt(new TezBonusModifierContainer(), MyDescriptorConfig.ShipPorperty.ShieldCapacity);
+        public TezBonusInt powerCapacity { get; private set; } = new TezBonusInt(new TezBonusModifierContainer(), MyDescriptorConfig.ShipPorperty.PowerCapacity);
 
         protected override void onClose()
         {
@@ -635,10 +635,10 @@ namespace tezcat.Framework.Test
         {
             this.lifeHolder.create(this);
             //default value
-            this.protoData.hullCapacity.baseValue = 5;
-            this.protoData.armorCapacity.baseValue = 34;
-            this.protoData.shieldCapacity.baseValue = 8;
-            this.protoData.powerCapacity.baseValue = 50;
+//             this.protoData.hullCapacity.baseValue = 5;
+//             this.protoData.armorCapacity.baseValue = 34;
+//             this.protoData.shieldCapacity.baseValue = 8;
+//             this.protoData.powerCapacity.baseValue = 50;
         }
 
         public void setShipData(ShipData data)

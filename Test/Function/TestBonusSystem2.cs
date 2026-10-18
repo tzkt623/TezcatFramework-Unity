@@ -42,7 +42,7 @@ namespace tezcat.Framework.Test
             TezBonusModifier modifier1 = new TezBonusModifier()
             {
                 owner = this,
-                calculateRule = (byte)TezBonusModifierCalculateRule.Base_SumAdd,
+                calculateRule = TezBonusModifierCalculateRule.Base_SumAdd,
                 valueDescriptor = MyDescriptorConfig.ShipPorperty.HullCapacity,
                 value = 10
             };
@@ -50,7 +50,7 @@ namespace tezcat.Framework.Test
             TezBonusModifier modifier2 = new TezBonusModifier()
             {
                 owner = this,
-                calculateRule = (byte)TezBonusModifierCalculateRule.Base_SumAdd,
+                calculateRule = TezBonusModifierCalculateRule.Base_SumAdd,
                 valueDescriptor = MyDescriptorConfig.ShipPorperty.ArmorCapacity,
                 value = 20
             };
@@ -58,7 +58,7 @@ namespace tezcat.Framework.Test
             TezBonusModifier modifier3 = new TezBonusModifier()
             {
                 owner = this,
-                calculateRule = (byte)TezBonusModifierCalculateRule.Base_SumAdd,
+                calculateRule = TezBonusModifierCalculateRule.Base_SumAdd,
                 valueDescriptor = MyDescriptorConfig.ShipPorperty.ShieldCapacity,
                 value = 30
             };
@@ -66,7 +66,7 @@ namespace tezcat.Framework.Test
             TezBonusModifier modifier4 = new TezBonusModifier()
             {
                 owner = this,
-                calculateRule = (byte)TezBonusModifierCalculateRule.Base_SumAdd,
+                calculateRule = TezBonusModifierCalculateRule.Base_SumAdd,
                 valueDescriptor = MyDescriptorConfig.ShipPorperty.PowerCapacity,
                 value = 40
             };
@@ -88,7 +88,7 @@ namespace tezcat.Framework.Test
             TezBonusModifier modifier5 = new TezBonusModifier()
             {
                 owner = this,
-                calculateRule = (byte)TezBonusModifierCalculateRule.Base_PercentAdd,
+                calculateRule = TezBonusModifierCalculateRule.Base_PercentAdd,
                 valueDescriptor = MyDescriptorConfig.ShipPorperty.HullCapacity,
                 value = 2
             };
@@ -96,7 +96,7 @@ namespace tezcat.Framework.Test
             TezBonusModifier modifier6 = new TezBonusModifier()
             {
                 owner = this,
-                calculateRule = (byte)TezBonusModifierCalculateRule.Base_PercentAdd,
+                calculateRule = TezBonusModifierCalculateRule.Base_PercentAdd,
                 valueDescriptor = MyDescriptorConfig.ShipPorperty.PowerCapacity,
                 value = 3
             };

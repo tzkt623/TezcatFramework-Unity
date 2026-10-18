@@ -80,7 +80,7 @@ namespace tezcat.Framework.Utility
 
         public void clear()
         {
-            Array.Clear(mSparseArray, -1, mSparseArray.Length);
+            Array.Fill(mSparseArray, -1);
             mDenseArray.Clear();
         }
 
@@ -167,7 +167,7 @@ namespace tezcat.Framework.Utility
 
         public void clear()
         {
-            Array.Clear(mSparseArray, -1, mSparseArray.Length);
+            Array.Fill(mSparseArray, -1);
             mDenseArray.Clear();
         }
 

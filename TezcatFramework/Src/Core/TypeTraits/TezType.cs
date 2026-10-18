@@ -294,12 +294,12 @@ namespace tezcat.Framework.TypeTraits
                 return object.ReferenceEquals(y, null);
             }
 
-            return x.Equals(y);
+            return !x.Equals(y);
         }
 
         public static bool operator ==(TezType x, TezType y)
         {
-            return !(x == y);
+            return !(x != y);
         }
     }
 }

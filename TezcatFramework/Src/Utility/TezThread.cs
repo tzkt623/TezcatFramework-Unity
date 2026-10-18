@@ -128,7 +128,8 @@ namespace tezcat.Framework.Utility
 
             public void close()
             {
-                m_Thread?.Abort();
+                //m_Thread?.Abort();
+                m_Running = false;
                 m_AutoEvent.Close();
 
                 this.name = null;

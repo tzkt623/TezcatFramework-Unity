@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using tezcat.Framework.ArchetypeECS;
 using tezcat.Framework.Utility;
 
