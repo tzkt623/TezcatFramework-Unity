@@ -40,6 +40,8 @@ namespace tezcat.Framework.Game
         void onWait(TezStepSystem2 system);
         void onComplete(TezStepSystem2 system);
         void onAbort(TezStepSystem2 system);
+
+        void close();
     }
 
     /// <summary>
@@ -88,6 +90,9 @@ namespace tezcat.Framework.Game
             }
         }
 
+        /// <summary>
+        /// 立即执行当前Group的执行器
+        /// </summary>
         public void onParent(TezStepSystem2 system)
         {
             system.runImmediately(this.parentExecutor);
@@ -141,6 +146,12 @@ namespace tezcat.Framework.Game
 
         public void setWishedTiming(TezStepWishedTiming wishedTiming)
         {
+            switch(mTiming)
+            {
+                case TezStepTiming2.Abort:
+                    break;
+            }
+
             switch (wishedTiming)
             {
                 //中止当前步骤组的执行
@@ -151,18 +162,12 @@ namespace tezcat.Framework.Game
                 case TezStepWishedTiming.Run:
                     if (mTiming != TezStepTiming2.Abort)
                     {
-                        if (mIndex >= mSteps.Count)
-                        {
-                            mTiming = TezStepTiming2.Complete;
-                        }
-                        else
-                        {
-                            mTiming = TezStepTiming2.Run;
-                        }
+                        mTiming = mIndex >= mSteps.Count ? TezStepTiming2.Complete : TezStepTiming2.Run;
                     }
                     break;
                 //期望当前步骤进行等待
                 case TezStepWishedTiming.Wait:
+                    //必须要运行状态下才能进行等待
                     if (mTiming == TezStepTiming2.Run)
                     {
                         mTiming = TezStepTiming2.Wait;
@@ -179,6 +184,8 @@ namespace tezcat.Framework.Game
 
         private void clear()
         {
+            this.childExecutor?.close();
+
             this.evtAbort = null;
             this.parentExecutor = null;
             this.childExecutor = null;
@@ -187,6 +194,11 @@ namespace tezcat.Framework.Game
             mSteps = null;
 
             mTiming = TezStepTiming2.Complete;
+        }
+
+        public void close()
+        {
+            this.clear();
         }
     }
 
@@ -214,40 +226,61 @@ namespace tezcat.Framework.Game
         /// 那个父步骤持有这个执行器
         /// </summary>
         public TezStepGroup parentStep { get; set; } = null;
-        List<TezStepGroup> mStackChains = new List<TezStepGroup>();
+        List<TezStepGroup> mStackGroup = new List<TezStepGroup>();
         int mRunIndex = 0;
         TezStepExecutorTiming mTiming = TezStepExecutorTiming.Complete;
 
         void ITezStepExecutor.onAddIntoSystem(TezStepSystem2 system)
         {
             mTiming = TezStepExecutorTiming.Run;
-            mRunIndex = mStackChains.Count - 1;
+            mRunIndex = mStackGroup.Count - 1;
         }
 
         void ITezStepExecutor.add(TezStepGroup step)
         {
             step.onInit(this);
-            mStackChains.Add(step);
-            mRunIndex = mStackChains.Count - 1;
+            mStackGroup.Add(step);
+            mRunIndex = mStackGroup.Count - 1;
         }
 
         void ITezStepExecutor.close()
         {
-            mStackChains.Clear();
-            mStackChains = null;
+            if (this.parentStep != null)
+            {
+                return;
+            }
+
+            if (mStackGroup.Count > 0)
+            {
+                foreach (var item in mStackGroup)
+                {
+                    item.close();
+                }
+            }
+            mStackGroup.Clear();
+            mStackGroup = null;
         }
 
         void ITezStepExecutor.complete(TezStepSystem2 system)
         {
+            mRunIndex = 0;
+
+            if (mStackGroup.Count > 0)
+            {
+                foreach (var item in mStackGroup)
+                {
+                    item.close();
+                }
+            }
+            mStackGroup.Clear();
+
+            //如果父步骤不为空
+            //那么此Executor必然为wait生成的
+            //所以他的生命周期归父Step管
             if (this.parentStep != null)
             {
-                system.runInNextFrame(this.parentStep.parentExecutor);
-                this.parentStep = null;
+                this.parentStep.onParent(system);
             }
-
-            mRunIndex = 0;
-            mStackChains.Clear();
-            //mStackChains = null;
         }
 
         TezStepExecutorTiming ITezStepExecutor.update(TezStepSystem2 system)
@@ -257,16 +290,16 @@ namespace tezcat.Framework.Game
                 return TezStepExecutorTiming.Complete;
             }
 
-            var chain = mStackChains[mRunIndex];
-            switch (chain.timing)
+            var group = mStackGroup[mRunIndex];
+            switch (group.timing)
             {
                 case TezStepTiming2.Run:
-                    chain.onExecute(system);
+                    group.onExecute(system);
                     break;
                 case TezStepTiming2.Complete:
-                    mStackChains.RemoveAt(mRunIndex);
-                    mRunIndex = mStackChains.Count - 1;
-                    chain.onComplete(system);
+                    mStackGroup.RemoveAt(mRunIndex);
+                    mRunIndex = mStackGroup.Count - 1;
+                    group.onComplete(system);
                     if (mRunIndex < 0)
                     {
                         mTiming = TezStepExecutorTiming.Complete;
@@ -275,9 +308,9 @@ namespace tezcat.Framework.Game
                 //group主动中断自己的执行,但是不会中断执行器的执行
                 //如果可能,执行器会继续执行下一个步骤
                 case TezStepTiming2.Abort:
-                    mStackChains.RemoveAt(mRunIndex);
-                    mRunIndex = mStackChains.Count - 1;
-                    chain.onAbort(system);
+                    mStackGroup.RemoveAt(mRunIndex);
+                    mRunIndex = mStackGroup.Count - 1;
+                    group.onAbort(system);
                     if (mRunIndex < 0)
                     {
                         mTiming = TezStepExecutorTiming.Complete;
@@ -285,16 +318,16 @@ namespace tezcat.Framework.Game
                     break;
                 //让当前步骤组进入等待状态,但是不会中断执行器的执行
                 case TezStepTiming2.Wait:
-                    chain.onWait(system);
+                    group.onWait(system);
                     break;
                 case TezStepTiming2.Children:
-                    chain.onChildren(system);
+                    group.onChildren(system);
                     mTiming = TezStepExecutorTiming.Wait;
                     break;
                 //group主动呼叫执行器执行其父步骤
                 //也就是中断当前执行器,不管里面是否还有步骤
                 case TezStepTiming2.Parent:
-                    //chain.onParent(system);
+                    //group.onParent(system);
                     //system.runInNextFrame(this.parentStep.parentExecutor);
                     mTiming = TezStepExecutorTiming.Complete;
                     break;
@@ -306,50 +339,66 @@ namespace tezcat.Framework.Game
         }
     }
 
-    
-    
+
+
     public class TezSequenceStepExecutor : ITezStepExecutor
     {
         public TezStepGroup parentStep { get; set; }
-        List<TezStepGroup> mQueueChains = new List<TezStepGroup>();
-        int mRunIndex = -1;
+        Queue<TezStepGroup> mQueueGroup = new Queue<TezStepGroup>();
         TezStepExecutorTiming mTiming = TezStepExecutorTiming.Complete;
 
         void ITezStepExecutor.add(TezStepGroup step)
         {
             step.onInit(this);
-            mQueueChains.Add(step);
+            mQueueGroup.Enqueue(step);
         }
 
         void ITezStepExecutor.onAddIntoSystem(TezStepSystem2 system)
         {
             mTiming = TezStepExecutorTiming.Run;
-            mRunIndex = 0;
         }
 
         TezStepExecutorTiming ITezStepExecutor.update(TezStepSystem2 system)
         {
-            if (mRunIndex >= mQueueChains.Count)
+            if (mQueueGroup.Count == 0)
             {
-
+                return TezStepExecutorTiming.Complete;
             }
 
-            var chain = mQueueChains[mRunIndex];
-            switch (chain.timing)
+            var group = mQueueGroup.Peek();
+            switch (group.timing)
             {
                 case TezStepTiming2.Run:
-                    //chain.onExecute();
+                    group.onExecute(system);
                     break;
                 case TezStepTiming2.Complete:
-                    mRunIndex++;
-                    //chain.onComplete();
+                    mQueueGroup.Dequeue();
+                    group.onComplete(system);
+                    if (mQueueGroup.Count == 0)
+                    {
+                        mTiming = TezStepExecutorTiming.Complete;
+                    }
                     break;
                 case TezStepTiming2.Abort:
-                    mRunIndex++;
-                    //chain.onAbort();
+                    //
+                    mQueueGroup.Dequeue();
+                    group.onAbort(system);
+                    if (mQueueGroup.Count == 0)
+                    {
+                        mTiming = TezStepExecutorTiming.Complete;
+                    }
                     break;
                 case TezStepTiming2.Wait:
-                    //chain.onWait();
+                    group.onWait(system);
+                    break;
+                case TezStepTiming2.Children:
+                    group.onChildren(system);
+                    mTiming = TezStepExecutorTiming.Wait;
+                    break;
+                //group主动呼叫执行器执行其父步骤
+                //也就是中断当前执行器,不管里面是否还有步骤
+                case TezStepTiming2.Parent:
+                    mTiming = TezStepExecutorTiming.Complete;
                     break;
                 default:
                     break;
@@ -360,24 +409,41 @@ namespace tezcat.Framework.Game
 
         void ITezStepExecutor.complete(TezStepSystem2 system)
         {
+            if (mQueueGroup.Count > 0)
+            {
+                foreach (var item in mQueueGroup)
+                {
+                    item.close();
+                }
+            }
+            mQueueGroup.Clear();
+
             if (this.parentStep != null)
             {
-                system.runInNextFrame(this.parentStep.parentExecutor);
-                this.parentStep = null;
+                this.parentStep.onParent(system);
             }
-
-            mRunIndex = -1;
-            mQueueChains.Clear();
         }
 
         void ITezStepExecutor.close()
         {
-            mQueueChains.Clear();
-            mQueueChains = null;
+            if (this.parentStep != null)
+            {
+                return;
+            }
+
+            if (mQueueGroup.Count > 0)
+            {
+                foreach (var item in mQueueGroup)
+                {
+                    item.close();
+                }
+            }
+            mQueueGroup.Clear();
+            mQueueGroup = null;
         }
     }
-    
-    
+
+
 
     public class TezStepSystem2
     {
@@ -476,7 +542,7 @@ namespace tezcat.Framework.Game
                     case TezStepExecutorTiming.Complete:
                         container.complete(this);
                         container.close();
-                        Console.WriteLine("Container Removed");
+                        Console.WriteLine("Container Complete Removed");
                         break;
                     default:
                         break;

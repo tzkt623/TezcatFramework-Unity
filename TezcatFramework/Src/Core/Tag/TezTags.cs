@@ -5,7 +5,7 @@ namespace tezcat.Framework.Core
 {
     public class TezTags : ITezCloseable
     {
-        public IEnumerable<int> tags1 => mSet;
+        public IEnumerable<int> tags => mSet;
 
         HashSet<int> mSet = new HashSet<int>();
 

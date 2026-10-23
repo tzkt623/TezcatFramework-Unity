@@ -25,6 +25,24 @@ namespace tezcat.Framework.Game
         Total_PercentAdd,
     }
 
+    public class TezModifierHelper
+    {
+        //默认100倍缩放
+        //也就是modifier=100时,实际加成是1倍
+
+        static int mScale = 0;
+        public static int Scale => mScale;
+
+        static float mReciprocal;
+        public static float reciprocal => mReciprocal;
+
+        public static void setScale(int scale)
+        {
+            mScale = scale;
+            mReciprocal = 1.0f / Scale;
+        }
+    }
+
     public interface ITezBonusModifier : ITezCloseable
     {
         //所有者
@@ -36,7 +54,8 @@ namespace tezcat.Framework.Game
         //计算规则
         TezBonusModifierCalculateRule calculateRule { get; set; }
         //值
-        float value { get; set; }
+        //float value { get; set; }
+        int value { get; set; }
         bool isClosed { get; }
 
         bool tryAddContainer(ITezBonusModifierContainer master, out TezBonusModifierEntry entry);
@@ -127,8 +146,8 @@ namespace tezcat.Framework.Game
         public TezBonusModifierCalculateRule calculateRule { get; set; } = 0;
         public ITezValueDescriptor valueDescriptor { get; set; } = null;
 
-        float mValue = 0.0f;
-        public float value
+        int mValue = 0;
+        public int value
         {
             get { return mValue; }
             set
