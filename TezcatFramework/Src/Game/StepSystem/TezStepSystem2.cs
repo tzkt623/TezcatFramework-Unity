@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace tezcat.Framework.Game
 {
-    public enum TezStepTiming2
+    public enum TezStepTiming
     {
         Run,
         Wait,
@@ -28,9 +28,15 @@ namespace tezcat.Framework.Game
         Complete,
     }
 
+    public enum TezStepGroupResult
+    {
+        Success,
+        Failure
+    }
+
     public interface ITezBaseStep
     {
-        TezStepTiming2 timing { get; }
+        TezStepTiming timing { get; }
 
         void onExecute(TezStepSystem2 system);
 
@@ -51,14 +57,14 @@ namespace tezcat.Framework.Game
     /// </summary>
     public class TezStepGroup : ITezBaseStep
     {
-        public event Action evtAbort;
+        public event Action<TezStepGroupResult> evtFinished;
         public ITezStepExecutor parentExecutor { get; set; } = null;
         public ITezStepExecutor childExecutor { get; set; } = null;
 
         private int mIndex = 0;
         private List<Action<TezStepGroup>> mSteps = new List<Action<TezStepGroup>>();
-        public TezStepTiming2 timing => mTiming;
-        private TezStepTiming2 mTiming = TezStepTiming2.Complete;
+        public TezStepTiming timing => mTiming;
+        private TezStepTiming mTiming = TezStepTiming.Complete;
 
         public void onInit(ITezStepExecutor parentExecutor)
         {
@@ -66,11 +72,11 @@ namespace tezcat.Framework.Game
             mIndex = 0;
             if (mSteps.Count > 0)
             {
-                mTiming = TezStepTiming2.Run;
+                mTiming = TezStepTiming.Run;
             }
             else
             {
-                mTiming = TezStepTiming2.Complete;
+                mTiming = TezStepTiming.Complete;
             }
         }
 
@@ -78,15 +84,15 @@ namespace tezcat.Framework.Game
         {
             if (mIndex >= mSteps.Count)
             {
-                mTiming = TezStepTiming2.Complete;
+                mTiming = TezStepTiming.Complete;
                 return;
             }
 
             mSteps[mIndex++](this);
 
-            if (mIndex >= mSteps.Count && mTiming == TezStepTiming2.Run)
+            if (mIndex >= mSteps.Count && mTiming == TezStepTiming.Run)
             {
-                mTiming = TezStepTiming2.Complete;
+                mTiming = TezStepTiming.Complete;
             }
         }
 
@@ -103,7 +109,7 @@ namespace tezcat.Framework.Game
         {
             //把子步骤执行器加入到系统中,并且切换状态为运行子步骤
             system.runImmediately(this.childExecutor);
-            mTiming = TezStepTiming2.Run;
+            mTiming = TezStepTiming.Run;
         }
 
         public void onWait(TezStepSystem2 system)
@@ -129,18 +135,19 @@ namespace tezcat.Framework.Game
             }
 
             //将状态切换到等待子步骤状态
-            mTiming = TezStepTiming2.Children;
+            mTiming = TezStepTiming.Children;
             this.childExecutor.add(step);
         }
 
         public void onComplete(TezStepSystem2 system)
         {
+            evtFinished?.Invoke(TezStepGroupResult.Success);
             this.clear();
         }
 
         public void onAbort(TezStepSystem2 system)
         {
-            evtAbort?.Invoke();
+            evtFinished?.Invoke(TezStepGroupResult.Failure);
             this.clear();
         }
 
@@ -148,7 +155,7 @@ namespace tezcat.Framework.Game
         {
             switch(mTiming)
             {
-                case TezStepTiming2.Abort:
+                case TezStepTiming.Abort:
                     break;
             }
 
@@ -156,26 +163,26 @@ namespace tezcat.Framework.Game
             {
                 //中止当前步骤组的执行
                 case TezStepWishedTiming.Abort:
-                    mTiming = TezStepTiming2.Abort;
+                    mTiming = TezStepTiming.Abort;
                     break;
                 //期望继续执行当前步骤组
                 case TezStepWishedTiming.Run:
-                    if (mTiming != TezStepTiming2.Abort)
+                    if (mTiming != TezStepTiming.Abort)
                     {
-                        mTiming = mIndex >= mSteps.Count ? TezStepTiming2.Complete : TezStepTiming2.Run;
+                        mTiming = mIndex >= mSteps.Count ? TezStepTiming.Complete : TezStepTiming.Run;
                     }
                     break;
                 //期望当前步骤进行等待
                 case TezStepWishedTiming.Wait:
                     //必须要运行状态下才能进行等待
-                    if (mTiming == TezStepTiming2.Run)
+                    if (mTiming == TezStepTiming.Run)
                     {
-                        mTiming = TezStepTiming2.Wait;
+                        mTiming = TezStepTiming.Wait;
                     }
                     break;
                 //期望执行父步骤组,也就是中断当前步骤组的执行,并且切换到父步骤组的执行器中
                 case TezStepWishedTiming.Parent:
-                    mTiming = TezStepTiming2.Parent;
+                    mTiming = TezStepTiming.Parent;
                     break;
                 default:
                     throw new Exception();
@@ -186,14 +193,14 @@ namespace tezcat.Framework.Game
         {
             this.childExecutor?.close();
 
-            this.evtAbort = null;
+            this.evtFinished = null;
             this.parentExecutor = null;
             this.childExecutor = null;
             mIndex = 0;
             mSteps.Clear();
             mSteps = null;
 
-            mTiming = TezStepTiming2.Complete;
+            mTiming = TezStepTiming.Complete;
         }
 
         public void close()
@@ -293,10 +300,10 @@ namespace tezcat.Framework.Game
             var group = mStackGroup[mRunIndex];
             switch (group.timing)
             {
-                case TezStepTiming2.Run:
+                case TezStepTiming.Run:
                     group.onExecute(system);
                     break;
-                case TezStepTiming2.Complete:
+                case TezStepTiming.Complete:
                     mStackGroup.RemoveAt(mRunIndex);
                     mRunIndex = mStackGroup.Count - 1;
                     group.onComplete(system);
@@ -307,7 +314,7 @@ namespace tezcat.Framework.Game
                     break;
                 //group主动中断自己的执行,但是不会中断执行器的执行
                 //如果可能,执行器会继续执行下一个步骤
-                case TezStepTiming2.Abort:
+                case TezStepTiming.Abort:
                     mStackGroup.RemoveAt(mRunIndex);
                     mRunIndex = mStackGroup.Count - 1;
                     group.onAbort(system);
@@ -317,16 +324,16 @@ namespace tezcat.Framework.Game
                     }
                     break;
                 //让当前步骤组进入等待状态,但是不会中断执行器的执行
-                case TezStepTiming2.Wait:
+                case TezStepTiming.Wait:
                     group.onWait(system);
                     break;
-                case TezStepTiming2.Children:
+                case TezStepTiming.Children:
                     group.onChildren(system);
                     mTiming = TezStepExecutorTiming.Wait;
                     break;
                 //group主动呼叫执行器执行其父步骤
                 //也就是中断当前执行器,不管里面是否还有步骤
-                case TezStepTiming2.Parent:
+                case TezStepTiming.Parent:
                     //group.onParent(system);
                     //system.runInNextFrame(this.parentStep.parentExecutor);
                     mTiming = TezStepExecutorTiming.Complete;
@@ -341,7 +348,7 @@ namespace tezcat.Framework.Game
 
 
 
-    public class TezSequenceStepExecutor : ITezStepExecutor
+    public class TezStepSequenceExecutor : ITezStepExecutor
     {
         public TezStepGroup parentStep { get; set; }
         Queue<TezStepGroup> mQueueGroup = new Queue<TezStepGroup>();
@@ -368,10 +375,10 @@ namespace tezcat.Framework.Game
             var group = mQueueGroup.Peek();
             switch (group.timing)
             {
-                case TezStepTiming2.Run:
+                case TezStepTiming.Run:
                     group.onExecute(system);
                     break;
-                case TezStepTiming2.Complete:
+                case TezStepTiming.Complete:
                     mQueueGroup.Dequeue();
                     group.onComplete(system);
                     if (mQueueGroup.Count == 0)
@@ -379,7 +386,7 @@ namespace tezcat.Framework.Game
                         mTiming = TezStepExecutorTiming.Complete;
                     }
                     break;
-                case TezStepTiming2.Abort:
+                case TezStepTiming.Abort:
                     //
                     mQueueGroup.Dequeue();
                     group.onAbort(system);
@@ -388,16 +395,16 @@ namespace tezcat.Framework.Game
                         mTiming = TezStepExecutorTiming.Complete;
                     }
                     break;
-                case TezStepTiming2.Wait:
+                case TezStepTiming.Wait:
                     group.onWait(system);
                     break;
-                case TezStepTiming2.Children:
+                case TezStepTiming.Children:
                     group.onChildren(system);
                     mTiming = TezStepExecutorTiming.Wait;
                     break;
                 //group主动呼叫执行器执行其父步骤
                 //也就是中断当前执行器,不管里面是否还有步骤
-                case TezStepTiming2.Parent:
+                case TezStepTiming.Parent:
                     mTiming = TezStepExecutorTiming.Complete;
                     break;
                 default:
@@ -447,6 +454,15 @@ namespace tezcat.Framework.Game
 
     public class TezStepSystem2
     {
+        #region Group
+
+        #endregion
+
+        #region Tool
+
+        #endregion
+
+        #region Main
         const int RUN_A = 0;
         const int RUN_B = 1;
 
@@ -470,11 +486,6 @@ namespace tezcat.Framework.Game
         {
             return (mRunCurrent.Count + mRunNext.Count + mCache.Count) == 0;
         }
-
-        //         public void runInNextFrame(ITezStackStepContainer2 container)
-        //         {
-        //             mRunNext.Add(container);
-        //         }
 
         public void runInNextFrame<T>(TezStepGroup step) where T : ITezStepExecutor, new()
         {
@@ -551,6 +562,8 @@ namespace tezcat.Framework.Game
 
             mRunCurrent.Clear();
         }
+
+        #endregion
     }
 
 }

@@ -1,18 +1,22 @@
 using System;
 using tezcat.Framework.Core;
-using tezcat.Framework.Extension;
 
 namespace tezcat.Framework.Game
 {
+    /// <summary>
+    /// BonusValue不能主动删除modifier
+    /// 但是可以选中自己的modifier让他自己删除
+    /// </summary>
     public interface ITezBonusValue
         : ITezValueWrapper
         , ITezSerializable
     {
+        ITezBonusModifierContainer modifierContainer { get; }
         void manualUpdate();
 
         void setDirty();
         void addModifier(ITezBonusModifier bonusModifier);
-        void removeModifier(ITezBonusModifier bonusModifier);
+        //void removeModifier(ITezBonusModifier bonusModifier);
     }
 
     public interface ITezBonusValue<T> : ITezBonusValue
@@ -92,10 +96,17 @@ namespace tezcat.Framework.Game
             mModifierContainer.addModifier(bonusModifier);
         }
 
-        public void removeModifier(ITezBonusModifier bonusModifier)
-        {
-            mModifierContainer.removeModifier(bonusModifier);
-        }
+        /// <summary>
+        /// 一个Value删除Modifier的情况有
+        /// 
+        /// 1.自己关闭了,需要通知modifier关闭自己
+        /// 2.modifier关闭了,通知value删除自己
+        /// 
+        /// </summary>
+//          public void removeModifier(ITezBonusModifier bonusModifier)
+//          {
+//              mModifierContainer.removeModifier(bonusModifier);
+//          }
 
         protected override void onClose()
         {

@@ -19,6 +19,8 @@ namespace tezcat.Framework.Test
 
         public override void init()
         {
+            TezBonusModifierConfig.init(TezBonusModifierConfig.Ratio.R100);
+
             var data = TezcatFramework.protoDB.createObjectData<ShipData>("Battleship", TezProtoObjectCreateMode.New);
             mShip = data.instantiateEntity();
         }
@@ -44,32 +46,34 @@ namespace tezcat.Framework.Test
                 owner = this,
                 calculateRule = TezBonusModifierCalculateRule.Base_SumAdd,
                 valueDescriptor = MyDescriptorConfig.ShipPorperty.HullCapacity,
-                value = 10
             };
+            modifier1.setValue(10);
 
             TezBonusModifier modifier2 = new TezBonusModifier()
             {
                 owner = this,
                 calculateRule = TezBonusModifierCalculateRule.Base_SumAdd,
                 valueDescriptor = MyDescriptorConfig.ShipPorperty.ArmorCapacity,
-                value = 20
             };
+            modifier2.setValue(20);
 
             TezBonusModifier modifier3 = new TezBonusModifier()
             {
                 owner = this,
                 calculateRule = TezBonusModifierCalculateRule.Base_SumAdd,
                 valueDescriptor = MyDescriptorConfig.ShipPorperty.ShieldCapacity,
-                value = 30
             };
+            modifier3.setValue(30);
+
 
             TezBonusModifier modifier4 = new TezBonusModifier()
             {
                 owner = this,
                 calculateRule = TezBonusModifierCalculateRule.Base_SumAdd,
                 valueDescriptor = MyDescriptorConfig.ShipPorperty.PowerCapacity,
-                value = 40
             };
+            modifier4.setValue(40);
+
 
             Console.WriteLine(modifier1);
             Console.WriteLine(modifier2);
@@ -90,16 +94,17 @@ namespace tezcat.Framework.Test
                 owner = this,
                 calculateRule = TezBonusModifierCalculateRule.Base_PercentAdd,
                 valueDescriptor = MyDescriptorConfig.ShipPorperty.HullCapacity,
-                value = 2
             };
+            modifier5.setValue(2);
+
 
             TezBonusModifier modifier6 = new TezBonusModifier()
             {
                 owner = this,
                 calculateRule = TezBonusModifierCalculateRule.Base_PercentAdd,
                 valueDescriptor = MyDescriptorConfig.ShipPorperty.PowerCapacity,
-                value = 3
             };
+            modifier6.setValue(3);
 
             Console.WriteLine(modifier5);
             Console.WriteLine(modifier6);
@@ -109,12 +114,18 @@ namespace tezcat.Framework.Test
 
 
             Console.WriteLine("====Remove Modifier====");
-            ship.bonusSystem.removeModifier(modifier1);
-            ship.bonusSystem.removeModifier(modifier2);
-            ship.bonusSystem.removeModifier(modifier3);
-            ship.bonusSystem.removeModifier(modifier4);
-            ship.bonusSystem.removeModifier(modifier5);
-            ship.bonusSystem.removeModifier(modifier6);
+            modifier1.close();
+            modifier2.close();
+            modifier3.close();
+            modifier4.close();
+            modifier5.close();
+            modifier6.close();
+            //             ship.bonusSystem.removeModifier(modifier1);
+            //             ship.bonusSystem.removeModifier(modifier2);
+            //             ship.bonusSystem.removeModifier(modifier3);
+            //             ship.bonusSystem.removeModifier(modifier4);
+            //             ship.bonusSystem.removeModifier(modifier5);
+            //             ship.bonusSystem.removeModifier(modifier6);
 
             this.showData();
         }

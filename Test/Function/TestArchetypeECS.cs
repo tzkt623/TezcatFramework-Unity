@@ -122,13 +122,13 @@ namespace tezcat.Framework.Test
 
         protected override void onLoadProtoData(TezSaveController.Reader reader)
         {
-            this.healthAdd.value = reader.readInt("HealthAdd");
+            this.healthAdd.setValue(reader.readInt("HealthAdd"));
         }
 
         protected override void endNewObject_CopyDataFrom(TezProtoObjectData other)
         {
             HealthPotionData data = (HealthPotionData)other;
-            this.healthAdd.value = data.healthAdd.value;
+            this.healthAdd.setValue(data.healthAdd.value);
         }
 
         protected override void onCreateEntity(ref TezWorld.Entity entity)

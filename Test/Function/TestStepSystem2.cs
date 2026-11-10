@@ -174,7 +174,7 @@ namespace tezcat.Framework.Test
             bool aborted = false;
 
             var group = new TezStepGroup();
-            group.evtAbort += () => aborted = true;
+            group.evtFinished += (result) => aborted = true;
             group.addStep(m =>
             {
                 order.Add("a");
@@ -332,7 +332,7 @@ namespace tezcat.Framework.Test
             var g2 = new TezStepGroup();
             g2.addStep(m => order.Add("b1"));
 
-            var executor = new TezSequenceStepExecutor();
+            var executor = new TezStepSequenceExecutor();
             var api = (ITezStepExecutor)executor;
             api.add(g1);
             api.add(g2);
@@ -369,7 +369,7 @@ namespace tezcat.Framework.Test
             });
             g2.addStep(m => order.Add("b2"));
 
-            var executor = new TezSequenceStepExecutor();
+            var executor = new TezStepSequenceExecutor();
             var api = (ITezStepExecutor)executor;
             api.add(g1);
             api.add(g2);
@@ -395,7 +395,7 @@ namespace tezcat.Framework.Test
             bool aborted = false;
 
             var g1 = new TezStepGroup();
-            g1.evtAbort += () => aborted = true;
+            g1.evtFinished += (result) => aborted = true;
             g1.addStep(m =>
             {
                 order.Add("a1");
@@ -406,7 +406,7 @@ namespace tezcat.Framework.Test
             var g2 = new TezStepGroup();
             g2.addStep(m => order.Add("b1"));
 
-            var executor = new TezSequenceStepExecutor();
+            var executor = new TezStepSequenceExecutor();
             var api = (ITezStepExecutor)executor;
             api.add(g1);
             api.add(g2);
@@ -441,7 +441,7 @@ namespace tezcat.Framework.Test
             var g2 = new TezStepGroup();
             g2.addStep(m => order.Add("b1"));
 
-            var executor = new TezSequenceStepExecutor();
+            var executor = new TezStepSequenceExecutor();
             var api = (ITezStepExecutor)executor;
             api.add(g1);
             api.add(g2);

@@ -54,11 +54,11 @@ namespace tezcat.Framework.Game
             mArrays[descriptor.typeID][descriptor.indexID].addModifier(modifier);
         }
 
-        public void removeModifier(ITezBonusModifier modifier)
-        {
-            var descriptor = modifier.valueDescriptor;
-            mArrays[descriptor.typeID][descriptor.indexID].removeModifier(modifier);
-        }
+//         public void removeModifier(ITezBonusModifier modifier)
+//         {
+//             var descriptor = modifier.valueDescriptor;
+//             mArrays[descriptor.typeID][descriptor.indexID].removeModifier(modifier);
+//         }
 
         public void close()
         {
